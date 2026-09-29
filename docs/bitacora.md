@@ -27,3 +27,9 @@ Diario del proceso: qué se hizo, qué se aprendió y qué queda pendiente. Una 
 **Decisiones**: ADR 0001 (infraestructura) y ADR 0002 (asientos) en `docs/decisiones/`.
 
 **Siguiente paso**: ejecutar las migraciones en Supabase y empezar el frontend (v0.2.0).
+
+
+## 2026-09-29 · Instalación en Supabase
+   - Ejecutadas las migraciones 0001–0006 en Supabase.
+   - Schema `conta` expuesto en la Data API.
+   - Repositorio gestionado desde VS Code y publicado en GitHub.

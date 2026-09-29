@@ -32,7 +32,7 @@ mini-erp/
 │   │   ├── 0005_informes.sql             diario, mayor, sumas y saldos, libro IVA/IGIC
 │   │   └── 0006_seguridad_rls.sql        permisos y Row Level Security (multiusuario)
 │   ├── seed/
-│   │   └── demo_empresa_canarias.sql     empresa de ejemplo con asientos (opcional)
+│   │   └── demo_empresas.sql             2 empresas de ejemplo: Canarias (IGIC) y Península (IVA)
 │   └── tests/
 │       ├── supabase_stub.sql             imita auth.* de Supabase para probar en local
 │       └── test_fase1.sql                pruebas automáticas de la fase 1
@@ -48,7 +48,7 @@ mini-erp/
 1. En tu proyecto de Supabase → **SQL Editor**, ejecuta **en orden** los archivos de `database/migrations/`
    (0001 → 0006). Cada uno es independiente y comentado.
 2. **Settings → API → Exposed schemas**: añade `conta` para que la web pueda leerlo.
-3. (Opcional) Ejecuta `database/seed/demo_empresa_canarias.sql` para tener una empresa con asientos.
+3. (Opcional) Ejecuta `database/seed/demo_empresas.sql` para tener dos empresas con asientos (necesita un usuario en Authentication).
 
 No toca nada de lo que ya tengas en el schema `public`: todo vive en `conta`.
 

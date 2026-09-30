@@ -1,122 +1,163 @@
-import { useState } from 'react'
-import heroImg from './assets/hero.png'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import './App.css'
+import { useEffect, useState } from 'react'
+import { supabase } from './supabase'
+import { I18nProvider, useI18n } from './i18n'
 
-function App() {
-  const [count, setCount] = useState(0)
+export default function App() {
+  const [session, setSession] = useState(null)
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => setSession(data.session))
+    const { data } = supabase.auth.onAuthStateChange((_event, s) => setSession(s))
+    return () => data.subscription.unsubscribe()
+  }, [])
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
-
-      <div className="ticks"></div>
-
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
-
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+    <I18nProvider session={session}>
+      <Layout session={session} />
+    </I18nProvider>
   )
 }
 
-export default App
+function Layout({ session }) {
+  const { t } = useI18n()
+  return (
+    <main>
+      <header className="cabecera">
+        <h1>{t('appTitle')}</h1>
+        <LanguageSwitch />
+      </header>
+      {session ? <Companies session={session} /> : <Login />}
+    </main>
+  )
+}
+
+function LanguageSwitch() {
+  const { language, changeLanguage, t } = useI18n()
+  return (
+    <select aria-label={t('language')} value={language}
+            onChange={(e) => changeLanguage(e.target.value)}>
+      <option value="es">ES</option>
+      <option value="en">EN</option>
+    </select>
+  )
+}
+
+function Login() {
+  const { t } = useI18n()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [message, setMessage] = useState('')
+
+  async function signIn(e) {
+    e.preventDefault()
+    const { error } = await supabase.auth.signInWithPassword({ email, password })
+    if (error) setMessage(error.message)
+  }
+
+  async function signUp() {
+    const { error } = await supabase.auth.signUp({ email, password })
+    setMessage(error ? error.message : t('userCreated'))
+  }
+
+  return (
+    <form onSubmit={signIn} className="tarjeta">
+      <h2>{t('login')}</h2>
+      <input type="email" placeholder={t('email')} value={email}
+             onChange={(e) => setEmail(e.target.value)} required />
+      <input type="password" placeholder={t('password')} value={password}
+             onChange={(e) => setPassword(e.target.value)} required />
+      <div className="fila">
+        <button type="submit">{t('signIn')}</button>
+        <button type="button" className="secundario" onClick={signUp}>{t('signUp')}</button>
+      </div>
+      {message && <p className="aviso">{message}</p>}
+    </form>
+  )
+}
+
+const emptyForm = { name: '', vat_registration_no: '', industry: 'services', tax_territory: 'canary_islands' }
+
+function Companies({ session }) {
+  const { t } = useI18n()
+  const [companies, setCompanies] = useState([])
+  const [form, setForm] = useState(emptyForm)
+  const [error, setError] = useState('')
+
+  async function load() {
+    const { data, error } = await supabase
+      .from('companies')
+      .select('id, name, vat_registration_no, industry, tax_territory')
+      .order('name')
+    if (error) setError(error.message)
+    else setCompanies(data)
+  }
+
+  useEffect(() => { load() }, [])
+
+  async function create(e) {
+    e.preventDefault()
+    setError('')
+    // 1) Alta de la empresa (la base de datos copia el PGC y te hace admin)
+    const { data, error } = await supabase
+      .from('companies')
+      .insert({ ...form, created_by: session.user.id })
+      .select('id')
+      .single()
+    if (error) return setError(error.message)
+
+    // 2) Ejercicio del año en curso con sus 12 periodos
+    const { error: e2 } = await supabase.rpc('create_fiscal_year', {
+      p_company: data.id,
+      p_year: new Date().getFullYear(),
+    })
+    if (e2) return setError(e2.message)
+
+    setForm(emptyForm)
+    load()
+  }
+
+  const change = (field) => (e) => setForm({ ...form, [field]: e.target.value })
+
+  return (
+    <>
+      <p className="usuario">
+        {session.user.email}
+        <button className="secundario" onClick={() => supabase.auth.signOut()}>{t('signOut')}</button>
+      </p>
+
+      <section className="tarjeta">
+        <h2>{t('myCompanies')}</h2>
+        {companies.length === 0 && <p>{t('noCompanies')}</p>}
+        <ul>
+          {companies.map((c) => (
+            <li key={c.id}>
+              <strong>{c.name}</strong>
+              <span>
+                {c.vat_registration_no} · {t(`industry.${c.industry}`)} · {t(`territory.${c.tax_territory}`)}
+              </span>
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <form onSubmit={create} className="tarjeta">
+        <h2>{t('newCompany')}</h2>
+        <input placeholder={t('companyName')} value={form.name} onChange={change('name')} required />
+        <input placeholder={t('vatNo')} value={form.vat_registration_no} onChange={change('vat_registration_no')} />
+        <select value={form.industry} onChange={change('industry')}>
+          {['services', 'retail', 'manufacturing', 'ecommerce'].map((i) => (
+            <option key={i} value={i}>{t(`industry.${i}`)}</option>
+          ))}
+        </select>
+        <select value={form.tax_territory} onChange={change('tax_territory')}>
+          {['canary_islands', 'mainland'].map((tt) => (
+            <option key={tt} value={tt}>{t(`territory.${tt}`)}</option>
+          ))}
+        </select>
+        <button type="submit">{t('createCompany')}</button>
+      </form>
+
+      {error && <p className="aviso">⚠ {error}</p>}
+    </>
+  )
+}

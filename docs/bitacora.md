@@ -39,3 +39,10 @@ Diario del proceso: qué se hizo, qué se aprendió y qué queda pendiente. Una 
    - Reset en Supabase: borrado `conta`, ejecutadas 0001–0006 de `erp`, expuesto `erp` en la Data API.
    - Comprobado: 11 tablas con RLS, 352 cuentas con nombre en inglés, 12 tipos IVA/IGIC.
    - Aprendido: `git switch -c` crea una rama; `git switch` solo cambia a una que ya existe.
+   
+## 2026-09-30 · Primera pantalla web (bilingüe)
+- Frontend React + Vite en /frontend, conectado a Supabase (schema erp).
+- Login con correo y contraseña, listado y alta de empresas (copia PGC + ejercicio automáticos).
+- Interfaz en español / inglés con diccionarios en src/i18n; idioma guardado por usuario en erp.user_settings.
+- Probado: registro, alta de empresa (352 cuentas, 12 periodos) y el idioma se mantiene al volver a entrar.
+- Aprendido: componentes y Context de React, variables VITE_ en .env.local, merge entre ramas.

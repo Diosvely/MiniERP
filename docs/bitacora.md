@@ -52,3 +52,13 @@ Diario del proceso: qué se hizo, qué se aprendió y qué queda pendiente. Una 
 - Root directory = frontend; variables VITE_SUPABASE_URL / VITE_SUPABASE_KEY en Cloudflare.
 - Supabase Auth: Site URL y Redirect URLs configuradas (producción, ramas y localhost).
 - Probado en el móvil: mismo usuario, mismo idioma y mismas empresas que en el ordenador.
+
+
+## 2026-09-30 · Primeros asientos desde la web
+- Pantalla de empresa con pestañas: Nuevo asiento · Libro diario · Cuentas.
+- Alta de subcuentas validada por la base de datos (longitud y cuenta PGC madre).
+- Formulario de asiento con cuadre en vivo, cálculo en céntimos, botón "=" y contabilización con post_entry().
+- Libro diario desde la vista v_general_journal, bilingüe y con formato de importes por idioma.
+- Probado: constitución (572/100) y factura con IGIC (430/705/477).
+- Aprendido: organizar en carpeta components/, props y comunicación padre-hijo en React.
+  Error típico: crear un archivo fuera de src (Vite no lo encuentra).

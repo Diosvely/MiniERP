@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from './supabase'
 import { I18nProvider, useI18n } from './i18n'
+import CompanyView from './components/CompanyView'
 
 export default function App() {
   const [session, setSession] = useState(null)
@@ -82,11 +83,12 @@ function Companies({ session }) {
   const [companies, setCompanies] = useState([])
   const [form, setForm] = useState(emptyForm)
   const [error, setError] = useState('')
+  const [selected, setSelected] = useState(null)   // empresa abierta
 
   async function load() {
     const { data, error } = await supabase
       .from('companies')
-      .select('id, name, vat_registration_no, industry, tax_territory')
+      .select('id, name, vat_registration_no, industry, tax_territory, posting_account_digits')
       .order('name')
     if (error) setError(error.message)
     else setCompanies(data)
@@ -117,6 +119,9 @@ function Companies({ session }) {
   }
 
   const change = (field) => (e) => setForm({ ...form, [field]: e.target.value })
+  
+  // Si hay una empresa abierta, mostramos su pantalla en lugar de la lista
+  if (selected) return <CompanyView company={selected} onBack={() => setSelected(null)} />
 
   return (
     <>
@@ -130,7 +135,7 @@ function Companies({ session }) {
         {companies.length === 0 && <p>{t('noCompanies')}</p>}
         <ul>
           {companies.map((c) => (
-            <li key={c.id}>
+          <li key={c.id} className="clicable" onClick={() => setSelected(c)}>
               <strong>{c.name}</strong>
               <span>
                 {c.vat_registration_no} · {t(`industry.${c.industry}`)} · {t(`territory.${c.tax_territory}`)}

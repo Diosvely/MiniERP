@@ -46,3 +46,9 @@ Diario del proceso: qué se hizo, qué se aprendió y qué queda pendiente. Una 
 - Interfaz en español / inglés con diccionarios en src/i18n; idioma guardado por usuario en erp.user_settings.
 - Probado: registro, alta de empresa (352 cuentas, 12 periodos) y el idioma se mantiene al volver a entrar.
 - Aprendido: componentes y Context de React, variables VITE_ en .env.local, merge entre ramas.
+
+## 2026-09-30 · Web publicada en Cloudflare Pages
+- Producción: https://minierp-6ty.pages.dev (se publica sola con cada push a main).
+- Root directory = frontend; variables VITE_SUPABASE_URL / VITE_SUPABASE_KEY en Cloudflare.
+- Supabase Auth: Site URL y Redirect URLs configuradas (producción, ramas y localhost).
+- Probado en el móvil: mismo usuario, mismo idioma y mismas empresas que en el ordenador.

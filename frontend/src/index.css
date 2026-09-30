@@ -28,3 +28,41 @@ li { display: flex; flex-direction: column; padding: 10px 0; border-bottom: 1px 
 li span { color: var(--suave); font-size: .9rem; }
 .usuario { display: flex; justify-content: space-between; align-items: center; color: var(--suave); }
 .aviso { color: var(--aviso); }
+/* --- Bloque F: empresa, cuentas, asientos, libro diario --- */
+.clicable { cursor: pointer; }
+.clicable:hover strong { color: var(--primario); }
+.ayuda { color: var(--suave); font-size: .85rem; margin: 0; }
+.exito { color: #1a7f37; }
+.empresa-cabecera { display: flex; align-items: center; gap: 12px; margin-bottom: 12px; }
+.empresa-cabecera div { display: flex; flex-direction: column; }
+.empresa-cabecera span { color: var(--suave); font-size: .85rem; }
+.pestanas { display: flex; gap: 6px; margin-bottom: 16px; overflow-x: auto; }
+.pestanas button { background: transparent; color: var(--texto); border: 1px solid var(--borde); white-space: nowrap; }
+.pestanas button.activa { background: var(--primario); color: #fff; border-color: var(--primario); }
+.codigo { font-family: ui-monospace, Consolas, monospace; color: var(--suave); margin-right: 6px; }
+.cuentas { max-height: 60vh; overflow-y: auto; }
+.cuentas li { flex-direction: row; gap: 6px; padding: 6px 0; }
+.cuentas li.nivel-1 { font-weight: 700; }
+.cuentas li.nivel-2 { font-weight: 600; padding-left: 8px; }
+.cuentas li.nivel-3 { padding-left: 16px; }
+.cuentas li.nivel-4 { padding-left: 24px; }
+.cuentas li.subcuenta { padding-left: 32px; color: var(--primario); }
+label { display: flex; flex-direction: column; gap: 4px; font-size: .85rem; color: var(--suave); }
+.rejilla-cabecera { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.linea { display: grid; grid-template-columns: 1fr 1fr auto; gap: 6px; padding: 8px 0; border-bottom: 1px dashed var(--borde); }
+.linea select { grid-column: 1 / -1; }
+.linea input { min-width: 0; }
+.acciones-linea { display: flex; gap: 4px; }
+.acciones-linea button { padding: 8px 10px; }
+button:disabled { opacity: .45; cursor: not-allowed; }
+.totales { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 8px; padding: 10px 12px; border-radius: 8px; font-size: .9rem; }
+.totales.ok { background: rgba(26,127,55,.12); color: #1a7f37; }
+.totales.descuadre { background: rgba(180,35,24,.10); color: var(--aviso); }
+.asiento { border-top: 1px solid var(--borde); padding-top: 10px; }
+.asiento header { display: flex; justify-content: space-between; color: var(--suave); font-size: .9rem; }
+.asiento header strong { color: var(--texto); }
+.concepto { margin: 4px 0 8px; }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+th { text-align: left; color: var(--suave); font-weight: 500; border-bottom: 1px solid var(--borde); padding: 4px; }
+td { padding: 4px; border-bottom: 1px solid var(--borde); vertical-align: top; }
+.num { text-align: right; white-space: nowrap; }

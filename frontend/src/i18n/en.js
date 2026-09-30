@@ -20,6 +20,51 @@ export default {
   vatNo: 'VAT registration no.',
   createCompany: 'Create company',
 
+    // Company screen
+  back: 'Companies',
+  tabEntry: 'New entry',
+  tabJournal: 'General journal',
+  tabAccounts: 'Accounts',
+
+  // Chart of accounts
+  chartOfAccounts: 'Chart of accounts',
+  searchAccount: 'Search by number or name…',
+  newAccount: 'New posting account',
+  newAccountHelp: 'A {n}-digit posting account starting with its PGC account. E.g. 57200001 Bank, 43000001 Customer.',
+  accountNo: 'Number',
+  accountNameEs: 'Name (Spanish)',
+  accountNameEn: 'English name (optional)',
+  createAccount: 'Create account',
+
+  // Journal entries
+  newEntry: 'New journal entry',
+  postingDate: 'Posting date',
+  documentNo: 'Document no.',
+  entryDescription: 'Entry description',
+  selectAccount: 'Select account…',
+  noPostingAccounts: 'First create posting accounts in the Accounts tab.',
+  debit: 'Debit',
+  credit: 'Credit',
+  addLine: 'Add line',
+  removeLine: 'Remove line',
+  fillDifference: 'Put the difference here',
+  balanced: 'Balanced',
+  difference: 'Difference',
+  saveDraft: 'Save draft',
+  post: 'Post',
+  postedAs: 'Entry posted as no. {n}.',
+  savedDraft: 'Draft saved.',
+  noFiscalYear: 'There is no open fiscal year for that date.',
+  needTwoLines: 'An entry needs at least 2 lines with account and amount.',
+  needDescription: 'Write the entry description.',
+  unbalanced: 'The entry is unbalanced: debit must equal credit.',
+
+  // General journal
+  generalJournal: 'General journal',
+  noEntries: 'There are no posted entries yet.',
+  entry: 'Entry',
+  account: 'Account',
+
   industry: {
     services: 'Services',
     retail: 'Retail',

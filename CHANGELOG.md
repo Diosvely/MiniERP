@@ -2,6 +2,15 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [Sin publicar]
+### Cambiado
+- Base de datos renombrada al inglés al estilo Business Central / SAP: schema `erp`, tablas, columnas,
+  funciones, vistas, estados y mensajes de error (ADR 0003).
+### Añadido
+- Nombres en inglés (`name_en`) para las 352 cuentas del PGC y descripciones de los tipos IVA / IGIC.
+- Tabla `user_settings` para el idioma de la interfaz (es / en) por usuario.
+- `docs/glosario.md` y script `database/reset/0000_drop_conta.sql`.
+
 ## [0.1.0] - 2026-09-29
 ### Añadido
 - Schema `conta` en PostgreSQL/Supabase con 6 migraciones.

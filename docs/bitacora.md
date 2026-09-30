@@ -33,3 +33,9 @@ Diario del proceso: qué se hizo, qué se aprendió y qué queda pendiente. Una 
    - Ejecutadas las migraciones 0001–0006 en Supabase.
    - Schema `conta` expuesto en la Data API.
    - Repositorio gestionado desde VS Code y publicado en GitHub.
+   
+## 2026-09-30 · Base de datos en inglés (schema erp)
+   - Nombres técnicos en inglés al estilo BC / SAP, comentarios en español (ADR 0003).
+   - Reset en Supabase: borrado `conta`, ejecutadas 0001–0006 de `erp`, expuesto `erp` en la Data API.
+   - Comprobado: 11 tablas con RLS, 352 cuentas con nombre en inglés, 12 tipos IVA/IGIC.
+   - Aprendido: `git switch -c` crea una rama; `git switch` solo cambia a una que ya existe.

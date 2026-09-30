@@ -1,17 +1,18 @@
 # Mini ERP · Contabilidad general española
 
-ERP web personal para **aprender contabilidad española** (PGC 2007, IVA peninsular e IGIC canario)
+ERP web personal para **aprender contabilidad española** (PGC 2007, IVA peninsular e IGIC canario) **y el inglés técnico** de los ERP
 haciendo asientos reales sobre empresas de distintos sectores (retail, industria, e-commerce, servicios).
 Multiusuario, usable desde el móvil y el ordenador.
 
 > Proyecto de estudio. La estructura de tablas se inspira en **Microsoft Dynamics 365 Business Central**
-> y **SAP FI**, simplificada para que cada pieza se entienda.
+> y **SAP FI**, simplificada para que cada pieza se entienda. Base de datos en inglés, comentarios en español,
+> interfaz en español o inglés a elección del usuario. Vocabulario en [`docs/glosario.md`](docs/glosario.md).
 
 ## Stack
 
 | Capa | Tecnología | Por qué |
 |---|---|---|
-| Base de datos | Supabase (PostgreSQL) — schema `conta` | Reutiliza un proyecto existente; SQL real; Auth + RLS incluidos |
+| Base de datos | Supabase (PostgreSQL) — schema `erp` | Reutiliza un proyecto existente; SQL real; Auth + RLS incluidos |
 | Lógica contable | Funciones y triggers en PostgreSQL | Las reglas (Debe = Haber, periodos, inmutabilidad) viven junto a los datos |
 | Frontend | React + Vite (PWA) — *pendiente* | Responsive: móvil y escritorio |
 | Despliegue web | Cloudflare Pages / Workers | Gratuito y ya en uso |
@@ -24,13 +25,15 @@ mini-erp/
 ├── README.md                 ← este archivo (léeme)
 ├── CHANGELOG.md              ← qué cambia en cada versión
 ├── database/
+│   ├── reset/
+│   │   └── 0000_drop_conta.sql           borra el schema antiguo en español (solo una vez)
 │   ├── migrations/           ← scripts SQL en orden; se ejecutan UNA vez cada uno
-│   │   ├── 0001_nucleo.sql               empresas, usuarios, ejercicios, periodos
-│   │   ├── 0002_plan_cuentas_pgc.sql     plantilla PGC (grupos 1-7) + cuentas por empresa
-│   │   ├── 0003_terceros_impuestos.sql   clientes/proveedores, tipos IVA / IGIC
-│   │   ├── 0004_asientos.sql             asientos, apuntes, contabilizar, anular
-│   │   ├── 0005_informes.sql             diario, mayor, sumas y saldos, libro IVA/IGIC
-│   │   └── 0006_seguridad_rls.sql        permisos y Row Level Security (multiusuario)
+│   │   ├── 0001_core.sql                 companies, users, settings, fiscal years, periods
+│   │   ├── 0002_chart_of_accounts.sql    PGC template (groups 1-7, es + en) + G/L accounts
+│   │   ├── 0003_partners_tax.sql         business partners, VAT / IGIC tax codes
+│   │   ├── 0004_journal_entries.sql      journal entries & lines, post, reverse
+│   │   ├── 0005_reports.sql              general journal, ledger, trial balance, tax book
+│   │   └── 0006_security_rls.sql         permissions and Row Level Security (multi-user)
 │   ├── seed/
 │   │   └── demo_empresas.sql             2 empresas de ejemplo: Canarias (IGIC) y Península (IVA)
 │   └── tests/
@@ -39,6 +42,7 @@ mini-erp/
 ├── docs/
 │   ├── bitacora.md           ← diario del proceso de aprendizaje, versión a versión
 │   ├── modelo-datos.md       ← tablas, relaciones y equivalencias BC / SAP
+│   ├── glosario.md           ← vocabulario español ↔ inglés ↔ BC ↔ SAP
 │   └── decisiones/           ← ADR: por qué se eligió cada cosa
 └── frontend/                 ← (fase 2) aplicación web
 ```
@@ -47,10 +51,11 @@ mini-erp/
 
 1. En tu proyecto de Supabase → **SQL Editor**, ejecuta **en orden** los archivos de `database/migrations/`
    (0001 → 0006). Cada uno es independiente y comentado.
-2. **Settings → API → Exposed schemas**: añade `conta` para que la web pueda leerlo.
+   *(Si vienes de la v0.1.0, ejecuta antes `database/reset/0000_drop_conta.sql`.)*
+2. **Project Settings → Data API → Exposed schemas**: añade `erp` para que la web pueda leerlo.
 3. (Opcional) Ejecuta `database/seed/demo_empresas.sql` para tener dos empresas con asientos (necesita un usuario en Authentication).
 
-No toca nada de lo que ya tengas en el schema `public`: todo vive en `conta`.
+No toca nada de lo que ya tengas en el schema `public`: todo vive en `erp`.
 
 ## Cómo probar en local (sin Supabase)
 
@@ -72,7 +77,7 @@ psql -d minierp_test -v ON_ERROR_STOP=1 -f database/tests/test_fase1.sql
 ## Hoja de ruta
 
 - [x] **v0.1.0** — Base contable: empresas, PGC, asientos con validación, libros y sumas y saldos, multiusuario (RLS)
-- [ ] v0.2.0 — Frontend web (login, empresas, alta de asientos desde el móvil)
+- [ ] v0.2.0 — Base de datos en inglés (BC / SAP) + frontend web bilingüe (login, empresas, asientos desde el móvil)
 - [ ] v0.3.0 — Impuestos automáticos: matriz IVA/IGIC, cálculo de cuotas, recargo de equivalencia, IRPF
 - [ ] v0.4.0 — PyG y Balance según modelo de cuentas anuales del PGC
 - [ ] v0.5.0 — Plantillas de asientos por sector

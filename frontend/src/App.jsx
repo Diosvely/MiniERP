@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from './supabase'
 import { I18nProvider, useI18n } from './i18n'
-import CompanyView from './components/CompanyView'
+import Companies from './components/Companies'
 
 export default function App() {
   const [session, setSession] = useState(null)
@@ -76,93 +76,3 @@ function Login() {
   )
 }
 
-const emptyForm = { name: '', vat_registration_no: '', industry: 'services', tax_territory: 'canary_islands' }
-
-function Companies({ session }) {
-  const { t } = useI18n()
-  const [companies, setCompanies] = useState([])
-  const [form, setForm] = useState(emptyForm)
-  const [error, setError] = useState('')
-  const [selected, setSelected] = useState(null)   // empresa abierta
-
-  async function load() {
-    const { data, error } = await supabase
-      .from('companies')
-      .select('id, name, vat_registration_no, industry, tax_territory, posting_account_digits')
-      .order('name')
-    if (error) setError(error.message)
-    else setCompanies(data)
-  }
-
-  useEffect(() => { load() }, [])
-
-  async function create(e) {
-    e.preventDefault()
-    setError('')
-    // 1) Alta de la empresa (la base de datos copia el PGC y te hace admin)
-    const { data, error } = await supabase
-      .from('companies')
-      .insert({ ...form, created_by: session.user.id })
-      .select('id')
-      .single()
-    if (error) return setError(error.message)
-
-    // 2) Ejercicio del año en curso con sus 12 periodos
-    const { error: e2 } = await supabase.rpc('create_fiscal_year', {
-      p_company: data.id,
-      p_year: new Date().getFullYear(),
-    })
-    if (e2) return setError(e2.message)
-
-    setForm(emptyForm)
-    load()
-  }
-
-  const change = (field) => (e) => setForm({ ...form, [field]: e.target.value })
-  
-  // Si hay una empresa abierta, mostramos su pantalla en lugar de la lista
-  if (selected) return <CompanyView company={selected} onBack={() => setSelected(null)} />
-
-  return (
-    <>
-      <p className="usuario">
-        {session.user.email}
-        <button className="secundario" onClick={() => supabase.auth.signOut()}>{t('signOut')}</button>
-      </p>
-
-      <section className="tarjeta">
-        <h2>{t('myCompanies')}</h2>
-        {companies.length === 0 && <p>{t('noCompanies')}</p>}
-        <ul>
-          {companies.map((c) => (
-          <li key={c.id} className="clicable" onClick={() => setSelected(c)}>
-              <strong>{c.name}</strong>
-              <span>
-                {c.vat_registration_no} · {t(`industry.${c.industry}`)} · {t(`territory.${c.tax_territory}`)}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <form onSubmit={create} className="tarjeta">
-        <h2>{t('newCompany')}</h2>
-        <input placeholder={t('companyName')} value={form.name} onChange={change('name')} required />
-        <input placeholder={t('vatNo')} value={form.vat_registration_no} onChange={change('vat_registration_no')} />
-        <select value={form.industry} onChange={change('industry')}>
-          {['services', 'retail', 'manufacturing', 'ecommerce'].map((i) => (
-            <option key={i} value={i}>{t(`industry.${i}`)}</option>
-          ))}
-        </select>
-        <select value={form.tax_territory} onChange={change('tax_territory')}>
-          {['canary_islands', 'mainland'].map((tt) => (
-            <option key={tt} value={tt}>{t(`territory.${tt}`)}</option>
-          ))}
-        </select>
-        <button type="submit">{t('createCompany')}</button>
-      </form>
-
-      {error && <p className="aviso">⚠ {error}</p>}
-    </>
-  )
-}

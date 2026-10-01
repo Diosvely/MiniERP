@@ -65,6 +65,16 @@ export default {
   entry: 'Entry',
   account: 'Account',
 
+
+    // Demo and limits
+  demoCompanies: 'Demo companies',
+  demoHelp: 'Sample companies to explore: general journal, accounts and reports. Read only.',
+  demoBadge: 'DEMO',
+  readOnly: 'Read only · demo company',
+  publishDemo: 'Publish as demo',
+  unpublishDemo: 'Stop publishing as demo',
+  companyLimit: 'You have reached your account limit of {n} company(ies).',
+  
   industry: {
     services: 'Services',
     retail: 'Retail',

@@ -62,3 +62,13 @@ Diario del proceso: qué se hizo, qué se aprendió y qué queda pendiente. Una 
 - Probado: constitución (572/100) y factura con IGIC (430/705/477).
 - Aprendido: organizar en carpeta components/, props y comunicación padre-hijo en React.
   Error típico: crear un archivo fuera de src (Vite no lo encuentra).
+  
+## 2026-10-01 · Empresas demo y límites por usuario (v0.4.0)
+- Migración 0007: perfiles de aplicación (owner sin límite / member con 1 empresa) y empresas demo.
+- Una empresa demo la lee cualquier usuario registrado; solo sus miembros la editan (RLS).
+- El límite de empresas y la publicación como demo se controlan con un trigger en la base de datos.
+- Web: listas "Mis empresas" / "Empresas de demostración", etiqueta DEMO, modo solo lectura,
+  botón "Publicar como demo" (solo owner) y aviso de límite.
+- Probado con un segundo usuario en ventana de incógnito.
+- Aprendido: perfiles de aplicación frente a roles por empresa; redefinir una función (can_read)
+  cambia la seguridad de todas las tablas que la usan.

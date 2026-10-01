@@ -64,6 +64,16 @@ export default {
   noEntries: 'Todavía no hay asientos contabilizados.',
   entry: 'Asiento',
   account: 'Cuenta',
+  
+  // Demo y límites
+  demoCompanies: 'Empresas de demostración',
+  demoHelp: 'Empresas de ejemplo para consultar: libro diario, cuentas e informes. Solo lectura.',
+  demoBadge: 'DEMO',
+  readOnly: 'Solo lectura · empresa de demostración',
+  publishDemo: 'Publicar como demo',
+  unpublishDemo: 'Dejar de publicar como demo',
+  companyLimit: 'Has alcanzado el límite de {n} empresa(s) de tu cuenta.',
+
 
   industry: {
     services: 'Servicios',

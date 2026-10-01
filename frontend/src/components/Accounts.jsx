@@ -4,7 +4,8 @@ import { useI18n } from '../i18n'
 import { accountName } from '../format'
 
 // Plan de cuentas de la empresa + alta de subcuentas
-export default function Accounts({ company }) {
+//   readOnly → empresa demo ajena: se oculta el formulario de alta
+export default function Accounts({ company, readOnly }) {
   const { t, language } = useI18n()
   const [accounts, setAccounts] = useState([])
   const [filter, setFilter] = useState('')
@@ -47,16 +48,18 @@ export default function Accounts({ company }) {
 
   return (
     <>
-      <form onSubmit={create} className="tarjeta">
-        <h2>{t('newAccount')}</h2>
-        <p className="ayuda">{t('newAccountHelp').replace('{n}', company.posting_account_digits)}</p>
-        <input placeholder={t('accountNo')} value={form.account_no} inputMode="numeric"
-               maxLength={company.posting_account_digits} onChange={change('account_no')} required />
-        <input placeholder={t('accountNameEs')} value={form.name} onChange={change('name')} required />
-        <input placeholder={t('accountNameEn')} value={form.name_en} onChange={change('name_en')} />
-        <button type="submit">{t('createAccount')}</button>
-        {error && <p className="aviso">⚠ {error}</p>}
-      </form>
+      {!readOnly && (
+        <form onSubmit={create} className="tarjeta">
+          <h2>{t('newAccount')}</h2>
+          <p className="ayuda">{t('newAccountHelp').replace('{n}', company.posting_account_digits)}</p>
+          <input placeholder={t('accountNo')} value={form.account_no} inputMode="numeric"
+                 maxLength={company.posting_account_digits} onChange={change('account_no')} required />
+          <input placeholder={t('accountNameEs')} value={form.name} onChange={change('name')} required />
+          <input placeholder={t('accountNameEn')} value={form.name_en} onChange={change('name_en')} />
+          <button type="submit">{t('createAccount')}</button>
+          {error && <p className="aviso">⚠ {error}</p>}
+        </form>
+      )}
 
       <section className="tarjeta">
         <h2>{t('chartOfAccounts')} ({visible.length})</h2>

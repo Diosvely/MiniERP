@@ -45,6 +45,8 @@ export default {
   noPostingAccounts: 'First create posting accounts in the Accounts tab.',
   debit: 'Debit',
   credit: 'Credit',
+  keyboardHelp: 'Enter: account → Debit → Credit → = → next line · +: new line · −: delete line · 572.1 = 57200001',
+  accountNotFound: 'Posting account not found',
   addLine: 'Add line',
   removeLine: 'Remove line',
   fillDifference: 'Put the difference here',

@@ -45,6 +45,8 @@ export default {
   noPostingAccounts: 'Primero crea subcuentas en la pestaña Cuentas.',
   debit: 'Debe',
   credit: 'Haber',
+  keyboardHelp: 'Enter: cuenta → Debe → Haber → = → línea siguiente · +: nueva línea · −: borrar línea · 572.1 = 57200001',
+  accountNotFound: 'No existe esa subcuenta',
   addLine: 'Añadir línea',
   removeLine: 'Quitar línea',
   fillDifference: 'Poner aquí la diferencia',

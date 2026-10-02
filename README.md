@@ -135,6 +135,7 @@ psql -d minierp_test -f database/tests/test_fase1.sql        # en otra base limp
 - [x] **v0.2.0**: base de datos en inglés al estilo BC/SAP e interfaz bilingüe
 - [x] **v0.3.0**: plan de cuentas, asientos con cuadre en vivo y libro diario en la web
 - [x] **v0.4.0**: empresas demo de solo lectura y límites por usuario
+- [x] **v0.5.0**: importación de subcuentas desde CSV con vista previa y validación
 - [ ] Libro mayor, sumas y saldos, borradores y anulación en la web
 - [ ] IVA / IGIC automático, retenciones IRPF y recargo de equivalencia
 - [ ] Balance y PyG según el modelo de cuentas anuales del PGC
@@ -145,5 +146,5 @@ psql -d minierp_test -f database/tests/test_fase1.sql        # en otra base limp
 
 ## Autor
 
-**Diosvely** · Controller financiero en transición hacia Data & ERP · Canarias, España.
+**Diosvely Perez Arteaga** · Controller financiero en transición hacia Data & ERP · Canarias, España.
 Proyecto personal de aprendizaje: sugerencias y comentarios bienvenidos en *Issues*.

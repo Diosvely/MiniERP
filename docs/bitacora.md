@@ -71,4 +71,14 @@ Diario del proceso: qué se hizo, qué se aprendió y qué queda pendiente. Una 
   botón "Publicar como demo" (solo owner) y aviso de límite.
 - Probado con un segundo usuario en ventana de incógnito.
 - Aprendido: perfiles de aplicación frente a roles por empresa; redefinir una función (can_read)
-  cambia la seguridad de todas las tablas que la usan.
+  cambia la seguridad de todas las tablas que la usan
+
+## 2026-10-02 · Importación de subcuentas desde CSV (v0.5.0)
+- Migración 0008: función import_posting_accounts(empresa, filas, dry_run).
+  Vista previa (dry_run) → valida cada fila sin guardar; importación real → todo o nada.
+  Estados: nueva / actualiza (renombra) / error (longitud, sin cuenta PGC, duplicada, sin nombre, letras).
+- Web: csv.js reutilizable (BOM de Excel, ; o , como separador, UTF-8 o Windows-1252) y pantalla
+  de importación con plantilla descargable.
+- Probado con el plan de Agrícola del Sur: 62 subcuentas importadas, errores detectados y reimportación.
+- Referencia ERP: crear o actualizar como los Configuration Packages de Business Central;
+  validación previa y todo o nada como el Migration Cockpit de SAP.

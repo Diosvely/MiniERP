@@ -1,12 +1,24 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import { accountName, money } from '../format'
 
 const today = () => new Date().toISOString().slice(0, 10)
-const emptyLine = () => ({ gl_account_id: '', debit: '', credit: '', description: '' })
+const emptyLine = () => ({ accountText: '', gl_account_id: '', debit: '', credit: '', description: '' })
 
-// Formulario de asiento: cabecera + líneas, con cuadre en vivo
+// Atajo de ContaPlus / Sage / A3: el punto rellena con ceros hasta la longitud de la subcuenta.
+//   572.1 → 57200001   ·   43.25 → 43000025
+function expandDot(text, digits) {
+  const t = text.trim()
+  if (!t.includes('.')) return t
+  const [left, right = ''] = t.split('.')
+  const zeros = digits - left.length - right.length
+  return zeros >= 0 ? left + '0'.repeat(zeros) + right : t
+}
+
+// Formulario de asiento: cabecera + líneas, con cuadre en vivo y manejo rápido con teclado
+//   Enter: cuenta → Debe → Haber → "=" → cuenta de la línea siguiente
+//   +    : nueva línea          −: borrar la línea actual
 export default function JournalEntryForm({ company, onPosted }) {
   const { t, language } = useI18n()
   const [accounts, setAccounts] = useState([])
@@ -16,6 +28,8 @@ export default function JournalEntryForm({ company, onPosted }) {
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
   const [saving, setSaving] = useState(false)
+  const [focusTarget, setFocusTarget] = useState(null)   // { line, field } a enfocar tras re-dibujar
+  const linesRef = useRef(null)
 
   useEffect(() => {
     // Solo subcuentas (posting): son las únicas donde se puede apuntar
@@ -27,6 +41,16 @@ export default function JournalEntryForm({ company, onPosted }) {
       .then(({ data }) => setFiscalYears(data ?? []))
   }, [company.id])
 
+  // Mover el cursor cuando React ya ha dibujado la línea (por ejemplo, una línea nueva)
+  useEffect(() => {
+    if (!focusTarget) return
+    const el = linesRef.current?.querySelector(
+      `[data-line="${focusTarget.line}"][data-field="${focusTarget.field}"]`)
+    el?.focus()
+    el?.select?.()
+    setFocusTarget(null)
+  }, [focusTarget, lines])
+
   // Totales en céntimos para evitar errores de decimales (0.1 + 0.2 ≠ 0.3 en JavaScript)
   const cents = (v) => Math.round((parseFloat(String(v).replace(',', '.')) || 0) * 100)
   const totalDebit = lines.reduce((s, l) => s + cents(l.debit), 0)
@@ -35,22 +59,86 @@ export default function JournalEntryForm({ company, onPosted }) {
   const usedLines = lines.filter((l) => l.gl_account_id && (cents(l.debit) || cents(l.credit)))
   const balanced = difference === 0 && totalDebit > 0 && usedLines.length >= 2
 
+  const byNo = (no) => accounts.find((a) => a.account_no === no)
+
   function updateLine(i, field, value) {
-    const copy = [...lines]
-    copy[i] = { ...copy[i], [field]: value }
-    // Un apunte va al Debe O al Haber: si escribes en uno, se vacía el otro
-    if (field === 'debit' && value) copy[i].credit = ''
-    if (field === 'credit' && value) copy[i].debit = ''
-    setLines(copy)
+    setLines((prev) => {
+      const copy = [...prev]
+      copy[i] = { ...copy[i], [field]: value }
+      // Un apunte va al Debe O al Haber: si escribes en uno, se vacía el otro
+      if (field === 'debit' && value) copy[i].credit = ''
+      if (field === 'credit' && value) copy[i].debit = ''
+      // Al teclear la cuenta, se vincula en cuanto el número coincide exactamente
+      if (field === 'accountText') copy[i].gl_account_id = byNo(value.trim())?.id ?? ''
+      return copy
+    })
+  }
+
+  // Al pulsar Enter en la cuenta: aplica el atajo del punto o elige la única coincidencia
+  function resolveAccount(i) {
+    const text = expandDot(lines[i].accountText, company.posting_account_digits)
+    let found = byNo(text)
+    if (!found && text) {
+      const q = text.toLowerCase()
+      const matches = accounts.filter((a) =>
+        a.account_no.startsWith(q) || accountName(a, language).toLowerCase().includes(q))
+      if (matches.length === 1) found = matches[0]
+    }
+    setLines((prev) => {
+      const copy = [...prev]
+      copy[i] = { ...copy[i], accountText: found ? found.account_no : text, gl_account_id: found?.id ?? '' }
+      return copy
+    })
+    return Boolean(found)
+  }
+
+  function addLine(afterIndex) {
+    setLines((prev) => {
+      const copy = [...prev]
+      copy.splice(afterIndex + 1, 0, emptyLine())
+      return copy
+    })
+    setFocusTarget({ line: afterIndex + 1, field: 'account' })
+  }
+
+  function removeLine(i) {
+    if (lines.length <= 2) return
+    setLines((prev) => prev.filter((_, j) => j !== i))
+    setFocusTarget({ line: Math.max(0, i - 1), field: 'account' })
   }
 
   // Pone en la línea la diferencia que falta para cuadrar
   function fillDifference(i) {
-    const copy = [...lines]
     const others = (field) => lines.reduce((s, l, j) => (j === i ? s : s + cents(l[field])), 0)
     const diff = others('debit') - others('credit')
-    copy[i] = { ...copy[i], debit: diff < 0 ? String(-diff / 100) : '', credit: diff > 0 ? String(diff / 100) : '' }
-    setLines(copy)
+    setLines((prev) => {
+      const copy = [...prev]
+      copy[i] = { ...copy[i], debit: diff < 0 ? String(-diff / 100) : '', credit: diff > 0 ? String(diff / 100) : '' }
+      return copy
+    })
+  }
+
+  // Teclado dentro de una línea
+  function onLineKey(e, i, field) {
+    if (e.key === '+') {
+      e.preventDefault()
+      return addLine(i)
+    }
+    if (e.key === '-') {
+      e.preventDefault()
+      return removeLine(i)
+    }
+    if (e.key !== 'Enter') return
+    e.preventDefault()   // en el botón "=", Enter NO lo aplica: solo avanza
+    if (field === 'account') {
+      if (resolveAccount(i)) setFocusTarget({ line: i, field: 'debit' })
+    } else if (field === 'debit') {
+      setFocusTarget({ line: i, field: 'credit' })
+    } else if (field === 'credit') {
+      setFocusTarget({ line: i, field: 'eq' })
+    } else if (field === 'eq') {
+      setFocusTarget({ line: (i + 1) % lines.length, field: 'account' })
+    }
   }
 
   async function save(post) {
@@ -97,6 +185,8 @@ export default function JournalEntryForm({ company, onPosted }) {
     onPosted?.()
   }
 
+  const listId = `cuentas-${company.id}`
+
   return (
     <section className="tarjeta">
       <h2>{t('newEntry')}</h2>
@@ -114,28 +204,52 @@ export default function JournalEntryForm({ company, onPosted }) {
              onChange={(e) => setHeader({ ...header, description: e.target.value })} />
 
       {accounts.length === 0 && <p className="aviso">{t('noPostingAccounts')}</p>}
+      <p className="ayuda">⌨ {t('keyboardHelp')}</p>
 
-      {lines.map((l, i) => (
-        <div key={i} className="linea">
-          <select value={l.gl_account_id} onChange={(e) => updateLine(i, 'gl_account_id', e.target.value)}>
-            <option value="">{t('selectAccount')}</option>
-            {accounts.map((a) => (
-              <option key={a.id} value={a.id}>{a.account_no} · {accountName(a, language)}</option>
-            ))}
-          </select>
-          <input placeholder={t('debit')} inputMode="decimal" value={l.debit}
-                 onChange={(e) => updateLine(i, 'debit', e.target.value)} />
-          <input placeholder={t('credit')} inputMode="decimal" value={l.credit}
-                 onChange={(e) => updateLine(i, 'credit', e.target.value)} />
-          <div className="acciones-linea">
-            <button type="button" className="secundario" onClick={() => fillDifference(i)} title={t('fillDifference')}>=</button>
-            <button type="button" className="secundario" disabled={lines.length <= 2}
-                    onClick={() => setLines(lines.filter((_, j) => j !== i))} title={t('removeLine')}>✕</button>
-          </div>
-        </div>
-      ))}
+      {/* Sugerencias para el campo de cuenta: el número como valor y el nombre como etiqueta */}
+      <datalist id={listId}>
+        {accounts.map((a) => (
+          <option key={a.id} value={a.account_no} label={accountName(a, language)} />
+        ))}
+      </datalist>
 
-      <button type="button" className="secundario" onClick={() => setLines([...lines, emptyLine()])}>
+      <div ref={linesRef}>
+        {lines.map((l, i) => {
+          const account = accounts.find((a) => a.id === l.gl_account_id)
+          const unknown = l.accountText.trim() !== '' && !account
+          return (
+            <div key={i} className="linea">
+              <div className="cuenta-linea">
+                <input
+                  data-line={i} data-field="account" list={listId}
+                  placeholder={t('selectAccount')} value={l.accountText} autoComplete="off"
+                  className={unknown ? 'invalido' : ''}
+                  onChange={(e) => updateLine(i, 'accountText', e.target.value)}
+                  onKeyDown={(e) => onLineKey(e, i, 'account')}
+                  onBlur={() => l.accountText && !l.gl_account_id && resolveAccount(i)} />
+                <span className={unknown ? 'nombre-cuenta aviso' : 'nombre-cuenta'}>
+                  {account ? accountName(account, language) : unknown ? t('accountNotFound') : ''}
+                </span>
+              </div>
+              <input data-line={i} data-field="debit" placeholder={t('debit')} inputMode="decimal" value={l.debit}
+                     onChange={(e) => updateLine(i, 'debit', e.target.value)}
+                     onKeyDown={(e) => onLineKey(e, i, 'debit')} />
+              <input data-line={i} data-field="credit" placeholder={t('credit')} inputMode="decimal" value={l.credit}
+                     onChange={(e) => updateLine(i, 'credit', e.target.value)}
+                     onKeyDown={(e) => onLineKey(e, i, 'credit')} />
+              <div className="acciones-linea">
+                <button type="button" className="secundario" data-line={i} data-field="eq"
+                        onClick={() => fillDifference(i)} onKeyDown={(e) => onLineKey(e, i, 'eq')}
+                        title={t('fillDifference')}>=</button>
+                <button type="button" className="secundario" disabled={lines.length <= 2} tabIndex={-1}
+                        onClick={() => removeLine(i)} title={t('removeLine')}>✕</button>
+              </div>
+            </div>
+          )
+        })}
+      </div>
+
+      <button type="button" className="secundario" onClick={() => addLine(lines.length - 1)}>
         + {t('addLine')}
       </button>
 

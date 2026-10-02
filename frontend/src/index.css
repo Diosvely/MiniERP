@@ -81,3 +81,8 @@ tr.estado-insert td:last-child strong { color: #1a7f37; }
 tr.estado-update td:last-child strong { color: #9a6700; }
 tr.estado-error td:last-child strong { color: var(--aviso); }
 tr.estado-error { background: rgba(180,35,24,.06); }
+
+/* --- Asiento rápido con teclado --- */
+.cuenta-linea { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 2px; }
+.nombre-cuenta { font-size: .8rem; color: var(--suave); min-height: 1em; padding-left: 4px; }
+input.invalido { border-color: var(--aviso); }

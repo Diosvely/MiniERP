@@ -75,6 +75,23 @@ export default {
   unpublishDemo: 'Stop publishing as demo',
   companyLimit: 'You have reached your account limit of {n} company(ies).',
   
+    // CSV import
+  importAccounts: 'Import posting accounts (CSV)',
+  importHelp: 'Prepare a CSV in Excel with the columns subcuenta, nombre_es and nombre_en (optional). {n}-digit accounts. You will see a preview first: nothing is saved until you press Import.',
+  chooseCsv: 'Choose CSV file',
+  downloadTemplate: 'Download template',
+  validating: 'Validating with the database…',
+  importNew: 'New',
+  importUpdate: 'Updated',
+  importErrors: 'Errors',
+  status: 'Status',
+  importStatus: { insert: 'New', update: 'Update', error: 'Error' },
+  importNow: 'Import {n} accounts',
+  importDone: 'Import completed: {n} rows.',
+  fixErrors: 'Fix the errors in the file and load it again. It is all or nothing.',
+  csvMissingColumns: 'Column "subcuenta" not found. Download the template to see the format.',
+  cancel: 'Cancel',
+
   industry: {
     services: 'Services',
     retail: 'Retail',

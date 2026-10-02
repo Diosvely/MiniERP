@@ -74,6 +74,22 @@ export default {
   unpublishDemo: 'Dejar de publicar como demo',
   companyLimit: 'Has alcanzado el límite de {n} empresa(s) de tu cuenta.',
 
+    // Importación CSV
+  importAccounts: 'Importar subcuentas (CSV)',
+  importHelp: 'Prepara en Excel un CSV con las columnas subcuenta, nombre_es y nombre_en (opcional). Subcuentas de {n} dígitos. Primero verás una vista previa: no se guarda nada hasta que pulses Importar.',
+  chooseCsv: 'Elegir archivo CSV',
+  downloadTemplate: 'Descargar plantilla',
+  validating: 'Validando con la base de datos…',
+  importNew: 'Nuevas',
+  importUpdate: 'Se actualizan',
+  importErrors: 'Errores',
+  status: 'Estado',
+  importStatus: { insert: 'Nueva', update: 'Actualiza', error: 'Error' },
+  importNow: 'Importar {n} subcuentas',
+  importDone: 'Importación completada: {n} filas.',
+  fixErrors: 'Corrige los errores en el archivo y vuelve a cargarlo. Se importa todo o nada.',
+  csvMissingColumns: 'No encuentro la columna "subcuenta". Descarga la plantilla para ver el formato.',
+  cancel: 'Cancelar',
 
   industry: {
     services: 'Servicios',

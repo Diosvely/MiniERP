@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import { accountName } from '../format'
+import AccountImport from './AccountImport'
 
 // Plan de cuentas de la empresa + alta de subcuentas
 //   readOnly → empresa demo ajena: se oculta el formulario de alta
@@ -50,6 +51,7 @@ export default function Accounts({ company, readOnly }) {
     <>
       {!readOnly && (
         <form onSubmit={create} className="tarjeta">
+
           <h2>{t('newAccount')}</h2>
           <p className="ayuda">{t('newAccountHelp').replace('{n}', company.posting_account_digits)}</p>
           <input placeholder={t('accountNo')} value={form.account_no} inputMode="numeric"
@@ -60,6 +62,8 @@ export default function Accounts({ company, readOnly }) {
           {error && <p className="aviso">⚠ {error}</p>}
         </form>
       )}
+      
+      {!readOnly && <AccountImport company={company} onImported={load} />}
 
       <section className="tarjeta">
         <h2>{t('chartOfAccounts')} ({visible.length})</h2>

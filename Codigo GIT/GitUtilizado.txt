@@ -30,7 +30,9 @@ Abre el panel de control de código (Source Control) con Ctrl+Shift+G.
 
 6 crear una rama de trabajo 
 
-git switch -c feature/frontend-base  
+git switch main
+git pull
+git switch -c feature/import-accounts
 
 7 pasar de una rama a otra 
 

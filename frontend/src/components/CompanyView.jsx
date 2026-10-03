@@ -4,6 +4,7 @@ import { useI18n } from '../i18n'
 import Accounts from './Accounts'
 import JournalEntryForm from './JournalEntryForm'
 import GeneralJournal from './GeneralJournal'
+import Partners from './Partners'
 
 // Pantalla de una empresa con pestañas
 //   readOnly   → empresa demo de otro usuario (o rol viewer): solo consultar
@@ -18,6 +19,7 @@ export default function CompanyView({ company, readOnly, canPublish, onChanged, 
     ...(readOnly ? [] : [['entry', t('tabEntry')]]),
     ['journal', t('tabJournal')],
     ['accounts', t('tabAccounts')],
+    ['partners', t('tabPartners')],
   ]
 
   async function togglePublish() {
@@ -60,6 +62,7 @@ export default function CompanyView({ company, readOnly, canPublish, onChanged, 
       {tab === 'entry' && !readOnly && <JournalEntryForm company={company} onPosted={() => setRefreshKey((k) => k + 1)} />}
       {tab === 'journal' && <GeneralJournal company={company} refreshKey={refreshKey} />}
       {tab === 'accounts' && <Accounts company={company} readOnly={readOnly} />}
+      {tab === 'partners' && <Partners company={company} readOnly={readOnly} />}
     </>
   )
 }

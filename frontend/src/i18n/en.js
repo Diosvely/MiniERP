@@ -94,6 +94,32 @@ export default {
   csvMissingColumns: 'Column "subcuenta" not found. Download the template to see the format.',
   cancel: 'Cancel',
 
+    // Partners
+  tabPartners: 'Partners',
+  partners: 'Business partners',
+  newPartner: 'New business partner',
+  partnerName: 'Name or company name',
+  taxId: 'Tax ID (NIF / NIE / CIF)',
+  emailOptional: 'Email (optional)',
+  accountAuto: 'Automatic account (next free number)',
+  accountExisting: 'Use an existing posting account',
+  createPartner: 'Create partner',
+  partnerCreated: '{name} created with account {n}.',
+  searchPartner: 'Search by name, tax ID or account…',
+  noPartners: 'No business partners.',
+  all: 'All',
+  balance: 'Balance',
+  debitBalanceShort: 'debit',
+  creditBalanceShort: 'credit',
+  partnerType: { customer: 'Customer', vendor: 'Vendor', creditor: 'Creditor', debtor: 'Debtor' },
+  partnerTypePlural: { customer: 'Customers', vendor: 'Vendors', creditor: 'Creditors', debtor: 'Debtors' },
+  partnerTypeHelp: {
+    customer: 'Account 430 · buys the goods or services of the company main activity.',
+    vendor: 'Account 400 · supplies merchandise and other procurement (group 60).',
+    creditor: 'Account 410 · provides services: utilities, rent, professionals, repairs… (group 62).',
+    debtor: 'Account 440 · owes us for operations outside the main activity (e.g. sale of an asset).',
+  },
+
   industry: {
     services: 'Services',
     retail: 'Retail',
@@ -103,5 +129,8 @@ export default {
   territory: {
     canary_islands: 'Canary Islands (IGIC)',
     mainland: 'Mainland Spain (VAT)',
+    ceuta_melilla: 'Ceuta and Melilla (IPSI)',
+    eu: 'European Union',
+    non_eu: 'Outside the EU',
   },
 }

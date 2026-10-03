@@ -86,3 +86,8 @@ tr.estado-error { background: rgba(180,35,24,.06); }
 .cuenta-linea { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 2px; }
 .nombre-cuenta { font-size: .8rem; color: var(--suave); min-height: 1em; padding-left: 4px; }
 input.invalido { border-color: var(--aviso); }
+
+/* --- J1: terceros --- */
+.opciones { display: flex; flex-direction: column; gap: 6px; }
+.opcion { flex-direction: row; align-items: center; gap: 8px; color: var(--texto); font-size: .95rem; }
+.opcion input { width: auto; }

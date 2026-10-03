@@ -93,6 +93,32 @@ export default {
   csvMissingColumns: 'No encuentro la columna "subcuenta". Descarga la plantilla para ver el formato.',
   cancel: 'Cancelar',
 
+    // Terceros
+  tabPartners: 'Terceros',
+  partners: 'Terceros',
+  newPartner: 'Nuevo tercero',
+  partnerName: 'Nombre o razón social',
+  taxId: 'NIF / NIE / CIF',
+  emailOptional: 'Correo (opcional)',
+  accountAuto: 'Subcuenta automática (la siguiente libre)',
+  accountExisting: 'Usar una subcuenta que ya existe',
+  createPartner: 'Crear tercero',
+  partnerCreated: '{name} creado con la subcuenta {n}.',
+  searchPartner: 'Buscar por nombre, NIF o subcuenta…',
+  noPartners: 'No hay terceros.',
+  all: 'Todos',
+  balance: 'Saldo',
+  debitBalanceShort: 'deudor',
+  creditBalanceShort: 'acreedor',
+  partnerType: { customer: 'Cliente', vendor: 'Proveedor', creditor: 'Acreedor', debtor: 'Deudor' },
+  partnerTypePlural: { customer: 'Clientes', vendor: 'Proveedores', creditor: 'Acreedores', debtor: 'Deudores' },
+  partnerTypeHelp: {
+    customer: 'Cuenta 430 · compra los bienes o servicios de la actividad principal de la empresa.',
+    vendor: 'Cuenta 400 · suministra mercaderías y otros aprovisionamientos (grupo 60).',
+    creditor: 'Cuenta 410 · presta servicios: suministros, alquileres, profesionales, reparaciones… (grupo 62).',
+    debtor: 'Cuenta 440 · nos debe por operaciones ajenas a la actividad principal (ej. venta de un activo).',
+  },
+
   industry: {
     services: 'Servicios',
     retail: 'Comercio minorista',
@@ -102,5 +128,8 @@ export default {
   territory: {
     canary_islands: 'Canarias (IGIC)',
     mainland: 'Península (IVA)',
+    ceuta_melilla: 'Ceuta y Melilla (IPSI)',
+    eu: 'Unión Europea',
+    non_eu: 'Fuera de la UE',
   },
 }

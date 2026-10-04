@@ -119,6 +119,25 @@ export default {
     debtor: 'Cuenta 440 · nos debe por operaciones ajenas a la actividad principal (ej. venta de un activo).',
   },
 
+    // Impuestos
+  tabTaxes: 'Impuestos',
+  taxSetup: 'Configuración de impuestos',
+  taxSetupHelp: 'Cada tipo de IVA/IGIC tiene su subcuenta de impuesto soportado (472, compras y gastos) y de repercutido (477, ventas e ingresos). Al registrar facturas, la cuota irá a estas cuentas.',
+  taxAssistant: 'Configurar {tax} automáticamente',
+  taxAssistantOther: 'Añadir también {tax}',
+  taxAssistantDone: 'Listo: {created} subcuentas creadas y {linked} existentes reutilizadas.',
+  taxAdminOnly: 'Solo el administrador de la empresa puede cambiar esta configuración.',
+  noTaxSetup: 'Todavía no hay impuestos configurados.',
+  taxType: { VAT: 'IVA', IGIC: 'IGIC' },
+  noTaxAmount: 'Sin cuota: solo se anota la base en el libro registro.',
+  inputTax: 'Soportado (472)',
+  outputTax: 'Repercutido (477)',
+  taxBlocked: 'Bloqueado (no se usa)',
+  taxSettlement: 'Liquidación',
+  taxSettlementHelp: 'Al cerrar el trimestre, 477 − 472: si sale a pagar va a la 4750; si sale a devolver o compensar, a la 4700.',
+  taxPayable: 'A ingresar (4750)',
+  taxReceivable: 'A devolver / compensar (4700)',
+  
   industry: {
     services: 'Servicios',
     retail: 'Comercio minorista',

@@ -119,7 +119,25 @@ export default {
     creditor: 'Account 410 · provides services: utilities, rent, professionals, repairs… (group 62).',
     debtor: 'Account 440 · owes us for operations outside the main activity (e.g. sale of an asset).',
   },
-
+  // Taxes
+  tabTaxes: 'Taxes',
+  taxSetup: 'Tax setup',
+  taxSetupHelp: 'Each VAT/IGIC rate has an input tax account (472, purchases and expenses) and an output tax account (477, sales and income). Invoice tax amounts will be posted to these accounts.',
+  taxAssistant: 'Set up {tax} automatically',
+  taxAssistantOther: 'Also add {tax}',
+  taxAssistantDone: 'Done: {created} accounts created and {linked} existing accounts reused.',
+  taxAdminOnly: 'Only the company admin can change this setup.',
+  noTaxSetup: 'No taxes set up yet.',
+  taxType: { VAT: 'VAT', IGIC: 'IGIC' },
+  noTaxAmount: 'No tax amount: only the base is recorded in the tax book.',
+  inputTax: 'Input tax (472)',
+  outputTax: 'Output tax (477)',
+  taxBlocked: 'Blocked (not used)',
+  taxSettlement: 'Settlement',
+  taxSettlementHelp: 'At quarter end, 477 − 472: an amount payable goes to 4750; a refund or carry-forward goes to 4700.',
+  taxPayable: 'Payable (4750)',
+  taxReceivable: 'Refund / carry forward (4700)',
+  
   industry: {
     services: 'Services',
     retail: 'Retail',

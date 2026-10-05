@@ -2,6 +2,12 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.12.0] · 2026-10-05
+### Añadido
+- Anulación de asientos con contraasiento, fecha y motivo.
+- Libro diario con rango de fechas, búsqueda y totales del filtro.
+- Etiquetas de origen del asiento (factura, liquidación) y de anulación.
+
 ## [0.11.0] · 2026-10-05
 ### Cambiado
 - Menú de la empresa agrupado por áreas (barra lateral en ordenador, menú desplegable en móvil).

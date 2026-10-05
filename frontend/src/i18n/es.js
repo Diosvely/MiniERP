@@ -248,6 +248,22 @@ export default {
   menuReportsItem: 'Sumas y saldos · Mayor',
   menuChart: 'Plan de cuentas',
 
+// Diario y anulación
+  fromDate: 'Desde',
+  search: 'Buscar',
+  searchJournal: 'Concepto, documento, nº o cuenta…',
+  entriesShown: '{n} asientos',
+  sourceInvoice: 'Factura',
+  sourceSettlement: 'Liquidación',
+  reversesEntry: 'Anula el asiento {n}',
+  reversedByEntry: 'Anulado por el asiento {n}',
+  reverseEntry: 'Anular asiento',
+  reverseHelp: 'Se creará un contraasiento (Debe ↔ Haber) enlazado a este. El original no se borra: así el diario queda completo para la auditoría.',
+  reversalDate: 'Fecha de la anulación',
+  reversalReason: 'Motivo (opcional)',
+  confirmReverse: 'Anular con contraasiento',
+  entryReversed: 'Asiento {n} anulado con el asiento {m}.',
+
   industry: {
     services: 'Servicios',
     retail: 'Comercio minorista',

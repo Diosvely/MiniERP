@@ -110,3 +110,17 @@ input.invalido { border-color: var(--aviso); }
 li .insignia { margin-left: 6px; }
 .factura .rejilla-cabecera { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
 .factura select, .factura input { min-width: 0; width: 100%; }
+
+/* --- J4: liquidación --- */
+.rejilla-tres { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.rejilla-tres select { min-width: 0; width: 100%; }
+.liquidacion-borrador h3 { margin: 14px 0 4px; font-size: 1rem; }
+tr.total td { font-weight: 700; border-top: 2px solid var(--borde); }
+.resultado { margin-top: 12px; }
+tr.resultado-payable td { color: var(--aviso); }
+tr.resultado-carry_forward td, tr.resultado-refund td { color: #1a7f37; }
+.cuadre { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 12px; padding: 8px 12px; border-radius: 8px; font-size: .9rem; }
+.cuadre.ok { background: rgba(26,127,55,.10); }
+.cuadre.descuadre { background: rgba(180,35,24,.10); color: var(--aviso); }
+li.bloqueado { opacity: .55; }
+

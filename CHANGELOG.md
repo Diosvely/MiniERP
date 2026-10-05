@@ -2,6 +2,13 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.9.0] · 2026-10-05
+### Añadido
+- Liquidación trimestral de IVA (modelo 303) e IGIC (modelo 420) con borrador por tipo.
+- Compensación automática de cuotas de periodos anteriores y devolución en el 4T.
+- Cuadre libro registro ↔ contabilidad antes de liquidar.
+- Bloqueo del trimestre liquidado y deshacer la última liquidación.
+
 ## [0.8.0] · 2026-10-05
 ### Añadido
 - Registro de facturas recibidas y emitidas, normales y rectificativas, con asiento automático.

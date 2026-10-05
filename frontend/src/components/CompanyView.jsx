@@ -7,6 +7,7 @@ import GeneralJournal from './GeneralJournal'
 import Partners from './Partners'
 import Taxes from './Taxes'
 import Invoices from './Invoices'
+import TaxSettlement from './TaxSettlement'
 
 // Pantalla de una empresa con pestañas
 //   readOnly   → empresa demo de otro usuario (o rol viewer): solo consultar
@@ -24,6 +25,7 @@ export default function CompanyView({ company, readOnly, canPublish, onChanged, 
     ['accounts', t('tabAccounts')],
     ['partners', t('tabPartners')],
     ['taxes', t('tabTaxes')],
+    ['settlement', t('tabSettlement')],
   ]
 
   async function togglePublish() {
@@ -69,6 +71,7 @@ export default function CompanyView({ company, readOnly, canPublish, onChanged, 
       {tab === 'accounts' && <Accounts company={company} readOnly={readOnly} />}
       {tab === 'partners' && <Partners company={company} readOnly={readOnly} />}
       {tab === 'taxes' && <Taxes company={company} readOnly={readOnly} />}
+        {tab === 'settlement' && <TaxSettlement company={company} readOnly={readOnly} />}
     </>
   )
 }

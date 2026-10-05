@@ -150,3 +150,27 @@ Diario del proceso: qué se hizo, qué se aprendió y qué queda pendiente. Una 
 **Decisiones**: ADR 0005 (registro de facturas desde contabilidad), fase A completada.
 
 **Siguiente paso**: J4 · liquidación trimestral (477 − 472 → 4750 / 4700) y borradores de los modelos 420 / 303.
+
+## 2026-10-05 · v0.9.0 · J4 Liquidación trimestral de IVA / IGIC
+
+**Qué se hizo**
+- Migración `0012_tax_settlement.sql`: borrador del modelo 303 / 420 por tipo, liquidación con asiento
+  (477 − 472 → 4750 / 4700), compensación automática de cuotas de periodos anteriores, devolución en el 4T,
+  bloqueo del trimestre liquidado y "deshacer" la última liquidación con contraasiento.
+- Control auditor: cuadre libro registro ↔ saldo de las 472/477; si no cuadra hay que aceptarlo
+  expresamente y la diferencia queda guardada.
+- Pantalla **Liquidación** (ES/EN).
+- Pruebas: `test_fase7_settlement.sql` (14 comprobaciones) y empresa de prueba con 1T a compensar y 2T a ingresar.
+- Incidencia de Git: los PR de v0.6.0–v0.8.0 solo llevaron el frontend (`git add .` desde `frontend`);
+  corregido con un commit `chore` desde la raíz. Desde ahora: `git add -A` desde la raíz.
+
+**Lo que se aprende en esta fase**
+- El IVA/IGIC soportado y repercutido se saldan cada trimestre; la diferencia es una deuda (4750)
+  o un derecho (4700) frente a Hacienda.
+- Un resultado negativo se compensa en los trimestres siguientes; la devolución se pide en el último periodo.
+- Lo que se declara sale del libro registro; si la contabilidad no coincide hay asientos manuales que revisar.
+- Un trimestre declarado no se toca: la factura que llega tarde se registra en el periodo siguiente.
+
+**Decisiones**: ADR 0007 (liquidación trimestral).
+
+**Siguiente paso**: decidir entre J5 (casos especiales de IVA/IGIC) o el bloque I (mayor, sumas y saldos y saldos anómalos).

@@ -2,6 +2,12 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.10.0] · 2026-10-05
+### Añadido
+- Informes: sumas y saldos por nivel y fecha de corte, libro mayor con saldo acumulado y drill-down.
+- Informe de saldos anómalos con explicación y cuenta de reclasificación.
+- Bloqueo de saldo inverso por subcuenta (caja bloqueada por defecto).
+
 ## [0.9.0] · 2026-10-05
 ### Añadido
 - Liquidación trimestral de IVA (modelo 303) e IGIC (modelo 420) con borrador por tipo.

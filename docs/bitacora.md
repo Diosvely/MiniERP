@@ -211,3 +211,23 @@ Diario del proceso: qué se hizo, qué se aprendió y qué queda pendiente. Una 
   plan de cuentas y terceros.
 
 **Siguiente paso**: K2 · libro diario con rango de fechas y anulación de asientos.
+
+## 2026-10-05 · v0.12.0 · K2 Libro diario con rango de fechas y anulación de asientos
+
+**Qué se hizo**
+- Migración `0014_journal_reverse.sql`: `reverse_entry` con fecha y motivo de anulación, permisos,
+  fecha no anterior al original y bloqueo para asientos de liquidación (las facturas ya lo estaban).
+- `v_general_journal` con origen del asiento (manual, factura, liquidación, anulación) y enlaces
+  "anula al nº" / "anulado por el nº".
+- Libro diario con filtro desde/hasta, búsqueda (concepto, documento, nº, cuenta), totales del filtro
+  y botón "Anular asiento" con confirmación en dos pasos.
+- Pruebas: `test_fase9_reverse.sql` y pruebas manuales (anulación de un cargo duplicado del banco).
+
+**Lo que se aprende en esta fase**
+- El diario no se altera: un error se corrige con un contraasiento enlazado (BC Reverse Transaction,
+  SAP FB08, A3 Anular asiento), con fecha y motivo para la pista de auditoría.
+- Cada operación se corrige por su circuito: asiento manual → anulación · factura → rectificativa ·
+  liquidación → deshacer liquidación.
+- Si el periodo original está cerrado, la anulación se fecha en el primer periodo abierto.
+
+**Siguiente paso**: K3 · acceso a las empresas demo sin registrarse.

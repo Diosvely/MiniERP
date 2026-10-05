@@ -247,6 +247,22 @@ export default {
   menuReportsItem: 'Trial balance · Ledger',
   menuChart: 'Chart of accounts',
 
+  // Journal and reversal
+  fromDate: 'From',
+  search: 'Search',
+  searchJournal: 'Description, document, no. or account…',
+  entriesShown: '{n} entries',
+  sourceInvoice: 'Invoice',
+  sourceSettlement: 'Settlement',
+  reversesEntry: 'Reverses entry {n}',
+  reversedByEntry: 'Reversed by entry {n}',
+  reverseEntry: 'Reverse entry',
+  reverseHelp: 'A reversing entry (debit ↔ credit) linked to this one will be posted. The original is kept so the journal stays complete for audit.',
+  reversalDate: 'Reversal date',
+  reversalReason: 'Reason (optional)',
+  confirmReverse: 'Reverse with a reversing entry',
+  entryReversed: 'Entry {n} reversed by entry {m}.',
+
   industry: {
     services: 'Services',
     retail: 'Retail',

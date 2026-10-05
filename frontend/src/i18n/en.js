@@ -42,7 +42,7 @@ export default {
   documentNo: 'Document no.',
   entryDescription: 'Entry description',
   selectAccount: 'Select account…',
-  noPostingAccounts: 'First create posting accounts in the Accounts tab.',
+  noPostingAccounts: 'First create posting accounts in Master data › Chart of accounts.',
   debit: 'Debit',
   credit: 'Credit',
   keyboardHelp: 'Enter: account → Debit → Credit → = → next line · +: new line · −: delete line · 572.1 = 57200001',
@@ -148,8 +148,8 @@ export default {
   kind: { invoice: 'Invoice', credit_memo: 'Credit memo' },
   vendorOrCreditor: 'Vendor or creditor',
   customerOrDebtor: 'Customer or debtor',
-  noPartnersForInvoice: 'No partners of this type: create them in the Partners tab.',
-  noTaxesForInvoice: 'No taxes set up: set them up in the Taxes tab.',
+  noPartnersForInvoice: 'No partners of this type: create them in Master data › Partners.',
+  noTaxesForInvoice: 'No taxes set up: set them up in Taxes › Tax setup.',
   correctedInvoice: 'Corrected invoice',
   correctedReference: 'or its number, if not registered',
   vendorInvoiceNo: 'Vendor invoice no.',
@@ -236,6 +236,16 @@ export default {
   actualBalance: 'Current balance',
   reclassTo: 'Reclassify at year end to account',
   seeLedger: 'See ledger',
+
+  // Menu
+  menuAccounting: 'Accounting',
+  menuInvoices: 'Invoices',
+  menuTaxes: 'Taxes',
+  menuReports: 'Reports',
+  menuMasterData: 'Master data',
+  menuTaxSetup: 'Tax setup',
+  menuReportsItem: 'Trial balance · Ledger',
+  menuChart: 'Chart of accounts',
 
   industry: {
     services: 'Services',

@@ -2,6 +2,11 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.11.0] · 2026-10-05
+### Cambiado
+- Menú de la empresa agrupado por áreas (barra lateral en ordenador, menú desplegable en móvil).
+- La aplicación recuerda la última pantalla abierta de cada empresa.
+
 ## [0.10.0] · 2026-10-05
 ### Añadido
 - Informes: sumas y saldos por nivel y fecha de corte, libro mayor con saldo acumulado y drill-down.

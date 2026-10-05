@@ -195,3 +195,19 @@ Diario del proceso: qué se hizo, qué se aprendió y qué queda pendiente. Una 
 **Decisiones**: ADR 0008 (naturaleza de saldos).
 
 **Siguiente paso**: J5 · casos especiales de IVA/IGIC.
+
+## 2026-10-05 · v0.11.0 · K1 Menú por áreas
+
+**Qué se hizo**
+- Navegación de la empresa reorganizada en 5 áreas: Contabilidad · Facturas · Impuestos · Informes ·
+  Datos maestros (antes, 8 pestañas en fila).
+- Ordenador: barra lateral fija y ruta "Área › Pantalla"; móvil: botón ☰ con menú desplegable.
+- Recuerda la última pantalla abierta de cada empresa; las pantallas de escritura se ocultan en solo lectura.
+- Textos de ayuda actualizados ("pestaña X" → "Área › Pantalla").
+
+**Lo que se aprende en esta fase**
+- Los ERP organizan la navegación por áreas funcionales: Role Center de Business Central,
+  Launchpad de SAP Fiori, menús de A3 / Sage. "Datos maestros" (master data) agrupa lo que no es movimiento:
+  plan de cuentas y terceros.
+
+**Siguiente paso**: K2 · libro diario con rango de fechas y anulación de asientos.

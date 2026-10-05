@@ -100,3 +100,13 @@ input.invalido { border-color: var(--aviso); }
 .liquidacion h3 { margin: 0 0 4px; font-size: 1rem; }
 .impuestos .rejilla-cabecera, .liquidacion .rejilla-cabecera { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
 .impuestos select, .liquidacion select { min-width: 0; width: 100%; }
+
+
+/* --- J3: facturas --- */
+.linea-factura { display: grid; grid-template-columns: 1fr 1fr auto; gap: 6px; padding: 8px 0; border-bottom: 1px dashed var(--borde); }
+.linea-factura input, .linea-factura select { min-width: 0; }
+.reduce { color: #9a6700; font-weight: 600; }
+.vista-previa { margin-top: 8px; }
+li .insignia { margin-left: 6px; }
+.factura .rejilla-cabecera { grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); }
+.factura select, .factura input { min-width: 0; width: 100%; }

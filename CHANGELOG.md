@@ -2,6 +2,14 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.8.0] · 2026-10-05
+### Añadido
+- Registro de facturas recibidas y emitidas, normales y rectificativas, con asiento automático.
+- Regla del lado: devoluciones, rappels y descuentos por pronto pago reducen base y cuota.
+- Vista previa del asiento antes de registrar.
+- Libro registro de facturas emitidas y recibidas.
+- Control de facturas duplicadas y numeración correlativa por serie.
+
 ## [Sin publicar]
 ### Cambiado
 - Base de datos renombrada al inglés al estilo Business Central / SAP: schema `erp`, tablas, columnas,
@@ -10,6 +18,22 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y 
 - Nombres en inglés (`name_en`) para las 352 cuentas del PGC y descripciones de los tipos IVA / IGIC.
 - Tabla `user_settings` para el idioma de la interfaz (es / en) por usuario.
 - `docs/glosario.md` y script `database/reset/0000_drop_conta.sql`.
+
+## [0.7.0] · 2026-10-04
+### Añadido
+- Configuración de impuestos: subcuentas 472/477 por tipo de IVA/IGIC y 4750/4700 de liquidación.
+- Asistente para configurar IGIC o IVA en un clic.
+- El apunte en una cuenta de impuesto toma su tipo y aparece en el libro registro.
+### Corregido
+- Comprobación de permisos para usuarios que no son miembros de la empresa.
+
+|
+## [0.6.0] · 2026-10-03
+### Añadido
+- Terceros: clientes, proveedores, acreedores y deudores con su subcuenta (430/400/410/440).
+- Validación de NIF/NIE/CIF españoles y control de duplicados.
+- Saldo de cada tercero con su naturaleza (deudor/acreedor).
+
 
 ## [0.1.0] - 2026-09-29
 ### Añadido

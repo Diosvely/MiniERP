@@ -69,7 +69,7 @@ begin
   raise notice 'OK  · subcuentas cuelgan de su cuenta PGC (430, 4751…)';
 
   insert into erp.business_partners (company_id, partner_type, vat_registration_no, name, tax_territory, gl_account_id)
-  values (e, 'customer', 'B11111111', 'Cliente Uno SL', 'canary_islands', c_cli) returning id into t;
+  values (e, 'customer', 'B11111119', 'Cliente Uno SL', 'canary_islands', c_cli) returning id into t;
 
   -- Asiento 1: factura de venta con IGIC 7%
   insert into erp.journal_entries (company_id, fiscal_year_id, posting_date, description, document_no)

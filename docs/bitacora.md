@@ -82,3 +82,71 @@ Diario del proceso: qué se hizo, qué se aprendió y qué queda pendiente. Una 
 - Probado con el plan de Agrícola del Sur: 62 subcuentas importadas, errores detectados y reimportación.
 - Referencia ERP: crear o actualizar como los Configuration Packages de Business Central;
   validación previa y todo o nada como el Migration Cockpit de SAP.
+  
+ ## 2026-10-03 · v0.6.0 · J1 Terceros
+
+**Qué se hizo**
+- Migración `0009_partners.sql`: ficha de tercero ampliada (email, dirección, país, bloqueado),
+  validación de NIF/NIE/CIF con letra o dígito de control, alta con subcuenta automática o vinculada,
+  control de duplicados por NIF + tipo, vínculo automático apunte → tercero y vista `v_partners` con saldo.
+- Pantalla **Terceros** (ES/EN): alta, filtros por tipo, búsqueda y saldo deudor/acreedor.
+- Pruebas: `test_fase4_partners.sql` (11 comprobaciones) y pruebas manuales en la web.
+
+**Lo que se aprende en esta fase**
+- Cliente 430 (actividad principal), proveedor 400 (mercaderías, grupo 60),
+  acreedor 410 (servicios, grupo 62) y deudor 440 (operaciones ajenas a la actividad).
+- Subcuenta por tercero (A3, Sage, ContaPlus) frente a la cuenta colectiva con detalle aparte
+  (BC posting groups, SAP reconciliation account).
+- Un mismo NIF puede ser cliente y proveedor; dos veces cliente, no (duplicaría saldos y el modelo 347).
+- Solo los asientos contabilizados mueven saldos; los borradores no.
+
+**Decisiones**: ADR 0005 (registro de facturas desde contabilidad, modelo gestoría).
+
+**Siguiente paso**: J2 · configuración de impuestos (cuentas 472/477 por tipo de IVA/IGIC).
+
+## 2026-10-04 · v0.7.0 · J2 Configuración de impuestos
+
+**Qué se hizo**
+- Migración `0010_tax_setup.sql`: tablas `tax_setup` (subcuenta 472/477 por tipo) y
+  `tax_settlement_setup` (4750/4700 por impuesto), asistente `setup_taxes`, vínculo automático
+  apunte → tipo de impuesto y vistas para la web.
+- Reglas contables en la base de datos: soportado solo en 472, repercutido en 477,
+  liquidación en 4750 / 4700; un tipo en uso no puede quedarse sin cuentas.
+- Corrección de seguridad: `can_write` e `is_admin` devuelven siempre true/false (nunca null).
+- Pantalla **Impuestos** (ES/EN), solo editable por el administrador de la empresa.
+- Pruebas: `test_fase5_taxes.sql` (14 comprobaciones) y pruebas manuales en la web.
+
+**Lo que se aprende en esta fase**
+- El IVA/IGIC no es gasto ni ingreso: el soportado (472) es un derecho frente a Hacienda
+  y el repercutido (477) una deuda.
+- Liquidación trimestral: 477 − 472 → 4750 si sale a pagar · 4700 si sale a devolver o compensar.
+- Una subcuenta por tipo (4721xxxx IGIC, 4720xxxx IVA): el mayor ya separa las cuotas por tipo.
+- Equivalencias: BC VAT Posting Setup · SAP OB40 · tabla de tipos de A3 / Sage / ContaPlus.
+
+**Decisiones**: ADR 0006 (configuración de impuestos).
+
+**Siguiente paso**: J3 · registro de facturas recibidas y emitidas.
+
+## 2026-10-05 · v0.8.0 · J3 Registro de facturas
+
+**Qué se hizo**
+- Migración `0011_invoices.sql`: facturas recibidas y emitidas (normales y rectificativas) con su asiento
+  contabilizado, libro registro por tipo de impuesto y numeración correlativa sin huecos
+  (F / R emitidas · C / CR nº de registro de recibidas).
+- Motor único en la base de datos: `preview_invoice` (vista previa sin guardar) y `post_invoice` (todo o nada).
+- Controles: factura duplicada del proveedor, rectificativa con factura de origen, cuentas por grupo
+  (compras 6/2 · ventas 7), tercero del tipo correcto, tipo de impuesto configurado, fechas y total negativo.
+- Facturas inmutables: se corrigen con rectificativa; su asiento no se puede anular suelto.
+- Pantalla **Facturas** (ES/EN): Recibidas / Emitidas, "Ver asiento" obligatorio antes de registrar.
+- Pruebas: `test_fase6_invoices.sql` (24 comprobaciones) y pruebas manuales en la web.
+
+**Lo que se aprende en esta fase**
+- Regla del lado: la base de una compra va al Debe y la de una venta al Haber; la cuota va al mismo lado
+  que su base; el tercero, al contrario por el total.
+- Las cuentas 606/608/609 y 706/708/709 restan: van al lado contrario y reducen también la cuota.
+- La rectificativa invierte todo y reduce el IVA/IGIC deducido o repercutido.
+- La cuota se calcula por factura y tipo (no línea a línea) y el 0 % / exento va igualmente al libro registro.
+
+**Decisiones**: ADR 0005 (registro de facturas desde contabilidad), fase A completada.
+
+**Siguiente paso**: J4 · liquidación trimestral (477 − 472 → 4750 / 4700) y borradores de los modelos 420 / 303.

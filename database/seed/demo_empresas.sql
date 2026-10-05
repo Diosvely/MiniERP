@@ -38,11 +38,11 @@ begin
                ('47510001','HP acreedora por retenciones IRPF profesionales','Withholdings payable – professionals')) as s(account_no, name, name_en);
 
   insert into erp.business_partners (company_id, partner_type, vat_registration_no, name, tax_territory, gl_account_id)
-  values (e, 'customer', 'B35999999', 'Hotel Atlántico SL', 'canary_islands',
+  values (e, 'customer', 'B35999994', 'Hotel Atlántico SL', 'canary_islands',
           (select id from erp.gl_accounts where company_id = e and account_no = '43000001'))
   returning id into t_cli;
   insert into erp.business_partners (company_id, partner_type, vat_registration_no, name, tax_territory, gl_account_id)
-  values (e, 'creditor', '42000000X', 'Gestoría Martín', 'canary_islands',
+  values (e, 'creditor', '42000000E', 'Gestoría Martín', 'canary_islands',
           (select id from erp.gl_accounts where company_id = e and account_no = '41000001'))
   returning id into t_prov;
 
@@ -103,7 +103,7 @@ begin
                ('47700021','IVA repercutido 21%','Output VAT 21%')) as s(account_no, name, name_en);
 
   insert into erp.business_partners (company_id, partner_type, vat_registration_no, name, tax_territory, gl_account_id)
-  values (e, 'vendor', 'A28888888', 'Distribuciones Norte SA', 'mainland',
+  values (e, 'vendor', 'A28888881', 'Distribuciones Norte SA', 'mainland',
           (select id from erp.gl_accounts where company_id = e and account_no = '40000001'))
   returning id into t_prov;
 

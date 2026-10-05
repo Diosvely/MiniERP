@@ -42,7 +42,7 @@ export default {
   documentNo: 'Nº documento',
   entryDescription: 'Concepto del asiento',
   selectAccount: 'Elige subcuenta…',
-  noPostingAccounts: 'Primero crea subcuentas en la pestaña Cuentas.',
+  noPostingAccounts: 'Primero crea subcuentas en Datos maestros › Plan de cuentas.',
   debit: 'Debe',
   credit: 'Haber',
   keyboardHelp: 'Enter: cuenta → Debe → Haber → = → línea siguiente · +: nueva línea · −: borrar línea · 572.1 = 57200001',
@@ -148,8 +148,8 @@ export default {
   kind: { invoice: 'Factura', credit_memo: 'Rectificativa' },
   vendorOrCreditor: 'Proveedor o acreedor',
   customerOrDebtor: 'Cliente o deudor',
-  noPartnersForInvoice: 'No hay terceros de este tipo: créalos en la pestaña Terceros.',
-  noTaxesForInvoice: 'No hay impuestos configurados: configúralos en la pestaña Impuestos.',
+  noPartnersForInvoice: 'No hay terceros de este tipo: créalos en Datos maestros › Terceros.',
+  noTaxesForInvoice: 'No hay impuestos configurados: configúralos en Impuestos › Configuración de impuestos.',
   correctedInvoice: 'Factura que rectifica',
   correctedReference: 'o su número, si no está registrada',
   vendorInvoiceNo: 'Nº de factura del proveedor',
@@ -237,6 +237,16 @@ export default {
   actualBalance: 'Saldo actual',
   reclassTo: 'Reclasificar al cierre a la cuenta',
   seeLedger: 'Ver mayor',
+
+  // Menú
+  menuAccounting: 'Contabilidad',
+  menuInvoices: 'Facturas',
+  menuTaxes: 'Impuestos',
+  menuReports: 'Informes',
+  menuMasterData: 'Datos maestros',
+  menuTaxSetup: 'Configuración de impuestos',
+  menuReportsItem: 'Sumas y saldos · Mayor',
+  menuChart: 'Plan de cuentas',
 
   industry: {
     services: 'Servicios',

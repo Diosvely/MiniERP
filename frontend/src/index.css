@@ -134,3 +134,27 @@ tr.anomalia.error td { background: rgba(180,35,24,.12); color: var(--aviso); }
 .anomalias li.error { border-left-color: var(--aviso); }
 .anomalias button { align-self: flex-start; }
 .insignia.error { background: var(--aviso); color: #fff; }
+
+/* --- K1: menú agrupado por áreas --- */
+main:has(.empresa-layout) { max-width: 1120px; }
+.empresa-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 20px; }
+.boton-menu { display: flex; gap: 8px; align-items: center; background: var(--tarjeta); color: var(--texto);
+              border: 1px solid var(--borde); margin-bottom: 12px; text-align: left; }
+.boton-menu strong { color: var(--primario); }
+.menu-empresa { display: none; flex-direction: column; gap: 12px; background: var(--tarjeta); border: 1px solid var(--borde);
+                border-radius: 12px; padding: 12px; margin-bottom: 16px; }
+.menu-empresa.abierto { display: flex; }
+.menu-grupo { display: flex; flex-direction: column; gap: 2px; }
+.menu-grupo h3 { margin: 0 0 4px; font-size: .75rem; text-transform: uppercase; letter-spacing: .06em; color: var(--suave); }
+.menu-grupo button { background: transparent; color: var(--texto); text-align: left; padding: 8px 10px; }
+.menu-grupo button:hover { background: rgba(31,94,255,.08); }
+.menu-grupo button.activa { background: var(--primario); color: #fff; }
+.menu-grupo button.secundario { color: var(--primario); border: 1px solid var(--primario); text-align: center; }
+.ruta { display: none; color: var(--suave); font-size: .85rem; margin: 0 0 10px; }
+@media (min-width: 900px) {
+  .empresa-layout { grid-template-columns: 220px minmax(0, 1fr); }
+  .empresa-cabecera { grid-column: 1 / -1; }
+  .boton-menu { display: none; }
+  .menu-empresa { display: flex; position: sticky; top: 16px; align-self: start; }
+  .ruta { display: block; }
+}

@@ -8,6 +8,7 @@ import Partners from './Partners'
 import Taxes from './Taxes'
 import Invoices from './Invoices'
 import TaxSettlement from './TaxSettlement'
+import Reports from './Reports'
 
 // Pantalla de una empresa con pestañas
 //   readOnly   → empresa demo de otro usuario (o rol viewer): solo consultar
@@ -22,6 +23,7 @@ export default function CompanyView({ company, readOnly, canPublish, onChanged, 
     ...(readOnly ? [] : [['entry', t('tabEntry')]]),
     ['invoices', t('tabInvoices')],
     ['journal', t('tabJournal')],
+    ['reports', t('tabReports')],
     ['accounts', t('tabAccounts')],
     ['partners', t('tabPartners')],
     ['taxes', t('tabTaxes')],
@@ -68,6 +70,7 @@ export default function CompanyView({ company, readOnly, canPublish, onChanged, 
       {tab === 'entry' && !readOnly && <JournalEntryForm company={company} onPosted={() => setRefreshKey((k) => k + 1)} />}
       {tab === 'invoices' && <Invoices company={company} readOnly={readOnly} />}
       {tab === 'journal' && <GeneralJournal company={company} refreshKey={refreshKey} />}
+      {tab === 'reports' && <Reports company={company} />}
       {tab === 'accounts' && <Accounts company={company} readOnly={readOnly} />}
       {tab === 'partners' && <Partners company={company} readOnly={readOnly} />}
       {tab === 'taxes' && <Taxes company={company} readOnly={readOnly} />}

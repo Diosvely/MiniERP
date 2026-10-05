@@ -174,3 +174,24 @@ Diario del proceso: qué se hizo, qué se aprendió y qué queda pendiente. Una 
 **Decisiones**: ADR 0007 (liquidación trimestral).
 
 **Siguiente paso**: decidir entre J5 (casos especiales de IVA/IGIC) o el bloque I (mayor, sumas y saldos y saldos anómalos).
+
+## 2026-10-05 · v0.10.0 · Bloque I · Informes y saldos anómalos
+
+**Qué se hizo**
+- Migración `0013_balance_rules.sql`: catálogo de naturaleza de saldos por prefijo PGC (~70 reglas con
+  reclasificación, gravedad y explicación ES/EN), informe `balance_anomalies` y bloqueo opcional de saldo
+  inverso por subcuenta (caja 570/571 bloqueada por defecto).
+- Pantalla **Informes** (ES/EN): sumas y saldos por nivel y fecha de corte, libro mayor con saldo D/H
+  y drill-down, y listado de saldos anómalos.
+- Pruebas: `test_fase8_balances.sql` y pruebas manuales (banco en descubierto, caja bloqueada).
+
+**Lo que se aprende en esta fase**
+- Naturaleza del saldo: activos y gastos deudores; patrimonio, pasivos e ingresos acreedores;
+  las correctoras (28, 29, 39, 49, 59, 606/608/609, 706/708/709) al revés.
+- Un saldo inverso no siempre es error, pero se revisa y se reclasifica al cierre:
+  572 → 5201 · 430 → 438 · 400 → 407 · 4750 ↔ 4700. La caja acreedora es imposible.
+- El PGC no permite compensar activos con pasivos: un descubierto es una deuda, no un banco negativo.
+
+**Decisiones**: ADR 0008 (naturaleza de saldos).
+
+**Siguiente paso**: J5 · casos especiales de IVA/IGIC.

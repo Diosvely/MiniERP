@@ -124,3 +124,13 @@ tr.resultado-carry_forward td, tr.resultado-refund td { color: #1a7f37; }
 .cuadre.descuadre { background: rgba(180,35,24,.10); color: var(--aviso); }
 li.bloqueado { opacity: .55; }
 
+/* --- Bloque I: informes --- */
+.informe td { white-space: nowrap; }
+.informe td:first-child { white-space: normal; min-width: 160px; }
+tr.anomalia.warning td { background: rgba(245,165,36,.12); }
+tr.anomalia.error td { background: rgba(180,35,24,.12); color: var(--aviso); }
+.anomalias { list-style: none; padding: 0; display: flex; flex-direction: column; gap: 10px; }
+.anomalias li { display: flex; flex-direction: column; gap: 4px; border-left: 4px solid #f5a524; padding: 6px 10px; }
+.anomalias li.error { border-left-color: var(--aviso); }
+.anomalias button { align-self: flex-start; }
+.insignia.error { background: var(--aviso); color: #fff; }

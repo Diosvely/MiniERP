@@ -186,3 +186,15 @@ button.pequeno { align-self: flex-start; padding: 6px 10px; font-size: .85rem; m
 .menu-grupo h3 { margin: 0 0 2px; padding: 6px 10px; border-radius: 6px; background: var(--fondo);
                  border-left: 3px solid var(--borde); cursor: default; user-select: none; }
 .menu-grupo button { margin-left: 8px; }
+
+/* --- Estados financieros --- */
+.tabla-ancha { overflow-x: auto; }
+.estado { font-size: .9rem; }
+.estado td:first-child { white-space: normal; }
+.estado tr.partida { cursor: pointer; }
+.estado tr.partida:hover td { background: rgba(31,94,255,.06); }
+.estado tr.total-estado td { font-weight: 700; background: var(--fondo); }
+.estado tr.total-estado.nivel-0 td { border-top: 2px solid var(--texto); }
+.estado td.anterior { color: var(--suave); }
+.estado tr.cuenta-partida td { font-size: .8rem; color: var(--suave); border-bottom: none; }
+.desplegar { display: inline-block; width: 12px; color: var(--primario); }

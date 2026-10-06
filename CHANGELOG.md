@@ -2,6 +2,13 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.14.0] · 2026-10-06
+### Añadido
+- Balance de situación y Cuenta de Pérdidas y Ganancias (modelo PYMES del PGC) con ejercicio anterior,
+  fecha de corte y detalle de cuentas por partida.
+### Cambiado
+- Los importes muestran siempre separador de miles.
+
 ## [0.13.1] · 2026-10-06
 ### Añadido
 - Guía de Git del proyecto (`docs/guia-git.md`).

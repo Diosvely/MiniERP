@@ -274,6 +274,19 @@ export default {
   shareDemoHelp: 'Quien abra este enlace entra directamente como invitado a las empresas publicadas como demo, sin registrarse.',
   copy: 'Copiar',
 
+  // Estados financieros
+  menuBalance: 'Balance de situación',
+  menuPyg: 'Pérdidas y ganancias',
+  balanceSheet: 'Balance de situación',
+  incomeStatement: 'Cuenta de Pérdidas y Ganancias',
+  balanceSheetHelp: 'Modelo PYMES del PGC. Cada subcuenta se clasifica por su saldo: un banco en descubierto va a deudas con entidades de crédito y un cliente con anticipo, a otros acreedores. Pulsa una partida para ver sus cuentas.',
+  incomeStatementHelp: 'Modelo PYMES del PGC: ingresos en positivo y gastos entre paréntesis. Pulsa una partida para ver sus cuentas.',
+  hideZeroLines: 'Ocultar partidas sin importe',
+  totalAssets: 'Total activo',
+  totalEquityLiabilities: 'Total patrimonio neto y pasivo',
+  noAccountsInLine: 'Sin cuentas con saldo en esta partida.',
+  statementsNote: 'Mientras no se cierre el ejercicio, el resultado de los grupos 6 y 7 aparece en "VII. Resultado del ejercicio". Proyecto de estudio basado en el modelo PYMES (RD 1515/2007).',
+
   industry: {
     services: 'Servicios',
     retail: 'Comercio minorista',

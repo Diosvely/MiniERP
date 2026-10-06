@@ -266,3 +266,25 @@ Diario del proceso: qué se hizo, qué se aprendió y qué queda pendiente. Una 
 - En navegación, lo que agrupa no debe parecer un botón.
 
 **Siguiente paso**: J5 · casos especiales de IVA/IGIC.
+
+## 2026-10-06 · v0.14.0 · Bloque L Balance de situación y Pérdidas y Ganancias
+
+**Qué se hizo**
+- Migración `0016_financial_statements.sql`: estructura de los modelos PYMES del PGC (partidas ES/EN y
+  jerarquía) y clasificación de cuentas por prefijo con doble destino según el saldo de cada subcuenta.
+- `financial_statement` (importes del año y del anterior), `fs_line_accounts` (cuentas de cada partida).
+- Pantallas: Informes › Balance de situación y Pérdidas y ganancias, con cuadre, fecha de corte,
+  drill-down y negativos entre paréntesis.
+- Importes con separador de miles siempre (2.900,00).
+- Pruebas: `test_fase11_statements.sql` (balance cuadrado, saldos inversos en su masa, PyG y año anterior).
+
+**Lo que se aprende en esta fase**
+- El PGC prohíbe compensar: cada subcuenta va a su partida según su saldo (banco en descubierto al pasivo,
+  anticipo de cliente a otros acreedores, anticipo a proveedor en existencias).
+- Mientras no se cierra el ejercicio, el resultado (grupos 6 y 7) forma parte del patrimonio neto:
+  el "D) Resultado del ejercicio" de la PyG es el "VII. Resultado del ejercicio" del balance.
+- Los estados solo leen el diario: sirven igual para asientos manuales, facturas o diarios importados.
+
+**Decisiones**: ADR 0010 (visión: laboratorio de práctica) y ADR 0011 (estados financieros e importación).
+
+**Siguiente paso**: cierre del ejercicio (regularización, cierre y apertura).

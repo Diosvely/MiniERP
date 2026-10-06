@@ -2,6 +2,13 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.13.0] · 2026-10-06
+### Añadido
+- Acceso como invitado (sin registro) a las empresas demo, solo lectura.
+- Enlace directo para compartir la demo.
+### Corregido
+- La lista de empresas no muestra separadores vacíos cuando falta el NIF.
+
 ## [0.12.0] · 2026-10-05
 ### Añadido
 - Anulación de asientos con contraasiento, fecha y motivo.

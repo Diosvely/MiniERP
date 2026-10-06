@@ -6,8 +6,14 @@ import Companies from './components/Companies'
 export default function App() {
   const [session, setSession] = useState(null)
 
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSession(data.session))
+    useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setSession(data.session)
+      // Enlace para compartir: https://…/?demo → entra como invitado sin registrarse
+      if (!data.session && new URLSearchParams(window.location.search).has('demo')) {
+        supabase.auth.signInAnonymously()
+      }
+    })
     const { data } = supabase.auth.onAuthStateChange((_event, s) => setSession(s))
     return () => data.subscription.unsubscribe()
   }, [])
@@ -55,6 +61,13 @@ function Login() {
     if (error) setMessage(error.message)
   }
 
+    // Invitado: sesión anónima de Supabase, solo puede ver las empresas demo
+  async function guest() {
+    setMessage('')
+    const { error } = await supabase.auth.signInAnonymously()
+    if (error) setMessage(error.message)
+  }
+
   async function signUp() {
     const { error } = await supabase.auth.signUp({ email, password })
     setMessage(error ? error.message : t('userCreated'))
@@ -72,6 +85,11 @@ function Login() {
         <button type="button" className="secundario" onClick={signUp}>{t('signUp')}</button>
       </div>
       {message && <p className="aviso">{message}</p>}
+      <div className="invitado">
+        <p className="ayuda">{t('guestHelp')}</p>
+        <button type="button" className="secundario" onClick={guest}>👁 {t('viewDemo')}</button>
+      </div>
+
     </form>
   )
 }

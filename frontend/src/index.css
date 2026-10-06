@@ -169,3 +169,7 @@ main:has(.empresa-layout) { max-width: 1120px; }
 button.pequeno { align-self: flex-start; padding: 6px 10px; font-size: .85rem; margin-top: 6px; }
 .anular { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; padding: 10px; border: 1px dashed var(--aviso); border-radius: 8px; }
 .anular input, .rejilla-tres input { min-width: 0; width: 100%; }
+
+/* --- K3: invitados --- */
+.invitado { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--borde); padding-top: 12px; margin-top: 4px; }
+.fila input { flex: 1; min-width: 0; }

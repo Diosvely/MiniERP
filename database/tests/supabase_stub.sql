@@ -18,3 +18,9 @@ $$;
 
 grant usage on schema auth to anon, authenticated;
 grant execute on function auth.uid() to anon, authenticated;
+
+-- auth.jwt(): todas las "claims" del token (en Supabase incluye is_anonymous para invitados)
+create or replace function auth.jwt() returns jsonb language sql stable as $$
+  select coalesce(nullif(current_setting('request.jwt.claims', true), '')::jsonb, '{}'::jsonb)
+$$;
+grant execute on function auth.jwt() to anon, authenticated;

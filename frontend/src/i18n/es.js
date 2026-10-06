@@ -264,6 +264,16 @@ export default {
   confirmReverse: 'Anular con contraasiento',
   entryReversed: 'Asiento {n} anulado con el asiento {m}.',
 
+  // Invitados
+  viewDemo: 'Ver la demo sin registrarme',
+  guestHelp: '¿Solo quieres echar un vistazo? Entra como invitado y consulta las empresas de ejemplo (solo lectura).',
+  guestUser: 'Invitado',
+  guestBanner: 'Estás viendo las empresas demo como invitado: puedes consultar todo, pero no modificar nada. Regístrate para crear tu propia empresa.',
+  signUpToCreate: 'Salir y registrarme',
+  shareDemo: 'Compartir la demo',
+  shareDemoHelp: 'Quien abra este enlace entra directamente como invitado a las empresas publicadas como demo, sin registrarse.',
+  copy: 'Copiar',
+
   industry: {
     services: 'Servicios',
     retail: 'Comercio minorista',

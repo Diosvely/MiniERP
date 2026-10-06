@@ -263,6 +263,16 @@ export default {
   confirmReverse: 'Reverse with a reversing entry',
   entryReversed: 'Entry {n} reversed by entry {m}.',
 
+  // Guests
+  viewDemo: 'View the demo without signing up',
+  guestHelp: 'Just want a look? Enter as a guest and browse the sample companies (read only).',
+  guestUser: 'Guest',
+  guestBanner: 'You are viewing the demo companies as a guest: you can see everything but change nothing. Sign up to create your own company.',
+  signUpToCreate: 'Leave and sign up',
+  shareDemo: 'Share the demo',
+  shareDemoHelp: 'Anyone opening this link goes straight into the companies published as demo, as a guest, without signing up.',
+  copy: 'Copy',
+
   industry: {
     services: 'Services',
     retail: 'Retail',

@@ -13,6 +13,7 @@ export default function Companies({ session }) {
   const [form, setForm] = useState(emptyForm)
   const [error, setError] = useState('')
   const [selected, setSelected] = useState(null)  // empresa abierta
+  const [copied, setCopied] = useState(false)     // enlace de la demo copiado
 
   async function load() {
     // v_my_companies devuelve también mi rol en cada empresa (null = demo ajena → solo lectura)
@@ -52,6 +53,8 @@ export default function Companies({ session }) {
   const mine = companies.filter((c) => c.my_role)
   const demos = companies.filter((c) => c.is_demo && !c.my_role)
   const isOwner = profile?.app_role === 'owner'
+  const isGuest = Boolean(session.user.is_anonymous)
+  const demoLink = `${window.location.origin}/?demo`
   const canCreate = profile && (profile.max_companies === null || profile.companies_created < profile.max_companies)
 
   // Si hay una empresa abierta, mostramos su pantalla en lugar de la lista
@@ -74,7 +77,7 @@ export default function Companies({ session }) {
         {c.name} {c.is_demo && <span className="insignia">{t('demoBadge')}</span>}
       </strong>
       <span>
-        {c.vat_registration_no} · {t(`industry.${c.industry}`)} · {t(`territory.${c.tax_territory}`)}
+        {[c.vat_registration_no, t(`industry.${c.industry}`), t(`territory.${c.tax_territory}`)].filter(Boolean).join(' · ')}
       </span>
     </li>
   )
@@ -82,15 +85,21 @@ export default function Companies({ session }) {
   return (
     <>
       <p className="usuario">
-        {session.user.email}
-        <button className="secundario" onClick={() => supabase.auth.signOut()}>{t('signOut')}</button>
+        {isGuest ? `👁 ${t('guestUser')}` : session.user.email}
+        <button className="secundario" onClick={() => supabase.auth.signOut()}>
+          {isGuest ? t('signUpToCreate') : t('signOut')}
+        </button>
       </p>
 
-      <section className="tarjeta">
-        <h2>{t('myCompanies')}</h2>
-        {mine.length === 0 && <p>{t('noCompanies')}</p>}
-        <ul>{mine.map(item)}</ul>
-      </section>
+      {isGuest && <p className="solo-lectura">{t('guestBanner')}</p>}
+
+      {!isGuest && (
+        <section className="tarjeta">
+          <h2>{t('myCompanies')}</h2>
+          {mine.length === 0 && <p>{t('noCompanies')}</p>}
+          <ul>{mine.map(item)}</ul>
+        </section>
+      )}
 
       {demos.length > 0 && (
         <section className="tarjeta">
@@ -100,7 +109,22 @@ export default function Companies({ session }) {
         </section>
       )}
 
-      {canCreate ? (
+      {/* El propietario ve el enlace para compartir las demos */}
+      {isOwner && (
+        <section className="tarjeta">
+          <h2>{t('shareDemo')}</h2>
+          <p className="ayuda">{t('shareDemoHelp')}</p>
+          <div className="fila">
+            <input readOnly value={demoLink} onFocus={(e) => e.target.select()} />
+            <button type="button" className="secundario"
+                    onClick={() => navigator.clipboard?.writeText(demoLink).then(() => setCopied(true))}>
+              {copied ? '✓' : t('copy')}
+            </button>
+          </div>
+        </section>
+      )}
+
+      {isGuest ? null : canCreate ? (
         <form onSubmit={create} className="tarjeta">
           <h2>{t('newCompany')}</h2>
           <input placeholder={t('companyName')} value={form.name} onChange={change('name')} required />

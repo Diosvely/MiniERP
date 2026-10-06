@@ -5,6 +5,9 @@ export function money(value, language) {
   return new Intl.NumberFormat(language === 'en' ? 'en-GB' : 'es-ES', {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+    useGrouping: 'always',   // 2.900,00 y no 2900,00 (en español Intl no agrupa los números de 4 cifras)
   }).format(Number(value) || 0)
 }
 

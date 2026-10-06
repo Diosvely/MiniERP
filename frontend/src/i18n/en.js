@@ -273,6 +273,19 @@ export default {
   shareDemoHelp: 'Anyone opening this link goes straight into the companies published as demo, as a guest, without signing up.',
   copy: 'Copy',
 
+    // Financial statements
+  menuBalance: 'Balance sheet',
+  menuPyg: 'Income statement',
+  balanceSheet: 'Balance sheet',
+  incomeStatement: 'Income statement (profit and loss)',
+  balanceSheetHelp: 'Spanish GAAP SME model. Each posting account is classified by its own balance: an overdrawn bank goes to bank borrowings and a customer advance to other payables. Click a line to see its accounts.',
+  incomeStatementHelp: 'Spanish GAAP SME model: income positive, expenses in brackets. Click a line to see its accounts.',
+  hideZeroLines: 'Hide lines without amount',
+  totalAssets: 'Total assets',
+  totalEquityLiabilities: 'Total equity and liabilities',
+  noAccountsInLine: 'No accounts with balance in this line.',
+  statementsNote: 'Until the year is closed, the result of groups 6 and 7 is shown in "VII. Profit (loss) for the year". Learning project based on the Spanish GAAP SME model (RD 1515/2007).',
+
   industry: {
     services: 'Services',
     retail: 'Retail',

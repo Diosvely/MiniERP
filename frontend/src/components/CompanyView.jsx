@@ -9,6 +9,7 @@ import Taxes from './Taxes'
 import Invoices from './Invoices'
 import TaxSettlement from './TaxSettlement'
 import Reports from './Reports'
+import FinancialStatements from './FinancialStatements'
 
 // Menú agrupado por áreas, como el Role Center de Business Central o el menú de A3 / Sage:
 //   Contabilidad · Facturas · Impuestos · Informes · Datos maestros
@@ -17,7 +18,7 @@ const MENU = [
   ['menuAccounting', [['entry', 'tabEntry', true], ['journal', 'tabJournal']]],
   ['menuInvoices', [['invoices', 'tabInvoices']]],
   ['menuTaxes', [['settlement', 'tabSettlement'], ['taxes', 'menuTaxSetup']]],
-  ['menuReports', [['reports', 'menuReportsItem']]],
+  ['menuReports', [['balance', 'menuBalance'], ['pyg', 'menuPyg'], ['reports', 'menuReportsItem']]],
   ['menuMasterData', [['accounts', 'menuChart'], ['partners', 'tabPartners']]],
 ]
 
@@ -111,7 +112,10 @@ export default function CompanyView({ company, readOnly, canPublish, onChanged, 
         {section === 'invoices' && <Invoices company={company} readOnly={readOnly} />}
         {section === 'settlement' && <TaxSettlement company={company} readOnly={readOnly} />}
         {section === 'taxes' && <Taxes company={company} readOnly={readOnly} />}
+          {section === 'balance' && <FinancialStatements company={company} statement="balance" />}
+        {section === 'pyg' && <FinancialStatements company={company} statement="pyg" />} 
         {section === 'reports' && <Reports company={company} />}
+       
         {section === 'accounts' && <Accounts company={company} readOnly={readOnly} />}
         {section === 'partners' && <Partners company={company} readOnly={readOnly} />}
       </section>

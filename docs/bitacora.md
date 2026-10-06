@@ -231,3 +231,23 @@ Diario del proceso: qué se hizo, qué se aprendió y qué queda pendiente. Una 
 - Si el periodo original está cerrado, la anulación se fecha en el primer periodo abierto.
 
 **Siguiente paso**: K3 · acceso a las empresas demo sin registrarse.
+
+
+## 2026-10-06 · v0.13.0 · K3 Acceso a las demos sin registrarse
+
+**Qué se hizo**
+- Migración `0015_guest_access.sql`: los usuarios anónimos de Supabase son "invitados" (`is_anonymous`),
+  con perfil `guest`, 0 empresas y `can_write` / `is_admin` siempre falsos; solo leen las empresas demo.
+- Supabase: activados los "anonymous sign-ins" (después de la migración, nunca antes).
+- Web: botón "Ver la demo sin registrarme", enlace directo `/?demo`, aviso de solo lectura
+  y tarjeta "Compartir la demo" para el propietario.
+- Pruebas: `test_fase10_guest.sql` (el invitado ve la demo, no ve las privadas y no puede escribir nada).
+
+**Lo que se aprende en esta fase**
+- Las empresas demo de los ERP (CRONUS en Business Central, IDES en SAP) se exploran sin tocar datos reales.
+- La seguridad se decide en la base de datos: la pantalla solo oculta botones.
+- El orden de despliegue importa: primero las reglas, después se abre la puerta.
+
+**Decisiones**: ADR 0009 (acceso de invitados).
+
+**Siguiente paso**: J5 · casos especiales de IVA/IGIC.

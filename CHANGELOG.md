@@ -2,6 +2,16 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.13.1] · 2026-10-06
+### Añadido
+- Guía de Git del proyecto (`docs/guia-git.md`).
+### Cambiado
+- Selector de idioma con banderas.
+- Cabeceras de área del menú diferenciadas de las opciones.
+- README actualizado.
+### Eliminado
+- Carpeta `Codigo GIT` (sustituida por la guía en `docs`).
+
 ## [0.13.0] · 2026-10-06
 ### Añadido
 - Acceso como invitado (sin registro) a las empresas demo, solo lectura.

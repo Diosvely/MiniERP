@@ -173,3 +173,16 @@ button.pequeno { align-self: flex-start; padding: 6px 10px; font-size: .85rem; m
 /* --- K3: invitados --- */
 .invitado { display: flex; flex-direction: column; gap: 8px; border-top: 1px solid var(--borde); padding-top: 12px; margin-top: 4px; }
 .fila input { flex: 1; min-width: 0; }
+
+/* --- UX: selector de idioma con bandera --- */
+.idiomas { display: flex; border: 1px solid var(--borde); border-radius: 8px; overflow: hidden; }
+.idiomas button { display: flex; align-items: center; gap: 6px; background: var(--tarjeta); color: var(--suave);
+                  border: none; border-radius: 0; padding: 6px 10px; font-size: .85rem; }
+.idiomas button + button { border-left: 1px solid var(--borde); }
+.idiomas button.activo { background: rgba(31,94,255,.10); color: var(--texto); font-weight: 600; }
+.idiomas svg { width: 20px; height: 14px; border-radius: 2px; box-shadow: 0 0 0 1px rgba(0,0,0,.15); }
+/* --- UX: cabeceras de área del menú (no se pulsan), como las secciones de BC / SAP --- */
+.menu-empresa { padding: 8px; gap: 8px; }
+.menu-grupo h3 { margin: 0 0 2px; padding: 6px 10px; border-radius: 6px; background: var(--fondo);
+                 border-left: 3px solid var(--borde); cursor: default; user-select: none; }
+.menu-grupo button { margin-left: 8px; }

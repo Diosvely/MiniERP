@@ -251,3 +251,18 @@ Diario del proceso: qué se hizo, qué se aprendió y qué queda pendiente. Una 
 **Decisiones**: ADR 0009 (acceso de invitados).
 
 **Siguiente paso**: J5 · casos especiales de IVA/IGIC.
+
+## 2026-10-06 · v0.13.1 · Detalles de UX y documentación
+
+**Qué se hizo**
+- `docs/guia-git.md`: guía de Git en formato plantilla (ciclo rama → commit → pull request → etiqueta,
+  nombres de ramas, mensajes, versiones y problemas frecuentes). Sustituye a la carpeta `Codigo GIT`.
+- Selector de idioma con bandera (SVG, porque Windows no muestra los emojis de banderas).
+- Cabeceras de área del menú en banda gris no pulsable, como las secciones de navegación de BC / SAP Fiori.
+- README actualizado a la v0.13.1.
+
+**Lo que se aprende en esta fase**
+- Documentar el proceso (Git incluido) es parte del proyecto: cualquiera puede repetirlo sin preguntar.
+- En navegación, lo que agrupa no debe parecer un botón.
+
+**Siguiente paso**: J5 · casos especiales de IVA/IGIC.

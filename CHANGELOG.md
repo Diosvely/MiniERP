@@ -1,6 +1,14 @@
 # Changelog
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
+## [0.18.0] · 2026-10-07
+### Añadido
+- Prorrata general del IVA / IGIC: porcentaje provisional por año, reparto de la cuota entre deducible y no deducible
+  en las facturas recibidas, y regularización con la prorrata definitiva en el 4T.
+- Impuestos › Prorrata: cálculo de la definitiva, asiento de regularización e historial.
+### Cambiado
+- El libro registro guarda lo deducido de cada tipo; la liquidación usa esa cifra e incluye la regularización de la prorrata.
+
 
 ## [0.17.0] · 2026-10-07
 ### Añadido

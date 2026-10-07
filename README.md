@@ -174,7 +174,7 @@ psql -d minierp_test -f database/tests/test_fase1.sql      # repetir en otra bas
 - [x] **v0.15.0**: cierre del ejercicio (regularización, cierre, apertura y reapertura)
 - [x] **v0.16.0**: retención IRPF (111/115) y operaciones exentas, exportaciones, intracomunitarias y no sujetas
 - [x] **v0.17.0**: inversión del sujeto pasivo, adquisiciones intracomunitarias y recargo de equivalencia
-- [ ] **v0.18.0**: prorrata
+- [x] **v0.18.0**: prorrata general (bloque J5 completo: casos especiales de IVA/IGIC)
 - [ ] Importación de libros diarios desde Excel (SAP, BC, Sage) y análisis: flujo de caja y ratios
 - [ ] Módulos auxiliares (inmovilizado y amortizaciones) que envían asientos resumen a contabilidad
 - [ ] Asistente de IA que analiza los datos con modelos open source

@@ -363,5 +363,32 @@ Diario del proceso: qué se hizo, qué se aprendió y qué queda pendiente. Una 
 - En la inversión del sujeto pasivo el impuesto lo declara quien compra: se lo repercute (477) y se lo soporta (472).
   Si es deducible, el efecto es cero, pero queda declarado: así Hacienda controla las operaciones con el extranjero y las obras.
 - Una compra de bienes a la UE no es una importación: es una adquisición intracomunitaria, y no hay aduana.
-- El recargo de equivalencia traslada al mayorista la recaudación del IVA del minorista: el minorista paga más,
-  no deduce nada y a
+- El recargo de equivalencia traslada al mayorista la recaudación del IVA del minorista: el minorista paga más,   no deduce nada y a
+
+
+## 2026-10-07 · v0.18.0 · Bloque J5 (parte 3) Prorrata general
+
+**Qué se hizo**
+- Migración `0020_pro_rata.sql`:
+  - tabla `pro_rata` (empresa, impuesto, año, provisional, definitiva, ajuste y asiento);
+  - motor de facturas: con prorrata, la cuota de las compras se reparte entre la 472 (parte deducible)
+    y la cuenta de la compra (parte no deducible); en el ISP se devenga entera y se deduce el porcentaje;
+  - libro registro con lo deducido de cada tipo (`deductible_amount`) y relleno de las facturas existentes;
+  - `pro_rata_calc` y `post_pro_rata_regularization`: definitiva = con derecho / total, redondeada a la unidad
+    superior; ajuste a 31/12 con 6341 / 6391 contra la 472; la definitiva pasa a ser la provisional del año siguiente;
+  - la liquidación del 4T incluye la casilla de regularización de la prorrata y mantiene el cuadre.
+- Nueva pantalla Impuestos › Prorrata (provisional, cálculo de la definitiva, asiento y historial).
+- Pruebas: `test_fase15_pro_rata.sql`.
+
+**Lo que se aprende en esta fase**
+- Prorrata = operaciones con derecho a deducir / total de operaciones; las exentas del art. 20 no dan derecho.
+- Durante el año se deduce con la provisional (la definitiva del año anterior) y en el 4T se ajusta a la real.
+- El IVA no deducible no es un impuesto aparte: es más coste de lo que se compra.
+- Un redondeo a la unidad superior a favor del contribuyente (60,004 % → 61 %) también es una regla que hay que conocer.
+
+**Bloque J5 completo**: retenciones, operaciones sin cuota, ISP, adquisiciones intracomunitarias,
+recargo de equivalencia y prorrata.
+
+**Decisiones**: ADR 0015 (prorrata).
+
+**Siguiente paso**: Modo auditor (importación de diarios, estado de flujos de efectivo y ratios).

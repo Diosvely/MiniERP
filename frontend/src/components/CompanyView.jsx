@@ -11,6 +11,7 @@ import TaxSettlement from './TaxSettlement'
 import Reports from './Reports'
 import FinancialStatements from './FinancialStatements'
 import YearClosing from './YearClosing'
+import Withholdings from './Withholdings'
 
 // Menú agrupado por áreas, como el Role Center de Business Central o el menú de A3 / Sage:
 //   Contabilidad · Facturas · Impuestos · Informes · Datos maestros
@@ -18,7 +19,7 @@ import YearClosing from './YearClosing'
 const MENU = [
   ['menuAccounting', [['entry', 'tabEntry', true], ['journal', 'tabJournal'], ['closing', 'menuYearClosing']]],
   ['menuInvoices', [['invoices', 'tabInvoices']]],
-  ['menuTaxes', [['settlement', 'tabSettlement'], ['taxes', 'menuTaxSetup']]],
+  ['menuTaxes', [['settlement', 'tabSettlement'], ['withholdings', 'menuWithholdings'], ['taxes', 'menuTaxSetup']]],
   ['menuReports', [['balance', 'menuBalance'], ['pyg', 'menuPyg'], ['reports', 'menuReportsItem']]],
   ['menuMasterData', [['accounts', 'menuChart'], ['partners', 'tabPartners']]],
 ]
@@ -113,6 +114,7 @@ export default function CompanyView({ company, readOnly, canPublish, onChanged, 
         {section === 'closing' && <YearClosing company={company} readOnly={readOnly} />}
         {section === 'invoices' && <Invoices company={company} readOnly={readOnly} />}
         {section === 'settlement' && <TaxSettlement company={company} readOnly={readOnly} />}
+        {section === 'withholdings' && <Withholdings company={company} />}
         {section === 'taxes' && <Taxes company={company} readOnly={readOnly} />}
         {section === 'balance' && <FinancialStatements company={company} statement="balance" />}
         {section === 'pyg' && <FinancialStatements company={company} statement="pyg" />}

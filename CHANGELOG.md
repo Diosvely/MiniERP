@@ -2,6 +2,15 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.16.0] · 2026-10-07
+### Añadido
+- Retención IRPF en facturas recibidas y emitidas (profesionales 15 % / 7 %, alquileres 19 %), con líquido a pagar o cobrar.
+- Impuestos › Retenciones IRPF: borrador trimestral de los modelos 111 y 115 y retenciones soportadas.
+- Operaciones sin cuota con su causa: exenta (E1), exportación (E2), entrega intracomunitaria (E5) y no sujeta (N2).
+### Cambiado
+- El motor de facturas valida cada causa de exención según el tipo de factura y el territorio del tercero.
+- El borrador del 303/420 muestra las bases sin cuota con su causa en lugar de "0 %".
+
 ## [0.15.0] · 2026-10-06
 ### Añadido
 - Cierre del ejercicio: comprobaciones, regularización, cierre, apertura del año siguiente y reapertura.

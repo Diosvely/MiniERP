@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
-import { money } from '../format'
+import { money, taxLabel } from '../format'
 
 const today = () => new Date().toISOString().slice(0, 10)
 const currentQuarter = () => Math.floor(new Date().getMonth() / 3) + 1
@@ -19,6 +19,7 @@ export default function TaxSettlement({ company, readOnly }) {
   const [acceptDiff, setAcceptDiff] = useState(false)
   const [calc, setCalc] = useState(null)
   const [history, setHistory] = useState([])
+  const [codes, setCodes] = useState({})
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
   const [busy, setBusy] = useState(false)
@@ -31,14 +32,16 @@ export default function TaxSettlement({ company, readOnly }) {
     Promise.all([
       supabase.from('v_tax_settlement_setup').select('tax_type').eq('company_id', company.id).order('tax_type'),
       supabase.from('fiscal_years').select('year').eq('company_id', company.id).order('year'),
-    ]).then(([s, y]) => {
-      const failed = s.error || y.error
+      supabase.from('tax_codes').select('code, tax_type, rate_pct, rate_category, exemption_key'),
+    ]).then(([s, y, k]) => {
+      const failed = s.error || y.error || k.error
       if (failed) return setError(failed.message)
       const list = s.data.map((r) => r.tax_type)
       setTypes(list)
       setTaxType(list.includes(company.tax_territory === 'canary_islands' ? 'IGIC' : 'VAT')
         ? (company.tax_territory === 'canary_islands' ? 'IGIC' : 'VAT') : list[0] ?? '')
       setYears(y.data.map((r) => r.year))
+      setCodes(Object.fromEntries(k.data.map((c) => [c.code, c])))
     })
   }, [company.id])
 
@@ -130,7 +133,7 @@ export default function TaxSettlement({ company, readOnly }) {
                   {boxes(side).length === 0 && <tr><td colSpan={3} className="ayuda">{t('noOperations')}</td></tr>}
                   {boxes(side).map((b) => (
                     <tr key={b.tax_code}>
-                      <td>{rate(b.rate_pct)}</td><td className="num">{m(b.tax_base)}</td><td className="num">{m(b.tax_amount)}</td>
+                      <td>{codes[b.tax_code] ? taxLabel(codes[b.tax_code], t, language) : rate(b.rate_pct)}</td><td className="num">{m(b.tax_base)}</td><td className="num">{m(b.tax_amount)}</td>
                     </tr>
                   ))}
                   <tr className="total">

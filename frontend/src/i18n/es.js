@@ -334,6 +334,31 @@ export default {
   reopened: 'reabierto',
   sourceClosing: 'Cierre',
 
+  // Retención IRPF y operaciones sin cuota
+  withholding: 'Retención IRPF',
+  noWithholding: 'Sin retención',
+  amountToPay: 'Líquido a pagar',
+  amountToCollect: 'Líquido a cobrar',
+  taxCategory: { exempt: 'Exenta', export: 'Exportación', intra_eu: 'Intracomunitaria', not_subject: 'No sujeta' },
+  foreignPartnerHint: 'Tercero de {t}: revisa si la operación es una exportación, una entrega intracomunitaria o no sujeta.',
+
+  // Retenciones IRPF (modelos 111 y 115)
+  menuWithholdings: 'Retenciones IRPF',
+  withholdingsTitle: 'Retenciones IRPF',
+  withholdingsIntro: 'Retenciones del trimestre registradas en las facturas. Las practicadas las ingresa la empresa en Hacienda; las soportadas son un pago a cuenta de su impuesto.',
+  withheldTitle: 'Retenciones practicadas (a ingresar)',
+  withholdingForm: { 111: 'profesionales y actividades económicas', 115: 'alquiler de locales' },
+  recipients: 'Perceptores',
+  withheldAmount: 'Retención',
+  formBoxes: 'Casillas del borrador: {a} perceptores · {b} base · {c} retención',
+  withholdingPaymentHelp: 'Se presentan e ingresan del 1 al 20 del mes siguiente al trimestre. Asiento del pago: 4751 al Debe / 572 al Haber.',
+  payrollWithholdingHelp: 'Las retenciones de las nóminas también van en el modelo 111 (casillas 01 a 03): regístralas con un asiento (640 / 4751 / 465…).',
+  sufferedTitle: 'Retenciones soportadas (473)',
+  sufferedHelp: 'Nos las han retenido los clientes: se descuentan en el Impuesto sobre Sociedades (o en el IRPF del autónomo).',
+  withholdingDetail: 'Detalle por factura',
+  noWithholdings: 'No hay retenciones en este trimestre.',
+  suffered: 'Soportada',
+
   industry: {
     services: 'Servicios',
     retail: 'Comercio minorista',

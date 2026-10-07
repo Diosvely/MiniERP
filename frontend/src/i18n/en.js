@@ -333,6 +333,31 @@ export default {
   reopened: 'reopened',
   sourceClosing: 'Closing',
 
+  // IRPF withholding and operations without tax
+  withholding: 'IRPF withholding',
+  noWithholding: 'No withholding',
+  amountToPay: 'Net amount to pay',
+  amountToCollect: 'Net amount to collect',
+  taxCategory: { exempt: 'Exempt', export: 'Export', intra_eu: 'Intra-EU supply', not_subject: 'Out of scope' },
+  foreignPartnerHint: 'Partner from {t}: check whether this is an export, an intra-EU supply or out of scope.',
+
+  // IRPF withholdings (forms 111 and 115)
+  menuWithholdings: 'IRPF withholdings',
+  withholdingsTitle: 'IRPF withholdings',
+  withholdingsIntro: 'Withholdings of the quarter recorded on invoices. Withheld amounts are paid to the Tax Agency by the company; suffered amounts are a payment on account of its own tax.',
+  withheldTitle: 'Withheld (payable)',
+  withholdingForm: { 111: 'professionals and business activities', 115: 'rent of premises' },
+  recipients: 'Recipients',
+  withheldAmount: 'Withholding',
+  formBoxes: 'Draft boxes: {a} recipients · {b} base · {c} withholding',
+  withholdingPaymentHelp: 'Filed and paid from the 1st to the 20th of the month after the quarter. Payment entry: 4751 debit / 572 credit.',
+  payrollWithholdingHelp: 'Payroll withholdings also go in form 111 (boxes 01 to 03): record them with a journal entry (640 / 4751 / 465…).',
+  sufferedTitle: 'Withholdings suffered (473)',
+  sufferedHelp: 'Withheld by our customers: deducted in the Corporate Income Tax (or in the self-employed person\'s IRPF).',
+  withholdingDetail: 'Detail by invoice',
+  noWithholdings: 'There are no withholdings in this quarter.',
+  suffered: 'Suffered',
+
 
   industry: {
     services: 'Services',

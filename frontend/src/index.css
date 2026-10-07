@@ -212,3 +212,10 @@ button.pequeno { align-self: flex-start; padding: 6px 10px; font-size: .85rem; m
 .comprobaciones li.warning { background: rgba(245,165,36,.15); }
 .comprobaciones li.info { color: var(--suave); }
 .comprobaciones .icono { display: inline-block; width: 1.2em; font-weight: 700; }
+
+/* --- J5: retenciones y operaciones sin cuota --- */
+.linea-factura .causa-exencion { grid-column: 1 / -1; font-size: .8rem; color: var(--suave); }
+.retencion { margin-top: 8px; max-width: 420px; }
+
+.modelo-retenciones { margin-bottom: 12px; }
+.modelo-retenciones h3 { margin: 10px 0 4px; font-size: 1rem; }

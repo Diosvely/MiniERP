@@ -171,8 +171,10 @@ psql -d minierp_test -f database/tests/test_fase1.sql      # repetir en otra bas
 - [x] **v0.10.0**: sumas y saldos, libro mayor y saldos anómalos
 - [x] **v0.11.0 – v0.13.1**: menú por áreas, diario con rango de fechas, anulación de asientos, demo sin registro, selector de idioma con bandera
 - [x] **v0.14.0**: balance de situación y PyG (modelo PYMES del PGC)
-- [ ] Cierre del ejercicio (regularización 129, cierre y apertura)
-- [ ] Casos especiales de IVA/IGIC: Canarias ↔ Península, exentas, inversión del sujeto pasivo, retención IRPF, recargo de equivalencia y prorrata
+- [x] **v0.15.0**: cierre del ejercicio (regularización, cierre, apertura y reapertura)
+- [x] **v0.16.0**: retención IRPF (111/115) y operaciones exentas, exportaciones, intracomunitarias y no sujetas
+- [ ] **v0.17.0**: inversión del sujeto pasivo y recargo de equivalencia
+- [ ] **v0.18.0**: prorrata
 - [ ] Importación de libros diarios desde Excel (SAP, BC, Sage) y análisis: flujo de caja y ratios
 - [ ] Módulos auxiliares (inmovilizado y amortizaciones) que envían asientos resumen a contabilidad
 - [ ] Asistente de IA que analiza los datos con modelos open source

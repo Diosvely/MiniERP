@@ -314,3 +314,32 @@ Diario del proceso: qué se hizo, qué se aprendió y qué queda pendiente. Una 
 **Decisiones**: ADR 0012 (cierre del ejercicio).
 
 **Siguiente paso**: Modo auditor (importación de diarios, estado de flujos de efectivo y ratios).
+
+## 2026-10-07 · v0.16.0 · Bloque J5 (parte 1) Retención IRPF y operaciones sin cuota
+
+**Qué se hizo**
+- Migración `0018_withholding_exempt.sql`:
+  - tipos sin cuota con su causa del libro registro / SII: E1 exenta art. 20, E2 exportación,
+    E5 entrega intracomunitaria y N2 no sujeta (IVA e IGIC);
+  - reglas del motor de facturas: exportación e intracomunitaria solo en ventas; intracomunitaria solo a clientes
+    de la UE; exportación y no sujeta solo con terceros de fuera del territorio de la empresa;
+  - retenciones IRPF (15 %, 7 % y 19 %): 4751 en compras (modelos 111 / 115) y 473 en ventas;
+    el tercero queda por base + cuota − retención;
+  - configuración automática de las retenciones al configurar el IVA / IGIC (también en las empresas existentes);
+  - `v_withholding_register` y `withholding_summary` (resumen trimestral por modelo).
+- Factura: selector de retención, líquido a pagar / cobrar, tipos sin cuota con su causa y aviso de tercero de otro territorio.
+- Nueva pantalla Impuestos › Retenciones IRPF (borrador de los modelos 111 y 115, soportadas y detalle por factura).
+- Pruebas: `test_fase13_withholding.sql` (y recuentos actualizados en las fases 5 y 10).
+
+**Lo que se aprende en esta fase**
+- La retención se calcula sobre la base, nunca sobre el IVA o el IGIC; no es un gasto, es un impuesto del proveedor
+  que la empresa adelanta a Hacienda.
+- Las ventas desde la Península a Canarias son exportaciones (Canarias está fuera del territorio del IVA),
+  y las de Canarias a la Península son exportaciones a efectos del IGIC.
+- Una venta de bienes a otro país de la UE no es una exportación: es una entrega intracomunitaria.
+- Exenta y no sujeta no son lo mismo: la exenta es una operación sujeta al impuesto que la ley libera;
+  la no sujeta queda fuera porque, según las reglas de localización, no ocurre en el territorio.
+
+**Decisiones**: ADR 0013 (retenciones y causas de exención).
+
+**Siguiente paso**: J5 parte 2: inversión del sujeto pasivo y recargo de equivalencia.

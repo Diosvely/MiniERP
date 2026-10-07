@@ -47,7 +47,9 @@ export default function Invoices({ company, readOnly }) {
               </strong>
               <span>
                 {i.invoice_date} · {t('taxBase')} {money(i.total_base, language)} · {t('taxAmount')} {money(i.total_tax, language)}
-                {' · '}<strong>{money(i.total_amount, language)}</strong> · {t('entry')} {i.entry_no}
+                {' · '}<strong>{money(i.total_amount, language)}</strong>
+                {Number(i.withholding_amount) !== 0 && ` · ${t('withholding')} ${money(i.withholding_amount, language)} · ${invoiceType === 'purchase' ? t('amountToPay') : t('amountToCollect')} ${money(i.amount_due, language)}`}
+                {' · '}{t('entry')} {i.entry_no}
                 {i.document_kind === 'credit_memo' && ` · ${t('corrects')} ${i.corrected_reference ?? i.corrected_invoice_no ?? '—'}`}
               </span>
             </li>

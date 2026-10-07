@@ -48,7 +48,7 @@ begin
   perform erp.create_posting_account(e, '47210007', 'IGIC soportado general');
 
   select count(*) into n from erp.setup_taxes(e);
-  assert (select count(*) from erp.tax_setup where company_id = e) = 8, 'los 8 tipos de IGIC vigentes';
+  assert (select count(*) from erp.tax_setup where company_id = e) = 11, 'los 8 tipos de IGIC vigentes + 3 sin cuota (0018)';
   assert (select input_account_no from erp.v_tax_setup where company_id = e and tax_code = 'IGIC7') = '47210007';
   assert (select name from erp.gl_accounts where company_id = e and account_no = '47210007') = 'IGIC soportado general',
          'la subcuenta existente conserva su nombre';
@@ -64,9 +64,9 @@ begin
 
   -- Repetir el asistente no duplica nada
   select count(*) into n from erp.setup_taxes(e) s where s.status = 'existing';
-  assert n = 9, format('esperaba 9 filas existing (8 tipos + liquidación), salen %s', n);
-  assert (select count(*) from erp.gl_accounts where company_id = e and account_no like '47%' and account_type = 'posting') = 16,
-         '7 tipos con cuota × 2 + 2 de liquidación';
+  assert n = 12, format('esperaba 12 filas existing (11 tipos + liquidación), salen %s', n);
+  assert (select count(*) from erp.gl_accounts where company_id = e and account_no like '47%' and account_type = 'posting') = 19,
+         '7 tipos con cuota × 2 + 2 de liquidación + 4751 (111 y 115) y 473 (0018)';
   raise notice 'OK  · ejecutar el asistente otra vez no duplica';
 
   -- Una empresa canaria también puede añadir el IVA (ej. si opera en la Península)
@@ -97,7 +97,7 @@ begin
   values ('Tienda Península', 'retail', 'mainland', auth.uid()) returning id into p;
   insert into public.ctx values ('peninsula', p);
   select count(*) into n from erp.setup_taxes(p);
-  assert (select count(*) from erp.tax_setup where company_id = p) = 4, 'IVA: 21, 10, 4 y 0';
+  assert (select count(*) from erp.tax_setup where company_id = p) = 8, 'IVA: 21, 10, 4 y 0 + 4 sin cuota (0018)';
   assert (select input_account_no from erp.v_tax_setup where company_id = p and tax_code = 'VAT4') = '47200004';
   perform public.debe_fallar(format(
     'update erp.tax_setup set input_account_id = (select id from erp.gl_accounts where company_id = %L and account_no = %L) where company_id = %L and tax_code = %L',
@@ -125,7 +125,7 @@ select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000b2
 do $$
 declare e uuid := (select valor from public.ctx where clave = 'canarias');
 begin
-  assert (select count(*) from erp.v_tax_setup where company_id = e) = 12, 'el contable ve la configuración';
+  assert (select count(*) from erp.v_tax_setup where company_id = e) = 19, 'el contable ve la configuración (11 IGIC + 8 IVA)';
   perform public.debe_fallar(format('select * from erp.setup_taxes(%L)', e), 'Only the company admin', 'el contable no ejecuta el asistente');
   update erp.tax_setup set blocked = true where company_id = e;   -- RLS: no actualiza nada
   assert (select count(*) from erp.tax_setup where company_id = e and blocked) = 1, 'el contable no modifica la configuración';

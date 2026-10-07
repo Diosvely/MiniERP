@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
-import { accountName, money } from '../format'
+import { accountName, money, taxLabel } from '../format'
 
 const today = () => new Date().toISOString().slice(0, 10)
 const emptyLine = () => ({ account_no: '', amount: '', tax_code: '', description: '' })
@@ -14,13 +14,14 @@ export default function InvoiceForm({ company, invoiceType, invoices, onPosted }
   const { t, language } = useI18n()
   const emptyHeader = () => ({
     document_kind: 'invoice', partner_id: '', external_document_no: '', invoice_date: today(),
-    posting_date: '', description: '', corrected_invoice_id: '', corrected_reference: '',
+    posting_date: '', description: '', corrected_invoice_id: '', corrected_reference: '', withholding_code: '',
   })
   const [header, setHeader] = useState(emptyHeader())
   const [lines, setLines] = useState([emptyLine()])
   const [partners, setPartners] = useState([])
   const [accounts, setAccounts] = useState([])
   const [taxes, setTaxes] = useState([])
+  const [withholdings, setWithholdings] = useState([])
   const [preview, setPreview] = useState(null)
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
@@ -33,18 +34,24 @@ export default function InvoiceForm({ company, invoiceType, invoices, onPosted }
     // Compras: cuentas de gastos (6) e inmovilizado (2) · Ventas: ingresos (7)
     const groups = purchase ? ['6', '2'] : ['7']
     Promise.all([
-      supabase.from('v_partners').select('id, name, partner_type, account_no, blocked')
+      supabase.from('v_partners').select('id, name, partner_type, account_no, blocked, tax_territory')
         .eq('company_id', company.id).in('partner_type', types).order('name'),
       supabase.from('gl_accounts').select('id, account_no, name, name_en, template_account')
         .eq('company_id', company.id).eq('account_type', 'posting').order('account_no'),
-      supabase.from('v_tax_setup').select('tax_code, tax_type, rate_pct, blocked')
-        .eq('company_id', company.id).eq('blocked', false).order('tax_type').order('rate_pct'),
-    ]).then(([p, a, x]) => {
-      const failed = p.error || a.error || x.error
+      supabase.from('v_tax_setup').select('tax_code, tax_type, rate_pct, rate_category, description, description_en, blocked')
+        .eq('company_id', company.id).eq('blocked', false).order('tax_type').order('rate_pct', { ascending: false }),
+      supabase.from('tax_codes').select('code, exemption_key'),
+      supabase.from('v_withholding_setup').select('withholding_code, rate_pct, description, description_en, blocked')
+        .eq('company_id', company.id).eq('blocked', false).order('rate_pct'),
+    ]).then(([p, a, x, k, w]) => {
+      const failed = p.error || a.error || x.error || k.error || w.error
       if (failed) return setError(failed.message)
       setPartners(p.data.filter((r) => !r.blocked))
       setAccounts(a.data.filter((r) => groups.includes(r.account_no[0])))
-      setTaxes(x.data)
+      // Primero los tipos con cuota (de mayor a menor) y después las operaciones sin cuota con su causa
+      const keys = Object.fromEntries(k.data.map((c) => [c.code, c.exemption_key]))
+      setTaxes(x.data.map((r) => ({ ...r, exemption_key: keys[r.tax_code] })))
+      setWithholdings(w.data)
     })
     setHeader(emptyHeader()); setLines([emptyLine()]); setPreview(null); setError(''); setMessage('')
   }, [company.id, invoiceType])
@@ -65,12 +72,20 @@ export default function InvoiceForm({ company, invoiceType, invoices, onPosted }
   for (const l of usedLines) byTax[l.tax_code] = (byTax[l.tax_code] ?? 0) + (reduces(l) ? -1 : 1) * cents(l.amount)
   const base = Object.values(byTax).reduce((s, v) => s + v, 0)
   const tax = Object.entries(byTax).reduce((s, [code, b]) => s + Math.round((b * rate(code)) / 100), 0)
+  // Retención IRPF sobre la base (sin el impuesto): se resta de lo que se paga o se cobra
+  const whRate = Number(withholdings.find((w) => w.withholding_code === header.withholding_code)?.rate_pct ?? 0)
+  const withheld = Math.round((base * whRate) / 100)
+  const partner = partners.find((p) => p.id === header.partner_id)
+  const foreignPartner = partner && partner.tax_territory !== company.tax_territory
+  const taxOf = (code) => taxes.find((x) => x.tax_code === code)
+  const descr = (x) => (language === 'en' ? x.description_en || x.description : x.description)
 
   function payload() {
     return {
       company_id: company.id,
       invoice_type: invoiceType,
       ...header,
+      withholding_code: header.withholding_code || null,
       posting_date: header.posting_date || header.invoice_date,
       lines: usedLines.map((l) => ({ ...l, amount: cents(l.amount) / 100 })),
     }
@@ -118,6 +133,7 @@ export default function InvoiceForm({ company, invoiceType, invoices, onPosted }
         </label>
       </div>
       {partners.length === 0 && <p className="aviso">{t('noPartnersForInvoice')}</p>}
+      {foreignPartner && <p className="ayuda">🌍 {t('foreignPartnerHint').replace('{t}', t(`territory.${partner.tax_territory}`))}</p>}
       {taxes.length === 0 && <p className="aviso">{t('noTaxesForInvoice')}</p>}
 
       {credit && (
@@ -151,6 +167,18 @@ export default function InvoiceForm({ company, invoiceType, invoices, onPosted }
         </label>
       </div>
       <input placeholder={t('invoiceDescription')} value={header.description} onChange={set('description')} />
+      {withholdings.length > 0 && (
+        <label className="retencion">{t('withholding')}
+          <select value={header.withholding_code} onChange={set('withholding_code')}>
+            <option value="">{t('noWithholding')}</option>
+            {withholdings.map((w) => (
+              <option key={w.withholding_code} value={w.withholding_code}>
+                IRPF {Number(w.rate_pct).toLocaleString(language === 'en' ? 'en-GB' : 'es-ES')} % · {descr(w)}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
 
       <p className="ayuda">{purchase ? t('purchaseLinesHelp') : t('salesLinesHelp')}</p>
       <datalist id={listId}>
@@ -159,6 +187,7 @@ export default function InvoiceForm({ company, invoiceType, invoices, onPosted }
 
       {lines.map((l, i) => {
         const account = byNo(l.account_no)
+        const lineTax = taxOf(l.tax_code)
         return (
           <div key={i} className="linea-factura">
             <div className="cuenta-linea">
@@ -175,13 +204,12 @@ export default function InvoiceForm({ company, invoiceType, invoices, onPosted }
             <select value={l.tax_code} onChange={(e) => setLine(i, 'tax_code', e.target.value)}>
               <option value="">{t('taxCode')}</option>
               {taxes.map((x) => (
-                <option key={x.tax_code} value={x.tax_code}>
-                  {t(`taxType.${x.tax_type}`)} {Number(x.rate_pct).toLocaleString(language === 'en' ? 'en-GB' : 'es-ES')} %
-                </option>
+                <option key={x.tax_code} value={x.tax_code}>{taxLabel(x, t, language)}</option>
               ))}
             </select>
             <button type="button" className="secundario" disabled={lines.length === 1} title={t('removeLine')}
                     onClick={() => { setLines(lines.filter((_, j) => j !== i)); setPreview(null) }}>✕</button>
+            {lineTax?.exemption_key && <span className="causa-exencion">{descr(lineTax)}</span>}
           </div>
         )
       })}
@@ -193,6 +221,10 @@ export default function InvoiceForm({ company, invoiceType, invoices, onPosted }
         <span>{t('taxBase')}: <strong>{money(base / 100, language)}</strong></span>
         <span>{t('taxAmount')}: <strong>{money(tax / 100, language)}</strong></span>
         <span>{t('invoiceTotal')}: <strong>{money((base + tax) / 100, language)}</strong></span>
+        {whRate > 0 && <span>{t('withholding')}: <strong>− {money(withheld / 100, language)}</strong></span>}
+        {whRate > 0 && (
+          <span>{purchase ? t('amountToPay') : t('amountToCollect')}: <strong>{money((base + tax - withheld) / 100, language)}</strong></span>
+        )}
       </div>
 
       <div className="fila">
@@ -210,7 +242,9 @@ export default function InvoiceForm({ company, invoiceType, invoices, onPosted }
             {previewRows.map((r) => (
               <tr key={r.line_no}>
                 <td><span className="codigo">{r.account_no}</span> {r.account_name}
-                  {r.line_role === 'tax' && <span className="ayuda"> · {t('base')} {money(r.tax_base, language)}</span>}
+                  {(r.line_role === 'tax' || r.line_role === 'withholding') && (
+                    <span className="ayuda"> · {r.line_role === 'withholding' ? `${t('withholding')} ` : ''}{t('base')} {money(r.tax_base, language)}</span>
+                  )}
                 </td>
                 <td className="num">{Number(r.debit) ? money(r.debit, language) : ''}</td>
                 <td className="num">{Number(r.credit) ? money(r.credit, language) : ''}</td>

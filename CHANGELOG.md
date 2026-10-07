@@ -2,6 +2,13 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.15.0] · 2026-10-06
+### Añadido
+- Cierre del ejercicio: comprobaciones, regularización, cierre, apertura del año siguiente y reapertura.
+- Etiqueta "Cierre" en el libro diario para los asientos del cierre.
+### Cambiado
+- Balance y PyG no incluyen los asientos de regularización y cierre.
+
 ## [0.14.0] · 2026-10-06
 ### Añadido
 - Balance de situación y Cuenta de Pérdidas y Ganancias (modelo PYMES del PGC) con ejercicio anterior,

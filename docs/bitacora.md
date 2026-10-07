@@ -288,3 +288,29 @@ Diario del proceso: qué se hizo, qué se aprendió y qué queda pendiente. Una 
 **Decisiones**: ADR 0010 (visión: laboratorio de práctica) y ADR 0011 (estados financieros e importación).
 
 **Siguiente paso**: cierre del ejercicio (regularización, cierre y apertura).
+
+
+## 2026-10-06 · v0.15.0 · Bloque M Cierre del ejercicio
+
+**Qué se hizo**
+- Migración `0017_year_closing.sql`: asistente de cierre (`year_closing_preview`, `close_fiscal_year`,
+  `reopen_fiscal_year`) y tabla `year_closings` con el historial de cierres.
+- Cuatro pasos: comprobaciones, regularización (6 y 7 contra la 129) a 31/12, cierre de las cuentas de balance
+  a 31/12 y apertura del año siguiente a 01/01. El ejercicio queda cerrado.
+- Reapertura con contraasientos, del año más reciente al más antiguo.
+- Bloqueos: no se contabiliza en un año cerrado, el estado no se cambia a mano, los asientos del cierre
+  no se anulan desde el diario y solo el administrador cierra.
+- Balance y PyG excluyen regularización y cierre: se ven igual antes y después de cerrar.
+- Pantalla Contabilidad › Cierre del ejercicio, y etiqueta 🔒 Cierre en el libro diario.
+- Pruebas: `test_fase12_closing.sql`.
+
+**Lo que se aprende en esta fase**
+- La regularización convierte el resultado de la PyG en una cuenta de patrimonio neto, la 129.
+- El cierre y la apertura son el mismo asiento con Debe y Haber cambiados: el balance final de un año
+  es el balance inicial del siguiente (principio de uniformidad y continuidad).
+- La 129 abre con el resultado pendiente de aplicar; la junta decide su destino (reservas, dividendos o la 121).
+- Un ejercicio cerrado no se toca: si aparece un ajuste, se reabre y la traza queda en el diario.
+
+**Decisiones**: ADR 0012 (cierre del ejercicio).
+
+**Siguiente paso**: Modo auditor (importación de diarios, estado de flujos de efectivo y ratios).

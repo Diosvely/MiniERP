@@ -10,12 +10,13 @@ import Invoices from './Invoices'
 import TaxSettlement from './TaxSettlement'
 import Reports from './Reports'
 import FinancialStatements from './FinancialStatements'
+import YearClosing from './YearClosing'
 
 // Menú agrupado por áreas, como el Role Center de Business Central o el menú de A3 / Sage:
 //   Contabilidad · Facturas · Impuestos · Informes · Datos maestros
 // En el ordenador es una barra lateral fija; en el móvil, un menú desplegable.
 const MENU = [
-  ['menuAccounting', [['entry', 'tabEntry', true], ['journal', 'tabJournal']]],
+  ['menuAccounting', [['entry', 'tabEntry', true], ['journal', 'tabJournal'], ['closing', 'menuYearClosing']]],
   ['menuInvoices', [['invoices', 'tabInvoices']]],
   ['menuTaxes', [['settlement', 'tabSettlement'], ['taxes', 'menuTaxSetup']]],
   ['menuReports', [['balance', 'menuBalance'], ['pyg', 'menuPyg'], ['reports', 'menuReportsItem']]],
@@ -109,13 +110,13 @@ export default function CompanyView({ company, readOnly, canPublish, onChanged, 
 
         {section === 'entry' && !readOnly && <JournalEntryForm company={company} onPosted={() => setRefreshKey((k) => k + 1)} />}
         {section === 'journal' && <GeneralJournal company={company} readOnly={readOnly} refreshKey={refreshKey} />}
+        {section === 'closing' && <YearClosing company={company} readOnly={readOnly} />}
         {section === 'invoices' && <Invoices company={company} readOnly={readOnly} />}
         {section === 'settlement' && <TaxSettlement company={company} readOnly={readOnly} />}
         {section === 'taxes' && <Taxes company={company} readOnly={readOnly} />}
-          {section === 'balance' && <FinancialStatements company={company} statement="balance" />}
-        {section === 'pyg' && <FinancialStatements company={company} statement="pyg" />} 
+        {section === 'balance' && <FinancialStatements company={company} statement="balance" />}
+        {section === 'pyg' && <FinancialStatements company={company} statement="pyg" />}
         {section === 'reports' && <Reports company={company} />}
-       
         {section === 'accounts' && <Accounts company={company} readOnly={readOnly} />}
         {section === 'partners' && <Partners company={company} readOnly={readOnly} />}
       </section>

@@ -198,3 +198,17 @@ button.pequeno { align-self: flex-start; padding: 6px 10px; font-size: .85rem; m
 .estado td.anterior { color: var(--suave); }
 .estado tr.cuenta-partida td { font-size: .8rem; color: var(--suave); border-bottom: none; }
 .desplegar { display: inline-block; width: 12px; color: var(--primario); }
+
+/* --- M: cierre del ejercicio --- */
+.insignia.cerrado { background: var(--suave); color: var(--tarjeta); }
+.ejercicio-cierre { max-width: 240px; }
+.pasos-cierre { list-style: none; padding: 0; margin: 12px 0; display: flex; flex-direction: column; gap: 6px; }
+.pasos-cierre > li { border-left: 3px solid var(--borde); padding: 2px 0 8px 12px; }
+.pasos-cierre h3 { margin: 0 0 4px; font-size: 1rem; }
+.pasos-cierre details summary { cursor: pointer; color: var(--primario); font-size: .9rem; margin: 4px 0; }
+.comprobaciones { list-style: none; padding: 0; margin: 4px 0; display: flex; flex-direction: column; gap: 4px; font-size: .9rem; }
+.comprobaciones li { display: block; padding: 4px 8px; border-radius: 6px; }
+.comprobaciones li.error { background: rgba(180,35,24,.10); color: var(--aviso); }
+.comprobaciones li.warning { background: rgba(245,165,36,.15); }
+.comprobaciones li.info { color: var(--suave); }
+.comprobaciones .icono { display: inline-block; width: 1.2em; font-weight: 700; }

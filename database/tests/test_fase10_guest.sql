@@ -61,7 +61,7 @@ begin
   assert (select count(*) from erp.v_my_companies) = 1, 'solo la demo';
   assert (select name from erp.v_my_companies) = 'Demo Pública SL';
   assert (select count(*) from erp.gl_accounts where company_id = d) > 0;
-  assert (select count(*) from erp.v_tax_setup where company_id = d) = 11;   -- 8 tipos de IGIC + 3 sin cuota (0018)
+  assert (select count(*) from erp.v_tax_setup where company_id = d) = 12;   -- 8 tipos de IGIC + 3 sin cuota (0018) + ISP (0019)
   assert (select count(*) from erp.gl_accounts where company_id = p) = 0, 'la privada es invisible';
   raise notice 'OK  · el invitado ve la demo completa y no ve la empresa privada';
 

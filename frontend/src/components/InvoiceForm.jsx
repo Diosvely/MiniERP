@@ -34,11 +34,11 @@ export default function InvoiceForm({ company, invoiceType, invoices, onPosted }
     // Compras: cuentas de gastos (6) e inmovilizado (2) · Ventas: ingresos (7)
     const groups = purchase ? ['6', '2'] : ['7']
     Promise.all([
-      supabase.from('v_partners').select('id, name, partner_type, account_no, blocked, tax_territory')
+      supabase.from('v_partners').select('id, name, partner_type, account_no, blocked, tax_territory, equivalence_surcharge')
         .eq('company_id', company.id).in('partner_type', types).order('name'),
       supabase.from('gl_accounts').select('id, account_no, name, name_en, template_account')
         .eq('company_id', company.id).eq('account_type', 'posting').order('account_no'),
-      supabase.from('v_tax_setup').select('tax_code, tax_type, rate_pct, rate_category, description, description_en, blocked')
+      supabase.from('v_tax_setup').select('tax_code, tax_type, rate_pct, rate_category, equivalence_surcharge_pct, description, description_en, blocked')
         .eq('company_id', company.id).eq('blocked', false).order('tax_type').order('rate_pct', { ascending: false }),
       supabase.from('tax_codes').select('code, exemption_key'),
       supabase.from('v_withholding_setup').select('withholding_code, rate_pct, description, description_en, blocked')
@@ -71,11 +71,22 @@ export default function InvoiceForm({ company, invoiceType, invoices, onPosted }
   const byTax = {}
   for (const l of usedLines) byTax[l.tax_code] = (byTax[l.tax_code] ?? 0) + (reduces(l) ? -1 : 1) * cents(l.amount)
   const base = Object.values(byTax).reduce((s, v) => s + v, 0)
-  const tax = Object.entries(byTax).reduce((s, [code, b]) => s + Math.round((b * rate(code)) / 100), 0)
+  // En ISP / adquisición intracomunitaria la cuota la declara la empresa (no la cobra el proveedor): no suma al total
+  const selfAssessedCode = (code) => ['reverse_charge', 'intra_eu_acquisition'].includes(taxes.find((x) => x.tax_code === code)?.rate_category)
+  const tax = Object.entries(byTax).filter(([code]) => !selfAssessedCode(code))
+    .reduce((s, [code, b]) => s + Math.round((b * rate(code)) / 100), 0)
+  const selfAssessed = Object.entries(byTax).filter(([code]) => selfAssessedCode(code))
+    .reduce((s, [code, b]) => s + Math.round((b * rate(code)) / 100), 0)
   // Retención IRPF sobre la base (sin el impuesto): se resta de lo que se paga o se cobra
   const whRate = Number(withholdings.find((w) => w.withholding_code === header.withholding_code)?.rate_pct ?? 0)
   const withheld = Math.round((base * whRate) / 100)
   const partner = partners.find((p) => p.id === header.partner_id)
+  // Recargo de equivalencia: venta a un cliente en recargo, o compra de una empresa en recargo
+  const companyRE = company.vat_regime === 'equivalence_surcharge'
+  const addsSurcharge = (!purchase && partner?.equivalence_surcharge) || (purchase && companyRE)
+  const surcharge = addsSurcharge ? Object.entries(byTax).reduce((s, [code, b]) =>
+    s + Math.round((b * Number(taxes.find((x) => x.tax_code === code)?.equivalence_surcharge_pct ?? 0)) / 100), 0) : 0
+  const total = base + tax + surcharge
   const foreignPartner = partner && partner.tax_territory !== company.tax_territory
   const taxOf = (code) => taxes.find((x) => x.tax_code === code)
   const descr = (x) => (language === 'en' ? x.description_en || x.description : x.description)
@@ -133,6 +144,8 @@ export default function InvoiceForm({ company, invoiceType, invoices, onPosted }
         </label>
       </div>
       {partners.length === 0 && <p className="aviso">{t('noPartnersForInvoice')}</p>}
+      {!purchase && partner?.equivalence_surcharge && <p className="ayuda">➕ {t('reCustomerHint')}</p>}
+      {purchase && companyRE && <p className="ayuda">➕ {t('reCompanyHint')}</p>}
       {foreignPartner && <p className="ayuda">🌍 {t('foreignPartnerHint').replace('{t}', t(`territory.${partner.tax_territory}`))}</p>}
       {taxes.length === 0 && <p className="aviso">{t('noTaxesForInvoice')}</p>}
 
@@ -220,11 +233,13 @@ export default function InvoiceForm({ company, invoiceType, invoices, onPosted }
       <div className="totales">
         <span>{t('taxBase')}: <strong>{money(base / 100, language)}</strong></span>
         <span>{t('taxAmount')}: <strong>{money(tax / 100, language)}</strong></span>
-        <span>{t('invoiceTotal')}: <strong>{money((base + tax) / 100, language)}</strong></span>
+        {surcharge > 0 && <span>{t('equivalenceSurcharge')}: <strong>{money(surcharge / 100, language)}</strong></span>}
+        <span>{t('invoiceTotal')}: <strong>{money(total / 100, language)}</strong></span>
         {whRate > 0 && <span>{t('withholding')}: <strong>− {money(withheld / 100, language)}</strong></span>}
         {whRate > 0 && (
-          <span>{purchase ? t('amountToPay') : t('amountToCollect')}: <strong>{money((base + tax - withheld) / 100, language)}</strong></span>
+          <span>{purchase ? t('amountToPay') : t('amountToCollect')}: <strong>{money((total - withheld) / 100, language)}</strong></span>
         )}
+        {selfAssessed !== 0 && <span>{t('selfAssessed')}: <strong>{money(selfAssessed / 100, language)}</strong></span>}
       </div>
 
       <div className="fila">
@@ -242,8 +257,8 @@ export default function InvoiceForm({ company, invoiceType, invoices, onPosted }
             {previewRows.map((r) => (
               <tr key={r.line_no}>
                 <td><span className="codigo">{r.account_no}</span> {r.account_name}
-                  {(r.line_role === 'tax' || r.line_role === 'withholding') && (
-                    <span className="ayuda"> · {r.line_role === 'withholding' ? `${t('withholding')} ` : ''}{t('base')} {money(r.tax_base, language)}</span>
+                  {r.line_role !== 'base' && r.line_role !== 'partner' && (
+                    <span className="ayuda"> · {t(`previewRole.${r.line_role}`)} · {t('base')} {money(r.tax_base, language)}</span>
                   )}
                 </td>
                 <td className="num">{Number(r.debit) ? money(r.debit, language) : ''}</td>

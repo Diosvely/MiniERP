@@ -115,7 +115,7 @@ export default function CompanyView({ company, readOnly, canPublish, onChanged, 
         {section === 'invoices' && <Invoices company={company} readOnly={readOnly} />}
         {section === 'settlement' && <TaxSettlement company={company} readOnly={readOnly} />}
         {section === 'withholdings' && <Withholdings company={company} />}
-        {section === 'taxes' && <Taxes company={company} readOnly={readOnly} />}
+        {section === 'taxes' && <Taxes company={company} readOnly={readOnly} onChanged={onChanged} />}
         {section === 'balance' && <FinancialStatements company={company} statement="balance" />}
         {section === 'pyg' && <FinancialStatements company={company} statement="pyg" />}
         {section === 'reports' && <Reports company={company} />}

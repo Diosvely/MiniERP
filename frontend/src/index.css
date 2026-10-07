@@ -219,3 +219,8 @@ button.pequeno { align-self: flex-start; padding: 6px 10px; font-size: .85rem; m
 
 .modelo-retenciones { margin-bottom: 12px; }
 .modelo-retenciones h3 { margin: 10px 0 4px; font-size: 1rem; }
+
+/* --- J5 parte 2: régimen de IVA y recargo --- */
+.regimen { margin-top: 10px; max-width: 460px; }
+.opcion.pequena { font-size: .85rem; margin-top: 4px; }
+

@@ -11,7 +11,7 @@ export default function Partners({ company, readOnly }) {
   const { t, language } = useI18n()
   const emptyForm = {
     type: 'customer', name: '', vat: '', territory: company.tax_territory,
-    accountMode: 'auto', accountNo: '', email: '',
+    accountMode: 'auto', accountNo: '', email: '', surcharge: false,
   }
   const [partners, setPartners] = useState([])
   const [form, setForm] = useState(emptyForm)
@@ -43,12 +43,26 @@ export default function Partners({ company, readOnly }) {
       p_email: form.email || null,
     }).single()
     if (error) return setError(error.message)
+    if (canSurcharge(form) && form.surcharge) {
+      const { error: e2 } = await supabase.from('business_partners').update({ equivalence_surcharge: true }).eq('id', data.partner_id)
+      if (e2) setError(e2.message)
+    }
     setMessage(t('partnerCreated').replace('{name}', form.name).replace('{n}', data.account_no))
     setForm({ ...emptyForm, type: form.type })
     load()
   }
 
   const change = (field) => (e) => setForm({ ...form, [field]: e.target.value })
+
+  // Recargo de equivalencia: solo clientes (o deudores) de la Península, y solo si la empresa lleva IVA
+  const canSurcharge = (p) => company.tax_territory === 'mainland' && ['customer', 'debtor'].includes(p.type ?? p.partner_type)
+    && (p.territory ?? p.tax_territory) === 'mainland'
+  async function toggleSurcharge(p) {
+    setError('')
+    const { error } = await supabase.from('business_partners').update({ equivalence_surcharge: !p.equivalence_surcharge }).eq('id', p.id)
+    if (error) return setError(error.message)
+    load()
+  }
 
   const q = search.trim().toLowerCase()
   const visible = partners.filter((p) =>
@@ -80,6 +94,12 @@ export default function Partners({ company, readOnly }) {
             </select>
           </div>
           <input type="email" placeholder={t('emailOptional')} value={form.email} onChange={change('email')} />
+          {canSurcharge(form) && (
+            <label className="opcion">
+              <input type="checkbox" checked={form.surcharge} onChange={(e) => setForm({ ...form, surcharge: e.target.checked })} />
+              {t('reCustomer')}
+            </label>
+          )}
 
           <div className="opciones">
             <label className="opcion">
@@ -118,11 +138,19 @@ export default function Partners({ company, readOnly }) {
         <ul>
           {visible.map((p) => (
             <li key={p.id}>
-              <strong><span className="codigo">{p.account_no}</span> {p.name}</strong>
+              <strong>
+                <span className="codigo">{p.account_no}</span> {p.name}
+                {p.equivalence_surcharge && <span className="insignia" title={t('reCustomer')}>RE</span>}
+              </strong>
               <span>
                 {t(`partnerType.${p.partner_type}`)} · {p.vat_registration_no ?? '—'} · {t(`territory.${p.tax_territory}`)}
                 {' · '}{t('balance')}: {balanceText(p.balance)}
               </span>
+              {!readOnly && canSurcharge(p) && (
+                <label className="opcion pequena">
+                  <input type="checkbox" checked={p.equivalence_surcharge} onChange={() => toggleSurcharge(p)} /> {t('reCustomer')}
+                </label>
+              )}
             </li>
           ))}
         </ul>

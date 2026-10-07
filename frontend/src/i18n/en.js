@@ -338,7 +338,10 @@ export default {
   noWithholding: 'No withholding',
   amountToPay: 'Net amount to pay',
   amountToCollect: 'Net amount to collect',
-  taxCategory: { exempt: 'Exempt', export: 'Export', intra_eu: 'Intra-EU supply', not_subject: 'Out of scope' },
+    taxCategory: {
+    exempt: 'Exempt', export: 'Export', intra_eu: 'Intra-EU supply', not_subject: 'Out of scope',
+    reverse_charge: 'Reverse charge', intra_eu_acquisition: 'Intra-EU acquisition', retail_surcharge: 'VAT included (surcharge)',
+  },
   foreignPartnerHint: 'Partner from {t}: check whether this is an export, an intra-EU supply or out of scope.',
 
   // IRPF withholdings (forms 111 and 115)
@@ -358,6 +361,21 @@ export default {
   noWithholdings: 'There are no withholdings in this quarter.',
   suffered: 'Suffered',
 
+
+    // Reverse charge and equivalence surcharge
+  equivalenceSurcharge: 'Equivalence surcharge',
+  selfAssessed: 'Self-assessed (reverse charge)',
+  reCustomer: 'Customer under the equivalence surcharge',
+  reCustomerHint: 'Customer under the equivalence surcharge: the surcharge is added to the invoice (5.2% on 21%, 1.4% on 10%, 0.5% on 4%).',
+  reCompanyHint: 'Your company is under the equivalence surcharge: the VAT and surcharge on purchases are not deductible, they are part of the cost.',
+  vatRegime: 'VAT regime',
+  vatRegimes: { general: 'General', equivalence_surcharge: 'Equivalence surcharge (retailer)' },
+  vatRegimeHelp: 'Under the equivalence surcharge the company does not file form 303: it pays VAT and surcharge to its suppliers and sells with VAT included (code VAT_RE_INC).',
+  surchargeAccount: 'Surcharge',
+  previewRole: {
+    tax: 'tax', tax_rc: 'self-assessed tax', tax_nd: 'non-deductible VAT', surcharge: 'equivalence surcharge',
+    surcharge_nd: 'non-deductible surcharge', withholding: 'IRPF withholding',
+  },
 
   industry: {
     services: 'Services',

@@ -173,7 +173,7 @@ psql -d minierp_test -f database/tests/test_fase1.sql      # repetir en otra bas
 - [x] **v0.14.0**: balance de situación y PyG (modelo PYMES del PGC)
 - [x] **v0.15.0**: cierre del ejercicio (regularización, cierre, apertura y reapertura)
 - [x] **v0.16.0**: retención IRPF (111/115) y operaciones exentas, exportaciones, intracomunitarias y no sujetas
-- [ ] **v0.17.0**: inversión del sujeto pasivo y recargo de equivalencia
+- [x] **v0.17.0**: inversión del sujeto pasivo, adquisiciones intracomunitarias y recargo de equivalencia
 - [ ] **v0.18.0**: prorrata
 - [ ] Importación de libros diarios desde Excel (SAP, BC, Sage) y análisis: flujo de caja y ratios
 - [ ] Módulos auxiliares (inmovilizado y amortizaciones) que envían asientos resumen a contabilidad

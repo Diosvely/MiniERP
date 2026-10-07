@@ -132,8 +132,12 @@ export default function TaxSettlement({ company, readOnly }) {
                 <tbody>
                   {boxes(side).length === 0 && <tr><td colSpan={3} className="ayuda">{t('noOperations')}</td></tr>}
                   {boxes(side).map((b) => (
-                    <tr key={b.tax_code}>
-                      <td>{codes[b.tax_code] ? taxLabel(codes[b.tax_code], t, language) : rate(b.rate_pct)}</td><td className="num">{m(b.tax_base)}</td><td className="num">{m(b.tax_amount)}</td>
+                    <tr key={`${b.tax_code}-${b.kind}`}>
+                      <td>
+                        {b.kind === 'surcharge' ? `${t('equivalenceSurcharge')} ${rate(b.rate_pct)}`
+                          : codes[b.tax_code] ? taxLabel(codes[b.tax_code], t, language) : rate(b.rate_pct)}
+                        {b.kind === 'reverse_charge' && <span className="ayuda"> · {t('selfAssessed')}</span>}
+                      </td><td className="num">{m(b.tax_base)}</td><td className="num">{m(b.tax_amount)}</td>
                     </tr>
                   ))}
                   <tr className="total">

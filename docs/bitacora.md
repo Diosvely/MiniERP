@@ -343,3 +343,25 @@ Diario del proceso: qué se hizo, qué se aprendió y qué queda pendiente. Una 
 **Decisiones**: ADR 0013 (retenciones y causas de exención).
 
 **Siguiente paso**: J5 parte 2: inversión del sujeto pasivo y recargo de equivalencia.
+
+## 2026-10-07 · v0.17.0 · Bloque J5 (parte 2) Inversión del sujeto pasivo y recargo de equivalencia
+
+**Qué se hizo**
+- Migración `0019_reverse_charge_surcharge.sql`:
+  - tipos nuevos: adquisición intracomunitaria (VAT21/10/4_AIB), inversión del sujeto pasivo (VAT21/10_ISP, IGIC7_ISP)
+    y venta del minorista en recargo (VAT_RE_INC);
+  - subcuentas propias que se crean solas: 472/477 …8… (AIB), …9… (ISP) y 4770 7… (recargo repercutido);
+  - régimen de IVA de la empresa (general / recargo de equivalencia, solo en la Península) y marca "cliente en recargo";
+  - motor de facturas: ISP y AIB (472 Debe = 477 Haber, el proveedor cobra solo la base); venta a cliente en recargo
+    (IVA + recargo); compra del minorista (IVA y recargo no deducibles a la cuenta del gasto);
+  - liquidación 303/420: el ISP devenga y deduce, el recargo se ingresa, lo no deducible no cuenta; el cuadre se mantiene.
+- Web: régimen de IVA en Impuestos, cliente en recargo en Terceros (insignia RE), totales de la factura con recargo
+  y autorrepercutido, y casillas del borrador con recargo e ISP.
+- Pruebas: `test_fase14_reverse_charge.sql` (y recuentos actualizados en las fases 5 y 10).
+
+**Lo que se aprende en esta fase**
+- En la inversión del sujeto pasivo el impuesto lo declara quien compra: se lo repercute (477) y se lo soporta (472).
+  Si es deducible, el efecto es cero, pero queda declarado: así Hacienda controla las operaciones con el extranjero y las obras.
+- Una compra de bienes a la UE no es una importación: es una adquisición intracomunitaria, y no hay aduana.
+- El recargo de equivalencia traslada al mayorista la recaudación del IVA del minorista: el minorista paga más,
+  no deduce nada y a

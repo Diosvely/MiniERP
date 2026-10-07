@@ -16,10 +16,14 @@ export function accountName(account, language) {
 
 // Nombre corto de un tipo de impuesto: "IVA 21 %" · sin cuota, su causa: "IVA · Exportación (E2)"
 //   x = { tax_type, rate_pct, rate_category, exemption_key }
+//   ISP y adquisiciones intracomunitarias: "IVA 21 % · ISP" · venta del minorista en recargo: "IVA · IVA incluido (recargo)"
 export function taxLabel(x, t, language) {
   const type = t(`taxType.${x.tax_type}`)
-  if (Number(x.rate_pct) > 0 || !x.exemption_key) {
-    return `${type} ${Number(x.rate_pct).toLocaleString(language === 'en' ? 'en-GB' : 'es-ES')} %`
+  const rate = `${Number(x.rate_pct).toLocaleString(language === 'en' ? 'en-GB' : 'es-ES')} %`
+  if (['reverse_charge', 'intra_eu_acquisition'].includes(x.rate_category)) {
+    return `${type} ${rate} · ${t(`taxCategory.${x.rate_category}`)}`
   }
+  if (x.rate_category === 'retail_surcharge') return `${type} · ${t('taxCategory.retail_surcharge')}`
+  if (Number(x.rate_pct) > 0 || !x.exemption_key) return `${type} ${rate}`
   return `${type} · ${t(`taxCategory.${x.rate_category}`)} (${x.exemption_key})`
 }

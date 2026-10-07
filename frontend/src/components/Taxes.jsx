@@ -7,7 +7,7 @@ const rateText = (n, language) => `${Number(n).toLocaleString(language === 'en' 
 
 // Configuración de impuestos: qué subcuenta usa cada tipo de IVA/IGIC
 // (como "VAT Posting Setup" de Business Central o la OB40 de SAP)
-export default function Taxes({ company, readOnly }) {
+export default function Taxes({ company, readOnly, onChanged }) {
   const { t, language } = useI18n()
   const canEdit = !readOnly && company.my_role === 'admin'
   const [setup, setSetup] = useState([])
@@ -61,6 +61,14 @@ export default function Taxes({ company, readOnly }) {
     load()
   }
 
+  // Régimen de IVA: general o recargo de equivalencia (comerciante minorista, solo en la Península)
+  async function changeRegime(regime) {
+    setError(''); setMessage('')
+    const { error } = await supabase.rpc('set_vat_regime', { p_company: company.id, p_regime: regime })
+    if (error) return setError(error.message)
+    onChanged?.({ ...company, vat_regime: regime })
+  }
+
   const options = (prefix) => accounts.filter((a) => a.account_no.startsWith(prefix))
 
   // Selector de cuenta (admin) o número y nombre (resto)
@@ -104,6 +112,16 @@ export default function Taxes({ company, readOnly }) {
             )}
           </div>
         )}
+        {company.tax_territory === 'mainland' && (
+          <label className="regimen">{t('vatRegime')}
+            {canEdit ? (
+              <select value={company.vat_regime ?? 'general'} onChange={(e) => changeRegime(e.target.value)}>
+                {['general', 'equivalence_surcharge'].map((r) => <option key={r} value={r}>{t(`vatRegimes.${r}`)}</option>)}
+              </select>
+            ) : <strong>{t(`vatRegimes.${company.vat_regime ?? 'general'}`)}</strong>}
+            <span className="ayuda">{t('vatRegimeHelp')}</span>
+          </label>
+        )}
         {!canEdit && !readOnly && <p className="ayuda">{t('taxAdminOnly')}</p>}
         {setup.length === 0 && <p>{t('noTaxSetup')}</p>}
         {error && <p className="aviso">⚠ {error}</p>}
@@ -130,6 +148,12 @@ export default function Taxes({ company, readOnly }) {
                     <AccountField label={t('outputTax')} id={r.output_account_id} no={r.output_account_no}
                                   name={r.output_account_name} prefix="477" allowEmpty={r.blocked}
                                   onChange={(v) => updateSetup(r, { output_account_id: v })} />
+                    {r.equivalence_surcharge_pct != null && (
+                      <AccountField label={`${t('surchargeAccount')} ${rateText(r.equivalence_surcharge_pct, language)}`}
+                                    id={r.surcharge_account_id} no={r.surcharge_account_no}
+                                    name={r.surcharge_account_name} prefix="477" allowEmpty={r.blocked}
+                                    onChange={(v) => updateSetup(r, { surcharge_account_id: v })} />
+                    )}
                   </div>
                 )}
                 {canEdit && (

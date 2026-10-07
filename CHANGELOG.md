@@ -2,6 +2,15 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.17.0] · 2026-10-07
+### Añadido
+- Inversión del sujeto pasivo (IVA e IGIC) y adquisiciones intracomunitarias de bienes, con autorrepercusión 472/477.
+- Recargo de equivalencia: clientes en recargo (venta con IVA + recargo) y régimen de la empresa minorista
+  (compras no deducibles, ventas con IVA incluido).
+- Régimen de IVA de la empresa en Impuestos y marca "cliente en recargo de equivalencia" en Terceros.
+### Cambiado
+- La liquidación 303/420 incluye el recargo repercutido y el ISP en devengado y deducible, y excluye lo no deducible.
+
 ## [0.16.0] · 2026-10-07
 ### Añadido
 - Retención IRPF en facturas recibidas y emitidas (profesionales 15 % / 7 %, alquileres 19 %), con líquido a pagar o cobrar.

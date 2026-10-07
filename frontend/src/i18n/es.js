@@ -339,7 +339,10 @@ export default {
   noWithholding: 'Sin retención',
   amountToPay: 'Líquido a pagar',
   amountToCollect: 'Líquido a cobrar',
-  taxCategory: { exempt: 'Exenta', export: 'Exportación', intra_eu: 'Intracomunitaria', not_subject: 'No sujeta' },
+  taxCategory: {
+    exempt: 'Exenta', export: 'Exportación', intra_eu: 'Intracomunitaria', not_subject: 'No sujeta',
+    reverse_charge: 'ISP', intra_eu_acquisition: 'Adq. intracomunitaria', retail_surcharge: 'IVA incluido (recargo)',
+  },
   foreignPartnerHint: 'Tercero de {t}: revisa si la operación es una exportación, una entrega intracomunitaria o no sujeta.',
 
   // Retenciones IRPF (modelos 111 y 115)
@@ -358,6 +361,21 @@ export default {
   withholdingDetail: 'Detalle por factura',
   noWithholdings: 'No hay retenciones en este trimestre.',
   suffered: 'Soportada',
+
+  // Inversión del sujeto pasivo y recargo de equivalencia
+  equivalenceSurcharge: 'Recargo de equivalencia',
+  selfAssessed: 'Autorrepercutido (ISP)',
+  reCustomer: 'Cliente en recargo de equivalencia',
+  reCustomerHint: 'Cliente en recargo de equivalencia: a la factura se le suma el recargo (5,2 % sobre el 21 %, 1,4 % sobre el 10 %, 0,5 % sobre el 4 %).',
+  reCompanyHint: 'Tu empresa está en recargo de equivalencia: el IVA y el recargo de la compra no se deducen, son más coste.',
+  vatRegime: 'Régimen de IVA',
+  vatRegimes: { general: 'General', equivalence_surcharge: 'Recargo de equivalencia (comerciante minorista)' },
+  vatRegimeHelp: 'En recargo de equivalencia la empresa no presenta el 303: paga el IVA y el recargo a sus proveedores y vende con el IVA incluido (código VAT_RE_INC).',
+  surchargeAccount: 'Recargo',
+  previewRole: {
+    tax: 'cuota', tax_rc: 'cuota autorrepercutida', tax_nd: 'IVA no deducible', surcharge: 'recargo de equivalencia',
+    surcharge_nd: 'recargo no deducible', withholding: 'retención IRPF',
+  },
 
   industry: {
     services: 'Servicios',

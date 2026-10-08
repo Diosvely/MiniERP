@@ -2,6 +2,17 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.20.0] - 2026-10-08
+### Añadido
+- **Estado de flujos de efectivo** por el método indirecto (modelo normal del PGC) y el directo (NIC 7),
+  con columna del ejercicio anterior y detalle por cuentas en cada línea (migración `0022`).
+- **Cuadre del auditor**:
+  - efectivo inicial + flujos = efectivo final;
+  - directo = indirecto = variación del subgrupo 57;
+  - comparación por actividades con la lista de asientos sin dinero que explican la diferencia.
+- Pantalla **Informes › Flujos de efectivo** (es / en).
+- Prueba `test_fase17_cash_flow.sql`.
+
 ## [0.19.0] · 2026-10-08
 ### Añadido
 - Importar diario de otro ERP (Sage, Dynamics 365 Business Central o plantilla del laboratorio) en una empresa nueva,

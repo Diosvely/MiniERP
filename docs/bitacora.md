@@ -418,3 +418,36 @@ recargo de equivalencia y prorrata.
 **Decisiones**: ADR 0016 (importación de diarios).
 
 **Siguiente paso**: estado de flujos de efectivo (método directo e indirecto).
+
+## 2026-10-08 · v0.20.0 · Estado de flujos de efectivo (directo e indirecto)
+
+**Qué se hizo**
+- Migración `0022_cash_flow.sql`:
+  - catálogo de líneas del EFE (`cf_lines`: modelo normal del PGC y NIC 7);
+  - clasificación de cuentas (`cf_mapping`);
+  - funciones `cash_flow_statement`, `cf_line_accounts` y `cash_flow_check`.
+- Pantalla **Informes › Flujos de efectivo**:
+  - pestañas Indirecto / Directo, con la columna del año anterior y detalle por cuentas;
+  - banda de cuadre con la 57;
+  - comparación por actividades y los asientos que explican la diferencia.
+- Prueba `test_fase17_cash_flow.sql` con datos inventados: préstamo, compra, amortización y venta con beneficio
+  de un inmovilizado, nómina, intereses, impuesto, dividendo y ampliación de capital. Pasan las 17 fases.
+- **Validado con las 4 contabilidades reales**, 11 ejercicios: directo = indirecto = variación de la 57 en todos.
+
+**Lo que se aprende en esta fase**
+- Por qué los dos métodos dan el mismo total: cada asiento cuadra, así que lo que no es 57 explica la 57.
+- El indirecto mira **variaciones de saldo**; el directo mira **cobros y pagos**. Por actividades solo difieren
+  por los asientos sin dinero que mezclan actividades.
+- La importancia de la **523 "Proveedores de inmovilizado"**:
+  - Empresa 3 compró inmovilizado a proveedores normales, y por eso el directo no ve inversión (0 €) donde el
+    indirecto ve (7.011,19 €).
+  - Empresa 2 paga proveedores con la póliza de crédito: es explotación para el indirecto y financiación para
+    el directo.
+- La línea 1 del indirecto es el **resultado antes de impuestos**. El impuesto (630) va al punto 4 por lo
+  realmente pagado (4752).
+- El EFE explica la caja, no el resultado. Una empresa con beneficio puede quedarse sin efectivo
+  (Empresa 1 en 2022: −799.190,42 €).
+
+**Decisiones:** ADR del estado de flujos de efectivo en `docs/decisiones/`.
+
+**Siguiente paso:** Modo auditor 3, ratios (liquidez, solvencia, endeudamiento, rentabilidad, PMC y PMP).

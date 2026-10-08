@@ -451,3 +451,37 @@ recargo de equivalencia y prorrata.
 **Decisiones:** ADR del estado de flujos de efectivo en `docs/decisiones/`.
 
 **Siguiente paso:** Modo auditor 3, ratios (liquidez, solvencia, endeudamiento, rentabilidad, PMC y PMP).
+
+
+## 2026-10-08 · v0.21.0 · Ratios financieros (Modo auditor completo)
+
+**Qué se hizo**
+- Migración `0023_financial_ratios.sql`:
+  - catálogo `ratio_defs` con 21 ratios en 5 grupos, cada uno con fórmula, explicación y zona de referencia (es / en);
+  - función `financial_ratios`, que devuelve el valor, el año anterior, el numerador, el denominador y la valoración.
+- Pantalla **Informes › Ratios**:
+  - una tarjeta por grupo, con semáforo y evolución frente al año anterior;
+  - al pulsar un ratio, la fórmula con los importes reales, la zona de referencia y su significado.
+- Prueba `test_fase18_ratios.sql`: cada ratio esperado está calculado a mano a partir del balance de la empresa
+  de prueba. Pasan las 18 fases.
+- Validado con las 4 contabilidades reales (11 ejercicios).
+
+**Lo que se aprende en esta fase**
+- **Liquidez:**
+  - fondo de maniobra, liquidez general, prueba ácida y disponibilidad;
+  - por qué las existencias separan la liquidez general de la prueba ácida (Empresa 3: 1,99 frente a 0,54,
+    con 342 días de existencias).
+- **Endeudamiento:** endeudamiento, autonomía y garantía son la misma información vista desde tres lados.
+- **Rentabilidad:**
+  - ROA ≈ margen × rotación;
+  - Empresa 1 gana por **rotación** (3,9 veces su activo, con un margen del 2 %);
+  - el ROE sube con la deuda si el ROA supera el coste de la deuda (apalancamiento).
+- **Periodos medios:** la Ley 15/2010 fija 60 días entre empresas. Empresa 2 cobra a 71 días; BC paga a 139.
+- **Calidad del resultado** (flujo de explotación / beneficio): mide si el beneficio llega al banco.
+  BC tuvo beneficio en 2023, pero su flujo de explotación fue de −247.118 €.
+- Un ratio fuera de la zona de referencia es una **pregunta**, no una conclusión: depende del sector.
+
+**Decisiones:** ADR de los ratios financieros en `docs/decisiones/`.
+
+**Siguiente paso:** según el plan, el **Inmovilizado**: fichas de activos, plan de amortización y asiento resumen
+mensual a contabilidad, como el módulo de Activos Fijos de BC o AA de SAP.

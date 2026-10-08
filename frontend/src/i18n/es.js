@@ -481,6 +481,24 @@ export default {
   cashFlowCrossExplains: 'Diferencia explicada (indirecto − directo)',
   cashFlowCrossMore: 'Y {n} asientos más con el mismo efecto (el total de arriba los incluye todos).',
 
+// ---- Ratios financieros (paso 117) ----
+  menuRatios: 'Ratios',
+  ratiosTitle: 'Ratios financieros',
+  ratiosIntro: 'Calculados con el balance, la PyG y el estado de flujos de efectivo del ejercicio (saldos de cierre). Pulsa un ratio para ver su fórmula con los importes de la empresa y qué significa.',
+  ratiosLoading: 'Calculando',
+  ratiosNote: 'La zona de referencia es orientativa (manuales españoles de análisis de estados financieros): cada sector tiene sus valores normales. Un supermercado vive con fondo de maniobra negativo; una bodega, con muchos días de existencias. Lo importante es la evolución y la comparación con empresas parecidas.',
+  ratioReference: 'Zona de referencia',
+  ratioStatus: { ok: 'En la zona de referencia', low: 'Por debajo', high: 'Por encima' },
+  ratioGroup: { liquidity: 'Liquidez', solvency: 'Solvencia y endeudamiento', profitability: 'Rentabilidad', activity: 'Actividad (periodos medios)', cash: 'Flujos de caja' },
+  ratioGroupHelp: {
+    liquidity: '¿Puede pagar lo que vence en menos de un año?',
+    solvency: '¿Cómo se financia y puede devolver lo que debe?',
+    profitability: '¿Gana dinero con lo que tiene?',
+    activity: '¿Cuánto tarda en cobrar, en pagar y en vender lo que compra?',
+    cash: '¿El beneficio se convierte en dinero?',
+  },
+  days: 'días',
+
   industry: {
     services: 'Servicios',
     retail: 'Comercio minorista',

@@ -482,6 +482,24 @@ export default {
   cashFlowCrossExplains: 'Difference explained (indirect − direct)',
   cashFlowCrossMore: 'And {n} more entries with the same effect (the total above includes them all).',
 
+// ---- Financial ratios (step 117) ----
+  menuRatios: 'Ratios',
+  ratiosTitle: 'Financial ratios',
+  ratiosIntro: 'Calculated from the balance sheet, the P&L and the cash flow statement for the year (closing balances). Click a ratio to see its formula with the company figures and what it means.',
+  ratiosLoading: 'Calculating',
+  ratiosNote: 'The reference range is a guide (Spanish financial analysis textbooks): every industry has its own normal values. A supermarket lives with negative working capital; a winery, with many days of inventory. What matters is the trend and the comparison with similar companies.',
+  ratioReference: 'Reference range',
+  ratioStatus: { ok: 'Within the reference range', low: 'Below', high: 'Above' },
+  ratioGroup: { liquidity: 'Liquidity', solvency: 'Solvency and debt', profitability: 'Profitability', activity: 'Activity (average periods)', cash: 'Cash flows' },
+  ratioGroupHelp: {
+    liquidity: 'Can it pay what falls due within a year?',
+    solvency: 'How is it financed, and can it repay what it owes?',
+    profitability: 'Does it make money with what it has?',
+    activity: 'How long does it take to collect, to pay and to sell what it buys?',
+    cash: 'Does profit turn into cash?',
+  },
+  days: 'days',
+
   industry: {
     services: 'Services',
     retail: 'Retail',

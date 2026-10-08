@@ -2,6 +2,21 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.22.0] - 2026-10-08
+### Añadido
+- **Analista IA** con un modelo open source de Cloudflare Workers AI (gratuito y sin clave de API):
+  - comenta como un auditor los estados financieros, el EFE y los ratios del ejercicio, con resumen, puntos
+    fuertes, alertas, preguntas del auditor y una idea para aprender;
+  - botón en Informes › Ratios y en Flujos de efectivo;
+  - solo para el propietario de la aplicación.
+- Migración `0024`: `can_use_ai()` y `ai_context()`. La IA solo recibe cifras agregadas: nunca nombres,
+  terceros ni conceptos.
+- Pages Function `functions/api/ai.js` (POST para el análisis, GET para comprobar la configuración).
+- Prueba `test_fase19_ai_context.sql`.
+### Corregido
+- La **calidad del resultado** (con pérdidas) y el **ROE** (con patrimonio neto negativo) ya no muestran un
+  valor positivo engañoso: quedan sin calcular.
+
 ## [0.21.0] - 2026-10-08
 ### Añadido
 - **Ratios financieros** (migración `0023`): 21 ratios de liquidez, solvencia y endeudamiento, rentabilidad,

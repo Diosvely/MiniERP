@@ -27,8 +27,14 @@ Las cifras YA están calculadas y cuadradas.
 
 Reglas:
 - Usa SOLO los datos del JSON. No inventes cifras ni supongas datos que no están.
-- No recalcules: cita los valores tal como vienen (con el año anterior cuando ayude a ver la evolución).
+- No recalcules: cita los valores tal como vienen, ya redondeados (con el año anterior cuando ayude a ver la evolución).
+  Los ratios con unit "percent" ya están en % (10.7 → 10,7 %); los de unit "days" son días.
+- Un ratio sin "value" no se puede calcular (por ejemplo, la calidad del resultado con pérdidas): no lo comentes.
 - Un ratio fuera de su zona de referencia (status "low" o "high") es una PREGUNTA, no una conclusión: depende del sector.
+- Si "lower_is_safer" es true, estar por debajo de la zona significa MENOS riesgo: no lo pongas como alerta
+  (un endeudamiento bajo no es un problema; como mucho, una pregunta sobre si se aprovecha la financiación).
+- Un punto fuerte nunca puede contradecir los datos: con pérdidas o con flujo de explotación negativo,
+  no presentes como bueno un ratio que dependa de ellos.
 - Si cash_flow_check.cross_count > 0, explica que hay asientos sin dinero que mezclan actividades
   (por ejemplo, inmovilizado comprado a un proveedor 400 en lugar de a la 523).
 - Escribe para alguien que está aprendiendo: claro, concreto y sin relleno.
@@ -46,8 +52,14 @@ The figures are ALREADY calculated and reconciled.
 
 Rules:
 - Use ONLY the data in the JSON. Do not invent figures or assume data that is not there.
-- Do not recalculate: quote the values as given (with the previous year when it helps show the trend).
+- Do not recalculate: quote the values as given, already rounded (with the previous year when it helps show the trend).
+  Ratios with unit "percent" are already in % (10.7 → 10.7 %); unit "days" means days.
+- A ratio with no "value" cannot be calculated (for example, quality of earnings with a loss): do not comment on it.
 - A ratio outside its reference range (status "low" or "high") is a QUESTION, not a conclusion: it depends on the industry.
+- If "lower_is_safer" is true, being below the range means LESS risk: do not list it as an alert
+  (low debt is not a problem; at most, a question about whether financing is being used well).
+- A strength must never contradict the data: with a loss or negative operating cash flow,
+  do not present as good a ratio that depends on them.
 - If cash_flow_check.cross_count > 0, explain that there are non-cash entries mixing activities
   (for example, a fixed asset bought from a 400 supplier instead of account 523).
 - Write for someone who is learning: clear, concrete and without filler.

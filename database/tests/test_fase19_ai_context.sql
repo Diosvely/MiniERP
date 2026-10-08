@@ -75,7 +75,8 @@ begin
     ["2026-03-01","2","normal","12900000",1200,0],        ["2026-03-01","2","normal","11300000",0,700],
     ["2026-03-01","2","normal","52600000",0,500],
     ["2026-03-15","3","normal","52600000",500,0],         ["2026-03-15","3","normal","57200000",0,500],
-    ["2026-06-01","4","normal","57200000",3000,0],        ["2026-06-01","4","normal","10000000",0,3000]
+    ["2026-06-01","4","normal","57200000",3000,0],        ["2026-06-01","4","normal","10000000",0,3000],
+    ["2026-07-01","5","normal","62900000",1000,0],        ["2026-07-01","5","normal","57200000",0,1000]
   ]');
   perform public.importar(b);
 
@@ -90,8 +91,13 @@ begin
   assert position('Prueba 1' in k::text) = 0, 'nunca los conceptos de los asientos';
   assert jsonb_array_length(k->'ratios') = (select count(*) from erp.ratio_defs), 'todos los ratios';
   assert exists (select 1 from jsonb_array_elements(k->'ratios') r
-                 where r->>'ratio' = 'Liquidez general' and (r->>'value')::numeric = 12.6923 and r->>'status' = 'high'),
-         'el ratio con su valoración';
+                 where r->>'ratio' = 'Liquidez general' and (r->>'value')::numeric = 12.69 and r->>'status' = 'high'),
+         'el ratio redondeado como en pantalla, con su valoración';
+  assert exists (select 1 from jsonb_array_elements(k->'ratios') r
+                 where r->>'ratio' = 'Rentabilidad financiera (ROE)' and (r->>'value')::numeric = 10.7 and r->>'unit' = 'percent'),
+         'los porcentajes ya en %';
+  assert exists (select 1 from jsonb_array_elements(k->'ratios') r
+                 where r->>'ratio' = 'Endeudamiento' and (r->>'lower_is_safer')::boolean), 'bajo endeudamiento = menos riesgo';
   assert exists (select 1 from jsonb_array_elements(k->'balance_sheet') x
                  where x->>'line' = 'TOTAL ACTIVO' and (x->>'amount')::numeric = 31150), 'balance';
   assert exists (select 1 from jsonb_array_elements(k->'income_statement') x
@@ -101,6 +107,13 @@ begin
   assert jsonb_array_length(k->'cash_flow_indirect') > 0;
   assert not exists (select 1 from jsonb_array_elements(k->'balance_sheet') x where (x->>'amount')::numeric = 0
                      and coalesce((x->>'previous')::numeric, 0) = 0), 'sin partidas vacías';
+
+  -- ---------- Con pérdidas, la calidad del resultado no se calcula (antes daba un positivo engañoso) ----------
+  assert (select value from erp.financial_ratios(e, 2026) where code = 'CFO') = -1400, 'caja de explotación negativa';
+  assert (select value from erp.financial_ratios(e, 2026) where code = 'CFQ') is null, 'con pérdidas: sin valor';
+  assert (select status from erp.financial_ratios(e, 2026) where code = 'CFQ') is null, 'y sin valoración';
+  assert not exists (select 1 from jsonb_array_elements(erp.ai_context(e, 2026)->'ratios') r
+                     where r->>'ratio' = 'Calidad del resultado' and r ? 'value'), 'la IA no recibe valor';
 
   -- ---------- En inglés ----------
   k := erp.ai_context(e, 2025, 'en');

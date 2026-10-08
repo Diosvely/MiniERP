@@ -2,6 +2,7 @@ import { Fragment, useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import { money } from '../format'
+import AiAnalyst from './AiAnalyst'
 
 // Estado de flujos de efectivo por los dos métodos (como el "Cash Flow Statement" de BC / SAP)
 //   indirecto: el modelo normal del PGC (parte del resultado) · directo: cobros y pagos por su contrapartida (NIC 7)
@@ -206,6 +207,7 @@ export default function CashFlow({ company }) {
           )}
         </section>
       )}
+      {check && <AiAnalyst company={company} year={year} />}
     </>
   )
 }

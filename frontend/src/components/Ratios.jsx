@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import { money } from '../format'
+import AiAnalyst from './AiAnalyst'
 
 // Ratios financieros (Modo auditor): liquidez, solvencia, rentabilidad, actividad y flujos de caja
 // Cada ratio con su valoración frente a la zona de referencia, el año anterior y, al pulsarlo,
@@ -128,6 +129,7 @@ export default function Ratios({ company }) {
       })}
 
       {rows.length > 0 && <p className="ayuda">{t('ratiosNote')}</p>}
+      {rows.length > 0 && <AiAnalyst company={company} year={year} />}
     </>
   )
 }

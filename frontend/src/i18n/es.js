@@ -499,6 +499,29 @@ export default {
   },
   days: 'días',
 
+// ---- Analista IA (paso 121) ----
+  aiTitle: 'Analista IA',
+  aiIntro: 'Un modelo de IA open source (Cloudflare Workers AI) lee el balance, la PyG, el estado de flujos y los ratios de este ejercicio y los comenta como lo haría un auditor. Solo recibe cifras agregadas: ni el nombre de la empresa, ni terceros, ni conceptos.',
+  aiAnalyse: 'Analizar con IA',
+  aiAgain: 'Volver a analizar',
+  aiThinking: 'Analizando',
+  aiWait: 'Suele tardar entre 10 y 30 segundos.',
+  aiStrengths: 'Puntos fuertes',
+  aiAlerts: 'Alertas',
+  aiQuestions: 'Preguntas que haría un auditor',
+  aiLearning: 'Para aprender',
+  aiDisclaimer: 'Interpretación orientativa generada por IA ({m}). Las cifras salen del ERP, pero el comentario puede equivocarse: compruébalo con los informes.',
+  aiNotAvailableLocally: 'El Analista IA solo funciona en la web publicada en Cloudflare (o con "wrangler pages dev"), no con "npm run dev".',
+  aiError: {
+    not_signed_in: 'Tienes que iniciar sesión.',
+    context_denied: 'No tienes permiso para analizar esta empresa con IA.',
+    ai_quota: 'Se ha agotado el límite gratuito de IA de hoy. Vuelve a intentarlo mañana (se reinicia a las 00:00 UTC).',
+    ai_failed: 'El modelo de IA no ha respondido.',
+    ai_not_configured: 'Falta el binding "AI" de Workers AI en Cloudflare.',
+    supabase_not_configured: 'Faltan las variables de Supabase en Cloudflare.',
+    bad_request: 'Petición incorrecta.',
+  },
+
   industry: {
     services: 'Servicios',
     retail: 'Comercio minorista',

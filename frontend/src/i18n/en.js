@@ -500,6 +500,29 @@ export default {
   },
   days: 'days',
 
+// ---- AI analyst (step 121) ----
+  aiTitle: 'AI analyst',
+  aiIntro: 'An open-source AI model (Cloudflare Workers AI) reads this year\'s balance sheet, P&L, cash flow statement and ratios and comments on them as an auditor would. It only receives aggregated figures: no company name, no third parties, no descriptions.',
+  aiAnalyse: 'Analyse with AI',
+  aiAgain: 'Analyse again',
+  aiThinking: 'Analysing',
+  aiWait: 'It usually takes 10 to 30 seconds.',
+  aiStrengths: 'Strengths',
+  aiAlerts: 'Alerts',
+  aiQuestions: 'Questions an auditor would ask',
+  aiLearning: 'Learning point',
+  aiDisclaimer: 'AI-generated guidance ({m}). The figures come from the ERP, but the commentary can be wrong: check it against the reports.',
+  aiNotAvailableLocally: 'The AI analyst only works on the site published on Cloudflare (or with "wrangler pages dev"), not with "npm run dev".',
+  aiError: {
+    not_signed_in: 'You need to sign in.',
+    context_denied: 'You are not allowed to analyse this company with AI.',
+    ai_quota: 'Today\'s free AI allowance is used up. Try again tomorrow (it resets at 00:00 UTC).',
+    ai_failed: 'The AI model did not respond.',
+    ai_not_configured: 'The Workers AI "AI" binding is missing in Cloudflare.',
+    supabase_not_configured: 'The Supabase variables are missing in Cloudflare.',
+    bad_request: 'Bad request.',
+  },
+
   industry: {
     services: 'Services',
     retail: 'Retail',

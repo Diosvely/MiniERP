@@ -248,3 +248,19 @@ button.pequeno { align-self: flex-start; padding: 6px 10px; font-size: .85rem; m
   .ratio-estado.ok { color: #4ac26b; }
   .ratio-estado.low, .ratio-estado.high { color: #e3b341; }
 }
+
+/* --- Analista IA --- */
+.analista-ia { border-left: 4px solid var(--primario); }
+.analista-ia > button { align-self: flex-start; }
+.analisis { display: flex; flex-direction: column; gap: 12px; margin-top: 12px; }
+.resumen-ia { margin: 0; font-size: 1rem; line-height: 1.5; }
+.bloque-ia h3 { margin: 0 0 4px; font-size: .95rem; }
+.bloque-ia ul { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 6px; }
+.bloque-ia li { display: block; border: 0; padding: 0; line-height: 1.45; }
+.bloque-ia .icono { display: inline-block; width: 1.3em; font-weight: 700; }
+.bloque-ia.strengths .icono { color: #1a7f37; }
+.bloque-ia.alerts .icono { color: #9a6700; }
+.bloque-ia.auditor_questions .icono { color: var(--primario); }
+.bloque-ia.learning { background: rgba(31,94,255,.07); border-radius: 8px; padding: 10px 12px; }
+.bloque-ia.learning p { margin: 0; line-height: 1.45; }
+.ia-texto { white-space: pre-wrap; font-family: inherit; background: var(--fondo); padding: 10px; border-radius: 8px; }

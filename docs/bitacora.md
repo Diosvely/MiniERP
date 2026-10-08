@@ -485,3 +485,4 @@ recargo de equivalencia y prorrata.
 
 **Siguiente paso:** según el plan, el **Inmovilizado**: fichas de activos, plan de amortización y asiento resumen
 mensual a contabilidad, como el módulo de Activos Fijos de BC o AA de SAP.
+

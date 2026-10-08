@@ -175,9 +175,11 @@ psql -d minierp_test -f database/tests/test_fase1.sql      # repetir en otra bas
 - [x] **v0.16.0**: retención IRPF (111/115) y operaciones exentas, exportaciones, intracomunitarias y no sujetas
 - [x] **v0.17.0**: inversión del sujeto pasivo, adquisiciones intracomunitarias y recargo de equivalencia
 - [x] **v0.18.0**: prorrata general (bloque J5 completo: casos especiales de IVA/IGIC)
-- [ ] Importación de libros diarios desde Excel (SAP, BC, Sage) y análisis: flujo de caja y ratios
-- [ ] Módulos auxiliares (inmovilizado y amortizaciones) que envían asientos resumen a contabilidad
+- [x] **v0.19.0**: Modo auditor (1): importación de diarios de Sage y Dynamics BC
+- [ ] **v0.20.0**: Modo auditor (2): estado de flujos de efectivo (directo e indirecto)
+- [ ] Creacion de  ratios
 - [ ] Asistente de IA que analiza los datos con modelos open source
+- [ ] Módulos auxiliares (inmovilizado y amortizaciones) que envían asientos resumen a contabilidad
 
 *Proyecto de estudio: los tipos impositivos y las reglas fiscales se contrastan con la AEAT y la ATC; no es asesoramiento fiscal.*
 

@@ -1,6 +1,15 @@
 # Changelog
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
+
+## [0.19.0] · 2026-10-08
+### Añadido
+- Importar diario de otro ERP (Sage, Dynamics 365 Business Central o plantilla del laboratorio) en una empresa nueva,
+  con todos sus ejercicios, vista previa con controles de auditor e importación por lotes.
+- 10 cuentas del PGC en la plantilla del plan de cuentas.
+### Cambiado
+- Sumas y saldos y saldos anómalos no incluyen el asiento de cierre.
+
 ## [0.18.0] · 2026-10-07
 ### Añadido
 - Prorrata general del IVA / IGIC: porcentaje provisional por año, reparto de la cuota entre deducible y no deducible

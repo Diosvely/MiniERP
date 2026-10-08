@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import CompanyView from './CompanyView'
+import JournalImport from './JournalImport'
 
 const emptyForm = { name: '', vat_registration_no: '', industry: 'services', tax_territory: 'canary_islands' }
 
@@ -14,6 +15,7 @@ export default function Companies({ session }) {
   const [error, setError] = useState('')
   const [selected, setSelected] = useState(null)  // empresa abierta
   const [copied, setCopied] = useState(false)     // enlace de la demo copiado
+  const [importing, setImporting] = useState(false) // importar el diario de otro ERP
 
   async function load() {
     // v_my_companies devuelve también mi rol en cada empresa (null = demo ajena → solo lectura)
@@ -22,6 +24,15 @@ export default function Companies({ session }) {
     setCompanies(data)
     const { data: p } = await supabase.rpc('my_profile').single()
     setProfile(p)
+    return data
+  }
+
+  // Al terminar una importación se abre la empresa nueva
+  async function imported(companyId) {
+    setImporting(false)
+    const list = await load()
+    const c = list?.find((x) => x.id === companyId)
+    if (c) setSelected(c)
   }
 
   useEffect(() => { load() }, [])
@@ -77,7 +88,7 @@ export default function Companies({ session }) {
         {c.name} {c.is_demo && <span className="insignia">{t('demoBadge')}</span>}
       </strong>
       <span>
-        {[c.vat_registration_no, t(`industry.${c.industry}`), t(`territory.${c.tax_territory}`)].filter(Boolean).join(' · ')}
+        {c.vat_registration_no} · {t(`industry.${c.industry}`)} · {t(`territory.${c.tax_territory}`)}
       </span>
     </li>
   )
@@ -123,6 +134,16 @@ export default function Companies({ session }) {
           </div>
         </section>
       )}
+
+      {!isGuest && canCreate && (importing
+        ? <JournalImport onDone={imported} onCancel={() => { setImporting(false); load() }} />
+        : (
+          <section className="tarjeta">
+            <h2>{t('importJournalTitle')}</h2>
+            <p className="ayuda">{t('importJournalCard')}</p>
+            <button type="button" className="secundario" onClick={() => setImporting(true)}>📥 {t('importJournalButton')}</button>
+          </section>
+        ))}
 
       {isGuest ? null : canCreate ? (
         <form onSubmit={create} className="tarjeta">

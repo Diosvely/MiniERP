@@ -392,3 +392,29 @@ recargo de equivalencia y prorrata.
 **Decisiones**: ADR 0015 (prorrata).
 
 **Siguiente paso**: Modo auditor (importación de diarios, estado de flujos de efectivo y ratios).
+
+## 2026-10-08 · v0.19.0 · Modo auditor (parte 1) Importación de diarios
+
+**Qué se hizo**
+- Migración `0021_journal_import.sql`:
+  - lotes de importación (`import_batches`) y filas temporales (`import_lines`) con la plantilla del laboratorio;
+  - `import_start` (empresa nueva con los dígitos del fichero), `import_preview` (controles de auditor),
+    `import_prepare` (ejercicios y subcuentas), `import_post_month` (contabiliza un mes en bloque)
+    e `import_finish` (cierra un ejercicio por llamada: con los asientos del fichero o con nuestro asistente);
+  - 10 cuentas del PGC que faltaban en la plantilla (633, 638, 644, 259, 293, 297, 598, 673, 796, 799);
+  - sumas y saldos y saldos anómalos sin el asiento de cierre (opción "excluir cierre").
+- Web: convertidores Sage, Dynamics 365 Business Central y plantilla (`importers.js`) y pantalla Importar diario.
+- Probado con 4 diarios reales (330.000 apuntes, 2019–2024): resultados y balances iguales a los del ERP de origen.
+- Pruebas: `test_fase16_import.sql` (con datos inventados).
+
+**Lo que se aprende en esta fase**
+- Cada ERP exporta distinto: Sage trae aperturas, regularizaciones y cierres; Business Central solo la regularización,
+  porque arrastra los saldos sin asientos de cierre ni de apertura.
+- Controles de auditor al recibir una contabilidad: cuadre por asiento, importes negativos, cuentas fuera del PGC
+  y, sobre todo, que cada apertura coincida con el cierre anterior (en un diario real apareció una reclasificación
+  de 7.000 € hecha directamente en la apertura).
+- Un saldo inverso histórico (caja acreedora) no se corrige al importar: se documenta.
+
+**Decisiones**: ADR 0016 (importación de diarios).
+
+**Siguiente paso**: estado de flujos de efectivo (método directo e indirecto).

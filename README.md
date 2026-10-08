@@ -176,9 +176,9 @@ psql -d minierp_test -f database/tests/test_fase1.sql      # repetir en otra bas
 - [x] **v0.17.0**: inversión del sujeto pasivo, adquisiciones intracomunitarias y recargo de equivalencia
 - [x] **v0.18.0**: prorrata general (bloque J5 completo: casos especiales de IVA/IGIC)
 - [x] **v0.19.0**: Modo auditor (1): importación de diarios de Sage y Dynamics BC
-- [ ] **v0.20.0**: Modo auditor (2): estado de flujos de efectivo (directo e indirecto)
-- [ ] Creacion de  ratios
-- [ ] Asistente de IA que analiza los datos con modelos open source
+- [x] **v0.20.0**: estado de flujos de efectivo por los dos métodos, con cuadre del auditor
+- [x] **v0.21.0**:Modo auditor 3: ratios (liquidez, solvencia, endeudamiento, rentabilidad, PMC / PMP)
+- [x] **v0.22.0** Analista IA con modelos open source (Cloudflare Workers AI)
 - [ ] Módulos auxiliares (inmovilizado y amortizaciones) que envían asientos resumen a contabilidad
 
 *Proyecto de estudio: los tipos impositivos y las reglas fiscales se contrastan con la AEAT y la ATC; no es asesoramiento fiscal.*

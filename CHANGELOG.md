@@ -2,6 +2,31 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.22.0] - 2026-10-08
+### Añadido
+- **Analista IA** con un modelo open source de Cloudflare Workers AI (gratuito y sin clave de API):
+  - comenta como un auditor los estados financieros, el EFE y los ratios del ejercicio, con resumen, puntos
+    fuertes, alertas, preguntas del auditor y una idea para aprender;
+  - botón en Informes › Ratios y en Flujos de efectivo;
+  - solo para el propietario de la aplicación.
+- Migración `0024`: `can_use_ai()` y `ai_context()`. La IA solo recibe cifras agregadas: nunca nombres,
+  terceros ni conceptos.
+- Pages Function `functions/api/ai.js` (POST para el análisis, GET para comprobar la configuración).
+- Prueba `test_fase19_ai_context.sql`.
+### Corregido
+- La **calidad del resultado** (con pérdidas) y el **ROE** (con patrimonio neto negativo) ya no muestran un
+  valor positivo engañoso: quedan sin calcular.
+
+## [0.21.0] - 2026-10-08
+### Añadido
+- **Ratios financieros** (migración `0023`): 21 ratios de liquidez, solvencia y endeudamiento, rentabilidad,
+  actividad (periodos medios de cobro, pago y existencias) y flujos de caja. Cada uno trae su fórmula, su
+  explicación, su zona de referencia, el año anterior y su numerador y denominador.
+- Pantalla **Informes › Ratios** (es / en):
+  - semáforo frente a la zona de referencia y evolución ↑↓;
+  - detalle con la fórmula y los importes reales de la empresa.
+- Prueba `test_fase18_ratios.sql`.
+
 ## [0.20.0] - 2026-10-08
 ### Añadido
 - **Estado de flujos de efectivo** por el método indirecto (modelo normal del PGC) y el directo (NIC 7),

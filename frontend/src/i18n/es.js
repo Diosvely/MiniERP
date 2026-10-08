@@ -481,6 +481,47 @@ export default {
   cashFlowCrossExplains: 'Diferencia explicada (indirecto − directo)',
   cashFlowCrossMore: 'Y {n} asientos más con el mismo efecto (el total de arriba los incluye todos).',
 
+// ---- Ratios financieros (paso 117) ----
+  menuRatios: 'Ratios',
+  ratiosTitle: 'Ratios financieros',
+  ratiosIntro: 'Calculados con el balance, la PyG y el estado de flujos de efectivo del ejercicio (saldos de cierre). Pulsa un ratio para ver su fórmula con los importes de la empresa y qué significa.',
+  ratiosLoading: 'Calculando',
+  ratiosNote: 'La zona de referencia es orientativa (manuales españoles de análisis de estados financieros): cada sector tiene sus valores normales. Un supermercado vive con fondo de maniobra negativo; una bodega, con muchos días de existencias. Lo importante es la evolución y la comparación con empresas parecidas.',
+  ratioReference: 'Zona de referencia',
+  ratioStatus: { ok: 'En la zona de referencia', low: 'Por debajo', high: 'Por encima' },
+  ratioGroup: { liquidity: 'Liquidez', solvency: 'Solvencia y endeudamiento', profitability: 'Rentabilidad', activity: 'Actividad (periodos medios)', cash: 'Flujos de caja' },
+  ratioGroupHelp: {
+    liquidity: '¿Puede pagar lo que vence en menos de un año?',
+    solvency: '¿Cómo se financia y puede devolver lo que debe?',
+    profitability: '¿Gana dinero con lo que tiene?',
+    activity: '¿Cuánto tarda en cobrar, en pagar y en vender lo que compra?',
+    cash: '¿El beneficio se convierte en dinero?',
+  },
+  days: 'días',
+
+// ---- Analista IA (paso 121) ----
+  aiTitle: 'Analista IA',
+  aiIntro: 'Un modelo de IA open source (Cloudflare Workers AI) lee el balance, la PyG, el estado de flujos y los ratios de este ejercicio y los comenta como lo haría un auditor. Solo recibe cifras agregadas: ni el nombre de la empresa, ni terceros, ni conceptos.',
+  aiAnalyse: 'Analizar con IA',
+  aiAgain: 'Volver a analizar',
+  aiThinking: 'Analizando',
+  aiWait: 'Suele tardar entre 10 y 30 segundos.',
+  aiStrengths: 'Puntos fuertes',
+  aiAlerts: 'Alertas',
+  aiQuestions: 'Preguntas que haría un auditor',
+  aiLearning: 'Para aprender',
+  aiDisclaimer: 'Interpretación orientativa generada por IA ({m}). Las cifras salen del ERP, pero el comentario puede equivocarse: compruébalo con los informes.',
+  aiNotAvailableLocally: 'El Analista IA solo funciona en la web publicada en Cloudflare (o con "wrangler pages dev"), no con "npm run dev".',
+  aiError: {
+    not_signed_in: 'Tienes que iniciar sesión.',
+    context_denied: 'No tienes permiso para analizar esta empresa con IA.',
+    ai_quota: 'Se ha agotado el límite gratuito de IA de hoy. Vuelve a intentarlo mañana (se reinicia a las 00:00 UTC).',
+    ai_failed: 'El modelo de IA no ha respondido.',
+    ai_not_configured: 'Falta el binding "AI" de Workers AI en Cloudflare.',
+    supabase_not_configured: 'Faltan las variables de Supabase en Cloudflare.',
+    bad_request: 'Petición incorrecta.',
+  },
+
   industry: {
     services: 'Servicios',
     retail: 'Comercio minorista',

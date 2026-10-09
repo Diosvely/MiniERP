@@ -555,6 +555,11 @@ export default {
     fixed_asset_supplier: 'A fixed asset is bought from a fixed-asset supplier (523 or 173), not 400 / 410.',
     unbalanced: 'The entry does not balance (debit / credit: {d}).',
     unknown_valuation_rule: 'Rule {d} is not one of the Spanish GAAP valuation rules.',
+    same_account_both_sides: 'Account {d} is on both the debit and the credit side: review the entry.',
+    depreciation_mismatch: 'The accumulated depreciation does not match its asset ({d}).',
+    disposal_depreciation_side: 'When disposing of a fixed asset, accumulated depreciation is debited, not credited.',
+    asset_supplier_misuse: '523 / 173 are only for fixed-asset suppliers. Use 410 for services and 400 for goods.',
+    valuation_rule_mismatch: '{d} does not fit the accounts in the entry.',
     no_tax_setup: 'This company has no tax setup: VAT / IGIC is posted to an ordinary account, without calculating the amount.',
   },
 

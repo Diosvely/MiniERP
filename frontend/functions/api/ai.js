@@ -128,6 +128,8 @@ export async function onRequestPost({ request, env }) {
   })
   if (!ctx.ok) {
     const e = await ctx.json().catch(() => ({}))
+    // PGRST202: la función no existe en Supabase → falta ejecutar la migración
+    if (e.code === 'PGRST202' || ctx.status === 404) return json({ error: 'db_not_updated', detail: '0024' }, 500)
     const status = ctx.status === 401 ? 401 : 403
     return json({ error: 'context_denied', detail: e.message ?? '' }, status)
   }

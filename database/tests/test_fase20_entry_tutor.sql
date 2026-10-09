@@ -129,6 +129,38 @@ begin
     {"account": "410", "side": "credit", "amount": 121}]}');
   assert (v->>'ok')::boolean and public.aviso(v, 'no_tax_setup') = 'info' and public.linea(v, 2)->>'account_no' like '472%';
 
+
+  -- ---------- 10. Reglas de criterio (0026): el asiento de la furgoneta que CUADRABA pero estaba mal ----------
+  v := erp.validate_proposed_entry(e, '{"valuation_rule": "NRV2", "lines": [
+    {"account": "218",  "side": "credit", "amount": 8000},
+    {"account": "477",  "side": "credit", "amount": 1680, "role": "tax", "tax_code": "VAT21", "tax_base": 8000},
+    {"account": "572",  "side": "debit",  "amount": 9680},
+    {"account": "2813", "side": "credit", "amount": 15000},
+    {"account": "671",  "side": "debit",  "amount": 7000},
+    {"account": "218",  "side": "debit",  "amount": 8000}]}');
+  assert (v->>'ok')::boolean, 'cuadra (por eso antes pasaba)';
+  assert public.aviso(v, 'same_account_both_sides') = 'warning', '218 en el Debe y en el Haber';
+  assert public.aviso(v, 'depreciation_mismatch') = 'warning', '2813 no es la amortización de la 218';
+  assert public.aviso(v, 'disposal_depreciation_side') = 'warning', 'en la baja la amortización va al Debe';
+  -- El asiento correcto no da ningún aviso de criterio
+  v := erp.validate_proposed_entry(e, '{"valuation_rule": "NRV2", "lines": [
+    {"account": "572",  "side": "debit",  "amount": 9680},
+    {"account": "2818", "side": "debit",  "amount": 15000},
+    {"account": "218",  "side": "credit", "amount": 20000},
+    {"account": "477",  "side": "credit", "amount": 1680, "role": "tax", "tax_code": "VAT21", "tax_base": 8000},
+    {"account": "771",  "side": "credit", "amount": 3000}]}');
+  assert (v->>'ok')::boolean and not exists (select 1 from jsonb_array_elements(v->'checks') c
+    where c->>'code' in ('same_account_both_sides', 'depreciation_mismatch', 'disposal_depreciation_side',
+                         'asset_supplier_misuse', 'valuation_rule_mismatch')), 'baja correcta: sin avisos';
+  -- La abogada con la 523 y la NRV 14ª
+  v := erp.validate_proposed_entry(e, '{"valuation_rule": "NRV14", "lines": [
+    {"account": "623", "side": "debit", "amount": 1000}, {"account": "472", "side": "debit", "amount": 210, "role": "tax", "tax_code": "VAT21", "tax_base": 1000},
+    {"account": "4751", "side": "credit", "amount": 150}, {"account": "523", "side": "credit", "amount": 1060}]}');
+  assert public.aviso(v, 'asset_supplier_misuse') = 'warning' and public.aviso(v, 'valuation_rule_mismatch') = 'warning';
+  -- Sin NRV citada no se comprueba
+  v := erp.validate_proposed_entry(e, '{"lines": [{"account": "623", "side": "debit", "amount": 10}, {"account": "410", "side": "credit", "amount": 10}]}');
+  assert public.aviso(v, 'valuation_rule_mismatch') is null and public.aviso(v, 'asset_supplier_misuse') is null;
+
   -- ---------- 9. Seguridad ----------
   perform set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000b2', true);
   assert public.falla(format('select erp.entry_tutor_context(%L)', e), 'only available to the application owner');

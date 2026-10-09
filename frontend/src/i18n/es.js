@@ -554,6 +554,11 @@ export default {
     fixed_asset_supplier: 'Un inmovilizado se compra a un proveedor de inmovilizado (523 o 173), no a la 400 / 410.',
     unbalanced: 'El asiento no cuadra (Debe / Haber: {d}).',
     unknown_valuation_rule: 'La norma {d} no es una de las NRV del PGC.',
+    same_account_both_sides: 'La cuenta {d} aparece en el Debe y en el Haber: revisa el asiento.',
+    depreciation_mismatch: 'La amortización acumulada no corresponde a su inmovilizado ({d}).',
+    disposal_depreciation_side: 'En una baja de inmovilizado, la amortización acumulada se carga (Debe), no se abona.',
+    asset_supplier_misuse: 'La 523 / 173 es solo para proveedores de inmovilizado. Para servicios usa la 410; para mercaderías, la 400.',
+    valuation_rule_mismatch: 'La {d} no encaja con las cuentas del asiento.',
     no_tax_setup: 'Esta empresa no tiene los impuestos configurados: el IVA / IGIC se apunta en una cuenta normal, sin calcular la cuota.',
   },
 

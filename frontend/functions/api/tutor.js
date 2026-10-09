@@ -10,7 +10,13 @@
 // Usa el mismo binding "AI" y las mismas variables que /api/ai.
 // =====================================================================
 
-const DEFAULT_MODEL = '@cf/mistralai/mistral-small-3.1-24b-instruct'
+// Para razonar asientos hace falta un modelo más potente que para comentar ratios: gpt-oss-120b (OpenAI, open source).
+// Si falla o no responde, se usa Mistral Small como respaldo. TUTOR_MODEL permite probar otro sin tocar el código.
+const DEFAULT_MODEL = '@cf/openai/gpt-oss-120b'
+const FALLBACK_MODEL = '@cf/mistralai/mistral-small-3.1-24b-instruct'
+// Avisos de criterio (0026) que también merecen una segunda vuelta, aunque el asiento cuadre
+const REPAIRABLE = ['same_account_both_sides', 'depreciation_mismatch', 'disposal_depreciation_side',
+                    'asset_supplier_misuse', 'valuation_rule_mismatch', 'fixed_asset_supplier']
 const MAX_TEXT = 1000
 
 const json = (body, status = 200) =>
@@ -27,10 +33,23 @@ Reglas:
   pon tu cálculo en "amount", pero el código es lo importante. Si la empresa es de Canarias es IGIC, no IVA.
   Si tax_setup es false, usa la cuenta 472 / 477 sin tax_code.
 - Retenciones (IRPF): "role": "withholding" con la cuenta de withholdings.
-- El tercero (cliente, proveedor, acreedor): "role": "partner". El inmovilizado se compra a la 523 (o 173 a largo plazo), no a la 400.
-  Bancos y caja: "role": "cash". El resto: "role": "base" u "other".
+- El tercero: "role": "partner". Bancos y caja: "role": "cash". El resto: "role": "base" u "other".
+- Guía de cuentas del tercero:
+  · 400 Proveedores: SOLO mercaderías y materias primas (grupo 60).
+  · 410 Acreedores por prestaciones de servicios: profesionales (abogados, asesores), suministros, alquileres, reparaciones… (grupo 62).
+  · 523 / 173 Proveedores de inmovilizado (corto / largo plazo): SOLO cuando se compra inmovilizado (grupo 2).
+  · 430 Clientes: ventas del grupo 70. Venta de inmovilizado a plazos: 543 Créditos a corto plazo por enajenación de inmovilizado.
+- Venta o baja de un inmovilizado: se ABONA la cuenta del elemento por su COSTE (por ejemplo 218 por 20.000), se CARGA su
+  amortización acumulada (la que corresponde al elemento: 218 → 2818, 217 → 2817, 213 → 2813, 206 → 2806) y la diferencia
+  entre el precio de venta y el valor neto contable (coste − amortización) es beneficio (771) o pérdida (671).
+  Ejemplo: coste 20.000, amortización 15.000 → valor neto 5.000; vendido por 8.000 → beneficio 3.000 en la 771.
+  Nunca pongas la misma cuenta en el Debe y en el Haber.
 - Importes positivos en euros, con punto decimal. "side": "debit" (Debe) o "credit" (Haber). Debe = Haber.
-- "valuation_rule": el código de valuation_rules que se aplica (por ejemplo "NRV2"). No cites artículos ni normas que no estén en la lista.
+- "valuation_rule": el código de valuation_rules que se aplica (por ejemplo "NRV2" para inmovilizado material, "NRV10" existencias,
+  "NRV14" SOLO para ingresos por ventas y servicios). Un gasto corriente (servicios, suministros) no tiene NRV específica: déjalo vacío.
+  No cites artículos ni normas que no estén en la lista.
+- "la mitad", "un tercio"… se refieren al total de la factura (con impuestos).
+- Antes de responder, comprueba: Debe = Haber, cada cuenta en un solo lado y el resultado de la operación con su signo correcto.
 - Si falta un dato (el tipo de IVA, la forma de pago…), elige lo más habitual y dilo en "assumptions".
 - Escribe para alguien que está aprendiendo: breve y claro.
 
@@ -52,10 +71,23 @@ Rules:
   put your calculation in "amount", but the code is what matters. If the company is in the Canary Islands it is IGIC, not VAT.
   If tax_setup is false, use account 472 / 477 without tax_code.
 - Withholdings (IRPF): "role": "withholding" with the account from withholdings.
-- The third party (customer, supplier, creditor): "role": "partner". Fixed assets are bought against 523 (or 173 long term), not 400.
-  Banks and cash: "role": "cash". Anything else: "role": "base" or "other".
+- The third party: "role": "partner". Banks and cash: "role": "cash". Anything else: "role": "base" or "other".
+- Third-party account guide:
+  · 400 Suppliers: ONLY goods for resale and raw materials (group 60).
+  · 410 Creditors for services: professionals (lawyers, advisers), utilities, rent, repairs… (group 62).
+  · 523 / 173 Fixed-asset suppliers (short / long term): ONLY when buying fixed assets (group 2).
+  · 430 Customers: sales in group 70. Sale of a fixed asset on credit: 543 Short-term receivables from disposal of fixed assets.
+- Sale or disposal of a fixed asset: CREDIT the asset account at its COST (e.g. 218 for 20,000), DEBIT its accumulated
+  depreciation (the one for that asset: 218 → 2818, 217 → 2817, 213 → 2813, 206 → 2806) and the difference between the sale
+  price and the net book value (cost − depreciation) is a gain (771) or a loss (671).
+  Example: cost 20,000, depreciation 15,000 → net book value 5,000; sold for 8,000 → gain 3,000 in 771.
+  Never put the same account on both sides.
 - Positive amounts in euros, with a decimal point. "side": "debit" or "credit". Debits = credits.
-- "valuation_rule": the code from valuation_rules that applies (for example "NRV2"). Do not cite articles or rules outside the list.
+- "valuation_rule": the code from valuation_rules that applies (for example "NRV2" for property, plant and equipment, "NRV10"
+  inventories, "NRV14" ONLY for revenue). A current expense (services, utilities) has no specific rule: leave it empty.
+  Do not cite articles or rules outside the list.
+- "half", "a third"… refer to the invoice total (including taxes).
+- Before answering, check: debits = credits, each account on one side only, and the gain or loss with the right sign.
 - If something is missing (VAT rate, payment terms…), choose the most usual option and say so in "assumptions".
 - Write for someone who is learning: short and clear. Write the texts in English, but keep Spanish account numbers.
 
@@ -73,10 +105,25 @@ const REPAIR = {
   en: (checks) => `The ERP found these errors in your entry: ${checks}. Fix it and reply again ONLY with the complete JSON.`,
 }
 
-const responseText = (out) =>
-  typeof out?.response === 'string' ? out.response
-    : typeof out?.response === 'object' && out.response ? JSON.stringify(out.response)
-    : out?.choices?.[0]?.message?.content ?? ''
+// Texto de la respuesta: { response } (Mistral, Llama), al estilo OpenAI { choices }, o Responses API (gpt-oss)
+export const responseText = (out) => {
+  if (typeof out?.response === 'string') return out.response
+  if (out?.response && typeof out.response === 'object') return JSON.stringify(out.response)
+  if (typeof out?.output_text === 'string') return out.output_text
+  if (Array.isArray(out?.output)) {
+    return out.output.filter((o) => o?.type === 'message')
+      .flatMap((o) => o.content ?? []).map((c) => c?.text ?? '').join('')
+  }
+  return out?.choices?.[0]?.message?.content ?? ''
+}
+
+// Llamada al modelo: los gpt-oss usan el formato Responses API (input) y el resto, chat (messages)
+async function runModel(env, model, messages) {
+  if (model.includes('gpt-oss')) {
+    return env.AI.run(model, { input: messages, reasoning: { effort: 'medium' } })
+  }
+  return env.AI.run(model, { messages, max_tokens: 1200, temperature: 0.1 })
+}
 
 // Propuesta del modelo: el primer objeto JSON del texto, con las líneas mínimamente saneadas
 export function parseProposal(text) {
@@ -124,7 +171,7 @@ async function rpc(env, auth, fn, args) {
 
 export async function onRequestGet({ env }) {
   return json({ ok: true, ai: Boolean(env.AI), supabase: Boolean(env.VITE_SUPABASE_URL && env.VITE_SUPABASE_KEY),
-                model: env.AI_MODEL || DEFAULT_MODEL })
+                model: env.TUTOR_MODEL || DEFAULT_MODEL, fallback: FALLBACK_MODEL })
 }
 
 export async function onRequestPost({ request, env }) {
@@ -140,9 +187,11 @@ export async function onRequestPost({ request, env }) {
   if (!body.company_id || text.length < 5) return json({ error: 'bad_request' }, 400)
 
   const ctx = await rpc(env, auth, 'entry_tutor_context', { p_company: body.company_id, p_language: language })
+  // PGRST202: la función no existe en Supabase → falta ejecutar la migración
+  if (!ctx.ok && (ctx.body?.code === 'PGRST202' || ctx.status === 404)) return json({ error: 'db_not_updated', detail: '0025' }, 500)
   if (!ctx.ok) return json({ error: 'context_denied', detail: ctx.body?.message ?? '' }, ctx.status === 401 ? 401 : 403)
 
-  const model = env.AI_MODEL || DEFAULT_MODEL
+  let model = env.TUTOR_MODEL || DEFAULT_MODEL
   const messages = [
     { role: 'system', content: INSTRUCTIONS[language] },
     { role: 'user', content: `${JSON.stringify(ctx.body)}\n\n---\n${language === 'en' ? 'Transaction' : 'Operación'}: ${text}` },
@@ -154,10 +203,18 @@ export async function onRequestPost({ request, env }) {
   for (; rounds < 2; rounds++) {
     let out
     try {
-      out = await env.AI.run(model, { messages, max_tokens: 1200, temperature: 0.1 })
+      out = await runModel(env, model, messages)
+      // Respuesta vacía del modelo principal: se prueba con el de respaldo
+      if (!responseText(out).trim() && model !== FALLBACK_MODEL) { model = FALLBACK_MODEL; out = await runModel(env, model, messages) }
     } catch (e) {
       const quota = /limit|quota|neuron|429/i.test(String(e?.message ?? e))
-      return json({ error: quota ? 'ai_quota' : 'ai_failed', detail: String(e?.message ?? e).slice(0, 300) }, quota ? 429 : 502)
+      if (!quota && model !== FALLBACK_MODEL) {
+        try { model = FALLBACK_MODEL; out = await runModel(env, model, messages) } catch (e2) { e = e2 }
+      }
+      if (!out) {
+        const q = /limit|quota|neuron|429/i.test(String(e?.message ?? e))
+        return json({ error: q ? 'ai_quota' : 'ai_failed', detail: String(e?.message ?? e).slice(0, 300) }, q ? 429 : 502)
+      }
     }
     const answer = responseText(out)
     proposal = parseProposal(answer)
@@ -171,9 +228,10 @@ export async function onRequestPost({ request, env }) {
     })
     if (!v.ok) return json({ error: 'validation_failed', detail: v.body?.message ?? '' }, 502)
     validation = v.body
-    if (validation.ok) break
-    // Segunda vuelta: se le enseñan los errores del ERP
-    const errors = validation.checks.filter((c) => c.level === 'error').map((c) => `${c.code} ${c.detail ?? ''}`.trim()).join('; ')
+    const problems = validation.checks.filter((c) => c.level === 'error' || REPAIRABLE.includes(c.code))
+    if (problems.length === 0) break
+    // Segunda vuelta: se le enseñan los errores y los avisos de criterio del ERP
+    const errors = problems.map((c) => `${c.code} ${c.detail ?? ''}`.trim()).join('; ')
     messages.push({ role: 'assistant', content: answer }, { role: 'user', content: REPAIR[language](errors) })
   }
 

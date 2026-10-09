@@ -521,6 +521,7 @@ export default {
     supabase_not_configured: 'Faltan las variables de Supabase en Cloudflare.',
     ai_bad_answer: 'La IA no ha devuelto un asiento válido. Prueba otra vez o describe la operación de otra forma.',
     validation_failed: 'No se ha podido comprobar la propuesta.',
+    db_not_updated: 'Falta ejecutar una migración en Supabase (SQL Editor)',
     bad_request: 'Petición incorrecta.',
   },
 

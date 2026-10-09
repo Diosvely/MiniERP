@@ -522,6 +522,7 @@ export default {
     supabase_not_configured: 'The Supabase variables are missing in Cloudflare.',
     ai_bad_answer: 'The AI did not return a valid entry. Try again or describe the transaction differently.',
     validation_failed: 'The proposal could not be checked.',
+    db_not_updated: 'A migration has not been run in Supabase yet (SQL Editor)',
     bad_request: 'Bad request.',
   },
 

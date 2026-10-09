@@ -19,7 +19,8 @@ function expandDot(text, digits) {
 // Formulario de asiento: cabecera + líneas, con cuadre en vivo y manejo rápido con teclado
 //   Enter: cuenta → Debe → Haber → "=" → cuenta de la línea siguiente
 //   +    : nueva línea          −: borrar la línea actual
-export default function JournalEntryForm({ company, onPosted }) {
+//   draft: asiento que propone el Tutor de asientos ({ id, description, lines: [{ account_no, debit, credit, description }] })
+export default function JournalEntryForm({ company, onPosted, draft }) {
   const { t, language } = useI18n()
   const [accounts, setAccounts] = useState([])
   const [fiscalYears, setFiscalYears] = useState([])
@@ -31,15 +32,33 @@ export default function JournalEntryForm({ company, onPosted }) {
   const [focusTarget, setFocusTarget] = useState(null)   // { line, field } a enfocar tras re-dibujar
   const linesRef = useRef(null)
 
+  // Solo subcuentas (posting): son las únicas donde se puede apuntar
+  const loadAccounts = () => supabase.from('gl_accounts').select('id, account_no, name, name_en')
+    .eq('company_id', company.id).eq('account_type', 'posting').order('account_no')
+    .then(({ data }) => { setAccounts(data ?? []); return data ?? [] })
+
   useEffect(() => {
-    // Solo subcuentas (posting): son las únicas donde se puede apuntar
-    supabase.from('gl_accounts').select('id, account_no, name, name_en')
-      .eq('company_id', company.id).eq('account_type', 'posting').order('account_no')
-      .then(({ data }) => setAccounts(data ?? []))
+    loadAccounts()
     supabase.from('fiscal_years').select('id, year, starting_date, ending_date, status')
       .eq('company_id', company.id)
       .then(({ data }) => setFiscalYears(data ?? []))
   }, [company.id])
+
+  // Asiento propuesto por el Tutor: se recargan las cuentas (puede haber subcuentas nuevas) y se rellenan las líneas.
+  // Queda en pantalla para revisarlo: se guarda o contabiliza con los botones de siempre.
+  useEffect(() => {
+    if (!draft) return
+    loadAccounts().then((list) => {
+      const id = (no) => list.find((a) => a.account_no === no)?.id ?? ''
+      setHeader((h) => ({ ...h, description: draft.description }))
+      setLines(draft.lines.map((l) => ({
+        accountText: l.account_no, gl_account_id: id(l.account_no),
+        debit: Number(l.debit) ? String(l.debit) : '', credit: Number(l.credit) ? String(l.credit) : '',
+        description: l.description ?? '',
+      })))
+      setError(''); setMessage(t('tutorLoaded'))
+    })
+  }, [draft?.id])
 
   // Mover el cursor cuando React ya ha dibujado la línea (por ejemplo, una línea nueva)
   useEffect(() => {
@@ -188,7 +207,7 @@ export default function JournalEntryForm({ company, onPosted }) {
   const listId = `cuentas-${company.id}`
 
   return (
-    <section className="tarjeta">
+    <section className="tarjeta formulario-asiento">
       <h2>{t('newEntry')}</h2>
 
       <div className="rejilla-cabecera">

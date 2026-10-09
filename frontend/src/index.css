@@ -264,3 +264,13 @@ button.pequeno { align-self: flex-start; padding: 6px 10px; font-size: .85rem; m
 .bloque-ia.learning { background: rgba(31,94,255,.07); border-radius: 8px; padding: 10px 12px; }
 .bloque-ia.learning p { margin: 0; line-height: 1.45; }
 .ia-texto { white-space: pre-wrap; font-family: inherit; background: var(--fondo); padding: 10px; border-radius: 8px; }
+
+/* --- Tutor de asientos --- */
+.tutor-asientos { border-left: 4px solid #8250df; }
+.tutor-asientos textarea { width: 100%; font: inherit; padding: 10px; border: 1px solid var(--borde); border-radius: 8px;
+  background: var(--tarjeta); color: var(--texto); resize: vertical; box-sizing: border-box; }
+.tutor-asientos > button { align-self: flex-start; }
+.propuesta { display: flex; flex-direction: column; gap: 10px; }
+.propuesta h3 { margin: 6px 0 2px; font-size: .95rem; }
+.propuesta td .insignia { margin-left: 6px; }
+.propuesta > button { align-self: flex-start; }

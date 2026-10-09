@@ -15,6 +15,7 @@ import Withholdings from './Withholdings'
 import ProRata from './ProRata'
 import CashFlow from './CashFlow'
 import Ratios from './Ratios'
+import EntryTutor from './EntryTutor'
 
 // Menú agrupado por áreas, como el Role Center de Business Central o el menú de A3 / Sage:
 //   Contabilidad · Facturas · Impuestos · Informes · Datos maestros
@@ -46,8 +47,9 @@ export default function CompanyView({ company, readOnly, canPublish, onChanged, 
   const [menuOpen, setMenuOpen] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)
   const [error, setError] = useState('')
+  const [draft, setDraft] = useState(null)   // asiento propuesto por el Tutor de asientos
 
-  useEffect(() => { setSection(initial()) }, [company.id, readOnly])
+  useEffect(() => { setSection(initial()); setDraft(null) }, [company.id, readOnly])
 
   function go(id) {
     setSection(id); remember(company.id, id); setMenuOpen(false)
@@ -112,7 +114,10 @@ export default function CompanyView({ company, readOnly, canPublish, onChanged, 
         {error && <p className="aviso">⚠ {error}</p>}
         <p className="ruta">{t(currentGroup)} › {t(currentItem)}</p>
 
-        {section === 'entry' && !readOnly && <JournalEntryForm company={company} onPosted={() => setRefreshKey((k) => k + 1)} />}
+        {section === 'entry' && !readOnly && <EntryTutor company={company} onLoad={setDraft} />}
+        {section === 'entry' && !readOnly && (
+          <JournalEntryForm company={company} draft={draft} onPosted={() => setRefreshKey((k) => k + 1)} />
+        )}
         {section === 'journal' && <GeneralJournal company={company} readOnly={readOnly} refreshKey={refreshKey} />}
         {section === 'closing' && <YearClosing company={company} readOnly={readOnly} />}
         {section === 'invoices' && <Invoices company={company} readOnly={readOnly} />}

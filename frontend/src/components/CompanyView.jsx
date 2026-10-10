@@ -17,22 +17,20 @@ import CashFlow from './CashFlow'
 import Ratios from './Ratios'
 import EntryTutor from './EntryTutor'
 import CompanyAccess from './CompanyAccess'
+import Home from './Home'
 import { companyPath, navigate, useHashRoute } from '../router'
 
 // Menú agrupado por áreas, como el Role Center de Business Central o el menú de A3 / Sage:
 //   Contabilidad · Facturas · Impuestos · Informes · Datos maestros
 // En el ordenador es una barra lateral fija; en el móvil, un menú desplegable.
 const MENU = [
+  ['', [['home', 'menuHome']]],   // Inicio: sin título de grupo, siempre el primero
   ['menuAccounting', [['entry', 'tabEntry', true], ['journal', 'tabJournal'], ['closing', 'menuYearClosing']]],
   ['menuInvoices', [['invoices', 'tabInvoices']]],
   ['menuTaxes', [['settlement', 'tabSettlement'], ['withholdings', 'menuWithholdings'], ['prorata', 'menuProRata'], ['taxes', 'menuTaxSetup']]],
   ['menuReports', [['balance', 'menuBalance'], ['pyg', 'menuPyg'], ['cashflow', 'menuCashFlow'], ['ratios', 'menuRatios'], ['reports', 'menuReportsItem']]],
   ['menuMasterData', [['accounts', 'menuChart'], ['partners', 'tabPartners']]],
 ]
-
-// Última pantalla abierta en cada empresa: respaldo cuando la dirección no trae pantalla (#/empresa/<id>)
-const remembered = (id) => { try { return localStorage.getItem(`erp-seccion-${id}`) } catch { return null } }
-const remember = (id, s) => { try { localStorage.setItem(`erp-seccion-${id}`, s) } catch { /* sin almacenamiento */ } }
 
 //   readOnly   → empresa demo de otro usuario (o rol viewer): solo consultar
 //   canPublish → el propietario de la app o el titular de los datos (Miembro) publican/despublican la demo
@@ -45,14 +43,12 @@ export default function CompanyView({ company, readOnly, canPublish, isOwner, on
   ]]).filter(([, items]) => items.length)
   const allowed = menu.flatMap(([, items]) => items.map(([id]) => id))
   // La pantalla sale de la dirección (#/empresa/<id>/<pantalla>): el botón atrás, recargar y compartir el enlace funcionan.
-  // Si no viene o no está permitida (p. ej. "entry" en una demo), la última abierta o la primera del menú.
+  // Si no viene o no está permitida (p. ej. "entry" en una demo), se abre el Inicio.
   const route = useHashRoute()
   const fromRoute = route[0] === 'empresa' && route[1] === company.id ? route[2] : null
-  const saved = remembered(company.id)
-  const section = allowed.includes(fromRoute) ? fromRoute : allowed.includes(saved) ? saved : allowed[0]
+  const section = allowed.includes(fromRoute) ? fromRoute : 'home'
   useEffect(() => {
     if (fromRoute !== section) navigate(companyPath(company.id, section), { replace: true })
-    remember(company.id, section)
   }, [fromRoute, section, company.id])
 
   const [menuOpen, setMenuOpen] = useState(false)
@@ -79,7 +75,7 @@ export default function CompanyView({ company, readOnly, canPublish, isOwner, on
   const [currentGroup, currentItem] = (() => {
     for (const [group, items] of menu) {
       const item = items.find(([id]) => id === section)
-      if (item) return [group, item[1]]
+      if (item) return [group || item[1], group ? item[1] : '']
     }
     return ['', '']
   })()
@@ -99,13 +95,13 @@ export default function CompanyView({ company, readOnly, canPublish, isOwner, on
 
       {/* Móvil: botón de menú con la ruta actual (Área › Pantalla) */}
       <button type="button" className="boton-menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
-        <span>☰</span> {t(currentGroup)} › <strong>{t(currentItem)}</strong>
+        <span>☰</span> {currentItem ? <>{t(currentGroup)} › <strong>{t(currentItem)}</strong></> : <strong>{t(currentGroup)}</strong>}
       </button>
 
       <aside className={menuOpen ? 'menu-empresa abierto' : 'menu-empresa'}>
         {menu.map(([group, items]) => (
           <div key={group} className="menu-grupo">
-            <h3>{t(group)}</h3>
+            {group && <h3>{t(group)}</h3>}
             {items.map(([id, label]) => (
               <button key={id} type="button" className={section === id ? 'activa' : ''} onClick={() => go(id)}>
                 {t(label)}
@@ -146,8 +142,9 @@ export default function CompanyView({ company, readOnly, canPublish, isOwner, on
             </div>
           </section>
         )}
-        <p className="ruta">{t(currentGroup)} › {t(currentItem)}</p>
+        {currentItem && <p className="ruta">{t(currentGroup)} › {t(currentItem)}</p>}
 
+        {section === 'home' && <Home company={company} readOnly={readOnly} />}
         {section === 'entry' && !readOnly && <EntryTutor company={company} onLoad={setDraft} />}
         {section === 'entry' && !readOnly && (
           <JournalEntryForm company={company} draft={draft} onPosted={() => setRefreshKey((k) => k + 1)} />

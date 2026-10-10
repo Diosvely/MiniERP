@@ -310,3 +310,52 @@ button.enlace { background: transparent; color: var(--primario); border: 0; padd
 .deshacer { display: flex; align-items: center; gap: 10px; margin: 0; padding: 8px 12px; border-radius: 8px;
             background: var(--fondo); border: 1px solid var(--borde); font-size: .9rem; }
 .deshacer button.enlace { padding: 0; }
+
+
+
+/* --- v0.25.0: Inicio, estados vacíos y de carga --- */
+a.boton { display: inline-flex; align-items: center; justify-content: center; gap: 6px; padding: 10px 14px; border-radius: 8px;
+          background: var(--primario); color: #fff; text-decoration: none; white-space: nowrap; }
+a.boton.secundario { background: transparent; color: var(--primario); border: 1px solid var(--primario); }
+a.enlace { color: var(--primario); text-decoration: none; }
+a.enlace:hover { text-decoration: underline; }
+.cargando { color: var(--suave); }
+.cargando span { display: inline-block; animation: latido 1.2s ease-in-out infinite; }
+@keyframes latido { 50% { opacity: .2; } }
+@media (prefers-reduced-motion: reduce) { .cargando span { animation: none; } }
+.vacio { display: flex; flex-direction: column; align-items: center; text-align: center; gap: 8px; padding: 16px 8px; }
+.vacio p { margin: 0; }
+.vacio-icono { font-size: 1.8rem; }
+.empresa-contenido { container-type: inline-size; }
+.inicio { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 16px; }
+@container (min-width: 760px) { .inicio { grid-template-columns: minmax(0, 1fr) 260px; } }
+.saludo h2 { margin: 0; }
+.ruta-cabecera { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.ruta-cabecera h2 { margin: 0; }
+.progreso-texto { color: var(--suave); font-size: .9rem; white-space: nowrap; }
+.progreso { height: 8px; border-radius: 4px; background: var(--borde); overflow: hidden; }
+.progreso span { display: block; height: 100%; background: var(--exito, #1a7f37); transition: width .3s; }
+.pasos { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.paso { display: flex; flex-direction: row; align-items: center; gap: 12px; padding: 10px 12px;
+        border: 1px solid var(--borde); border-radius: 10px; }
+.paso-numero { flex: none; width: 30px; height: 30px; border-radius: 50%; display: grid; place-items: center;
+               font-weight: 600; background: var(--borde); color: var(--texto); }
+.paso-texto { flex: 1; display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.paso-texto span { color: var(--suave); font-size: .88rem; }
+.paso.hecho .paso-numero { background: var(--exito, #1a7f37); color: #fff; }
+.paso.hecho .paso-texto strong { color: var(--suave); }
+.paso.siguiente { border: 2px solid var(--primario); background: color-mix(in srgb, var(--primario) 7%, var(--tarjeta)); }
+.paso.siguiente .paso-numero { background: var(--primario); color: #fff; }
+.paso.pendiente { opacity: .9; }
+@container (max-width: 520px) {
+  .paso { flex-wrap: wrap; }
+  .paso a.boton { margin-left: 42px; }
+  .paso.siguiente a.boton { width: calc(100% - 42px); }
+}
+.accesos-rapidos .acceso { display: flex; align-items: center; gap: 10px; padding: 10px 12px; border: 1px solid var(--borde);
+                           border-radius: 8px; color: var(--texto); text-decoration: none; }
+.accesos-rapidos .acceso:hover, .accesos-rapidos .acceso:focus-visible { border-color: var(--primario); color: var(--primario); }
+.ultimos li { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 2px 10px; padding: 8px 0; }
+.ultimo-fecha { grid-column: 1 / -1; font-size: .8rem; }
+.ultimo-concepto { color: var(--texto) !important; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.ultimos .num { font-variant-numeric: tabular-nums; }

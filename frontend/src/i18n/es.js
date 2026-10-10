@@ -800,6 +800,24 @@ export default {
   landingCheckEmailHelp: 'Abre el enlace del correo (mira también en spam) y vuelve aquí para iniciar sesión.',
   landingAbout: 'Proyecto de aprendizaje y portfolio: contabilidad española, ERP y datos. No es asesoramiento fiscal.',
 
+// v0.26.0 · Plantillas de asientos, búsqueda de cuentas por nombre y explicaciones
+  accountSearch: 'Nº o nombre (caja, bancos…)',
+  tplTitle: '¿Qué ha pasado?',
+  tpl: {
+    purchase: { label: '🛒 He comprado mercaderías', concept: 'Compra de mercaderías' },
+    sale: { label: '💶 He vendido', concept: 'Venta de mercaderías' },
+    collect: { label: '📥 He cobrado a un cliente', concept: 'Cobro de cliente' },
+    pay: { label: '📤 He pagado a un proveedor', concept: 'Pago a proveedor' },
+    payroll: { label: '👥 Nómina', concept: 'Nómina del mes' },
+  },
+  tplNote: 'Rellenan las cuentas; tú escribes los importes y pulsas "=" en la línea del total. No calculan el {tax}: para una factura con el impuesto calculado, usa',
+  tplLoaded: 'Plantilla cargada: escribe los importes en los campos marcados y pulsa "=" en la línea del total.',
+  tplMissing: 'No hay subcuenta de: {g}. Esas líneas quedan marcadas: créalas antes de contabilizar.',
+  explainDebitTitle: '¿Qué es el Debe y el Haber?',
+  explainDebit: 'Son los dos lados de cada cuenta. En las cuentas de lo que tienes (caja, bancos, clientes) y en los gastos, lo que aumenta va al Debe; en lo que debes (proveedores, préstamos), en el capital y en los ingresos, lo que aumenta va al Haber. Cada asiento mueve al menos dos cuentas y la suma del Debe es siempre igual a la del Haber: es la partida doble.',
+  explainDraftTitle: '¿Guardar borrador o contabilizar?',
+  explainDraft: 'Un borrador se puede cambiar o borrar y no cuenta en los informes. Al contabilizar, el asiento recibe su número correlativo, entra en el diario, el mayor y los estados, y ya no se cambia: si hay un error, se anula con un contraasiento.',
+
   industry: {
     services: 'Servicios',
     retail: 'Comercio minorista',

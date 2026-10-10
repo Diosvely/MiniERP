@@ -801,6 +801,24 @@ export default {
   landingCheckEmailHelp: 'Open the link in the email (check spam too) and come back here to sign in.',
   landingAbout: 'Learning project and portfolio: Spanish accounting, ERP and data. Not tax advice.',
 
+// v0.26.0 · Entry templates, account search by name and explanations
+  accountSearch: 'No. or name (cash, bank…)',
+  tplTitle: 'What happened?',
+  tpl: {
+    purchase: { label: '🛒 I bought goods', concept: 'Purchase of goods' },
+    sale: { label: '💶 I sold', concept: 'Sale of goods' },
+    collect: { label: '📥 A customer paid me', concept: 'Customer collection' },
+    pay: { label: '📤 I paid a supplier', concept: 'Supplier payment' },
+    payroll: { label: '👥 Payroll', concept: 'Monthly payroll' },
+  },
+  tplNote: 'They fill in the accounts; you type the amounts and press "=" on the total line. They do not calculate {tax}: for an invoice with the tax calculated, use',
+  tplLoaded: 'Template loaded: type the amounts in the highlighted fields and press "=" on the total line.',
+  tplMissing: 'There is no posting account for: {g}. Those lines are marked: create them before posting.',
+  explainDebitTitle: 'What are debit and credit?',
+  explainDebit: 'They are the two sides of every account. For what you own (cash, bank, customers) and for expenses, increases go to the debit; for what you owe (suppliers, loans), equity and income, increases go to the credit. Every entry moves at least two accounts and total debits always equal total credits: that is double entry.',
+  explainDraftTitle: 'Save as draft or post?',
+  explainDraft: 'A draft can be changed or deleted and does not count in the reports. When you post, the entry gets its sequential number, goes into the journal, the ledger and the statements, and can no longer be changed: if there is a mistake, it is reversed with a reversal entry.',
+
   industry: {
     services: 'Services',
     retail: 'Retail',

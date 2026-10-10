@@ -423,3 +423,21 @@ a.enlace:hover { text-decoration: underline; }
 .entrada-pie { text-align: center; color: var(--suave); font-size: .85rem; padding-bottom: 16px; }
 .entrada-pie p { margin: 4px 0; }
 .entrada-pie a { color: var(--primario); }
+
+/* --- v0.26.0: plantillas de asientos y buscador de cuentas --- */
+.plantillas { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border-radius: 10px;
+              background: var(--fondo); border: 1px solid var(--borde); }
+.plantillas-titulo { font-weight: 600; }
+.plantillas-botones { display: flex; flex-wrap: wrap; gap: 6px; }
+.plantillas-botones button { padding: 6px 10px; font-size: .9rem; }
+.explica { font-size: .9rem; }
+.explica summary { cursor: pointer; color: var(--primario); }
+.explica p { margin: 6px 0 0; color: var(--texto); line-height: 1.45; }
+.cuenta-linea { position: relative; }
+.sugerencias { position: absolute; z-index: 20; left: 0; right: 0; top: 44px; max-height: 260px; overflow-y: auto;
+               background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,.15); }
+.sugerencias li { flex-direction: row; gap: 8px; padding: 8px 10px; cursor: pointer; border-bottom: 1px solid var(--borde); font-size: .92rem; }
+.sugerencias li:last-child { border-bottom: 0; }
+.sugerencias li.activa, .sugerencias li:hover { background: color-mix(in srgb, var(--primario) 12%, var(--tarjeta)); }
+input.esperado { border-color: var(--primario); box-shadow: inset 0 0 0 1px var(--primario); }
+.linea-total .acciones-linea button:first-child { border-width: 2px; font-weight: 700; }

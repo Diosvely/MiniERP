@@ -16,6 +16,7 @@ import ProRata from './ProRata'
 import CashFlow from './CashFlow'
 import Ratios from './Ratios'
 import EntryTutor from './EntryTutor'
+import CompanyAccess from './CompanyAccess'
 
 // Menú agrupado por áreas, como el Role Center de Business Central o el menú de A3 / Sage:
 //   Contabilidad · Facturas · Impuestos · Informes · Datos maestros
@@ -33,11 +34,14 @@ const remembered = (id) => { try { return localStorage.getItem(`erp-seccion-${id
 const remember = (id, s) => { try { localStorage.setItem(`erp-seccion-${id}`, s) } catch { /* sin almacenamiento */ } }
 
 //   readOnly   → empresa demo de otro usuario (o rol viewer): solo consultar
-//   canPublish → el propietario de la app puede publicar/despublicar la empresa como demo
-export default function CompanyView({ company, readOnly, canPublish, onChanged, onBack }) {
+//   canPublish → el propietario de la app o el titular de los datos (Miembro) publican/despublican la demo
+//   isOwner    → el propietario de la app: ve el apartado Accesos (quién entra y con qué rol)
+export default function CompanyView({ company, readOnly, canPublish, isOwner, onChanged, onBack }) {
   const { t } = useI18n()
-  const menu = MENU.map(([group, items]) => [group, items.filter(([, , write]) => !(write && readOnly))])
-    .filter(([, items]) => items.length)
+  const menu = MENU.map(([group, items]) => [group, [
+    ...items.filter(([, , write]) => !(write && readOnly)),
+    ...(group === 'menuMasterData' && isOwner && company.my_role === 'admin' ? [['access', 'menuAccess']] : []),
+  ]]).filter(([, items]) => items.length)
   const allowed = menu.flatMap(([, items]) => items.map(([id]) => id))
   const initial = () => {
     const saved = remembered(company.id)
@@ -56,12 +60,14 @@ export default function CompanyView({ company, readOnly, canPublish, onChanged, 
     window.scrollTo?.({ top: 0 })
   }
 
-  async function togglePublish() {
+  // Publicar como demo: se pide la mención y que acepte que los datos serán públicos. Despublicar es directo.
+  const [publishing, setPublishing] = useState(null)   // { credit, accepted } mientras se rellena
+  async function setDemo(demo, credit) {
     setError('')
-    const { error } = await supabase.from('companies')
-      .update({ is_demo: !company.is_demo }).eq('id', company.id)
+    const { error } = await supabase.rpc('set_company_demo', { p_company: company.id, p_demo: demo, p_credit: credit ?? null })
     if (error) return setError(error.message)
-    onChanged({ ...company, is_demo: !company.is_demo })
+    setPublishing(null)
+    onChanged({ ...company, is_demo: demo, data_credit: credit?.trim() || company.data_credit })
   }
 
   const [currentGroup, currentItem] = (() => {
@@ -81,6 +87,7 @@ export default function CompanyView({ company, readOnly, canPublish, onChanged, 
             {company.name} {company.is_demo && <span className="insignia">{t('demoBadge')}</span>}
           </strong>
           <span>{t(`territory.${company.tax_territory}`)}</span>
+          {company.data_credit && <span className="mencion">📊 {company.data_credit}</span>}
         </div>
       </div>
 
@@ -102,7 +109,8 @@ export default function CompanyView({ company, readOnly, canPublish, onChanged, 
         ))}
         {canPublish && (
           <div className="menu-grupo">
-            <button type="button" className="secundario" onClick={togglePublish}>
+            <button type="button" className="secundario"
+                    onClick={() => (company.is_demo ? setDemo(false) : setPublishing({ credit: company.data_credit ?? '', accepted: false }))}>
               {company.is_demo ? t('unpublishDemo') : t('publishDemo')}
             </button>
           </div>
@@ -112,6 +120,26 @@ export default function CompanyView({ company, readOnly, canPublish, onChanged, 
       <section className="empresa-contenido">
         {readOnly && <p className="solo-lectura">👁 {t('readOnly')}</p>}
         {error && <p className="aviso">⚠ {error}</p>}
+        {company.is_data_owner && <p className="titular">🤝 {t('dataOwnerBanner')}</p>}
+        {publishing && (
+          <section className="tarjeta publicar-demo">
+            <h2>{t('publishTitle')}</h2>
+            <p className="ayuda">{t('publishIntro')}</p>
+            <label>{t('publishCredit')}
+              <input maxLength={200} value={publishing.credit} placeholder={t('publishCreditPlaceholder')}
+                     onChange={(e) => setPublishing({ ...publishing, credit: e.target.value })} />
+            </label>
+            <label className="opcion">
+              <input type="checkbox" checked={publishing.accepted}
+                     onChange={(e) => setPublishing({ ...publishing, accepted: e.target.checked })} />
+              {t('publishAccept')}
+            </label>
+            <div className="fila">
+              <button type="button" className="secundario" onClick={() => setPublishing(null)}>{t('cancel')}</button>
+              <button type="button" disabled={!publishing.accepted} onClick={() => setDemo(true, publishing.credit)}>{t('publishDemo')}</button>
+            </div>
+          </section>
+        )}
         <p className="ruta">{t(currentGroup)} › {t(currentItem)}</p>
 
         {section === 'entry' && !readOnly && <EntryTutor company={company} onLoad={setDraft} />}
@@ -132,6 +160,7 @@ export default function CompanyView({ company, readOnly, canPublish, onChanged, 
         {section === 'reports' && <Reports company={company} />}
         {section === 'accounts' && <Accounts company={company} readOnly={readOnly} />}
         {section === 'partners' && <Partners company={company} readOnly={readOnly} />}
+        {section === 'access' && isOwner && <CompanyAccess company={company} />}
       </section>
     </div>
   )

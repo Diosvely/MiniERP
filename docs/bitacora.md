@@ -518,3 +518,76 @@ mensual a contabilidad, como el módulo de Activos Fijos de BC o AA de SAP.
 **Siguiente paso:** módulo de **Inmovilizado** (fichas, plan de amortización y asiento mensual a contabilidad).
 Después, inventario y nóminas.
 
+
+## 2026-10-09 · v0.23.0 · Tutor de asientos con IA
+
+**Qué se hizo**
+- Migración `0025_entry_tutor.sql`:
+  - tabla `valuation_rules` con las 23 NRV;
+  - `entry_tutor_context`: el PGC, los impuestos vigentes, las retenciones y las NRV (sin datos de la empresa);
+  - `validate_proposed_entry`: subcuentas, tercero, impuesto calculado por el ERP y cuadre.
+- Migración `0026_tutor_checks.sql`:
+  - **reglas de criterio** (la misma cuenta en los dos lados, amortización ↔ elemento, baja de inmovilizado,
+    523 sin inmovilizado y NRV que no encaja);
+  - cuentas **2800–2806 y 2811–2819** del PGC.
+- Función **`/api/tutor`**:
+  - modelo `gpt-oss-120b`, con Mistral Small de respaldo;
+  - guía de cuentas en las instrucciones;
+  - segunda vuelta cuando el ERP encuentra errores o avisos de criterio.
+- Pantalla **Contabilidad › Asiento**: el cuadro "Describe la operación", con la propuesta, los supuestos, la NRV,
+  el porqué de cada línea, las comprobaciones del ERP, una pregunta de repaso y **Cargar en el asiento** (crea las
+  subcuentas nuevas y rellena el formulario sin contabilizar).
+- Mensaje claro cuando falta ejecutar una migración en Supabase, en lugar de "no tienes permiso".
+- Pruebas: la fase 20, con 13 casos. Pasan las 20 fases.
+
+**Lo que se aprende en esta fase**
+- **Cuadrar no es estar bien.** El primer intento de la furgoneta cuadraba (24.680 = 24.680), pero tenía una pérdida
+  de 7.000 € en lugar de un beneficio de 3.000 €.
+- **Baja de inmovilizado:**
+  - se abona el elemento por su **coste** (218 por 20.000);
+  - se carga **su** amortización acumulada (2818 por 15.000);
+  - precio de venta − valor neto contable = resultado: 8.000 − 5.000 = **3.000 de beneficio en la 771**.
+- **400, 410 y 523:** la 400 es para mercaderías y materias, la 410 para servicios (abogados, suministros) y la
+  523 / 173 solo para inmovilizado.
+- **La retención** del profesional se calcula sobre la base, sin el impuesto, y va a la 4751 (modelo 111).
+- **No todo tiene NRV:** un gasto corriente de servicios no tiene una norma de valoración específica.
+- **El modelo importa:** con las mismas reglas, Mistral Small acertó 1 de 3 y gpt-oss-120b, 3 de 3.
+
+**Decisiones:** ADR del Tutor de asientos en `docs/decisiones/`.
+
+**Siguiente paso:** v0.24.0 "Accesos y titulares de datos" (el rol *Miembro* para quien cede su dataset, con publicación de su demo y, quizá, el Analista IA en su empresa). Después, el módulo de Inmovilizado.
+
+## 2026-10-10 · v0.24.0 · Accesos y titulares de los datos (Miembro)
+
+**Qué se hizo**
+- Migración `0027_members.sql`:
+  - `company_users.data_owner` (el titular de los datos) y `companies.data_credit` (la mención de la demo);
+  - `grant_company_access`, `revoke_company_access` y `company_access` (solo el owner, por email);
+  - `set_company_demo`, para que el owner o el titular publiquen con su mención;
+  - IA para el owner y el titular: `ai_allowed`, `ai_status` y `ai_consume`, con cuota diaria de 10
+    (`app_profiles.ai_daily_limit`);
+  - `ai_feedback`: opiniones sobre las respuestas de la IA.
+- `/api/ai` y `/api/tutor` gastan una consulta de la cuota antes de llamar al modelo; la segunda vuelta del tutor
+  no cuenta aparte.
+- Pantallas:
+  - **Datos maestros › Accesos** (solo el owner): usuarios, roles, consultas de IA de hoy y el buzón de opiniones;
+  - aviso para el titular;
+  - **Publicar como demo** con mención y aceptación;
+  - "¿Es correcta esta respuesta?" en el Tutor y el Analista;
+  - cuota restante de IA;
+  - **Cambiar contraseña**.
+- Pruebas: la fase 21 (25 comprobaciones con tres usuarios: owner, amigo y curioso). Pasan las 21 fases.
+
+**Lo que se aprende en esta fase**
+- **Roles en dos niveles**, como en Power BI / Fabric y en BC: rol de aplicación (owner / member) y rol por
+  empresa (admin / contable / solo lectura), más un atributo de negocio (titular de los datos).
+- **La seguridad en la base de datos manda:** la web solo enseña u oculta botones; quién puede publicar, usar la
+  IA o ver una empresa lo decide PostgreSQL (RLS y funciones `security definer` con comprobación explícita).
+- **Una cuota se cuenta antes de gastar:** la llamada rechazada no suma (la transacción se deshace).
+- **Privacidad:** los datos ajenos se publican solo con el permiso de su titular, que es quien los publica.
+
+**Decisiones:** ADR de Accesos y titulares de los datos en `docs/decisiones/`.
+
+**Siguiente paso:** dar de alta a los dos compañeros del curso y recoger sus primeras opiniones sobre la IA.
+Después, el módulo de **Inmovilizado**.
+

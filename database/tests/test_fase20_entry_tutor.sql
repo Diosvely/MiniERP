@@ -163,7 +163,7 @@ begin
 
   -- ---------- 9. Seguridad ----------
   perform set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000b2', true);
-  assert public.falla(format('select erp.entry_tutor_context(%L)', e), 'only available to the application owner');
+  assert public.falla(format('select erp.entry_tutor_context(%L)', e), 'not enabled for you');
   assert public.falla(format($q$select erp.validate_proposed_entry(%L, '{"lines": []}')$q$, e), 'not allowed');
   perform set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a1', true);
 end $$;

@@ -123,7 +123,7 @@ begin
   assert public.falla(format('select erp.ai_context(%L, 2030)', e), 'does not exist');
   perform set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000b2', true);
   assert not erp.can_use_ai(), 'otro usuario no';
-  assert public.falla(format('select erp.ai_context(%L, 2025)', e), 'only available to the application owner');
+  assert public.falla(format('select erp.ai_context(%L, 2025)', e), 'not enabled for you');
   perform set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a1', true);
 end $$;
 

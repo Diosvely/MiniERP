@@ -135,6 +135,19 @@ export async function onRequestPost({ request, env }) {
   }
   const context = await ctx.json()
 
+  // Cuota diaria de IA por usuario (el owner no tiene límite): se gasta una antes de llamar al modelo
+  const quota = await fetch(`${env.VITE_SUPABASE_URL}/rest/v1/rpc/ai_consume`, {
+    method: 'POST',
+    headers: { apikey: env.VITE_SUPABASE_KEY, Authorization: auth, 'Content-Type': 'application/json',
+               'Content-Profile': 'erp', 'Accept-Profile': 'erp' },
+    body: JSON.stringify({ p_company: body.company_id }),
+  })
+  if (!quota.ok) {
+    const q = await quota.json().catch(() => ({}))
+    if (q.code === 'PGRST202') return json({ error: 'db_not_updated', detail: '0027' }, 500)
+    return json({ error: /limit/i.test(q.message ?? '') ? 'ai_user_limit' : 'context_denied', detail: q.message ?? '' }, 429)
+  }
+
   const model = env.AI_MODEL || DEFAULT_MODEL
   let out
   try {

@@ -274,3 +274,31 @@ button.pequeno { align-self: flex-start; padding: 6px 10px; font-size: .85rem; m
 .propuesta h3 { margin: 6px 0 2px; font-size: .95rem; }
 .propuesta td .insignia { margin-left: 6px; }
 .propuesta > button { align-self: flex-start; }
+
+/* --- Accesos, Miembros y opiniones --- */
+.accesos { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; }
+.accesos li { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-direction: row;
+  border-top: 1px solid var(--borde); padding: 10px 0; }
+.accesos li > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.accesos li strong { overflow-wrap: anywhere; }
+.alta-acceso { display: flex; flex-direction: column; gap: 8px; border-top: 2px solid var(--borde); padding-top: 12px; }
+.alta-acceso h3 { margin: 0; font-size: 1rem; }
+.alta-acceso button { align-self: flex-start; }
+.opiniones { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 10px; }
+.opiniones li { display: flex; flex-direction: column; gap: 6px; border-left: 4px solid var(--borde); padding: 6px 10px; }
+.opiniones li.correct { border-left-color: #1a7f37; }
+.opiniones li.partial { border-left-color: #9a6700; }
+.opiniones li.wrong { border-left-color: var(--aviso); }
+.opiniones p { margin: 0; }
+.cabecera-opinion { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; }
+button.enlace { background: transparent; color: var(--primario); border: 0; padding: 0; align-self: flex-start; font-weight: 400; }
+.opinion-ia { display: flex; flex-direction: column; gap: 8px; border-top: 1px dashed var(--borde); padding-top: 10px; }
+.fila-opiniones { display: flex; flex-wrap: wrap; gap: 6px; }
+.fila-opiniones button.activa { background: var(--primario); color: #fff; }
+.opinion-ia textarea { width: 100%; font: inherit; padding: 8px; border: 1px solid var(--borde); border-radius: 8px;
+  background: var(--tarjeta); color: var(--texto); box-sizing: border-box; }
+.opinion-ia > button { align-self: flex-start; }
+.titular { background: rgba(130,80,223,.10); padding: 8px 12px; border-radius: 8px; margin: 0 0 12px; }
+.mencion { font-size: .8rem; }
+.fila-usuario { display: flex; gap: 6px; flex-wrap: wrap; }
+.publicar-demo { border-left: 4px solid #9a6700; }

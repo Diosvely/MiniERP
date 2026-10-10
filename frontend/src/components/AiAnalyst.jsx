@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
+import AiFeedback from './AiFeedback'
 
 // Analista IA (Cloudflare Workers AI, modelo open source): interpreta los estados, el EFE y los ratios ya calculados.
-// Solo lo ve el propietario de la aplicación (erp.can_use_ai). La IA no contabiliza ni cambia nada.
+// Lo ven el propietario y el titular de los datos de la empresa (erp.ai_status, con cuota diaria). La IA no cambia nada.
 export default function AiAnalyst({ company, year }) {
   const { t, language } = useI18n()
   const [allowed, setAllowed] = useState(false)
@@ -11,9 +12,12 @@ export default function AiAnalyst({ company, year }) {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
 
-  useEffect(() => {
-    supabase.rpc('can_use_ai').then(({ data }) => setAllowed(data === true))
-  }, [])
+  const [status, setStatus] = useState(null)   // { allowed, used, limit } · limit null = sin límite (el owner)
+  // ¿Puede usar la IA en ESTA empresa? El owner, o el titular de los datos (Miembro) con su cuota diaria
+  const loadStatus = () => supabase.rpc('ai_status', { p_company: company.id })
+    .then(({ data }) => { setStatus(data); setAllowed(data?.allowed === true) })
+  useEffect(() => { loadStatus() }, [company.id])
+  const remaining = status?.limit == null ? null : Math.max(0, status.limit - status.used)
 
   // Otro año u otra empresa: el análisis anterior ya no vale
   useEffect(() => { setResult(null); setError('') }, [company.id, year])
@@ -38,6 +42,7 @@ export default function AiAnalyst({ company, year }) {
       setError(e.message)
     } finally {
       setBusy(false)
+      loadStatus()
     }
   }
 
@@ -48,10 +53,11 @@ export default function AiAnalyst({ company, year }) {
     <section className="tarjeta analista-ia">
       <h2>🤖 {t('aiTitle')} · {year}</h2>
       <p className="ayuda">{t('aiIntro')}</p>
-      <button type="button" disabled={busy} onClick={analyse}>
+      <button type="button" disabled={busy || remaining === 0} onClick={analyse}>
         {busy ? `${t('aiThinking')}…` : result ? t('aiAgain') : t('aiAnalyse')}
       </button>
       {busy && <p className="ayuda">{t('aiWait')}</p>}
+      {remaining !== null && <p className="ayuda">{t('aiRemaining').replace('{n}', remaining).replace('{l}', status.limit)}</p>}
       {error && <p className="aviso">⚠ {error}</p>}
 
       {a && (
@@ -77,6 +83,10 @@ export default function AiAnalyst({ company, year }) {
       )}
       {result && !a && result.raw && <pre className="ia-texto">{result.raw}</pre>}
       {result && <p className="ayuda">{t('aiDisclaimer').replace('{m}', result.model.replace(/^@cf\//, ''))}</p>}
+      {result && (
+        <AiFeedback key={`${company.id}-${year}-${result.model}-${a?.summary?.length ?? 0}`} company={company} kind="analyst"
+                    prompt={String(year)} answer={a ?? { raw: result.raw }} model={result.model} />
+      )}
     </section>
   )
 }

@@ -2,6 +2,40 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.24.0] - 2026-10-10
+### Añadido
+- **Rol Miembro (titular de los datos):** quien cede su dataset entra solo en su empresa, trabaja en ella como
+  contable, usa el Analista y el Tutor de IA con una cuota diaria y decide si la publica como demo, con su mención.
+- **Datos maestros › Accesos** (solo el propietario): dar y quitar acceso por email, ver roles y consumo de IA, y
+  leer las **opiniones sobre la IA**.
+- **Opiniones sobre la IA:** "¿Es correcta esta respuesta?" (correcta, a medias o incorrecta, con comentario) en
+  el Tutor y el Analista.
+- **Cambiar contraseña** desde la web.
+- Migración `0027`: `data_owner`, `data_credit`, `grant_company_access`, `revoke_company_access`,
+  `company_access`, `set_company_demo`, `ai_allowed`, `ai_status`, `ai_consume`, `ai_usage`, `ai_feedback` y
+  `app_profiles.ai_daily_limit`.
+- Prueba `test_fase21_members.sql`.
+### Cambiado
+- La IA ya no es exclusiva del propietario: también la usa el titular de los datos en su empresa, con cuota diaria.
+- Una empresa demo la puede publicar su titular de los datos, no solo el propietario.
+
+## [0.23.0] - 2026-10-09
+### Añadido
+- **Tutor de asientos con IA** (Contabilidad › Asiento):
+  - describes una operación y la IA propone el asiento según el PGC, con la NRV aplicable, los supuestos, el porqué
+    de cada línea y una pregunta de repaso;
+  - el ERP la comprueba (subcuentas, impuesto vigente calculado por el ERP, cuadre y reglas de criterio) y la carga
+    en el formulario sin contabilizar.
+- Migración `0025`: `valuation_rules` (las 23 NRV), `entry_tutor_context`, `validate_proposed_entry` y
+  `next_subaccount_no`.
+- Migración `0026`: reglas de criterio contable y cuentas 2800–2806 y 2811–2819 del PGC.
+- Pages Function `functions/api/tutor.js`: modelo `gpt-oss-120b` con Mistral Small de respaldo y segunda vuelta
+  con los avisos del ERP.
+- Prueba `test_fase20_entry_tutor.sql`.
+### Cambiado
+- El PGC de la plantilla pasa de 362 a 378 cuentas.
+- `/api/ai` y `/api/tutor` avisan de forma clara cuando falta ejecutar una migración en Supabase.
+
 ## [0.22.0] - 2026-10-08
 ### Añadido
 - **Analista IA** con un modelo open source de Cloudflare Workers AI (gratuito y sin clave de API):

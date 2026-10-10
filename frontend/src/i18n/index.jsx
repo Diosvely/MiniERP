@@ -16,6 +16,9 @@ function initialLanguage() {
 export function I18nProvider({ session, children }) {
   const [language, setLanguage] = useState(initialLanguage)
 
+  // El lector de pantalla y el traductor del navegador leen el idioma de <html lang>
+  useEffect(() => { document.documentElement.lang = language }, [language])
+
   // Al iniciar sesión, cargamos el idioma guardado en la base de datos (erp.user_settings)
   useEffect(() => {
     if (!session) return

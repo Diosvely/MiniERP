@@ -164,7 +164,7 @@ export default function Companies({ session }) {
           <h2>{t('shareDemo')}</h2>
           <p className="ayuda">{t('shareDemoHelp')}</p>
           <div className="fila">
-            <input readOnly value={demoLink} onFocus={(e) => e.target.select()} />
+            <input readOnly value={demoLink} aria-label={t('shareDemo')} onFocus={(e) => e.target.select()} />
             <button type="button" className="secundario"
                     onClick={() => navigator.clipboard?.writeText(demoLink).then(() => setCopied(true))}>
               {copied ? '✓' : t('copy')}
@@ -186,14 +186,18 @@ export default function Companies({ session }) {
       {isGuest ? null : canCreate ? (
         <form onSubmit={create} className="tarjeta">
           <h2>{t('newCompany')}</h2>
-          <input placeholder={t('companyName')} value={form.name} onChange={change('name')} required />
-          <input placeholder={t('vatNo')} value={form.vat_registration_no} onChange={change('vat_registration_no')} />
-          <select value={form.industry} onChange={change('industry')}>
+          <label htmlFor="alta-nombre">{t('companyName')}</label>
+          <input id="alta-nombre" value={form.name} onChange={change('name')} required />
+          <label htmlFor="alta-nif">{t('vatNo')}</label>
+          <input id="alta-nif" placeholder={t('vatNoExample')} value={form.vat_registration_no} onChange={change('vat_registration_no')} />
+          <label htmlFor="alta-sector">{t('fieldIndustry')}</label>
+          <select id="alta-sector" value={form.industry} onChange={change('industry')}>
             {['services', 'retail', 'manufacturing', 'ecommerce'].map((i) => (
               <option key={i} value={i}>{t(`industry.${i}`)}</option>
             ))}
           </select>
-          <select value={form.tax_territory} onChange={change('tax_territory')}>
+          <label htmlFor="alta-territorio">{t('fieldTerritory')}</label>
+          <select id="alta-territorio" value={form.tax_territory} onChange={change('tax_territory')}>
             {['canary_islands', 'mainland'].map((tt) => (
               <option key={tt} value={tt}>{t(`territory.${tt}`)}</option>
             ))}

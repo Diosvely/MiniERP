@@ -4,6 +4,11 @@ import { I18nProvider, useI18n } from './i18n'
 import Companies from './components/Companies'
 import BusyBar from './components/BusyBar'
 import Landing from './components/Landing'
+import Glossary from './components/Glossary'
+import Link from './components/Link'
+import { useHashRoute } from './router'
+import { BookOpen } from 'lucide-react'
+import { ICON } from './icons'
 
 export default function App() {
   const [session, setSession] = useState(null)
@@ -29,15 +34,19 @@ export default function App() {
 
 function Layout({ session }) {
   const { t } = useI18n()
+  const route = useHashRoute()   // #/glosario se abre con sesión o sin ella
   return (
     <main>
       {/* Aviso "Cargando…" arriba mientras llegan datos de Supabase (v0.25.0) */}
       <BusyBar />
       <header className="cabecera">
         <h1>{t('appTitle')}</h1>
-        <LanguageSwitch />
+        <div className="cabecera-acciones">
+          <Link to="/glosario" className="enlace-glosario" aria-label={t('glossary')}><BookOpen {...ICON} /> <span>{t('glossary')}</span></Link>
+          <LanguageSwitch />
+        </div>
       </header>
-      {session ? <Companies session={session} /> : <Landing />}
+      {route[0] === 'glosario' ? <Glossary /> : session ? <Companies session={session} /> : <Landing />}
     </main>
   )
 }

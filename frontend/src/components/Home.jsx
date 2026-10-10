@@ -7,6 +7,8 @@ import Link from './Link'
 import Empty from './Empty'
 import Loading from './Loading'
 import ErrorBox from './ErrorBox'
+import { BookText, PenLine, Receipt, Scale, SearchCheck } from 'lucide-react'
+import { ICON } from '../icons'
 
 // INICIO de la empresa (como el Role Center de Business Central): qué hacer a continuación y qué ha pasado.
 //   · Empresa propia → RUTA GUIADA de 6 pasos para llevar un trimestre (cada paso se marca solo al hacerlo)
@@ -91,7 +93,7 @@ export default function Home({ company, readOnly, mode, onAuditor }) {
 
         {tour ? (
           <section className="tarjeta ruta-guiada">
-            <h2>🔍 {t(info.imported ? 'homeTourImported' : 'homeTourDemo')}</h2>
+            <h2><SearchCheck {...ICON} /> {t(info.imported ? 'homeTourImported' : 'homeTourDemo')}</h2>
             <p className="ayuda">{t('homeTourIntro')}</p>
             {mode === 'basic' && (
               <p className="aviso-modo">
@@ -118,7 +120,8 @@ export default function Home({ company, readOnly, mode, onAuditor }) {
               <h2>{t('homePathTitle')}</h2>
               <span className="progreso-texto">{t('homeProgress').replace('{n}', doneCount).replace('{m}', STEPS.length)}</span>
             </div>
-            <div className="progreso" role="progressbar" aria-valuemin={0} aria-valuemax={STEPS.length} aria-valuenow={doneCount}>
+            <div className="progreso" role="progressbar" aria-label={t('homePathTitle')}
+                 aria-valuemin={0} aria-valuemax={STEPS.length} aria-valuenow={doneCount}>
               <span style={{ width: `${(doneCount / STEPS.length) * 100}%` }} />
             </div>
             <p className="ayuda">{t('homePathIntro').replace('{tax}', tax)}</p>
@@ -147,16 +150,16 @@ export default function Home({ company, readOnly, mode, onAuditor }) {
         {!readOnly && (
           <section className="tarjeta accesos-rapidos">
             <h2>{t('homeQuick')}</h2>
-            <Link to={to('invoices')} className="acceso"><span aria-hidden="true">🧾</span> {t('homeQuickInvoice')}</Link>
-            <Link to={to('entry')} className="acceso"><span aria-hidden="true">✍️</span> {t('homeQuickEntry')}</Link>
-            <Link to={to('balance')} className="acceso"><span aria-hidden="true">📊</span> {t('homeQuickBalance')}</Link>
+            <Link to={to('invoices')} className="acceso"><Receipt {...ICON} /> {t('homeQuickInvoice')}</Link>
+            <Link to={to('entry')} className="acceso"><PenLine {...ICON} /> {t('homeQuickEntry')}</Link>
+            <Link to={to('balance')} className="acceso"><Scale {...ICON} /> {t('homeQuickBalance')}</Link>
           </section>
         )}
 
         <section className="tarjeta ultimos">
           <h2>{t('homeLatest')}</h2>
           {info.latest.length === 0 ? (
-            <Empty icon="📒" text={t('homeLatestNone')}
+            <Empty icon={BookText} text={t('homeLatestNone')}
                    action={readOnly ? null : t('homeQuickEntry')} to={readOnly ? null : to('entry')} />
           ) : (
             <>

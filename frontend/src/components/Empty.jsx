@@ -5,7 +5,7 @@ import Link from './Link'
 export default function Empty({ icon = '○', text, help, action, to, onAction }) {
   return (
     <div className="vacio">
-      <span className="vacio-icono" aria-hidden="true">{icon}</span>
+      <span className="vacio-icono" aria-hidden="true">{typeof icon === 'string' ? icon : (() => { const I = icon; return <I size={28} strokeWidth={1.75} /> })()}</span>
       <p>{text}</p>
       {help && <p className="ayuda">{help}</p>}
       {action && to && <Link to={to} className="boton">{action}</Link>}

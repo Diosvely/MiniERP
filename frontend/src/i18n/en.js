@@ -805,11 +805,11 @@ export default {
   accountSearch: 'No. or name (cash, bank…)',
   tplTitle: 'What happened?',
   tpl: {
-    purchase: { label: '🛒 I bought goods', concept: 'Purchase of goods' },
-    sale: { label: '💶 I sold', concept: 'Sale of goods' },
-    collect: { label: '📥 A customer paid me', concept: 'Customer collection' },
-    pay: { label: '📤 I paid a supplier', concept: 'Supplier payment' },
-    payroll: { label: '👥 Payroll', concept: 'Monthly payroll' },
+    purchase: { label: 'I bought goods', concept: 'Purchase of goods' },
+    sale: { label: 'I sold', concept: 'Sale of goods' },
+    collect: { label: 'A customer paid me', concept: 'Customer collection' },
+    pay: { label: 'I paid a supplier', concept: 'Supplier payment' },
+    payroll: { label: 'Payroll', concept: 'Monthly payroll' },
   },
   tplNote: 'They fill in the accounts; you type the amounts and press "=" on the total line. They do not calculate {tax}: for an invoice with the tax calculated, use',
   tplLoaded: 'Template loaded: type the amounts in the highlighted fields and press "=" on the total line.',
@@ -818,6 +818,20 @@ export default {
   explainDebit: 'They are the two sides of every account. For what you own (cash, bank, customers) and for expenses, increases go to the debit; for what you owe (suppliers, loans), equity and income, increases go to the credit. Every entry moves at least two accounts and total debits always equal total credits: that is double entry.',
   explainDraftTitle: 'Save as draft or post?',
   explainDraft: 'A draft can be changed or deleted and does not count in the reports. When you post, the entry gets its sequential number, goes into the journal, the ledger and the statements, and can no longer be changed: if there is a mistake, it is reversed with a reversal entry.',
+
+// v0.27.0 · In-app glossary
+  glossary: 'Glossary',
+  glossaryIntro: 'Key terms of Spanish accounting, with their name in Business Central and SAP. On any screen, press ⓘ next to a term to see its explanation.',
+  glossarySearch: 'Search a term (debit, pro rata, 472…)',
+  glossaryCount: '{n} of {m} terms',
+  glossaryBack: 'Back',
+  glossaryAll: 'See the whole glossary',
+  glossaryWhatIs: 'What is',
+
+// v0.27.0 · Accessibility: visible labels in the new-company form
+  fieldIndustry: 'Industry',
+  fieldTerritory: 'Tax territory',
+  vatNoExample: 'e.g. B12345674',
 
   industry: {
     services: 'Services',

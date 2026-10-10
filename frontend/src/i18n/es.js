@@ -446,7 +446,7 @@ export default {
   importNegatives: '{n} importes negativos (anulaciones "en negativo" de Sage): pasarán al lado contrario en positivo. El saldo no cambia, las sumas del Debe y del Haber sí.',
   importRounded: '{n} asiento(s) descuadrados por céntimos: se cuadrarán con la 678 / 778 (redondeos).',
   importZeros: '{n} apuntes a cero: no se importan.',
-  importAccounts: '{n} subcuentas en el diario; se crearán {m}. Si el nombre viene oculto, se usa el de su cuenta del PGC.',
+  journalImportAccounts: '{n} subcuentas en el diario; se crearán {m}. Si el nombre viene oculto, se usa el de su cuenta del PGC.',
   importContinuityOk: 'La apertura de {y} coincide con el cierre de {p}.',
   importContinuityDiff: 'Apertura de {y}, cuenta {a}: cierre anterior {c} · apertura {o} · diferencia {d}. Alguien cambió el saldo en la apertura en lugar de hacer un asiento.',
   importUnregularized: 'Apertura de {y}, cuenta {a}: abre con {d}, el resultado del año anterior. El fichero no trae la regularización, pero cuadra.',
@@ -454,7 +454,7 @@ export default {
   importDiscard: 'Descartar (borra la empresa)',
   importRun: 'Importar',
   importClosed: { file: 'Ejercicio {y} cerrado con los asientos del fichero · resultado {r}', assistant: 'Ejercicio {y} cerrado con nuestro asistente (cierre y apertura generados) · resultado {r}' },
-  importDone: 'Importación terminada: balance, PyG, sumas y saldos, mayor y saldos anómalos ya funcionan con este diario.',
+  journalImportDone: 'Importación terminada: balance, PyG, sumas y saldos, mayor y saldos anómalos ya funcionan con este diario.',
   importOpenCompany: 'Abrir la empresa',
 
 // ---- Estado de flujos de efectivo (paso 114) ----

@@ -447,7 +447,7 @@ export default {
   importNegatives: '{n} negative amounts (Sage "negative" reversals): they will move to the other side as positive amounts. The balance does not change, the debit and credit totals do.',
   importRounded: '{n} entries are out of balance by cents: they will be balanced with 678 / 778 (rounding).',
   importZeros: '{n} zero lines: they are not imported.',
-  importAccounts: '{n} accounts in the journal; {m} will be created. Hidden names take the name of their Spanish GAAP account.',
+  journalImportAccounts: '{n} accounts in the journal; {m} will be created. Hidden names take the name of their Spanish GAAP account.',
   importContinuityOk: 'The {y} opening matches the {p} closing.',
   importContinuityDiff: '{y} opening, account {a}: previous closing {c} · opening {o} · difference {d}. Someone changed the balance in the opening instead of posting an entry.',
   importUnregularized: '{y} opening, account {a}: opens with {d}, the previous year\'s result. The file has no income closing entry, but it balances.',
@@ -455,7 +455,7 @@ export default {
   importDiscard: 'Discard (deletes the company)',
   importRun: 'Import',
   importClosed: { file: 'Fiscal year {y} closed with the file entries · result {r}', assistant: 'Fiscal year {y} closed with our assistant (closing and opening generated) · result {r}' },
-  importDone: 'Import finished: balance sheet, income statement, trial balance, ledger and inverse balances now work with this journal.',
+  journalImportDone: 'Import finished: balance sheet, income statement, trial balance, ledger and inverse balances now work with this journal.',
   importOpenCompany: 'Open the company',
 
 // ---- Cash flow statement (step 114) ----

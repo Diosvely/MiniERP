@@ -180,7 +180,7 @@ export default function JournalImport({ onDone, onCancel }) {
             {preview.negative_rows > 0 && <li className="warning">⚠ {t('importNegatives').replace('{n}', preview.negative_rows)}</li>}
             {preview.rounded_entries > 0 && <li className="warning">⚠ {t('importRounded').replace('{n}', preview.rounded_entries)}</li>}
             {preview.zero_rows > 0 && <li className="info">ℹ {t('importZeros').replace('{n}', preview.zero_rows)}</li>}
-            <li className="info">ℹ {t('importAccounts').replace('{n}', preview.accounts.total).replace('{m}', preview.accounts.new)}</li>
+            <li className="info">ℹ {t('journalImportAccounts').replace('{n}', preview.accounts.total).replace('{m}', preview.accounts.new)}</li>
             {preview.continuity.map((c) => c.differences.length === 0 ? (
               <li key={c.year} className="info">✓ {t('importContinuityOk').replace('{y}', c.year).replace('{p}', c.year - 1)}</li>
             ) : c.differences.map((d) => (
@@ -219,7 +219,7 @@ export default function JournalImport({ onDone, onCancel }) {
 
       {finished && (
         <>
-          <p className="exito">✓ {t('importDone')}</p>
+          <p className="exito">✓ {t('journalImportDone')}</p>
           <button type="button" onClick={() => onDone(ids.company_id)}>{t('importOpenCompany')}</button>
         </>
       )}

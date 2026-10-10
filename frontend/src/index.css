@@ -441,3 +441,28 @@ a.enlace:hover { text-decoration: underline; }
 .sugerencias li.activa, .sugerencias li:hover { background: color-mix(in srgb, var(--primario) 12%, var(--tarjeta)); }
 input.esperado { border-color: var(--primario); box-shadow: inset 0 0 0 1px var(--primario); }
 .linea-total .acciones-linea button:first-child { border-width: 2px; font-weight: 700; }
+
+
+/* --- v0.27.0: glosario (ⓘ con globo y página) --- */
+.cabecera-acciones { display: flex; align-items: center; gap: 10px; }
+.enlace-glosario { color: var(--primario); text-decoration: none; font-size: .9rem; white-space: nowrap; }
+.enlace-glosario:hover { text-decoration: underline; }
+.termino { position: relative; display: inline-flex; align-items: baseline; gap: 2px; }
+.termino-i { background: transparent; color: var(--primario); border: 0; padding: 0 2px; font-size: .85em; line-height: 1; cursor: help; }
+.termino-i:focus-visible { outline: 2px solid var(--primario); border-radius: 4px; }
+.globo { position: absolute; z-index: 40; top: calc(100% + 6px); left: 0; width: max-content; max-width: min(320px, calc(100vw - 32px));
+         display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border-radius: 10px; text-align: left;
+         background: var(--tarjeta); color: var(--texto); border: 1px solid var(--borde); box-shadow: 0 8px 24px rgba(0,0,0,.18);
+         font-size: .88rem; font-weight: 400; line-height: 1.4; white-space: normal; text-transform: none; letter-spacing: normal; }
+.globo strong { font-size: .95rem; }
+.globo-ejemplo { display: block; color: var(--suave); font-style: italic; margin-top: 2px; }
+.globo-erp { display: block; color: var(--suave); font-size: .8rem; margin-top: 2px; }
+.globo a.enlace { font-size: .85rem; }
+.glosario .fila-glosario { display: flex; align-items: center; gap: 12px; }
+.glosario .fila-glosario h2 { margin: 0; }
+.glosario dl { margin: 0; display: flex; flex-direction: column; }
+.glosario-termino { padding: 10px 0; border-bottom: 1px solid var(--borde); }
+.glosario-termino dt { font-weight: 600; }
+.glosario-termino dd { margin: 2px 0 0; line-height: 1.45; }
+.oculto { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (max-width: 480px) { .enlace-glosario { font-size: 0; } .enlace-glosario::first-letter { font-size: 1.2rem; } }

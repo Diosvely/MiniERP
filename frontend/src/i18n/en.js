@@ -819,6 +819,15 @@ export default {
   explainDraftTitle: 'Save as draft or post?',
   explainDraft: 'A draft can be changed or deleted and does not count in the reports. When you post, the entry gets its sequential number, goes into the journal, the ledger and the statements, and can no longer be changed: if there is a mistake, it is reversed with a reversal entry.',
 
+// v0.27.0 · In-app glossary
+  glossary: 'Glossary',
+  glossaryIntro: 'Key terms of Spanish accounting, with their name in Business Central and SAP. On any screen, press ⓘ next to a term to see its explanation.',
+  glossarySearch: 'Search a term (debit, pro rata, 472…)',
+  glossaryCount: '{n} of {m} terms',
+  glossaryBack: 'Back',
+  glossaryAll: 'See the whole glossary',
+  glossaryWhatIs: 'What is',
+
   industry: {
     services: 'Services',
     retail: 'Retail',

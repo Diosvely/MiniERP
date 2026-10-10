@@ -18,6 +18,8 @@ import Ratios from './Ratios'
 import EntryTutor from './EntryTutor'
 import CompanyAccess from './CompanyAccess'
 import Home from './Home'
+import Term from './Term'
+import { SECTION_TERM } from '../glossary'
 import { companyPath, navigate, useHashRoute } from '../router'
 import ErrorBox from './ErrorBox'
 
@@ -181,7 +183,12 @@ export default function CompanyView({ company, readOnly, canPublish, isOwner, on
             </div>
           </section>
         )}
-        {section !== 'home' && <p className="ruta">{group && <>{t(group)} › </>}{label(section)}</p>}
+        {section !== 'home' && (
+          <p className="ruta">
+            {group && <>{t(group)} › </>}
+            {SECTION_TERM[section] ? <Term id={SECTION_TERM[section]}>{label(section)}</Term> : label(section)}
+          </p>
+        )}
         {advanced && (
           <p className="aviso-modo">
             🔍 {t('modeAdvancedScreen')}

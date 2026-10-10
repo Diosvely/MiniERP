@@ -6,6 +6,7 @@ import Link from './Link'
 import { companyPath } from '../router'
 import ErrorBox from './ErrorBox'
 import { TEMPLATES } from '../templates'
+import Term from './Term'
 
 const today = () => new Date().toISOString().slice(0, 10)
 const emptyLine = () => ({ accountText: '', gl_account_id: '', debit: '', credit: '', description: '' })
@@ -413,8 +414,8 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
       </button>
 
       <div className={`totales ${balanced ? 'ok' : 'descuadre'}`}>
-        <span>{t('debit')}: <strong>{money(totalDebit / 100, language)}</strong></span>
-        <span>{t('credit')}: <strong>{money(totalCredit / 100, language)}</strong></span>
+        <span><Term id="debit">{t('debit')}</Term>: <strong>{money(totalDebit / 100, language)}</strong></span>
+        <span><Term id="credit">{t('credit')}</Term>: <strong>{money(totalCredit / 100, language)}</strong></span>
         <span>{balanced ? `✓ ${t('balanced')}` : `${t('difference')}: ${money(difference / 100, language)}`}</span>
       </div>
 

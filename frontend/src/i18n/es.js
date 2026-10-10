@@ -818,6 +818,15 @@ export default {
   explainDraftTitle: '¿Guardar borrador o contabilizar?',
   explainDraft: 'Un borrador se puede cambiar o borrar y no cuenta en los informes. Al contabilizar, el asiento recibe su número correlativo, entra en el diario, el mayor y los estados, y ya no se cambia: si hay un error, se anula con un contraasiento.',
 
+  // v0.27.0 · Glosario en la app
+  glossary: 'Glosario',
+  glossaryIntro: 'Los términos clave de la contabilidad española, con su nombre en Business Central y en SAP. En las pantallas, pulsa ⓘ junto a un término para ver su explicación.',
+  glossarySearch: 'Buscar un término (debe, prorrata, 472…)',
+  glossaryCount: '{n} de {m} términos',
+  glossaryBack: 'Volver',
+  glossaryAll: 'Ver todo el glosario',
+  glossaryWhatIs: 'Qué es',
+
   industry: {
     services: 'Servicios',
     retail: 'Comercio minorista',

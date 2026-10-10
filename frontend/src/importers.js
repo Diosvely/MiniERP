@@ -126,7 +126,7 @@ export async function readJournal(file) {
     const buf = await file.arrayBuffer()
     let text = new TextDecoder('utf-8', { fatal: false }).decode(buf)
     if (text.includes('�')) text = new TextDecoder('windows-1252').decode(buf)   // exportaciones en ANSI
-    raw = parseCsv(text.replace(/^﻿/, ''))
+        raw = parseCsv(text.replace(/^\uFEFF/, ''))
   }
   if (raw.length === 0) throw new Error('El fichero está vacío')
 

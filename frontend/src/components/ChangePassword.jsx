@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
+import ErrorBox from './ErrorBox'
 
 // Cambiar la contraseña del usuario conectado (los Miembros entran con una provisional que les da el owner)
 export default function ChangePassword({ onDone }) {
@@ -42,7 +43,7 @@ export default function ChangePassword({ onDone }) {
             <button type="button" className="secundario" onClick={onDone}>{t('cancel')}</button>
             <button type="submit" disabled={busy || !pass}>{t('savePassword')}</button>
           </div>
-          {error && <p className="aviso">⚠ {error}</p>}
+          <ErrorBox error={error} />
         </>
       )}
     </form>

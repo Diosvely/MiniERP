@@ -6,6 +6,7 @@ import { companyPath } from '../router'
 import Link from './Link'
 import Empty from './Empty'
 import Loading from './Loading'
+import ErrorBox from './ErrorBox'
 
 // INICIO de la empresa (como el Role Center de Business Central): qué hacer a continuación y qué ha pasado.
 //   · Empresa propia → RUTA GUIADA de 6 pasos para llevar un trimestre (cada paso se marca solo al hacerlo)
@@ -68,7 +69,7 @@ export default function Home({ company, readOnly, mode, onAuditor }) {
     return () => { alive = false }
   }, [company.id])
 
-  if (error) return <p className="aviso">⚠ {error}</p>
+  if (error) return <ErrorBox error={error} company={company} />
   if (!info) return <Loading />
 
   const tour = readOnly || Boolean(info.imported)

@@ -630,3 +630,39 @@ Después, el módulo de **Inmovilizado**.
 **Siguiente paso:** v0.26.0. Errores en lenguaje claro (`friendlyError`), pantalla de entrada y plantillas de
 asientos frecuentes.
 
+## 2026-10-10 · v0.26.0 · Errores claros, pantalla de entrada y plantillas de asientos
+
+**Qué se hizo**
+- **Errores en lenguaje claro** (`errors.js` y `ErrorBox.jsx`):
+  - 85 reglas traducen los mensajes de la base de datos a qué ha pasado y qué hacer, con un botón "Ir a…" a la
+    pantalla donde se arregla y el detalle técnico plegado;
+  - se aplicaron a las 27 cajas de error con un script, sin sustituir pantallas.
+- **Pantalla de entrada** (`Landing.jsx`):
+  - qué es el proyecto, en tres puntos;
+  - la demo, arriba y en grande;
+  - pestañas de acceso y registro con etiquetas, mostrar contraseña, requisito visible y aviso de confirmación por
+    correo;
+  - pie con GitHub.
+- **Asientos para principiantes:**
+  - 5 plantillas "¿Qué ha pasado?" (compra, venta, cobro, pago, nómina) que rellenan las subcuentas de la empresa y
+    marcan el lado de cada importe;
+  - buscador de cuentas por número o nombre, con teclado;
+  - explicaciones plegables de Debe/Haber y de borrador frente a contabilizar.
+
+**Lo que se aprende en esta fase**
+- **Un error es una oportunidad de enseñar:** "El asiento no cuadra: falta 210,00; pulsa =" ayuda más que
+  `Unbalanced entry`. En un ERP de formación, el mensaje de error es parte del temario.
+- **Capas:** la base de datos decide (reglas y mensajes estables, probados por los tests) y la web explica
+  (traducción, pistas, navegación). Si un patrón deja de coincidir, se muestra el mensaje original: falla de forma
+  segura.
+- **Cambios masivos con un script** en lugar de sustituir ficheros: toca solo lo necesario sobre la versión real de
+  cada pantalla, y `git diff --stat` lo confirma.
+- **Accesibilidad básica:** cada campo con su `label for`, los roles `tablist` / `combobox` / `listbox` y el uso
+  completo con teclado.
+- **La partida doble en cinco plantillas:** compra (600 + 472 a 400), venta (430 a 700 + 477), cobro (572 a 430),
+  pago (400 a 572) y nómina (640 + 642 a 476 + 4751 + 572).
+
+**Decisiones:** ADR 0023 · Errores en lenguaje claro, pantalla de entrada y plantillas de asientos.
+
+**Siguiente paso:** v0.27.0. Glosario dentro de la app, accesibilidad, colores e iconos, y capturas en el README.
+

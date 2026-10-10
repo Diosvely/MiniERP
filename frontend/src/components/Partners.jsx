@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import { money } from '../format'
+import ErrorBox from './ErrorBox'
 
 const TYPES = ['customer', 'vendor', 'creditor', 'debtor']
 const TERRITORIES = ['canary_islands', 'mainland', 'ceuta_melilla', 'eu', 'non_eu']
@@ -119,7 +120,7 @@ export default function Partners({ company, readOnly }) {
           )}
 
           <button type="submit">{t('createPartner')}</button>
-          {error && <p className="aviso">⚠ {error}</p>}
+          <ErrorBox error={error} company={company} />
           {message && <p className="exito">✓ {message}</p>}
         </form>
       )}

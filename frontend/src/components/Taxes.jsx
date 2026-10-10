@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import { accountName } from '../format'
+import ErrorBox from './ErrorBox'
 
 const rateText = (n, language) => `${Number(n).toLocaleString(language === 'en' ? 'en-GB' : 'es-ES')} %`
 
@@ -124,7 +125,7 @@ export default function Taxes({ company, readOnly, onChanged }) {
         )}
         {!canEdit && !readOnly && <p className="ayuda">{t('taxAdminOnly')}</p>}
         {setup.length === 0 && <p>{t('noTaxSetup')}</p>}
-        {error && <p className="aviso">⚠ {error}</p>}
+        <ErrorBox error={error} company={company} />
         {message && <p className="exito">✓ {message}</p>}
       </section>
 

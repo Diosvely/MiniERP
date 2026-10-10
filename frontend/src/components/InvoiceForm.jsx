@@ -4,6 +4,7 @@ import { useI18n } from '../i18n'
 import { accountName, money, taxLabel } from '../format'
 import Link from './Link'
 import { companyPath } from '../router'
+import ErrorBox from './ErrorBox'
 
 const today = () => new Date().toISOString().slice(0, 10)
 const emptyLine = () => ({ account_no: '', amount: '', tax_code: '', description: '' })
@@ -275,7 +276,7 @@ export default function InvoiceForm({ company, invoiceType, invoices, onPosted }
         </table>
       )}
 
-      {error && <p className="aviso">⚠ {error}</p>}
+      <ErrorBox error={error} company={company} />
       {message && (
         <p className="exito">✓ {message}
           <> · <Link to={companyPath(company.id, 'journal')} className="enlace">{t('seeInJournal')} →</Link></>

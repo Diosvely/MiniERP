@@ -4,9 +4,14 @@ import { useI18n } from '../i18n'
 import { accountName, money } from '../format'
 import Link from './Link'
 import { companyPath } from '../router'
+import ErrorBox from './ErrorBox'
+import { TEMPLATES } from '../templates'
 
 const today = () => new Date().toISOString().slice(0, 10)
 const emptyLine = () => ({ accountText: '', gl_account_id: '', debit: '', credit: '', description: '' })
+
+// Búsqueda sin acentos ni mayúsculas: "camion" encuentra "Camión"
+const norm = (s) => String(s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
 
 // Atajo de ContaPlus / Sage / A3: el punto rellena con ceros hasta la longitud de la subcuenta.
 //   572.1 → 57200001   ·   43.25 → 43000025
@@ -23,6 +28,8 @@ function expandDot(text, digits) {
 //   +    : nueva línea (en cualquier campo de la línea: un importe nunca lleva "+")
 //   −    : borrar la línea, SOLO con el campo de cuenta vacío (en los importes el "−" se escribe normal)
 //   Al borrar una línea con datos aparece "Línea borrada · Deshacer" durante 5 segundos
+//   Cuenta: se busca por número (572…) o por nombre ("caja", "bancos"); ↑ ↓ para elegir, Enter, Escape para cerrar
+//   Plantillas "¿Qué ha pasado?": rellenan las cuentas; tú solo escribes los importes
 //   draft: asiento que propone el Tutor de asientos ({ id, description, lines: [{ account_no, debit, credit, description }] })
 export default function JournalEntryForm({ company, onPosted, draft }) {
   const { t, language } = useI18n()
@@ -38,6 +45,8 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
   const linesRef = useRef(null)
   const [removed, setRemoved] = useState(null)   // { line, index } · última línea borrada, para deshacer
   const undoTimer = useRef(null)
+  const [suggest, setSuggest] = useState(null)   // { line, active } · lista de cuentas abierta bajo una línea
+  const [missing, setMissing] = useState([])     // grupos del PGC sin subcuenta al aplicar una plantilla
 
   // Solo subcuentas (posting): son las únicas donde se puede apuntar
   const loadAccounts = () => supabase.from('gl_accounts').select('id, account_no, name, name_en')
@@ -118,6 +127,40 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
     return Boolean(found)
   }
 
+  // Cuentas que encajan con lo escrito: por número (empieza por) o por nombre (contiene), como máximo 8
+  function matchAccounts(text) {
+    const q = norm(text).trim()
+    if (!q || q.includes('.')) return []           // con el atajo del punto no se sugiere: se resuelve con Enter
+    const byNumber = /^\d+$/.test(q)
+    return accounts.filter((a) => (byNumber
+      ? a.account_no.startsWith(q)
+      : norm(accountName(a, language)).includes(q) || norm(a.name).includes(q))).slice(0, 8)
+  }
+
+  function chooseAccount(i, a) {
+    setLines((prev) => {
+      const copy = [...prev]
+      copy[i] = { ...copy[i], accountText: a.account_no, gl_account_id: a.id }
+      return copy
+    })
+    setSuggest(null)
+    setFocusTarget({ line: i, field: lines[i].expect ?? 'debit' })
+  }
+
+  // Plantilla: cada línea toma la primera subcuenta de su grupo; los importes quedan para el usuario
+  function applyTemplate(tpl) {
+    const gaps = []
+    setLines(tpl.lines.map((tl) => {
+      const a = accounts.find((x) => x.account_no.startsWith(tl.prefix))
+      if (!a) gaps.push(tl.prefix)
+      return { ...emptyLine(), accountText: a?.account_no ?? tl.prefix, gl_account_id: a?.id ?? '', expect: tl.side, total: Boolean(tl.total) }
+    }))
+    setMissing(gaps)
+    setHeader((h) => ({ ...h, description: t(`tpl.${tpl.id}.concept`) }))
+    setError(''); setMessage(t('tplLoaded')); setPostedOk(false); setSuggest(null)
+    setFocusTarget({ line: 0, field: tpl.lines[0].side })
+  }
+
   function addLine(afterIndex) {
     setLines((prev) => {
       const copy = [...prev]
@@ -176,6 +219,20 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
       e.preventDefault()
       return removeLine(i)
     }
+    // Lista de cuentas abierta: ↑ ↓ eligen, Enter confirma, Escape cierra
+    if (field === 'account' && suggest?.line === i) {
+      const list = matchAccounts(lines[i].accountText)
+      if (list.length && (e.key === 'ArrowDown' || e.key === 'ArrowUp')) {
+        e.preventDefault()
+        const step = e.key === 'ArrowDown' ? 1 : -1
+        return setSuggest({ line: i, active: (suggest.active + step + list.length) % list.length })
+      }
+      if (e.key === 'Escape') return setSuggest(null)
+      if (e.key === 'Enter' && list.length && !byNo(lines[i].accountText.trim())) {
+        e.preventDefault()
+        return chooseAccount(i, list[Math.min(suggest.active, list.length - 1)])
+      }
+    }
     if (e.key !== 'Enter') return
     e.preventDefault()   // en el botón "=", Enter NO lo aplica: solo avanza
     if (field === 'account') {
@@ -232,10 +289,11 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
     }
     setHeader({ posting_date: header.posting_date, description: '', document_no: '' })
     setLines([emptyLine(), emptyLine()])
+    setMissing([])
     onPosted?.()
   }
 
-  const listId = `cuentas-${company.id}`
+  const tax = company.tax_territory === 'canary_islands' ? 'IGIC' : 'IVA'
 
   return (
     <section className="tarjeta formulario-asiento">
@@ -253,40 +311,82 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
       <input placeholder={t('entryDescription')} value={header.description}
              onChange={(e) => setHeader({ ...header, description: e.target.value })} />
 
+      {/* ¿Qué ha pasado? Plantillas de los asientos más frecuentes */}
+      <div className="plantillas">
+        <span className="plantillas-titulo">{t('tplTitle')}</span>
+        <div className="plantillas-botones">
+          {TEMPLATES.map((tpl) => (
+            <button key={tpl.id} type="button" className="secundario" onClick={() => applyTemplate(tpl)}>
+              {t(`tpl.${tpl.id}.label`)}
+            </button>
+          ))}
+        </div>
+        <p className="ayuda">
+          {t('tplNote').replace('{tax}', tax)}{' '}
+          <Link to={companyPath(company.id, 'invoices')} className="enlace">{t('homeQuickInvoice')} →</Link>
+        </p>
+      </div>
+      {missing.length > 0 && (
+        <p className="aviso">
+          {t('tplMissing').replace('{g}', missing.join(', '))}{' '}
+          <Link to={companyPath(company.id, missing.some((g) => g === '400' || g === '430') ? 'partners' : 'accounts')} className="enlace">
+            {t(missing.some((g) => g === '400' || g === '430') ? 'actionAddPartner' : 'actionOpenChart')} →
+          </Link>
+        </p>
+      )}
+
       {accounts.length === 0 && (
         <p className="aviso">{t('noPostingAccounts')} <Link to={companyPath(company.id, 'accounts')} className="enlace">{t('actionOpenChart')} →</Link></p>
       )}
       <p className="ayuda">⌨ {t('keyboardHelp')}</p>
-
-      {/* Sugerencias para el campo de cuenta: el número como valor y el nombre como etiqueta */}
-      <datalist id={listId}>
-        {accounts.map((a) => (
-          <option key={a.id} value={a.account_no} label={accountName(a, language)} />
-        ))}
-      </datalist>
+      <details className="explica">
+        <summary>{t('explainDebitTitle')}</summary>
+        <p>{t('explainDebit')}</p>
+      </details>
+      <details className="explica">
+        <summary>{t('explainDraftTitle')}</summary>
+        <p>{t('explainDraft')}</p>
+      </details>
 
       <div ref={linesRef}>
         {lines.map((l, i) => {
           const account = accounts.find((a) => a.id === l.gl_account_id)
           const unknown = l.accountText.trim() !== '' && !account
+          const options = suggest?.line === i && !account ? matchAccounts(l.accountText) : []
+          const listId = `cuentas-${i}`
           return (
-            <div key={i} className="linea">
+            <div key={i} className={l.total ? 'linea linea-total' : 'linea'}>
               <div className="cuenta-linea">
                 <input
-                  data-line={i} data-field="account" list={listId}
-                  placeholder={t('selectAccount')} value={l.accountText} autoComplete="off"
+                  data-line={i} data-field="account" role="combobox" aria-autocomplete="list"
+                  aria-expanded={options.length > 0} aria-controls={listId} aria-label={t('account')}
+                  aria-activedescendant={options.length ? `${listId}-${Math.min(suggest.active, options.length - 1)}` : undefined}
+                  placeholder={t('accountSearch')} value={l.accountText} autoComplete="off"
                   className={unknown ? 'invalido' : ''}
-                  onChange={(e) => updateLine(i, 'accountText', e.target.value)}
+                  onChange={(e) => { updateLine(i, 'accountText', e.target.value); setSuggest({ line: i, active: 0 }) }}
                   onKeyDown={(e) => onLineKey(e, i, 'account')}
-                  onBlur={() => l.accountText && !l.gl_account_id && resolveAccount(i)} />
+                  onBlur={() => { setSuggest(null); if (l.accountText && !l.gl_account_id) resolveAccount(i) }} />
+                {options.length > 0 && (
+                  <ul id={listId} role="listbox" className="sugerencias">
+                    {options.map((a, k) => (
+                      <li key={a.id} id={`${listId}-${k}`} role="option" aria-selected={k === suggest.active}
+                          className={k === suggest.active ? 'activa' : ''}
+                          onMouseDown={(e) => { e.preventDefault(); chooseAccount(i, a) }}>
+                        <span className="codigo">{a.account_no}</span> {accountName(a, language)}
+                      </li>
+                    ))}
+                  </ul>
+                )}
                 <span className={unknown ? 'nombre-cuenta aviso' : 'nombre-cuenta'}>
                   {account ? accountName(account, language) : unknown ? t('accountNotFound') : ''}
                 </span>
               </div>
               <input data-line={i} data-field="debit" placeholder={t('debit')} inputMode="decimal" value={l.debit}
+                     aria-label={t('debit')} className={l.expect === 'debit' ? 'esperado' : ''}
                      onChange={(e) => updateLine(i, 'debit', e.target.value)}
                      onKeyDown={(e) => onLineKey(e, i, 'debit')} />
               <input data-line={i} data-field="credit" placeholder={t('credit')} inputMode="decimal" value={l.credit}
+                     aria-label={t('credit')} className={l.expect === 'credit' ? 'esperado' : ''}
                      onChange={(e) => updateLine(i, 'credit', e.target.value)}
                      onKeyDown={(e) => onLineKey(e, i, 'credit')} />
               <div className="acciones-linea">
@@ -323,7 +423,7 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
         <button type="button" disabled={saving || !balanced} onClick={() => save(true)}>{t('post')}</button>
       </div>
 
-      {error && <p className="aviso">⚠ {error}</p>}
+      <ErrorBox error={error} company={company} />
       {message && (
         <p className="exito">✓ {message}
           {postedOk && <> · <Link to={companyPath(company.id, 'journal')} className="enlace">{t('seeInJournal')} →</Link></>}

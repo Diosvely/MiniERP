@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import AiFeedback from './AiFeedback'
+import ErrorBox from './ErrorBox'
 
 // Analista IA (Cloudflare Workers AI, modelo open source): interpreta los estados, el EFE y los ratios ya calculados.
 // Lo ven el propietario y el titular de los datos de la empresa (erp.ai_status, con cuota diaria). La IA no cambia nada.
@@ -58,7 +59,7 @@ export default function AiAnalyst({ company, year }) {
       </button>
       {busy && <p className="ayuda">{t('aiWait')}</p>}
       {remaining !== null && <p className="ayuda">{t('aiRemaining').replace('{n}', remaining).replace('{l}', status.limit)}</p>}
-      {error && <p className="aviso">⚠ {error}</p>}
+      <ErrorBox error={error} company={company} />
 
       {a && (
         <div className="analisis">

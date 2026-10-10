@@ -384,3 +384,60 @@ a.enlace:hover { text-decoration: underline; }
 @media (prefers-reduced-motion: reduce) { .ocupado-barra { animation: none; background: var(--primario); opacity: .5; } }
 .exito a.enlace { font-weight: 500; }
 .aviso a.enlace { white-space: nowrap; }
+
+/* --- v0.26.0: errores en lenguaje claro --- */
+.caja-error { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin: 8px 0; padding: 10px 14px;
+              border-radius: 8px; border: 1px solid var(--aviso); border-left-width: 4px;
+              background: color-mix(in srgb, var(--aviso) 6%, var(--tarjeta)); }
+.caja-error p { margin: 0; }
+.caja-error-titulo { color: var(--aviso); font-weight: 600; }
+.caja-error-pista { color: var(--texto); font-size: .92rem; }
+.caja-error a.boton { padding: 6px 12px; font-size: .9rem; }
+.caja-error details { font-size: .8rem; color: var(--suave); }
+.caja-error summary { cursor: pointer; }
+.caja-error code { display: block; margin-top: 4px; white-space: pre-wrap; word-break: break-word; }
+
+/* --- v0.26.0: pantalla de entrada --- */
+.entrada { display: flex; flex-direction: column; gap: 16px; }
+.entrada-portada { display: flex; flex-direction: column; gap: 10px; }
+.entrada-portada h2 { font-size: 1.45rem; line-height: 1.25; margin: 0; }
+.entrada-sub { margin: 0; color: var(--suave); }
+.entrada-puntos { display: flex; flex-direction: column; gap: 8px; }
+.entrada-puntos li { flex-direction: row; align-items: flex-start; gap: 10px; padding: 0; border: 0; }
+.entrada-puntos li > span { font-size: 1.25rem; line-height: 1.3; }
+.entrada-puntos li div { display: flex; flex-direction: column; }
+.entrada-puntos li div span { font-size: .88rem; }
+.boton-demo { font-size: 1.05rem; padding: 14px 18px; font-weight: 600; }
+.pestanas-acceso { display: flex; border-bottom: 1px solid var(--borde); margin: -4px 0 4px; }
+.pestanas-acceso button { flex: 1; background: transparent; color: var(--suave); border-radius: 0; border-bottom: 3px solid transparent; }
+.pestanas-acceso button.activa { color: var(--primario); border-bottom-color: var(--primario); font-weight: 600; }
+.entrada-acceso form { display: flex; flex-direction: column; gap: 8px; }
+.entrada-acceso label { font-size: .9rem; font-weight: 500; margin-top: 4px; }
+.campo-password { display: flex; gap: 8px; }
+.campo-password input { flex: 1; min-width: 0; }
+.campo-password button { flex: none; }
+.requisito { margin: 0; font-size: .85rem; color: var(--suave); }
+.requisito.ok { color: var(--exito, #1a7f37); }
+.enviado { display: flex; flex-direction: column; gap: 8px; }
+.enviado p { margin: 0; }
+.entrada-pie { text-align: center; color: var(--suave); font-size: .85rem; padding-bottom: 16px; }
+.entrada-pie p { margin: 4px 0; }
+.entrada-pie a { color: var(--primario); }
+
+/* --- v0.26.0: plantillas de asientos y buscador de cuentas --- */
+.plantillas { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border-radius: 10px;
+              background: var(--fondo); border: 1px solid var(--borde); }
+.plantillas-titulo { font-weight: 600; }
+.plantillas-botones { display: flex; flex-wrap: wrap; gap: 6px; }
+.plantillas-botones button { padding: 6px 10px; font-size: .9rem; }
+.explica { font-size: .9rem; }
+.explica summary { cursor: pointer; color: var(--primario); }
+.explica p { margin: 6px 0 0; color: var(--texto); line-height: 1.45; }
+.cuenta-linea { position: relative; }
+.sugerencias { position: absolute; z-index: 20; left: 0; right: 0; top: 44px; max-height: 260px; overflow-y: auto;
+               background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 8px; box-shadow: 0 6px 20px rgba(0,0,0,.15); }
+.sugerencias li { flex-direction: row; gap: 8px; padding: 8px 10px; cursor: pointer; border-bottom: 1px solid var(--borde); font-size: .92rem; }
+.sugerencias li:last-child { border-bottom: 0; }
+.sugerencias li.activa, .sugerencias li:hover { background: color-mix(in srgb, var(--primario) 12%, var(--tarjeta)); }
+input.esperado { border-color: var(--primario); box-shadow: inset 0 0 0 1px var(--primario); }
+.linea-total .acciones-linea button:first-child { border-width: 2px; font-weight: 700; }

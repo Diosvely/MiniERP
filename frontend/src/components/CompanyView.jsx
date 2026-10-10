@@ -19,6 +19,7 @@ import EntryTutor from './EntryTutor'
 import CompanyAccess from './CompanyAccess'
 import Home from './Home'
 import { companyPath, navigate, useHashRoute } from '../router'
+import ErrorBox from './ErrorBox'
 
 // PANTALLAS de la empresa. Dos menús sobre las mismas pantallas (como los "perfiles" de Business Central):
 //   · Modo BÁSICO (por defecto): lista corta, solo lo del día a día, en lenguaje sencillo.
@@ -159,7 +160,7 @@ export default function CompanyView({ company, readOnly, canPublish, isOwner, on
 
       <section className="empresa-contenido">
         {readOnly && <p className="solo-lectura">👁 {t('readOnly')}</p>}
-        {error && <p className="aviso">⚠ {error}</p>}
+        <ErrorBox error={error} company={company} />
         {company.is_data_owner && <p className="titular">🤝 {t('dataOwnerBanner')}</p>}
         {publishing && (
           <section className="tarjeta publicar-demo">

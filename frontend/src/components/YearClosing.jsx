@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import { money } from '../format'
+import ErrorBox from './ErrorBox'
 
 // Cierre del ejercicio en 4 pasos, como el asistente de cierre de A3 / Sage / ContaPlus
 //   (BC: "Close Income Statement" + cerrar el año · SAP: FAGLGVTR "Balance Carryforward")
@@ -99,7 +100,7 @@ export default function YearClosing({ company, readOnly }) {
             ))}
           </select>
         </label>
-        {error && <p className="aviso">⚠ {error}</p>}
+        <ErrorBox error={error} company={company} />
         {message && <p className="exito">✓ {message}</p>}
       </section>
 

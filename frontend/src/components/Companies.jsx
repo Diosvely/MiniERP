@@ -4,6 +4,8 @@ import { useI18n } from '../i18n'
 import CompanyView from './CompanyView'
 import JournalImport from './JournalImport'
 import ChangePassword from './ChangePassword'
+import Link from './Link'
+import { companyPath, navigate, useHashRoute } from '../router'
 
 const emptyForm = { name: '', vat_registration_no: '', industry: 'services', tax_territory: 'canary_islands' }
 
@@ -14,7 +16,7 @@ export default function Companies({ session }) {
   const [profile, setProfile] = useState(null)   // { app_role, max_companies, companies_created }
   const [form, setForm] = useState(emptyForm)
   const [error, setError] = useState('')
-  const [selected, setSelected] = useState(null)  // empresa abierta
+  const [loaded, setLoaded] = useState(false)     // ya ha llegado la lista
   const [copied, setCopied] = useState(false)     // enlace de la demo copiado
   const [importing, setImporting] = useState(false) // importar el diario de otro ERP
   const [changingPassword, setChangingPassword] = useState(false)
@@ -24,18 +26,26 @@ export default function Companies({ session }) {
     const { data, error } = await supabase.from('v_my_companies').select('*').order('name')
     if (error) return setError(error.message)
     setCompanies(data)
+    setLoaded(true)
     const { data: p } = await supabase.rpc('my_profile').single()
     setProfile(p)
     return data
   }
 
+  // La empresa abierta sale de la dirección: #/empresa/<id>/<pantalla>
+  const route = useHashRoute()
+  const openId = route[0] === 'empresa' ? route[1] : null
+  const selected = openId ? companies.find((c) => c.id === openId) : null
+
   // Al terminar una importación se abre la empresa nueva
   async function imported(companyId) {
     setImporting(false)
-    const list = await load()
-    const c = list?.find((x) => x.id === companyId)
-    if (c) setSelected(c)
+    await load()
+    navigate(companyPath(companyId))
   }
+
+  // Cambios hechos dentro de la empresa (publicar demo, impuestos…): se actualiza su fila de la lista
+  const changed = (c) => setCompanies((list) => list.map((x) => (x.id === c.id ? { ...x, ...c } : x)))
 
   useEffect(() => { load() }, [])
 
@@ -70,30 +80,46 @@ export default function Companies({ session }) {
   const demoLink = `${window.location.origin}/?demo`
   const canCreate = profile && (profile.max_companies === null || profile.companies_created < profile.max_companies)
 
-  // Si hay una empresa abierta, mostramos su pantalla en lugar de la lista
+  // Si hay una empresa abierta, mostramos su pantalla en lugar de la lista.
+  // key: al cambiar de empresa (o de permiso) la pantalla empieza de cero (sin asiento a medias del Tutor, etc.)
   if (selected) {
     const readOnly = !selected.my_role || selected.my_role === 'viewer'
     return (
       <CompanyView
+        key={`${selected.id}-${readOnly}`}
         company={selected}
         readOnly={readOnly}
         canPublish={(isOwner && selected.my_role === 'admin') || selected.is_data_owner}
         isOwner={isOwner}
-        onChanged={(c) => setSelected(c)}
-        onBack={() => { setSelected(null); load() }}
+        onChanged={changed}
+        onBack={() => { navigate('/'); load() }}
       />
     )
   }
 
+  // Enlace a una empresa que no existe o que no puedes ver (o la lista aún está llegando)
+  if (openId) {
+    return loaded
+      ? (
+        <section className="tarjeta">
+          <p className="aviso">⚠ {t('companyNotFound')}</p>
+          <Link to="/" className="enlace">← {t('back')}</Link>
+        </section>
+      )
+      : <p className="ayuda">{t('loadingData')}…</p>
+  }
+
   const item = (c) => (
-    <li key={c.id} className="clicable" onClick={() => setSelected(c)}>
-      <strong>
-        {c.name} {c.is_demo && <span className="insignia">{t('demoBadge')}</span>}
-      </strong>
-      <span>
-        {c.vat_registration_no} · {t(`industry.${c.industry}`)} · {t(`territory.${c.tax_territory}`)}
-        {c.data_credit && <> · 📊 {c.data_credit}</>}
-      </span>
+    <li key={c.id}>
+      <Link to={companyPath(c.id)} className="enlace-empresa">
+        <strong>
+          {c.name} {c.is_demo && <span className="insignia">{t('demoBadge')}</span>}
+        </strong>
+        <span>
+          {c.vat_registration_no} · {t(`industry.${c.industry}`)} · {t(`territory.${c.tax_territory}`)}
+          {c.data_credit && <> · 📊 {c.data_credit}</>}
+        </span>
+      </Link>
     </li>
   )
 

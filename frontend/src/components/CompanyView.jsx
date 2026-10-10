@@ -17,6 +17,7 @@ import CashFlow from './CashFlow'
 import Ratios from './Ratios'
 import EntryTutor from './EntryTutor'
 import CompanyAccess from './CompanyAccess'
+import { companyPath, navigate, useHashRoute } from '../router'
 
 // Menú agrupado por áreas, como el Role Center de Business Central o el menú de A3 / Sage:
 //   Contabilidad · Facturas · Impuestos · Informes · Datos maestros
@@ -29,7 +30,7 @@ const MENU = [
   ['menuMasterData', [['accounts', 'menuChart'], ['partners', 'tabPartners']]],
 ]
 
-// Última pantalla abierta en cada empresa (comodidad; si el navegador no deja guardar, no pasa nada)
+// Última pantalla abierta en cada empresa: respaldo cuando la dirección no trae pantalla (#/empresa/<id>)
 const remembered = (id) => { try { return localStorage.getItem(`erp-seccion-${id}`) } catch { return null } }
 const remember = (id, s) => { try { localStorage.setItem(`erp-seccion-${id}`, s) } catch { /* sin almacenamiento */ } }
 
@@ -43,20 +44,25 @@ export default function CompanyView({ company, readOnly, canPublish, isOwner, on
     ...(group === 'menuMasterData' && isOwner && company.my_role === 'admin' ? [['access', 'menuAccess']] : []),
   ]]).filter(([, items]) => items.length)
   const allowed = menu.flatMap(([, items]) => items.map(([id]) => id))
-  const initial = () => {
-    const saved = remembered(company.id)
-    return allowed.includes(saved) ? saved : allowed[0]
-  }
-  const [section, setSection] = useState(initial)
+  // La pantalla sale de la dirección (#/empresa/<id>/<pantalla>): el botón atrás, recargar y compartir el enlace funcionan.
+  // Si no viene o no está permitida (p. ej. "entry" en una demo), la última abierta o la primera del menú.
+  const route = useHashRoute()
+  const fromRoute = route[0] === 'empresa' && route[1] === company.id ? route[2] : null
+  const saved = remembered(company.id)
+  const section = allowed.includes(fromRoute) ? fromRoute : allowed.includes(saved) ? saved : allowed[0]
+  useEffect(() => {
+    if (fromRoute !== section) navigate(companyPath(company.id, section), { replace: true })
+    remember(company.id, section)
+  }, [fromRoute, section, company.id])
+
   const [menuOpen, setMenuOpen] = useState(false)
   const [refreshKey, setRefreshKey] = useState(0)
   const [error, setError] = useState('')
   const [draft, setDraft] = useState(null)   // asiento propuesto por el Tutor de asientos
 
-  useEffect(() => { setSection(initial()); setDraft(null) }, [company.id, readOnly])
-
   function go(id) {
-    setSection(id); remember(company.id, id); setMenuOpen(false)
+    setMenuOpen(false)
+    navigate(companyPath(company.id, id))
     window.scrollTo?.({ top: 0 })
   }
 

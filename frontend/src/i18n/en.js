@@ -45,7 +45,7 @@ export default {
   noPostingAccounts: 'First create posting accounts in Master data › Chart of accounts.',
   debit: 'Debit',
   credit: 'Credit',
-  keyboardHelp: 'Enter: account → Debit → Credit → = → next line · +: new line · −: delete line · 572.1 = 57200001',
+  keyboardHelp: 'Enter: account → Debit → Credit → = → next line · +: new line · − (empty account): delete line · 572.1 = 57200001',
   accountNotFound: 'Posting account not found',
   addLine: 'Add line',
   removeLine: 'Remove line',
@@ -609,6 +609,11 @@ export default {
   passwordMismatch: 'The passwords do not match.',
   passwordShort: 'The password must have at least 8 characters.',
   close: 'Close',
+  // v0.25.0 · Routes and undo
+  companyNotFound: "I can't find this company. The link may be old or you may not have access.",
+  loadingData: 'Loading',
+  lineRemoved: 'Line deleted.',
+  undo: 'Undo',
 
   industry: {
     services: 'Services',

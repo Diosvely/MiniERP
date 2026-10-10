@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import { money } from '../format'
+import ErrorBox from './ErrorBox'
 
 // ACCESOS (solo el propietario de la aplicación): quién entra en esta empresa y con qué rol,
 // quién es el TITULAR DE LOS DATOS (Miembro) y las opiniones sobre la IA que han dejado.
@@ -90,7 +91,7 @@ export default function CompanyAccess({ company }) {
           <button type="submit" disabled={busy || !form.email.trim()}>{t('accessAdd')}</button>
         </form>
         <p className="ayuda">{t('accessHowTo')}</p>
-        {error && <p className="aviso">⚠ {error}</p>}
+        <ErrorBox error={error} company={company} />
         {message && <p className="exito">✓ {message}</p>}
       </section>
 

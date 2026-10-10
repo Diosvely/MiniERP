@@ -4,6 +4,7 @@ import { useI18n } from '../i18n'
 import { accountName, money } from '../format'
 import Link from './Link'
 import { companyPath } from '../router'
+import ErrorBox from './ErrorBox'
 
 const today = () => new Date().toISOString().slice(0, 10)
 const emptyLine = () => ({ accountText: '', gl_account_id: '', debit: '', credit: '', description: '' })
@@ -323,7 +324,7 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
         <button type="button" disabled={saving || !balanced} onClick={() => save(true)}>{t('post')}</button>
       </div>
 
-      {error && <p className="aviso">⚠ {error}</p>}
+      <ErrorBox error={error} company={company} />
       {message && (
         <p className="exito">✓ {message}
           {postedOk && <> · <Link to={companyPath(company.id, 'journal')} className="enlace">{t('seeInJournal')} →</Link></>}

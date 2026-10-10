@@ -3,6 +3,7 @@ import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import { money } from '../format'
 import { readJournal } from '../importers'
+import ErrorBox from './ErrorBox'
 
 const CHUNK = 2000   // filas por envío al subir el fichero
 
@@ -224,7 +225,7 @@ export default function JournalImport({ onDone, onCancel }) {
         </>
       )}
 
-      {error && <p className="aviso">⚠ {error}</p>}
+      <ErrorBox error={error} />
     </section>
   )
 }

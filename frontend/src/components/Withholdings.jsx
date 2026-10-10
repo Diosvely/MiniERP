@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import { money } from '../format'
+import ErrorBox from './ErrorBox'
 
 const currentQuarter = () => Math.floor(new Date().getMonth() / 3) + 1
 
@@ -65,7 +66,7 @@ export default function Withholdings({ company }) {
             </select>
           </label>
         </div>
-        {error && <p className="aviso">⚠ {error}</p>}
+        <ErrorBox error={error} company={company} />
       </section>
 
       {/* Retenciones practicadas: un borrador por modelo */}

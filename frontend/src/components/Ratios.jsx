@@ -3,6 +3,7 @@ import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import { money } from '../format'
 import AiAnalyst from './AiAnalyst'
+import ErrorBox from './ErrorBox'
 
 // Ratios financieros (Modo auditor): liquidez, solvencia, rentabilidad, actividad y flujos de caja
 // Cada ratio con su valoración frente a la zona de referencia, el año anterior y, al pulsarlo,
@@ -86,7 +87,7 @@ export default function Ratios({ company }) {
           <span className="ratio-estado low">▼ {t('ratioStatus.low')}</span>
           <span className="ratio-estado high">▲ {t('ratioStatus.high')}</span>
         </p>
-        {error && <p className="aviso">⚠ {error}</p>}
+        <ErrorBox error={error} company={company} />
         {loading && <p className="ayuda">{t('ratiosLoading')}…</p>}
       </section>
 

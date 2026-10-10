@@ -4,6 +4,7 @@ import { useI18n } from '../i18n'
 import { accountName, money } from '../format'
 import Empty from './Empty'
 import { companyPath } from '../router'
+import ErrorBox from './ErrorBox'
 
 const LEVELS = [['', 'levelPosting'], ['3', 'levelAccount'], ['2', 'levelSubgroup'], ['1', 'levelGroup']]
 
@@ -106,7 +107,7 @@ export default function Reports({ company }) {
             <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
           </label>
         </div>
-        {error && <p className="aviso">⚠ {error}</p>}
+        <ErrorBox error={error} company={company} />
       </section>
 
       {view === 'trial' && (

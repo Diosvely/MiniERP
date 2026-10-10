@@ -2,6 +2,7 @@ import { Fragment, useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import { money } from '../format'
+import ErrorBox from './ErrorBox'
 
 // Balance de situación y Cuenta de Pérdidas y Ganancias (modelo PYMES del PGC)
 //   statement: 'balance' | 'pyg' · columnas ejercicio actual y anterior, como en las cuentas anuales
@@ -63,7 +64,7 @@ export default function FinancialStatements({ company, statement }) {
           <input type="checkbox" checked={hideZero} onChange={(e) => setHideZero(e.target.checked)} /> {t('hideZeroLines')}
         </label>
       </div>
-      {error && <p className="aviso">⚠ {error}</p>}
+      <ErrorBox error={error} company={company} />
 
       {statement === 'balance' && rows.length > 0 && (
         <div className={Math.abs(difference) < 0.005 ? 'cuadre ok' : 'cuadre descuadre'}>

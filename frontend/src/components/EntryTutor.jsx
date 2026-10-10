@@ -3,6 +3,7 @@ import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import AiFeedback from './AiFeedback'
 import { money } from '../format'
+import ErrorBox from './ErrorBox'
 
 // Tutor de asientos con IA: describes la operación, la IA propone el asiento, el ERP lo comprueba y tú decides.
 // "Cargar en el asiento" crea las subcuentas nuevas que hagan falta y pasa las líneas al formulario de abajo:
@@ -88,7 +89,7 @@ export default function EntryTutor({ company, onLoad }) {
       </button>
       {busy && <p className="ayuda">{t('aiWait')}</p>}
       {remaining !== null && <p className="ayuda">{t('aiRemaining').replace('{n}', remaining).replace('{l}', status.limit)}</p>}
-      {error && <p className="aviso">⚠ {error}</p>}
+      <ErrorBox error={error} company={company} />
 
       {p && v && (
         <div className="propuesta">

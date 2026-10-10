@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import { readTextFile, parseCsv, downloadCsv } from '../csv'
+import ErrorBox from './ErrorBox'
 
 // Nombres de columna aceptados en el CSV (español o inglés). La columna "grupo" se ignora:
 // la base de datos ya sabe a qué grupo pertenece cada subcuenta.
@@ -128,7 +129,7 @@ export default function AccountImport({ company, onImported }) {
         </>
       )}
 
-      {error && <p className="aviso">⚠ {error}</p>}
+      <ErrorBox error={error} company={company} />
       {message && <p className="exito">✓ {message}</p>}
     </section>
   )

@@ -4,6 +4,7 @@ import { useI18n } from '../i18n'
 import { money } from '../format'
 import Empty from './Empty'
 import { companyPath } from '../router'
+import ErrorBox from './ErrorBox'
 
 const yearStart = () => `${new Date().getFullYear()}-01-01`
 
@@ -68,7 +69,7 @@ export default function GeneralJournal({ company, readOnly, refreshKey }) {
       <p className="ayuda">
         {t('entriesShown').replace('{n}', visible.length)} · {t('debit')} {money(sum('debit'), language)} · {t('credit')} {money(sum('credit'), language)}
       </p>
-      {error && <p className="aviso">⚠ {error}</p>}
+      <ErrorBox error={error} company={company} />
       {message && <p className="exito">✓ {message}</p>}
       {visible.length === 0 && (
         <Empty icon="📒" text={t('noEntries')} action={readOnly ? null : t('actionNewEntry')}

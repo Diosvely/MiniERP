@@ -5,6 +5,7 @@ import { money, taxLabel } from '../format'
 import Empty from './Empty'
 import Loading from './Loading'
 import { companyPath } from '../router'
+import ErrorBox from './ErrorBox'
 
 const today = () => new Date().toISOString().slice(0, 10)
 const currentQuarter = () => Math.floor(new Date().getMonth() / 3) + 1
@@ -85,7 +86,7 @@ export default function TaxSettlement({ company, readOnly }) {
     load()
   }
 
-  if (types === null) return error ? <p className="aviso">⚠ {error}</p> : <Loading />
+  if (types === null) return error ? <ErrorBox error={error} company={company} /> : <Loading />
   if (types.length === 0) {
     return (
       <section className="tarjeta">
@@ -122,7 +123,7 @@ export default function TaxSettlement({ company, readOnly }) {
             </select>
           </label>
         </div>
-        {error && <p className="aviso">⚠ {error}</p>}
+        <ErrorBox error={error} company={company} />
         {message && <p className="exito">✓ {message}</p>}
       </section>
 

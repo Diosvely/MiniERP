@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
+import ErrorBox from './ErrorBox'
 
 // "¿Es correcta esta respuesta de la IA?" — la opinión se guarda en erp.ai_feedback y el owner la lee en Accesos.
 // Sirve para que quien sabe contabilidad (los Miembros) diga dónde se equivoca la IA y así mejorarla.
@@ -40,7 +41,7 @@ export default function AiFeedback({ company, kind, prompt, answer, model }) {
           <button type="button" onClick={send}>{t('feedbackSend')}</button>
         </>
       )}
-      {error && <p className="aviso">⚠ {error}</p>}
+      <ErrorBox error={error} company={company} />
     </div>
   )
 }

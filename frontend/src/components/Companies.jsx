@@ -7,6 +7,7 @@ import ChangePassword from './ChangePassword'
 import Link from './Link'
 import { companyPath, navigate, useHashRoute } from '../router'
 import Empty from './Empty'
+import ErrorBox from './ErrorBox'
 
 const emptyForm = { name: '', vat_registration_no: '', industry: 'services', tax_territory: 'canary_islands' }
 
@@ -203,7 +204,7 @@ export default function Companies({ session }) {
         profile && <p className="ayuda">{t('companyLimit').replace('{n}', profile.max_companies)}</p>
       )}
 
-      {error && <p className="aviso">⚠ {error}</p>}
+      <ErrorBox error={error} />
     </>
   )
 }

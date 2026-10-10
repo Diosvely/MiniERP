@@ -384,3 +384,15 @@ a.enlace:hover { text-decoration: underline; }
 @media (prefers-reduced-motion: reduce) { .ocupado-barra { animation: none; background: var(--primario); opacity: .5; } }
 .exito a.enlace { font-weight: 500; }
 .aviso a.enlace { white-space: nowrap; }
+
+/* --- v0.26.0: errores en lenguaje claro --- */
+.caja-error { display: flex; flex-direction: column; align-items: flex-start; gap: 6px; margin: 8px 0; padding: 10px 14px;
+              border-radius: 8px; border: 1px solid var(--aviso); border-left-width: 4px;
+              background: color-mix(in srgb, var(--aviso) 6%, var(--tarjeta)); }
+.caja-error p { margin: 0; }
+.caja-error-titulo { color: var(--aviso); font-weight: 600; }
+.caja-error-pista { color: var(--texto); font-size: .92rem; }
+.caja-error a.boton { padding: 6px 12px; font-size: .9rem; }
+.caja-error details { font-size: .8rem; color: var(--suave); }
+.caja-error summary { cursor: pointer; }
+.caja-error code { display: block; margin-top: 4px; white-space: pre-wrap; word-break: break-word; }

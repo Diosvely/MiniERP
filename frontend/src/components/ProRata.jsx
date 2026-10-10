@@ -5,6 +5,7 @@ import { money } from '../format'
 import Empty from './Empty'
 import Loading from './Loading'
 import { companyPath } from '../router'
+import ErrorBox from './ErrorBox'
 
 // Prorrata general del IVA / IGIC: porcentaje provisional del año y regularización con el definitivo en el 4T
 // (como la "Prorrata" de A3ECO / Sage: % provisional en la ficha y asistente de regularización anual)
@@ -73,7 +74,7 @@ export default function ProRata({ company, readOnly }) {
   const post = () => run('post_pro_rata_regularization', base, t('proRataPosted'))
   const cancel = () => run('cancel_pro_rata_regularization', base, t('proRataCancelled'))
 
-  if (types === null) return error ? <p className="aviso">⚠ {error}</p> : <Loading />
+  if (types === null) return error ? <ErrorBox error={error} company={company} /> : <Loading />
   if (types.length === 0) {
     return (
       <section className="tarjeta">
@@ -119,7 +120,7 @@ export default function ProRata({ company, readOnly }) {
           </div>
         )}
         <p className="ayuda">{t('provisionalHelp')}</p>
-        {error && <p className="aviso">⚠ {error}</p>}
+        <ErrorBox error={error} company={company} />
         {message && <p className="exito">✓ {message}</p>}
       </section>
 

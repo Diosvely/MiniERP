@@ -3,6 +3,7 @@ import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import { accountName } from '../format'
 import AccountImport from './AccountImport'
+import ErrorBox from './ErrorBox'
 
 // Plan de cuentas de la empresa + alta de subcuentas
 //   readOnly → empresa demo ajena: se oculta el formulario de alta
@@ -59,7 +60,7 @@ export default function Accounts({ company, readOnly }) {
           <input placeholder={t('accountNameEs')} value={form.name} onChange={change('name')} required />
           <input placeholder={t('accountNameEn')} value={form.name_en} onChange={change('name_en')} />
           <button type="submit">{t('createAccount')}</button>
-          {error && <p className="aviso">⚠ {error}</p>}
+          <ErrorBox error={error} company={company} />
         </form>
       )}
       

@@ -4,6 +4,7 @@ import { useI18n } from '../i18n'
 import { money } from '../format'
 import InvoiceForm from './InvoiceForm'
 import Empty from './Empty'
+import ErrorBox from './ErrorBox'
 
 // Facturas recibidas y emitidas: formulario de registro + libro registro
 export default function Invoices({ company, readOnly }) {
@@ -36,7 +37,7 @@ export default function Invoices({ company, readOnly }) {
 
       <section className="tarjeta">
         <h2>{t(`invoiceRegister.${invoiceType}`)} ({invoices.length})</h2>
-        {error && <p className="aviso">⚠ {error}</p>}
+        <ErrorBox error={error} company={company} />
         {invoices.length === 0 && (
           <Empty icon="🧾" text={t('noInvoices')} help={readOnly ? null : t('emptyInvoicesHelp')} />
         )}

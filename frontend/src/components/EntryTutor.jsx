@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
+import AiFeedback from './AiFeedback'
 import { money } from '../format'
 
 // Tutor de asientos con IA: describes la operación, la IA propone el asiento, el ERP lo comprueba y tú decides.
 // "Cargar en el asiento" crea las subcuentas nuevas que hagan falta y pasa las líneas al formulario de abajo:
-// nada se contabiliza sin que lo revises. Solo lo ve el propietario de la aplicación (erp.can_use_ai).
+// nada se contabiliza sin que lo revises. Lo ven el propietario y el titular de los datos (erp.ai_status, con cuota diaria).
 export default function EntryTutor({ company, onLoad }) {
   const { t, language } = useI18n()
   const [allowed, setAllowed] = useState(false)
@@ -15,9 +16,12 @@ export default function EntryTutor({ company, onLoad }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
-  useEffect(() => {
-    supabase.rpc('can_use_ai').then(({ data }) => setAllowed(data === true))
-  }, [])
+  const [status, setStatus] = useState(null)   // { allowed, used, limit } · limit null = sin límite (el owner)
+  // ¿Puede usar la IA en ESTA empresa? El owner, o el titular de los datos (Miembro) con su cuota diaria
+  const loadStatus = () => supabase.rpc('ai_status', { p_company: company.id })
+    .then(({ data }) => { setStatus(data); setAllowed(data?.allowed === true) })
+  useEffect(() => { loadStatus() }, [company.id])
+  const remaining = status?.limit == null ? null : Math.max(0, status.limit - status.used)
   useEffect(() => { setResult(null); setError('') }, [company.id])
 
   const m = (v) => money(v, language)
@@ -41,6 +45,7 @@ export default function EntryTutor({ company, onLoad }) {
       setError(e.message)
     } finally {
       setBusy(false)
+      loadStatus()
     }
   }
 
@@ -78,10 +83,11 @@ export default function EntryTutor({ company, onLoad }) {
       <p className="ayuda">{t('tutorIntro')}</p>
       <textarea rows={3} maxLength={1000} value={text} placeholder={t('tutorPlaceholder')}
                 onChange={(e) => setText(e.target.value)} />
-      <button type="button" disabled={busy || text.trim().length < 5} onClick={propose}>
+      <button type="button" disabled={busy || text.trim().length < 5 || remaining === 0} onClick={propose}>
         {busy ? `${t('tutorThinking')}…` : t('tutorPropose')}
       </button>
       {busy && <p className="ayuda">{t('aiWait')}</p>}
+      {remaining !== null && <p className="ayuda">{t('aiRemaining').replace('{n}', remaining).replace('{l}', status.limit)}</p>}
       {error && <p className="aviso">⚠ {error}</p>}
 
       {p && v && (
@@ -147,6 +153,9 @@ export default function EntryTutor({ company, onLoad }) {
             ? <button type="button" disabled={loading} onClick={load}>⬇ {t('tutorLoad')}</button>
             : <p className="aviso">⚠ {t('tutorCannotLoad')}</p>}
           <p className="ayuda">{t('tutorDisclaimer').replace('{m}', result.model.replace(/^@cf\//, ''))}</p>
+          <AiFeedback key={result.proposal?.explanation ?? ''} company={company} kind="tutor" prompt={text} model={result.model}
+                      answer={{ explanation: p.explanation, valuation_rule: p.valuation_rule, assumptions: p.assumptions,
+                                lines: v.lines, checks: v.checks, ok: v.ok }} />
         </div>
       )}
     </section>

@@ -3,6 +3,7 @@ import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import CompanyView from './CompanyView'
 import JournalImport from './JournalImport'
+import ChangePassword from './ChangePassword'
 
 const emptyForm = { name: '', vat_registration_no: '', industry: 'services', tax_territory: 'canary_islands' }
 
@@ -16,6 +17,7 @@ export default function Companies({ session }) {
   const [selected, setSelected] = useState(null)  // empresa abierta
   const [copied, setCopied] = useState(false)     // enlace de la demo copiado
   const [importing, setImporting] = useState(false) // importar el diario de otro ERP
+  const [changingPassword, setChangingPassword] = useState(false)
 
   async function load() {
     // v_my_companies devuelve también mi rol en cada empresa (null = demo ajena → solo lectura)
@@ -75,7 +77,8 @@ export default function Companies({ session }) {
       <CompanyView
         company={selected}
         readOnly={readOnly}
-        canPublish={isOwner && selected.my_role === 'admin'}
+        canPublish={(isOwner && selected.my_role === 'admin') || selected.is_data_owner}
+        isOwner={isOwner}
         onChanged={(c) => setSelected(c)}
         onBack={() => { setSelected(null); load() }}
       />
@@ -89,6 +92,7 @@ export default function Companies({ session }) {
       </strong>
       <span>
         {c.vat_registration_no} · {t(`industry.${c.industry}`)} · {t(`territory.${c.tax_territory}`)}
+        {c.data_credit && <> · 📊 {c.data_credit}</>}
       </span>
     </li>
   )
@@ -97,10 +101,16 @@ export default function Companies({ session }) {
     <>
       <p className="usuario">
         {isGuest ? `👁 ${t('guestUser')}` : session.user.email}
-        <button className="secundario" onClick={() => supabase.auth.signOut()}>
-          {isGuest ? t('signUpToCreate') : t('signOut')}
-        </button>
+        <span className="fila-usuario">
+          {!isGuest && (
+            <button className="secundario" onClick={() => setChangingPassword(!changingPassword)}>🔑 {t('changePassword')}</button>
+          )}
+          <button className="secundario" onClick={() => supabase.auth.signOut()}>
+            {isGuest ? t('signUpToCreate') : t('signOut')}
+          </button>
+        </span>
       </p>
+      {changingPassword && <ChangePassword onDone={() => setChangingPassword(false)} />}
 
       {isGuest && <p className="solo-lectura">{t('guestBanner')}</p>}
 

@@ -3,6 +3,7 @@ import { supabase } from './supabase'
 import { I18nProvider, useI18n } from './i18n'
 import Companies from './components/Companies'
 import BusyBar from './components/BusyBar'
+import Landing from './components/Landing'
 
 export default function App() {
   const [session, setSession] = useState(null)
@@ -36,7 +37,7 @@ function Layout({ session }) {
         <h1>{t('appTitle')}</h1>
         <LanguageSwitch />
       </header>
-      {session ? <Companies session={session} /> : <Login />}
+      {session ? <Companies session={session} /> : <Landing />}
     </main>
   )
 }
@@ -76,49 +77,5 @@ function LanguageSwitch() {
         </button>
       ))}
     </div>
-  )
-}
-
-function Login() {
-  const { t } = useI18n()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [message, setMessage] = useState('')
-
-  async function signIn(e) {
-    e.preventDefault()
-    const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) setMessage(error.message)
-  }
-
-  // Invitado: sesión anónima de Supabase, solo puede ver las empresas demo
-  async function guest() {
-    setMessage('')
-    const { error } = await supabase.auth.signInAnonymously()
-    if (error) setMessage(error.message)
-  }
-
-  async function signUp() {
-    const { error } = await supabase.auth.signUp({ email, password })
-    setMessage(error ? error.message : t('userCreated'))
-  }
-
-  return (
-    <form onSubmit={signIn} className="tarjeta">
-      <h2>{t('login')}</h2>
-      <input type="email" placeholder={t('email')} value={email}
-             onChange={(e) => setEmail(e.target.value)} required />
-      <input type="password" placeholder={t('password')} value={password}
-             onChange={(e) => setPassword(e.target.value)} required />
-      <div className="fila">
-        <button type="submit">{t('signIn')}</button>
-        <button type="button" className="secundario" onClick={signUp}>{t('signUp')}</button>
-      </div>
-      {message && <p className="aviso">{message}</p>}
-      <div className="invitado">
-        <p className="ayuda">{t('guestHelp')}</p>
-        <button type="button" className="secundario" onClick={guest}>👁 {t('viewDemo')}</button>
-      </div>
-    </form>
   )
 }

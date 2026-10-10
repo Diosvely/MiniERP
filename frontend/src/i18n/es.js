@@ -780,6 +780,26 @@ export default {
     network: { title: 'No hay conexión con el servidor', hint: 'Revisa tu conexión a internet y vuelve a intentarlo.' },
   },
 
+// v0.26.0 · Pantalla de entrada
+  landingTitle: 'Aprende contabilidad española llevando una empresa de verdad',
+  landingSubtitle: 'Un ERP web de práctica: registras facturas, liquidas el IVA o el IGIC y cierras el ejercicio, como en una gestoría.',
+  landingPoint: {
+    pgc: { title: 'Plan General Contable', text: 'Asientos, terceros, cierre y estados financieros del PGC 2007.' },
+    tax: { title: 'IVA e IGIC', text: 'Facturas con el impuesto calculado y liquidaciones 303 / 420.' },
+    audit: { title: 'Mirada de auditor e IA', text: 'Ratios, flujos de efectivo y un tutor de asientos con IA.' },
+  },
+  landingDemoHelp: 'Entra como invitado y consulta las empresas de ejemplo. No hace falta correo.',
+  landingSignIn: 'Iniciar sesión',
+  landingSignUp: 'Crear cuenta',
+  landingCreate: 'Crear mi cuenta',
+  landingPassword: 'Contraseña',
+  landingShow: 'Mostrar',
+  landingHide: 'Ocultar',
+  landingPasswordRule: 'Al menos {n} caracteres',
+  landingCheckEmail: 'Te hemos enviado un correo a {e} para confirmar tu cuenta.',
+  landingCheckEmailHelp: 'Abre el enlace del correo (mira también en spam) y vuelve aquí para iniciar sesión.',
+  landingAbout: 'Proyecto de aprendizaje y portfolio: contabilidad española, ERP y datos. No es asesoramiento fiscal.',
+
   industry: {
     services: 'Servicios',
     retail: 'Comercio minorista',

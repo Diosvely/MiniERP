@@ -781,6 +781,26 @@ export default {
     network: { title: 'No connection to the server', hint: 'Check your internet connection and try again.' },
   },
 
+ // v0.26.0 · Landing screen
+  landingTitle: 'Learn Spanish accounting by running a real company',
+  landingSubtitle: 'A practice web ERP: register invoices, settle VAT or IGIC and close the year, like an accounting firm.',
+  landingPoint: {
+    pgc: { title: 'Spanish GAAP (PGC)', text: 'Journal entries, partners, year-end closing and financial statements.' },
+    tax: { title: 'VAT and IGIC', text: 'Invoices with the tax calculated and quarterly forms 303 / 420.' },
+    audit: { title: 'Auditor view and AI', text: 'Ratios, cash flow and an AI journal-entry tutor.' },
+  },
+  landingDemoHelp: 'Enter as a guest and browse the sample companies. No email needed.',
+  landingSignIn: 'Sign in',
+  landingSignUp: 'Create account',
+  landingCreate: 'Create my account',
+  landingPassword: 'Password',
+  landingShow: 'Show',
+  landingHide: 'Hide',
+  landingPasswordRule: 'At least {n} characters',
+  landingCheckEmail: 'We have sent an email to {e} to confirm your account.',
+  landingCheckEmailHelp: 'Open the link in the email (check spam too) and come back here to sign in.',
+  landingAbout: 'Learning project and portfolio: Spanish accounting, ERP and data. Not tax advice.',
+
   industry: {
     services: 'Services',
     retail: 'Retail',

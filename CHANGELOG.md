@@ -2,6 +2,25 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.26.0] - 2026-10-10
+### Añadido
+- **Errores en lenguaje claro:**
+  - qué ha pasado, qué hacer y un botón **"Ir a…"** a la pantalla donde se arregla;
+  - el mensaje original queda en "Detalle técnico";
+  - 85 reglas (`src/errors.js`) para asientos, facturas, impuestos, ejercicios, permisos, IA, importación e inicio
+    de sesión.
+- **Pantalla de entrada:** propuesta de valor, **"Ver la demo sin registrarme"** destacado, pestañas Iniciar sesión /
+  Crear cuenta, mostrar u ocultar la contraseña, requisito visible, aviso de confirmación por correo y pie con GitHub.
+- **Plantillas de asientos "¿Qué ha pasado?":** he comprado mercaderías, he vendido, he cobrado a un cliente, he
+  pagado a un proveedor y nómina.
+- **Buscador de cuentas por número o nombre** (sin acentos, con ↑ ↓ Enter Escape).
+- Explicaciones plegables **"¿Qué es el Debe y el Haber?"** y **"¿Guardar borrador o contabilizar?"**.
+### Cambiado
+- Todas las cajas de error usan `ErrorBox`.
+- El acceso deja de ser un formulario dentro de `App.jsx` y pasa a ser el componente `Landing`.
+- La contraseña nueva pide al menos 8 caracteres, igual que "Cambiar contraseña".
+- La lista de cuentas del asiento ya no usa el `datalist` del navegador.
+
 ## [0.25.0] - 2026-10-10
 ### Añadido
 - **Pantalla de Inicio** en cada empresa:

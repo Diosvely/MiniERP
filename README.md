@@ -21,7 +21,7 @@ Proyecto de aprendizaje en evolución.
 > - balance sheet, income statement, cash flow statement (direct and indirect), financial ratios and audit reports;
 > - an **auditor mode** that imports real journals from Sage and Business Central;
 > - an open-source **AI analyst** and an **AI journal-entry tutor** whose proposals are validated by the ERP;
-> - a guided home screen and a Basic / Auditor menu.
+> - a guided home screen, a Basic / Auditor menu, plain-language error messages and journal-entry templates.
 >
 > Data model inspired by Business Central and SAP FI. Database in English, bilingual UI (Spanish / English),
 > multi-company and multi-user, with guest access to demo companies. Accounting rules are enforced by PostgreSQL,
@@ -36,7 +36,7 @@ española y el funcionamiento real de un ERP. Los ERP comerciales son caros y di
 propia, así que decidí **construir uno**. Diseñar la tabla de asientos obliga a entender *por qué* un ERP impone
 cada regla. Además, todo el código está en inglés para practicar el vocabulario técnico de BC y SAP.
 
-## ¿Qué hace hoy? (v0.25.0)
+## ¿Qué hace hoy? (v0.26.0)
 
 **Primeros pasos y navegación**
 - **Pantalla de Inicio** en cada empresa:
@@ -47,6 +47,9 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
   por áreas para revisar.
 - **Cada pantalla tiene su enlace** (`#/empresa/<id>/balance`): se puede recargar, volver atrás y compartir.
 - Estados vacíos con la **siguiente acción** ("Configurar impuestos", "Hacer un asiento") y aviso de carga.
+- **Errores en lenguaje claro:** cuando la base de datos rechaza algo, se explica qué ha pasado, qué hacer y se ofrece
+  un botón para ir a la pantalla donde se arregla ("El asiento no cuadra: falta 210,00; pulsa =").
+- **Pantalla de entrada** con la demo destacada, y acceso y registro accesibles.
 
 **Contabilidad**
 - **Plan General Contable 2007** (grupos 1-7) con nombre oficial y traducción al inglés, copiado automáticamente a
@@ -55,6 +58,8 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
   periodos.
 - **Asientos** con cuadre en vivo, manejo rápido con teclado (atajo del punto `572.1 = 57200001`, botón "=" y
   deshacer) y numeración correlativa sin huecos.
+- **Plantillas "¿Qué ha pasado?"** (compra, venta, cobro, pago, nómina) que rellenan las subcuentas, y **buscador de
+  cuentas por nombre** ("caja", "bancos").
 - **Inmutabilidad:** un asiento contabilizado no se edita ni se borra; se **anula con contraasiento** (con fecha y
   motivo), como *Reverse Transaction* de BC o la FB08 de SAP.
 - **Cierre del ejercicio:** regularización a la 129, cierre, apertura y reapertura, con confirmación en dos pasos.
@@ -181,6 +186,8 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 │       ├── i18n/              diccionarios es.js / en.js y motor de idioma
 │       ├── router.js          rutas #/empresa/<id>/<pantalla>
 │       ├── activity.js        aviso "Cargando…" global
+│       ├── errors.js          errores de la base de datos en lenguaje claro
+│       ├── templates.js       plantillas de asientos frecuentes
 │       ├── importers.js       lectura de diarios de Sage y Business Central
 │       ├── format.js          formato de importes y nombres de cuenta
 │       └── supabase.js        conexión con la base de datos (solo clave publicable)
@@ -189,7 +196,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
     ├── guia-git.md            guía de Git (plantilla)
     ├── modelo-datos.md        tablas, funciones, vistas
     ├── glosario.md            vocabulario contable bilingüe
-    └── decisiones/            ADR 0001 → 0022
+    └── decisiones/            ADR 0001 → 0023
 ```
 
 ## Calidad
@@ -271,7 +278,7 @@ bash scripts/test-db.sh fase21     # solo las que contienen "fase21"
 - [x] **v0.23.0**: Tutor de asientos con IA, validado por el ERP
 - [x] **v0.24.0**: accesos y titulares de los datos (rol Miembro), cuota de IA y opiniones sobre la IA
 - [x] **v0.25.0**: Inicio guiado, modo Básico/Auditor, rutas, estados vacíos y de carga, integración continua
-- [ ] v0.26.0: errores en lenguaje claro, pantalla de entrada y plantillas de asientos
+- [x] **v0.26.0**: errores en lenguaje claro, pantalla de entrada y plantillas de asientos
 - [ ] v0.27.0: glosario en la app, accesibilidad, colores e iconos, capturas en el README
 - [ ] v0.28.0: seguridad (cabeceras, endurecer la IA, CAPTCHA, limpieza de invitados y tests de la web)
 - [ ] Inmovilizado: fichas de activos, plan de amortización y asiento mensual a contabilidad

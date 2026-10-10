@@ -666,3 +666,32 @@ asientos frecuentes.
 
 **Siguiente paso:** v0.27.0. Glosario dentro de la app, accesibilidad, colores e iconos, y capturas en el README.
 
+## 2026-10-10 · v0.27.0 · Glosario en la app, accesibilidad y acabado
+
+**Qué se hizo**
+- **Glosario** (`glossary.js`, `Term.jsx` y `Glossary.jsx`):
+  - 36 términos en español e inglés con su nombre en Business Central y SAP;
+  - un ⓘ con globo junto a la ruta de cada pantalla y en Debe/Haber;
+  - página `#/glosario` con buscador, enlazada desde la cabecera.
+- **Accesibilidad:**
+  - medida con axe-core en entrada, empresas, Inicio, asiento, factura y balance, en modo claro y oscuro: 0 fallos
+    (antes, 20 y 31);
+  - `lang` que sigue al idioma, título de la página, etiquetas visibles en el alta de empresa, nombres accesibles en
+    la factura y foco visible común.
+- **Colores:** `--exito`, `--alerta` y `--sobre-color` con versión oscura sustituyen a 32 colores escritos a mano.
+- **Iconos `lucide-react`** en la cabecera, la entrada, el Inicio, los errores, los estados vacíos y las plantillas.
+- **Capturas** de la app en `docs/capturas/` y en el README.
+
+**Lo que se aprende en esta fase**
+- **Accesibilidad = medir:** axe-core da una lista concreta (falta `lang`, un select sin nombre, contraste 3,1:1) y un
+  objetivo verificable (0 fallos). Lighthouse usa el mismo motor.
+- **Contraste:** el blanco sobre `#1f5eff` da 5,2:1 (vale), pero sobre el `#6d8dff` del modo oscuro solo 3,1:1. En
+  oscuro, el texto sobre color tiene que ser oscuro.
+- **Variables CSS como sistema de diseño:** cambiar un color de estado es tocar una línea, y el modo oscuro sale solo.
+- **El vocabulario como puente profesional:** contraasiento = *Reverse Transaction* (BC) = *FB08* (SAP). El glosario
+  enseña contabilidad y, a la vez, a hablar el idioma de los ERP del mercado.
+
+**Decisiones:** ADR 0024 · Glosario en la app, accesibilidad medida y colores con variables.
+
+**Siguiente paso:** v0.28.0. Seguridad: cabeceras HTTP, endurecer `/api/ai` y `/api/tutor`, CAPTCHA, limpieza de invitados y tests de la web con Vitest.
+

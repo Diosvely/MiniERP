@@ -21,11 +21,20 @@ Proyecto de aprendizaje en evolución.
 > - balance sheet, income statement, cash flow statement (direct and indirect), financial ratios and audit reports;
 > - an **auditor mode** that imports real journals from Sage and Business Central;
 > - an open-source **AI analyst** and an **AI journal-entry tutor** whose proposals are validated by the ERP;
-> - a guided home screen, a Basic / Auditor menu, plain-language error messages and journal-entry templates.
+> - a guided home screen, a Basic / Auditor menu, plain-language error messages, journal-entry templates and an
+>   in-app glossary with Business Central / SAP equivalents. Accessible: no axe-core issues (WCAG 2 A/AA).
 >
 > Data model inspired by Business Central and SAP FI. Database in English, bilingual UI (Spanish / English),
 > multi-company and multi-user, with guest access to demo companies. Accounting rules are enforced by PostgreSQL,
 > and every pull request is checked by CI. Learning project, work in progress.
+
+| Inicio guiado | Asiento con plantilla |
+|---|---|
+| ![Inicio con la ruta guiada](docs/capturas/02-inicio.png) | ![Asiento con plantilla y cuadre](docs/capturas/03-asiento-plantilla.png) |
+| **Balance (modo oscuro) con el glosario** | **Modo auditor de una empresa importada** |
+| ![Balance con el globo del glosario](docs/capturas/04-balance-oscuro.png) | ![Recorrido del auditor](docs/capturas/05-modo-auditor.png) |
+
+Más capturas: [pantalla de entrada](docs/capturas/01-entrada.png) · [errores en lenguaje claro](docs/capturas/06-errores-claros.png) · [Inicio en el móvil](docs/capturas/07-inicio-movil.png)
 
 ---
 
@@ -36,7 +45,7 @@ española y el funcionamiento real de un ERP. Los ERP comerciales son caros y di
 propia, así que decidí **construir uno**. Diseñar la tabla de asientos obliga a entender *por qué* un ERP impone
 cada regla. Además, todo el código está en inglés para practicar el vocabulario técnico de BC y SAP.
 
-## ¿Qué hace hoy? (v0.26.0)
+## ¿Qué hace hoy? (v0.27.0)
 
 **Primeros pasos y navegación**
 - **Pantalla de Inicio** en cada empresa:
@@ -50,6 +59,10 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
 - **Errores en lenguaje claro:** cuando la base de datos rechaza algo, se explica qué ha pasado, qué hacer y se ofrece
   un botón para ir a la pantalla donde se arregla ("El asiento no cuadra: falta 210,00; pulsa =").
 - **Pantalla de entrada** con la demo destacada, y acceso y registro accesibles.
+- **Glosario dentro de la app:** un ⓘ junto a cada pantalla y a los términos clave explica el concepto, con su nombre
+  en Business Central y SAP. Hay también una página de glosario con buscador.
+- **Accesible:** sin fallos con axe-core (WCAG 2 A/AA) en modo claro y oscuro, todo se usa con el teclado, el idioma
+  de la página sigue al elegido y los colores tienen contraste suficiente.
 
 **Contabilidad**
 - **Plan General Contable 2007** (grupos 1-7) con nombre oficial y traducción al inglés, copiado automáticamente a
@@ -127,7 +140,7 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
 |---|---|---|
 | Base de datos | **PostgreSQL** en Supabase (schema `erp`) | Las reglas contables viven en la base de datos: triggers, funciones y RLS |
 | Autenticación | Supabase Auth | Correo y contraseña · invitados con *anonymous sign-ins* |
-| Web | **React + Vite** | Componentes por pantalla, i18n propio (es/en), rutas con almohadilla sin dependencias |
+| Web | **React + Vite** | Componentes por pantalla, i18n propio (es/en), rutas con almohadilla, iconos `lucide-react` |
 | IA | **Cloudflare Workers AI** + Pages Functions | `/api/ai` (Mistral Small 3.1) y `/api/tutor` (gpt-oss-120b); la clave nunca llega al navegador |
 | Despliegue | **Cloudflare Pages** | Despliegue automático desde `main` y dirección de prueba por rama |
 | Calidad | **GitHub Actions** | Pruebas SQL, lint, build y auditoría de dependencias en cada Pull Request |
@@ -188,6 +201,8 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 │       ├── activity.js        aviso "Cargando…" global
 │       ├── errors.js          errores de la base de datos en lenguaje claro
 │       ├── templates.js       plantillas de asientos frecuentes
+│       ├── glossary.js        glosario de la app (es/en, con su nombre en BC y SAP)
+│       ├── icons.js           tamaño común de los iconos (lucide-react)
 │       ├── importers.js       lectura de diarios de Sage y Business Central
 │       ├── format.js          formato de importes y nombres de cuenta
 │       └── supabase.js        conexión con la base de datos (solo clave publicable)
@@ -196,7 +211,8 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
     ├── guia-git.md            guía de Git (plantilla)
     ├── modelo-datos.md        tablas, funciones, vistas
     ├── glosario.md            vocabulario contable bilingüe
-    └── decisiones/            ADR 0001 → 0023
+    ├── capturas/              capturas de la app para el README
+    └── decisiones/            ADR 0001 → 0024
 ```
 
 ## Calidad
@@ -204,6 +220,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 - **Integración continua** (GitHub Actions) en cada Pull Request:
   - las 21 pruebas de la base de datos sobre PostgreSQL 16, cada una en una base limpia con todas las migraciones;
   - lint, build y auditoría de dependencias de la web.
+- **Accesibilidad** comprobada con axe-core (WCAG 2 A/AA) en las pantallas principales, en modo claro y oscuro.
 - La rama `main` está protegida: solo se fusiona con los checks en verde.
 
 ## Instalación propia
@@ -279,7 +296,7 @@ bash scripts/test-db.sh fase21     # solo las que contienen "fase21"
 - [x] **v0.24.0**: accesos y titulares de los datos (rol Miembro), cuota de IA y opiniones sobre la IA
 - [x] **v0.25.0**: Inicio guiado, modo Básico/Auditor, rutas, estados vacíos y de carga, integración continua
 - [x] **v0.26.0**: errores en lenguaje claro, pantalla de entrada y plantillas de asientos
-- [ ] v0.27.0: glosario en la app, accesibilidad, colores e iconos, capturas en el README
+- [x] **v0.27.0**: glosario en la app, accesibilidad, colores e iconos, capturas en el README
 - [ ] v0.28.0: seguridad (cabeceras, endurecer la IA, CAPTCHA, limpieza de invitados y tests de la web)
 - [ ] Inmovilizado: fichas de activos, plan de amortización y asiento mensual a contabilidad
 - [ ] Inventario y nóminas

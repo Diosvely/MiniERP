@@ -2,6 +2,25 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.27.0] - 2026-10-10
+### Añadido
+- **Glosario en la app:**
+  - 36 términos (español / inglés) con su equivalente en Business Central y SAP;
+  - **ⓘ con globo** junto a la ruta de cada pantalla y en Debe/Haber;
+  - página **Glosario** con buscador (`#/glosario`), enlazada desde la cabecera.
+- **Iconos `lucide-react`** en la cabecera, la entrada, el Inicio, los errores, los estados vacíos y las plantillas.
+- Variables de color `--exito`, `--alerta`, `--alerta-fondo`, `--error` y `--sobre-color`, con versión oscura.
+- Foco visible común (`:focus-visible`) en botones, enlaces y campos.
+- **Capturas** de la app en `docs/capturas/` y en el README.
+### Cambiado
+- `<html lang>` sigue al idioma elegido, y la página tiene título ("Mini ERP · Contabilidad española").
+- Alta de empresa con etiquetas visibles.
+- En modo oscuro, el texto sobre los botones y las etiquetas de color es oscuro, para tener contraste suficiente.
+- Las plantillas de asientos llevan icono en lugar de emoji en su texto.
+### Corregido
+- Accesibilidad: 0 fallos con axe-core (WCAG 2 A/AA) en seis pantallas y en los dos modos. Antes había 20 en claro
+  y 31 en oscuro: contraste, `lang`, título, selects sin nombre y enlace sin subrayar dentro de un texto.
+
 ## [0.26.0] - 2026-10-10
 ### Añadido
 - **Errores en lenguaje claro:**

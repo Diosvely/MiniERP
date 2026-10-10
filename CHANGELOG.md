@@ -2,6 +2,32 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.25.0] - 2026-10-10
+### Añadido
+- **Pantalla de Inicio** en cada empresa:
+  - ruta guiada de 6 pasos para llevar un trimestre, que se marcan solos, con barra de progreso;
+  - **Modo auditor** (recorrido por las cuentas) para las empresas importadas y las demos;
+  - accesos rápidos y últimos movimientos.
+- **Modo Básico / Auditor:** menú corto de 8 entradas o completo, con nombres sencillos y el término técnico debajo.
+- **Rutas** `#/empresa/<id>/<pantalla>`: el botón atrás, recargar y compartir el enlace de una pantalla funcionan.
+- **Aviso "Cargando…" global** mientras llegan datos de Supabase.
+- **Estados vacíos con la siguiente acción** (Configurar impuestos, Hacer un asiento, Dar de alta un tercero, Abrir
+  el plan de cuentas) y enlace **"Ver en el diario"** tras contabilizar.
+- **Deshacer** al borrar una línea del asiento.
+- **Integración continua** con GitHub Actions: pruebas SQL, lint, build y `npm audit` en cada PR; `main` protegida.
+- `scripts/test-db.sh`: ejecuta todas las pruebas SQL, cada una en una base limpia.
+### Cambiado
+- El atajo "−" del asiento solo borra la línea desde el campo de cuenta vacío; en los importes se escribe como signo.
+- Nombres del menú en lenguaje sencillo: "Clientes y proveedores", "Revisión de saldos", "Liquidar IVA/IGIC",
+  "Cuenta de resultados".
+- Las empresas de la lista son enlaces: se abren con el teclado o en otra pestaña.
+- `package.json`: nombre `minierp-frontend`.
+- Lint: las reglas nuevas de React 19 (`set-state-in-effect`) pasan a aviso hasta refactorizar la carga de datos.
+### Corregido
+- "Importar subcuentas (CSV)" mostraba como título el texto del importador del diario (clave i18n duplicada).
+- Carácter invisible (BOM) escrito tal cual en `importers.js`.
+- `tutor.js` reasignaba la variable del error en el `catch` (lint `no-ex-assign`).
+
 ## [0.24.0] - 2026-10-10
 ### Añadido
 - **Rol Miembro (titular de los datos):** quien cede su dataset entra solo en su empresa, trabaja en ella como

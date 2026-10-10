@@ -591,3 +591,42 @@ Después, inventario y nóminas.
 **Siguiente paso:** dar de alta a los dos compañeros del curso y recoger sus primeras opiniones sobre la IA.
 Después, el módulo de **Inmovilizado**.
 
+## 2026-10-10 · v0.25.0 · Navegación, Inicio guiado y modo Básico / Auditor
+
+**Qué se hizo**
+- **Integración continua** (`.github/workflows/ci.yml` y `scripts/test-db.sh`):
+  - en cada PR, PostgreSQL 16 con las 21 pruebas SQL, cada una en una base limpia;
+  - lint, build y `npm audit` de la web;
+  - la rama `main` queda protegida: sin los checks en verde no se puede fusionar.
+- **Rutas** `#/empresa/<id>/<pantalla>` (`router.js`, `Link.jsx`): atrás, recargar y compartir funcionan. Las
+  empresas de la lista son enlaces que se abren con el teclado.
+- **Inicio** (`Home.jsx`):
+  - ruta guiada "Tu primer trimestre, paso a paso", en 6 pasos que se marcan solos y con barra de progreso;
+  - **Modo auditor** para las empresas importadas y las demos;
+  - accesos rápidos y últimos movimientos.
+- **Modo Básico / Auditor:** menú corto de 8 entradas en lenguaje sencillo, o el completo. Se guarda en el navegador
+  y cambiar de modo no saca de la pantalla.
+- **"Cargando…" global** (`activity.js`, `BusyBar.jsx`) y **estados vacíos con botón** (`Empty.jsx`) en
+  Liquidación, Prorrata, Diario, Sumas y saldos, Facturas, el formulario de factura, el asiento y Empresas.
+  "Ver en el diario" tras contabilizar.
+- **Asiento:** el "−" solo borra la línea desde el campo de cuenta vacío, con **Deshacer** durante 5 s. En los
+  importes se escribe como signo.
+- **Corregido:** la pantalla "Importar subcuentas" mostraba el texto del diario por una clave i18n duplicada.
+
+**Lo que se aprende en esta fase**
+- **El CI paga desde el primer día:** en su primera ejecución encontró dos fallos que llevaban semanas en
+  producción, y después paró en el PR un comentario CSS roto antes de que llegara a la web.
+- **Rutas con almohadilla:** en una SPA alojada como ficheros estáticos, `#/…` no llega al servidor, así que no
+  hace falta configurar redirecciones.
+- **Una pieza transversal mejor que veinte parches:** contar las peticiones en el cliente de Supabase da el
+  "Cargando…" a todas las pantallas.
+- **Diseño por perfiles (BC):** el mismo ERP con dos menús. El principiante ve 8 entradas y el auditor 17; los
+  permisos no cambian.
+- **Git en Windows:** los avisos LF/CRLF no son errores. `git diff --stat --ignore-cr-at-eol` muestra solo los
+  cambios reales, y `git config --global core.pager ""` evita quedarse atrapado en el visor `(END)`.
+
+**Decisiones:** ADR 0022 · Navegación con rutas, pantalla de Inicio y modo Básico / Auditor.
+
+**Siguiente paso:** v0.26.0. Errores en lenguaje claro (`friendlyError`), pantalla de entrada y plantillas de
+asientos frecuentes.
+

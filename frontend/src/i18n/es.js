@@ -651,6 +651,33 @@ export default {
   homeLatestNone: 'Todavía no hay asientos contabilizados.',
   homeSeeJournal: 'Ver el diario completo',
 
+// v0.25.0 · Modo Básico / Auditor y menú en lenguaje sencillo
+  modeLabel: 'Modo de trabajo',
+  mode: { basic: 'Básico', auditor: 'Auditor' },
+  modeHelp: { basic: 'Menú corto con lo del día a día', auditor: 'Todas las pantallas: retenciones, prorrata, flujos de efectivo, ratios, cierre…' },
+  modeAdvancedScreen: 'Esta pantalla es del modo Auditor.',
+  modeSwitchAuditor: 'Cambiar a Auditor',
+  homeTourMode: 'Algunas pantallas del recorrido son del modo Auditor.',
+  nav: {
+    home: { label: 'Inicio', sub: '' },
+    entry: { label: 'Nuevo asiento', sub: 'Con el Tutor de asientos' },
+    journal: { label: 'Libro diario', sub: 'Todos los asientos' },
+    closing: { label: 'Cierre del ejercicio', sub: 'Regularización, cierre y apertura' },
+    invoices: { label: 'Facturas', sub: 'Emitidas y recibidas' },
+    settlement: { label: 'Liquidar {tax}', sub: 'Modelo {form} trimestral' },
+    withholdings: { label: 'Retenciones IRPF', sub: 'Modelos 111 · 115 · 190' },
+    prorata: { label: 'Prorrata', sub: '{tax} deducible en parte' },
+    taxes: { label: 'Configurar impuestos', sub: 'Tipos y subcuentas 472 / 477' },
+    balance: { label: 'Balance', sub: 'Balance de situación' },
+    pyg: { label: 'Cuenta de resultados', sub: 'Pérdidas y ganancias' },
+    cashflow: { label: 'Flujos de efectivo', sub: 'EFE · directo e indirecto' },
+    ratios: { label: 'Ratios', sub: 'Análisis financiero · Analista IA' },
+    reports: { label: 'Revisión de saldos', sub: 'Sumas y saldos · Mayor · Saldos anómalos' },
+    accounts: { label: 'Plan de cuentas', sub: 'Cuentas y subcuentas del PGC' },
+    partners: { label: 'Clientes y proveedores', sub: 'Terceros' },
+    access: { label: 'Accesos', sub: 'Quién entra y con qué rol' },
+  },
+
   industry: {
     services: 'Servicios',
     retail: 'Comercio minorista',

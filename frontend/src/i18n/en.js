@@ -652,6 +652,33 @@ export default {
   homeLatestNone: 'No posted entries yet.',
   homeSeeJournal: 'See the full journal',
 
+// v0.25.0 · Basic / Auditor mode and plain-language menu
+  modeLabel: 'Working mode',
+  mode: { basic: 'Basic', auditor: 'Auditor' },
+  modeHelp: { basic: 'Short menu with day-to-day tasks', auditor: 'Every screen: withholdings, pro rata, cash flow, ratios, year-end…' },
+  modeAdvancedScreen: 'This screen belongs to Auditor mode.',
+  modeSwitchAuditor: 'Switch to Auditor',
+  homeTourMode: 'Some screens in this tour belong to Auditor mode.',
+  nav: {
+    home: { label: 'Home', sub: '' },
+    entry: { label: 'New journal entry', sub: 'With the entry tutor' },
+    journal: { label: 'General journal', sub: 'All entries' },
+    closing: { label: 'Year-end closing', sub: 'Closing and opening entries' },
+    invoices: { label: 'Invoices', sub: 'Issued and received' },
+    settlement: { label: 'Settle {tax}', sub: 'Quarterly form {form}' },
+    withholdings: { label: 'Income tax withholdings', sub: 'Forms 111 · 115 · 190' },
+    prorata: { label: 'Pro rata', sub: 'Partly deductible {tax}' },
+    taxes: { label: 'Tax setup', sub: 'Rates and accounts 472 / 477' },
+    balance: { label: 'Balance sheet', sub: 'Financial position' },
+    pyg: { label: 'Income statement', sub: 'Profit and loss' },
+    cashflow: { label: 'Cash flow', sub: 'Direct and indirect method' },
+    ratios: { label: 'Ratios', sub: 'Financial analysis · AI analyst' },
+    reports: { label: 'Balance review', sub: 'Trial balance · Ledger · Inverse balances' },
+    accounts: { label: 'Chart of accounts', sub: 'Spanish GAAP accounts' },
+    partners: { label: 'Customers and suppliers', sub: 'Business partners' },
+    access: { label: 'Access', sub: 'Who can enter and with which role' },
+  },
+
   industry: {
     services: 'Services',
     retail: 'Retail',

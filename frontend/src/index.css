@@ -359,3 +359,17 @@ a.enlace:hover { text-decoration: underline; }
 .ultimo-fecha { grid-column: 1 / -1; font-size: .8rem; }
 .ultimo-concepto { color: var(--texto) !important; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .ultimos .num { font-variant-numeric: tabular-nums; }
+
+/* --- v0.25.0: modo Básico / Auditor --- */
+.empresa-cabecera .modo { margin-left: auto; display: inline-flex; flex-direction: row; flex: none; border: 1px solid var(--borde); border-radius: 999px; padding: 3px; gap: 2px; }
+.empresa-cabecera .modo button { background: transparent; color: var(--suave); padding: 6px 14px; border-radius: 999px; font-size: .9rem; }
+.empresa-cabecera .modo button.activo { background: var(--primario); color: #fff; }
+.menu-grupo button small { display: block; font-size: .75rem; color: var(--suave); margin-top: 1px; }
+.menu-grupo button.activa small { color: rgba(255,255,255,.85); }
+.aviso-modo { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; margin: 0 0 12px; padding: 8px 12px; border-radius: 8px;
+              background: var(--fondo); border: 1px dashed var(--borde); color: var(--suave); font-size: .9rem; }
+.aviso-modo button.enlace { padding: 0; }
+@media (max-width: 600px) {
+  .empresa-cabecera { flex-wrap: wrap; }
+  .empresa-cabecera .modo { margin-left: 0; }
+}

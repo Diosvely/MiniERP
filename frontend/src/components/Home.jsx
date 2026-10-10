@@ -29,7 +29,7 @@ const TOUR = [
   ['cashflow', 'cashflow'], ['ratios', 'ratios'], ['reports', 'reports'],
 ]
 
-export default function Home({ company, readOnly }) {
+export default function Home({ company, readOnly, mode, onAuditor }) {
   const { t, language } = useI18n()
   const [info, setInfo] = useState(null)      // { done: {…}, imported, year, latest: […] }
   const [error, setError] = useState('')
@@ -92,6 +92,12 @@ export default function Home({ company, readOnly }) {
           <section className="tarjeta ruta-guiada">
             <h2>🔍 {t(info.imported ? 'homeTourImported' : 'homeTourDemo')}</h2>
             <p className="ayuda">{t('homeTourIntro')}</p>
+            {mode === 'basic' && (
+              <p className="aviso-modo">
+                🔍 {t('homeTourMode')}
+                <button type="button" className="enlace" onClick={onAuditor}>{t('modeSwitchAuditor')}</button>
+              </p>
+            )}
             <ol className="pasos">
               {TOUR.map(([key, section], i) => (
                 <li key={key} className="paso pendiente">

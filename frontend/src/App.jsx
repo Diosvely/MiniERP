@@ -2,11 +2,12 @@ import { useEffect, useState } from 'react'
 import { supabase } from './supabase'
 import { I18nProvider, useI18n } from './i18n'
 import Companies from './components/Companies'
+import BusyBar from './components/BusyBar'
 
 export default function App() {
   const [session, setSession] = useState(null)
 
-    useEffect(() => {
+  useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
       setSession(data.session)
       // Enlace para compartir: https://…/?demo → entra como invitado sin registrarse
@@ -29,6 +30,8 @@ function Layout({ session }) {
   const { t } = useI18n()
   return (
     <main>
+      {/* Aviso "Cargando…" arriba mientras llegan datos de Supabase (v0.25.0) */}
+      <BusyBar />
       <header className="cabecera">
         <h1>{t('appTitle')}</h1>
         <LanguageSwitch />
@@ -88,7 +91,7 @@ function Login() {
     if (error) setMessage(error.message)
   }
 
-    // Invitado: sesión anónima de Supabase, solo puede ver las empresas demo
+  // Invitado: sesión anónima de Supabase, solo puede ver las empresas demo
   async function guest() {
     setMessage('')
     const { error } = await supabase.auth.signInAnonymously()
@@ -116,8 +119,6 @@ function Login() {
         <p className="ayuda">{t('guestHelp')}</p>
         <button type="button" className="secundario" onClick={guest}>👁 {t('viewDemo')}</button>
       </div>
-
     </form>
   )
 }
-

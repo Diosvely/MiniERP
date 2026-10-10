@@ -373,3 +373,14 @@ a.enlace:hover { text-decoration: underline; }
   .empresa-cabecera { flex-wrap: wrap; }
   .empresa-cabecera .modo { margin-left: 0; }
 }
+
+/* --- v0.25.0: aviso global "Cargando…" (cualquier consulta a Supabase de más de 0,3 s) --- */
+.ocupado { position: fixed; top: 0; left: 0; right: 0; z-index: 50; pointer-events: none; }
+.ocupado-barra { display: block; height: 3px; background: linear-gradient(90deg, transparent, var(--primario), transparent);
+                 background-size: 50% 100%; background-repeat: no-repeat; animation: barra 1.1s linear infinite; }
+.ocupado-texto { position: absolute; top: 8px; right: 12px; padding: 4px 10px; border-radius: 999px; font-size: .8rem;
+                 background: var(--tarjeta); color: var(--suave); border: 1px solid var(--borde); }
+@keyframes barra { from { background-position: -50% 0; } to { background-position: 150% 0; } }
+@media (prefers-reduced-motion: reduce) { .ocupado-barra { animation: none; background: var(--primario); opacity: .5; } }
+.exito a.enlace { font-weight: 500; }
+.aviso a.enlace { white-space: nowrap; }

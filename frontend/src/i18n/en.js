@@ -42,7 +42,7 @@ export default {
   documentNo: 'Document no.',
   entryDescription: 'Entry description',
   selectAccount: 'Select account…',
-  noPostingAccounts: 'First create posting accounts in Master data › Chart of accounts.',
+  noPostingAccounts: 'There are no posting accounts yet.',
   debit: 'Debit',
   credit: 'Credit',
   keyboardHelp: 'Enter: account → Debit → Credit → = → next line · +: new line · − (empty account): delete line · 572.1 = 57200001',
@@ -148,8 +148,8 @@ export default {
   kind: { invoice: 'Invoice', credit_memo: 'Credit memo' },
   vendorOrCreditor: 'Vendor or creditor',
   customerOrDebtor: 'Customer or debtor',
-  noPartnersForInvoice: 'No partners of this type: create them in Master data › Partners.',
-  noTaxesForInvoice: 'No taxes set up: set them up in Taxes › Tax setup.',
+  noPartnersForInvoice: 'No partners of this type.',
+  noTaxesForInvoice: 'No taxes set up.',
   correctedInvoice: 'Corrected invoice',
   correctedReference: 'or its number, if not registered',
   vendorInvoiceNo: 'Vendor invoice no.',
@@ -678,6 +678,16 @@ export default {
     partners: { label: 'Customers and suppliers', sub: 'Business partners' },
     access: { label: 'Access', sub: 'Who can enter and with which role' },
   },
+
+// v0.25.0 · Empty states with the next action
+  emptyTaxesHelp: 'This is the first step: the assistant creates the 472 / 477 accounts for each rate in one click.',
+  emptyInvoicesHelp: 'Register the first one with the form above: the ERP calculates the tax and makes the entry.',
+  emptyCompaniesHelp: 'Create a company below or import the journal from another ERP.',
+  actionSetupTaxes: 'Set up taxes',
+  actionNewEntry: 'Make a journal entry',
+  actionAddPartner: 'Add a business partner',
+  actionOpenChart: 'Open the chart of accounts',
+  seeInJournal: 'See it in the journal',
 
   industry: {
     services: 'Services',

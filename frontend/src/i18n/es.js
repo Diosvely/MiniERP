@@ -42,7 +42,7 @@ export default {
   documentNo: 'Nº documento',
   entryDescription: 'Concepto del asiento',
   selectAccount: 'Elige subcuenta…',
-  noPostingAccounts: 'Primero crea subcuentas en Datos maestros › Plan de cuentas.',
+  noPostingAccounts: 'Todavía no hay subcuentas donde apuntar.',
   debit: 'Debe',
   credit: 'Haber',
   keyboardHelp: 'Enter: cuenta → Debe → Haber → = → línea siguiente · +: nueva línea · − (con la cuenta vacía): borrar línea · 572.1 = 57200001',
@@ -148,8 +148,8 @@ export default {
   kind: { invoice: 'Factura', credit_memo: 'Rectificativa' },
   vendorOrCreditor: 'Proveedor o acreedor',
   customerOrDebtor: 'Cliente o deudor',
-  noPartnersForInvoice: 'No hay terceros de este tipo: créalos en Datos maestros › Terceros.',
-  noTaxesForInvoice: 'No hay impuestos configurados: configúralos en Impuestos › Configuración de impuestos.',
+  noPartnersForInvoice: 'No hay terceros de este tipo.',
+  noTaxesForInvoice: 'No hay impuestos configurados.',
   correctedInvoice: 'Factura que rectifica',
   correctedReference: 'o su número, si no está registrada',
   vendorInvoiceNo: 'Nº de factura del proveedor',
@@ -677,6 +677,16 @@ export default {
     partners: { label: 'Clientes y proveedores', sub: 'Terceros' },
     access: { label: 'Accesos', sub: 'Quién entra y con qué rol' },
   },
+
+// v0.25.0 · Estados vacíos con la siguiente acción
+  emptyTaxesHelp: 'Es el primer paso: el asistente crea las subcuentas 472 / 477 de cada tipo en un clic.',
+  emptyInvoicesHelp: 'Registra la primera con el formulario de arriba: el ERP calcula el impuesto y hace el asiento.',
+  emptyCompaniesHelp: 'Crea una empresa abajo o importa el diario de otro ERP.',
+  actionSetupTaxes: 'Configurar impuestos',
+  actionNewEntry: 'Hacer un asiento',
+  actionAddPartner: 'Dar de alta un tercero',
+  actionOpenChart: 'Abrir el plan de cuentas',
+  seeInJournal: 'Ver en el diario',
 
   industry: {
     services: 'Servicios',

@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import { money } from '../format'
+import Empty from './Empty'
+import { companyPath } from '../router'
 
 const yearStart = () => `${new Date().getFullYear()}-01-01`
 
@@ -68,7 +70,10 @@ export default function GeneralJournal({ company, readOnly, refreshKey }) {
       </p>
       {error && <p className="aviso">⚠ {error}</p>}
       {message && <p className="exito">✓ {message}</p>}
-      {visible.length === 0 && <p>{t('noEntries')}</p>}
+      {visible.length === 0 && (
+        <Empty icon="📒" text={t('noEntries')} action={readOnly ? null : t('actionNewEntry')}
+               to={companyPath(company.id, readOnly ? null : 'entry')} />
+      )}
 
       {visible.map((e) => {
         const canReverse = !readOnly && e.source === 'manual' && !e.reversed_by_no

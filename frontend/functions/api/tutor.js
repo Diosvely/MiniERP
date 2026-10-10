@@ -191,6 +191,14 @@ export async function onRequestPost({ request, env }) {
   if (!ctx.ok && (ctx.body?.code === 'PGRST202' || ctx.status === 404)) return json({ error: 'db_not_updated', detail: '0025' }, 500)
   if (!ctx.ok) return json({ error: 'context_denied', detail: ctx.body?.message ?? '' }, ctx.status === 401 ? 401 : 403)
 
+  // Cuota diaria de IA por usuario (el owner no tiene límite): la segunda vuelta no cuenta aparte
+  const quota = await rpc(env, auth, 'ai_consume', { p_company: body.company_id })
+  if (!quota.ok) {
+    if (quota.body?.code === 'PGRST202') return json({ error: 'db_not_updated', detail: '0027' }, 500)
+    return json({ error: /limit/i.test(quota.body?.message ?? '') ? 'ai_user_limit' : 'context_denied',
+                  detail: quota.body?.message ?? '' }, 429)
+  }
+
   let model = env.TUTOR_MODEL || DEFAULT_MODEL
   const messages = [
     { role: 'system', content: INSTRUCTIONS[language] },

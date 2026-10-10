@@ -2,6 +2,23 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.23.0] - 2026-10-09
+### Añadido
+- **Tutor de asientos con IA** (Contabilidad › Asiento):
+  - describes una operación y la IA propone el asiento según el PGC, con la NRV aplicable, los supuestos, el porqué
+    de cada línea y una pregunta de repaso;
+  - el ERP la comprueba (subcuentas, impuesto vigente calculado por el ERP, cuadre y reglas de criterio) y la carga
+    en el formulario sin contabilizar.
+- Migración `0025`: `valuation_rules` (las 23 NRV), `entry_tutor_context`, `validate_proposed_entry` y
+  `next_subaccount_no`.
+- Migración `0026`: reglas de criterio contable y cuentas 2800–2806 y 2811–2819 del PGC.
+- Pages Function `functions/api/tutor.js`: modelo `gpt-oss-120b` con Mistral Small de respaldo y segunda vuelta
+  con los avisos del ERP.
+- Prueba `test_fase20_entry_tutor.sql`.
+### Cambiado
+- El PGC de la plantilla pasa de 362 a 378 cuentas.
+- `/api/ai` y `/api/tutor` avisan de forma clara cuando falta ejecutar una migración en Supabase.
+
 ## [0.22.0] - 2026-10-08
 ### Añadido
 - **Analista IA** con un modelo open source de Cloudflare Workers AI (gratuito y sin clave de API):

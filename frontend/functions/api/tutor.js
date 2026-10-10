@@ -215,13 +215,14 @@ export async function onRequestPost({ request, env }) {
       // Respuesta vacía del modelo principal: se prueba con el de respaldo
       if (!responseText(out).trim() && model !== FALLBACK_MODEL) { model = FALLBACK_MODEL; out = await runModel(env, model, messages) }
     } catch (e) {
+      let failure = e
       const quota = /limit|quota|neuron|429/i.test(String(e?.message ?? e))
       if (!quota && model !== FALLBACK_MODEL) {
-        try { model = FALLBACK_MODEL; out = await runModel(env, model, messages) } catch (e2) { e = e2 }
+        try { model = FALLBACK_MODEL; out = await runModel(env, model, messages) } catch (e2) { failure = e2 }
       }
       if (!out) {
-        const q = /limit|quota|neuron|429/i.test(String(e?.message ?? e))
-        return json({ error: q ? 'ai_quota' : 'ai_failed', detail: String(e?.message ?? e).slice(0, 300) }, q ? 429 : 502)
+        const q = /limit|quota|neuron|429/i.test(String(failure?.message ?? failure))
+        return json({ error: q ? 'ai_quota' : 'ai_failed', detail: String(failure?.message ?? failure).slice(0, 300) }, q ? 429 : 502)
       }
     }
     const answer = responseText(out)

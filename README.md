@@ -1,5 +1,7 @@
 # Mini ERP · Contabilidad general española
 
+  [![CI](https://github.com/Diosvely/MiniERP/actions/workflows/ci.yml/badge.svg)](https://github.com/Diosvely/MiniERP/actions/workflows/ci.yml)
+
 **🔗 Demo en vivo:** [minierp-6ty.pages.dev/?demo](https://minierp-6ty.pages.dev/?demo) · Entra como invitado, **sin registrarte**,
 y consulta las empresas de ejemplo. O regístrate, crea tu empresa y contabiliza.
 

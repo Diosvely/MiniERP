@@ -557,3 +557,37 @@ Después, inventario y nóminas.
 
 **Siguiente paso:** v0.24.0 "Accesos y titulares de datos" (el rol *Miembro* para quien cede su dataset, con publicación de su demo y, quizá, el Analista IA en su empresa). Después, el módulo de Inmovilizado.
 
+## 2026-10-10 · v0.24.0 · Accesos y titulares de los datos (Miembro)
+
+**Qué se hizo**
+- Migración `0027_members.sql`:
+  - `company_users.data_owner` (el titular de los datos) y `companies.data_credit` (la mención de la demo);
+  - `grant_company_access`, `revoke_company_access` y `company_access` (solo el owner, por email);
+  - `set_company_demo`, para que el owner o el titular publiquen con su mención;
+  - IA para el owner y el titular: `ai_allowed`, `ai_status` y `ai_consume`, con cuota diaria de 10
+    (`app_profiles.ai_daily_limit`);
+  - `ai_feedback`: opiniones sobre las respuestas de la IA.
+- `/api/ai` y `/api/tutor` gastan una consulta de la cuota antes de llamar al modelo; la segunda vuelta del tutor
+  no cuenta aparte.
+- Pantallas:
+  - **Datos maestros › Accesos** (solo el owner): usuarios, roles, consultas de IA de hoy y el buzón de opiniones;
+  - aviso para el titular;
+  - **Publicar como demo** con mención y aceptación;
+  - "¿Es correcta esta respuesta?" en el Tutor y el Analista;
+  - cuota restante de IA;
+  - **Cambiar contraseña**.
+- Pruebas: la fase 21 (25 comprobaciones con tres usuarios: owner, amigo y curioso). Pasan las 21 fases.
+
+**Lo que se aprende en esta fase**
+- **Roles en dos niveles**, como en Power BI / Fabric y en BC: rol de aplicación (owner / member) y rol por
+  empresa (admin / contable / solo lectura), más un atributo de negocio (titular de los datos).
+- **La seguridad en la base de datos manda:** la web solo enseña u oculta botones; quién puede publicar, usar la
+  IA o ver una empresa lo decide PostgreSQL (RLS y funciones `security definer` con comprobación explícita).
+- **Una cuota se cuenta antes de gastar:** la llamada rechazada no suma (la transacción se deshace).
+- **Privacidad:** los datos ajenos se publican solo con el permiso de su titular, que es quien los publica.
+
+**Decisiones:** ADR de Accesos y titulares de los datos en `docs/decisiones/`.
+
+**Siguiente paso:** dar de alta a los dos compañeros del curso y recoger sus primeras opiniones sobre la IA.
+Después, el módulo de **Inmovilizado**.
+

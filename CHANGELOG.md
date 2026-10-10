@@ -2,6 +2,23 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.24.0] - 2026-10-10
+### Añadido
+- **Rol Miembro (titular de los datos):** quien cede su dataset entra solo en su empresa, trabaja en ella como
+  contable, usa el Analista y el Tutor de IA con una cuota diaria y decide si la publica como demo, con su mención.
+- **Datos maestros › Accesos** (solo el propietario): dar y quitar acceso por email, ver roles y consumo de IA, y
+  leer las **opiniones sobre la IA**.
+- **Opiniones sobre la IA:** "¿Es correcta esta respuesta?" (correcta, a medias o incorrecta, con comentario) en
+  el Tutor y el Analista.
+- **Cambiar contraseña** desde la web.
+- Migración `0027`: `data_owner`, `data_credit`, `grant_company_access`, `revoke_company_access`,
+  `company_access`, `set_company_demo`, `ai_allowed`, `ai_status`, `ai_consume`, `ai_usage`, `ai_feedback` y
+  `app_profiles.ai_daily_limit`.
+- Prueba `test_fase21_members.sql`.
+### Cambiado
+- La IA ya no es exclusiva del propietario: también la usa el titular de los datos en su empresa, con cuota diaria.
+- Una empresa demo la puede publicar su titular de los datos, no solo el propietario.
+
 ## [0.23.0] - 2026-10-09
 ### Añadido
 - **Tutor de asientos con IA** (Contabilidad › Asiento):

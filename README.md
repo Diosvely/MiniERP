@@ -180,6 +180,7 @@ psql -d minierp_test -f database/tests/test_fase1.sql      # repetir en otra bas
 - [x] **v0.21.0**:Modo auditor 3: ratios (liquidez, solvencia, endeudamiento, rentabilidad, PMC / PMP)
 - [x] **v0.22.0** Analista IA con modelos open source (Cloudflare Workers AI)
 - [x] **v0.23.0** : Tutor de asientos con IA, validado por el ERP
+v- [x] **v0.24.0** : accesos y titulares de los datos (rol Miembro), cuota de IA y opiniones sobre la IA
 - [ ] Módulos auxiliares (inmovilizado y amortizaciones) que envían asientos resumen a contabilidad
 
 *Proyecto de estudio: los tipos impositivos y las reglas fiscales se contrastan con la AEAT y la ATC; no es asesoramiento fiscal.*

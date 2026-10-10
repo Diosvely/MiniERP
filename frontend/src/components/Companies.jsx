@@ -6,6 +6,7 @@ import JournalImport from './JournalImport'
 import ChangePassword from './ChangePassword'
 import Link from './Link'
 import { companyPath, navigate, useHashRoute } from '../router'
+import Empty from './Empty'
 
 const emptyForm = { name: '', vat_registration_no: '', industry: 'services', tax_territory: 'canary_islands' }
 
@@ -143,7 +144,7 @@ export default function Companies({ session }) {
       {!isGuest && (
         <section className="tarjeta">
           <h2>{t('myCompanies')}</h2>
-          {mine.length === 0 && <p>{t('noCompanies')}</p>}
+          {mine.length === 0 && <Empty icon="🏢" text={t('noCompanies')} help={t('emptyCompaniesHelp')} />}
           <ul>{mine.map(item)}</ul>
         </section>
       )}

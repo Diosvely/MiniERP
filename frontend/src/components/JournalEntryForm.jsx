@@ -2,6 +2,8 @@ import { useEffect, useRef, useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import { accountName, money } from '../format'
+import Link from './Link'
+import { companyPath } from '../router'
 
 const today = () => new Date().toISOString().slice(0, 10)
 const emptyLine = () => ({ accountText: '', gl_account_id: '', debit: '', credit: '', description: '' })
@@ -31,6 +33,7 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
   const [saving, setSaving] = useState(false)
+  const [postedOk, setPostedOk] = useState(false)   // tras contabilizar: enlace "Ver en el diario"
   const [focusTarget, setFocusTarget] = useState(null)   // { line, field } a enfocar tras re-dibujar
   const linesRef = useRef(null)
   const [removed, setRemoved] = useState(null)   // { line, index } · última línea borrada, para deshacer
@@ -189,6 +192,7 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
   async function save(post) {
     setError('')
     setMessage('')
+    setPostedOk(false)
     const fy = fiscalYears.find((y) => header.posting_date >= y.starting_date && header.posting_date <= y.ending_date)
     if (!fy) return setError(t('noFiscalYear'))
     if (!header.description.trim()) return setError(t('needDescription'))
@@ -221,6 +225,7 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
       setSaving(false)
       if (e3) return setError(e3.message)
       setMessage(t('postedAs').replace('{n}', entryNo))
+      setPostedOk(true)
     } else {
       setSaving(false)
       setMessage(t('savedDraft'))
@@ -248,7 +253,9 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
       <input placeholder={t('entryDescription')} value={header.description}
              onChange={(e) => setHeader({ ...header, description: e.target.value })} />
 
-      {accounts.length === 0 && <p className="aviso">{t('noPostingAccounts')}</p>}
+      {accounts.length === 0 && (
+        <p className="aviso">{t('noPostingAccounts')} <Link to={companyPath(company.id, 'accounts')} className="enlace">{t('actionOpenChart')} →</Link></p>
+      )}
       <p className="ayuda">⌨ {t('keyboardHelp')}</p>
 
       {/* Sugerencias para el campo de cuenta: el número como valor y el nombre como etiqueta */}
@@ -317,7 +324,11 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
       </div>
 
       {error && <p className="aviso">⚠ {error}</p>}
-      {message && <p className="exito">✓ {message}</p>}
+      {message && (
+        <p className="exito">✓ {message}
+          {postedOk && <> · <Link to={companyPath(company.id, 'journal')} className="enlace">{t('seeInJournal')} →</Link></>}
+        </p>
+      )}
     </section>
   )
 }

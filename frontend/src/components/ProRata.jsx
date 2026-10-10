@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import { money } from '../format'
+import Empty from './Empty'
+import Loading from './Loading'
+import { companyPath } from '../router'
 
 // Prorrata general del IVA / IGIC: porcentaje provisional del año y regularización con el definitivo en el 4T
 // (como la "Prorrata" de A3ECO / Sage: % provisional en la ficha y asistente de regularización anual)
@@ -9,7 +12,7 @@ export default function ProRata({ company, readOnly }) {
   const { t, language } = useI18n()
   const isAdmin = !readOnly && company.my_role === 'admin'
   const canWrite = !readOnly && ['admin', 'accountant'].includes(company.my_role)
-  const [types, setTypes] = useState([])
+  const [types, setTypes] = useState(null)   // null = aún cargando
   const [taxType, setTaxType] = useState('')
   const [years, setYears] = useState([])
   const [year, setYear] = useState(new Date().getFullYear())
@@ -70,8 +73,15 @@ export default function ProRata({ company, readOnly }) {
   const post = () => run('post_pro_rata_regularization', base, t('proRataPosted'))
   const cancel = () => run('cancel_pro_rata_regularization', base, t('proRataCancelled'))
 
+  if (types === null) return error ? <p className="aviso">⚠ {error}</p> : <Loading />
   if (types.length === 0) {
-    return <section className="tarjeta"><h2>{t('proRataTitle')}</h2><p>{t('noTaxSetup')}</p></section>
+    return (
+      <section className="tarjeta">
+        <h2>{t('proRataTitle')}</h2>
+        <Empty icon="🧾" text={t('noTaxSetup')} help={readOnly ? null : t('emptyTaxesHelp')}
+               action={readOnly ? null : t('actionSetupTaxes')} to={companyPath(company.id, 'taxes')} />
+      </section>
+    )
   }
   if (company.vat_regime === 'equivalence_surcharge') {
     return <section className="tarjeta"><h2>{t('proRataTitle')}</h2><p>{t('proRataNotForRE')}</p></section>

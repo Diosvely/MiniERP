@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import { accountName, money } from '../format'
+import Empty from './Empty'
+import { companyPath } from '../router'
 
 const LEVELS = [['', 'levelPosting'], ['3', 'levelAccount'], ['2', 'levelSubgroup'], ['1', 'levelGroup']]
 
@@ -142,7 +144,10 @@ export default function Reports({ company }) {
               </tbody>
             </table>
           </div>
-          {trial.length === 0 && <p>{t('noEntries')}</p>}
+          {trial.length === 0 && (
+            <Empty icon="📒" text={t('noEntries')} action={company.my_role && company.my_role !== 'viewer' ? t('actionNewEntry') : null}
+                   to={companyPath(company.id, 'entry')} />
+          )}
         </section>
       )}
 

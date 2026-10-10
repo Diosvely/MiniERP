@@ -1,0 +1,24 @@
+warning: in the working copy of 'frontend/src/App.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/Companies.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/GeneralJournal.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/InvoiceForm.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/Invoices.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/JournalEntryForm.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/ProRata.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/Reports.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/components/TaxSettlement.jsx', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'frontend/src/supabase.js', LF will be replaced by CRLF the next time Git touches it
+ frontend/src/App.jsx                         |  9 [32m+++++[m[31m----[m
+ frontend/src/components/Companies.jsx        |  3 [32m++[m[31m-[m
+ frontend/src/components/GeneralJournal.jsx   |  9 [32m+++++++[m[31m--[m
+ frontend/src/components/InvoiceForm.jsx      | 16 [32m+++++++++++++[m[31m---[m
+ frontend/src/components/Invoices.jsx         |  5 [32m++++[m[31m-[m
+ frontend/src/components/JournalEntryForm.jsx | 15 [32m+++++++++++++[m[31m--[m
+ frontend/src/components/ProRata.jsx          | 14 [32m++++++++++++[m[31m--[m
+ frontend/src/components/Reports.jsx          |  9 [32m+++++++[m[31m--[m
+ frontend/src/components/TaxSettlement.jsx    | 14 [32m++++++++++++[m[31m--[m
+ frontend/src/i18n/en.js                      | 16 [32m+++++++++++++[m[31m---[m
+ frontend/src/i18n/es.js                      | 16 [32m+++++++++++++[m[31m---[m
+ frontend/src/index.css                       | 13 [32m++++++++++++[m[31m-[m
+ frontend/src/supabase.js                     |  4 [32m+++[m[31m-[m
+ 13 files changed, 116 insertions(+), 27 deletions(-)

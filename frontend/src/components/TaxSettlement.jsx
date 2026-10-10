@@ -2,6 +2,9 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import { money, taxLabel } from '../format'
+import Empty from './Empty'
+import Loading from './Loading'
+import { companyPath } from '../router'
 
 const today = () => new Date().toISOString().slice(0, 10)
 const currentQuarter = () => Math.floor(new Date().getMonth() / 3) + 1
@@ -10,7 +13,7 @@ const currentQuarter = () => Math.floor(new Date().getMonth() / 3) + 1
 // Como "Calc. and Post VAT Settlement" de Business Central
 export default function TaxSettlement({ company, readOnly }) {
   const { t, language } = useI18n()
-  const [types, setTypes] = useState([])
+  const [types, setTypes] = useState(null)   // null = aún cargando
   const [years, setYears] = useState([])
   const [taxType, setTaxType] = useState('')
   const [year, setYear] = useState(new Date().getFullYear())
@@ -82,8 +85,15 @@ export default function TaxSettlement({ company, readOnly }) {
     load()
   }
 
+  if (types === null) return error ? <p className="aviso">⚠ {error}</p> : <Loading />
   if (types.length === 0) {
-    return <section className="tarjeta"><h2>{t('taxSettlementTitle')}</h2><p>{t('noTaxSetup')}</p></section>
+    return (
+      <section className="tarjeta">
+        <h2>{t('taxSettlementTitle')}</h2>
+        <Empty icon="🧾" text={t('noTaxSetup')} help={readOnly ? null : t('emptyTaxesHelp')}
+               action={readOnly ? null : t('actionSetupTaxes')} to={companyPath(company.id, 'taxes')} />
+      </section>
+    )
   }
 
   const boxes = (side) => (calc?.boxes ?? []).filter((b) => b.side === side)

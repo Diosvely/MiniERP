@@ -2,6 +2,8 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import { accountName, money, taxLabel } from '../format'
+import Link from './Link'
+import { companyPath } from '../router'
 
 const today = () => new Date().toISOString().slice(0, 10)
 const emptyLine = () => ({ account_no: '', amount: '', tax_code: '', description: '' })
@@ -143,11 +145,15 @@ export default function InvoiceForm({ company, invoiceType, invoices, onPosted }
           </select>
         </label>
       </div>
-      {partners.length === 0 && <p className="aviso">{t('noPartnersForInvoice')}</p>}
+      {partners.length === 0 && (
+        <p className="aviso">{t('noPartnersForInvoice')} <Link to={companyPath(company.id, 'partners')} className="enlace">{t('actionAddPartner')} →</Link></p>
+      )}
       {!purchase && partner?.equivalence_surcharge && <p className="ayuda">➕ {t('reCustomerHint')}</p>}
       {purchase && companyRE && <p className="ayuda">➕ {t('reCompanyHint')}</p>}
       {foreignPartner && <p className="ayuda">🌍 {t('foreignPartnerHint').replace('{t}', t(`territory.${partner.tax_territory}`))}</p>}
-      {taxes.length === 0 && <p className="aviso">{t('noTaxesForInvoice')}</p>}
+      {taxes.length === 0 && (
+        <p className="aviso">{t('noTaxesForInvoice')} <Link to={companyPath(company.id, 'taxes')} className="enlace">{t('actionSetupTaxes')} →</Link></p>
+      )}
 
       {credit && (
         <div className="rejilla-cabecera">
@@ -270,7 +276,11 @@ export default function InvoiceForm({ company, invoiceType, invoices, onPosted }
       )}
 
       {error && <p className="aviso">⚠ {error}</p>}
-      {message && <p className="exito">✓ {message}</p>}
+      {message && (
+        <p className="exito">✓ {message}
+          <> · <Link to={companyPath(company.id, 'journal')} className="enlace">{t('seeInJournal')} →</Link></>
+        </p>
+      )}
     </section>
   )
 }

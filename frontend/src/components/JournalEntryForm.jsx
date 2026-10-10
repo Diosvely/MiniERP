@@ -18,7 +18,9 @@ function expandDot(text, digits) {
 
 // Formulario de asiento: cabecera + líneas, con cuadre en vivo y manejo rápido con teclado
 //   Enter: cuenta → Debe → Haber → "=" → cuenta de la línea siguiente
-//   +    : nueva línea          −: borrar la línea actual
+//   +    : nueva línea (en cualquier campo de la línea: un importe nunca lleva "+")
+//   −    : borrar la línea, SOLO con el campo de cuenta vacío (en los importes el "−" se escribe normal)
+//   Al borrar una línea con datos aparece "Línea borrada · Deshacer" durante 5 segundos
 //   draft: asiento que propone el Tutor de asientos ({ id, description, lines: [{ account_no, debit, credit, description }] })
 export default function JournalEntryForm({ company, onPosted, draft }) {
   const { t, language } = useI18n()
@@ -31,6 +33,8 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
   const [saving, setSaving] = useState(false)
   const [focusTarget, setFocusTarget] = useState(null)   // { line, field } a enfocar tras re-dibujar
   const linesRef = useRef(null)
+  const [removed, setRemoved] = useState(null)   // { line, index } · última línea borrada, para deshacer
+  const undoTimer = useRef(null)
 
   // Solo subcuentas (posting): son las únicas donde se puede apuntar
   const loadAccounts = () => supabase.from('gl_accounts').select('id, account_no, name, name_en')
@@ -122,8 +126,29 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
 
   function removeLine(i) {
     if (lines.length <= 2) return
+    const gone = lines[i]
     setLines((prev) => prev.filter((_, j) => j !== i))
     setFocusTarget({ line: Math.max(0, i - 1), field: 'account' })
+    // Solo se ofrece deshacer si la línea tenía algo escrito
+    clearTimeout(undoTimer.current)
+    if (gone.accountText || gone.debit || gone.credit) {
+      setRemoved({ line: gone, index: i })
+      undoTimer.current = setTimeout(() => setRemoved(null), 5000)
+    } else {
+      setRemoved(null)
+    }
+  }
+
+  function undoRemove() {
+    clearTimeout(undoTimer.current)
+    const { line, index } = removed
+    setLines((prev) => {
+      const copy = [...prev]
+      copy.splice(index, 0, line)
+      return copy
+    })
+    setRemoved(null)
+    setFocusTarget({ line: index, field: 'account' })
   }
 
   // Pone en la línea la diferencia que falta para cuadrar
@@ -143,7 +168,8 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
       e.preventDefault()
       return addLine(i)
     }
-    if (e.key === '-') {
+    // "−" borra solo desde el campo de cuenta vacío: en Debe/Haber se escribe como signo
+    if (e.key === '-' && field === 'account' && !lines[i].accountText.trim()) {
       e.preventDefault()
       return removeLine(i)
     }
@@ -267,6 +293,13 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
           )
         })}
       </div>
+
+      {removed && (
+        <p className="deshacer" role="status">
+          {t('lineRemoved')}
+          <button type="button" className="enlace" onClick={undoRemove}>↶ {t('undo')}</button>
+        </p>
+      )}
 
       <button type="button" className="secundario" onClick={() => addLine(lines.length - 1)}>
         + {t('addLine')}

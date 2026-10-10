@@ -45,7 +45,7 @@ export default {
   noPostingAccounts: 'Primero crea subcuentas en Datos maestros › Plan de cuentas.',
   debit: 'Debe',
   credit: 'Haber',
-  keyboardHelp: 'Enter: cuenta → Debe → Haber → = → línea siguiente · +: nueva línea · −: borrar línea · 572.1 = 57200001',
+  keyboardHelp: 'Enter: cuenta → Debe → Haber → = → línea siguiente · +: nueva línea · − (con la cuenta vacía): borrar línea · 572.1 = 57200001',
   accountNotFound: 'No existe esa subcuenta',
   addLine: 'Añadir línea',
   removeLine: 'Quitar línea',
@@ -608,6 +608,11 @@ export default {
   passwordMismatch: 'Las contraseñas no coinciden.',
   passwordShort: 'La contraseña debe tener al menos 8 caracteres.',
   close: 'Cerrar',
+// v0.25.0 · Rutas y deshacer
+  companyNotFound: 'No encuentro esta empresa. Puede que el enlace sea antiguo o que no tengas acceso.',
+  loadingData: 'Cargando',
+  lineRemoved: 'Línea borrada.',
+  undo: 'Deshacer',
 
   industry: {
     services: 'Servicios',

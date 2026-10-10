@@ -302,3 +302,11 @@ button.enlace { background: transparent; color: var(--primario); border: 0; padd
 .mencion { font-size: .8rem; }
 .fila-usuario { display: flex; gap: 6px; flex-wrap: wrap; }
 .publicar-demo { border-left: 4px solid #9a6700; }
+
+/* --- v0.25.0: rutas (empresas como enlaces) y deshacer línea --- */
+.enlace-empresa { display: flex; flex-direction: column; color: inherit; text-decoration: none; border-radius: 6px; }
+.enlace-empresa:hover strong, .enlace-empresa:focus-visible strong { color: var(--primario); }
+.enlace-empresa:focus-visible { outline: 2px solid var(--primario); outline-offset: 4px; }
+.deshacer { display: flex; align-items: center; gap: 10px; margin: 0; padding: 8px 12px; border-radius: 8px;
+            background: var(--fondo); border: 1px solid var(--borde); font-size: .9rem; }
+.deshacer button.enlace { padding: 0; }

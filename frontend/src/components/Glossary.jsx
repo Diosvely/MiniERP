@@ -1,6 +1,8 @@
 import { useState } from 'react'
 import { useI18n } from '../i18n'
 import { GLOSSARY } from '../glossary'
+import { BookOpen } from 'lucide-react'
+import { ICON } from '../icons'
 
 const norm = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 
@@ -19,7 +21,7 @@ export default function Glossary() {
     <section className="tarjeta glosario">
       <div className="fila-glosario">
         <button type="button" className="secundario" onClick={() => window.history.back()}>← {t('glossaryBack')}</button>
-        <h2>📖 {t('glossary')}</h2>
+        <h2><BookOpen {...ICON} /> {t('glossary')}</h2>
       </div>
       <p className="ayuda">{t('glossaryIntro')}</p>
       <label htmlFor="buscar-glosario" className="oculto">{t('search')}</label>

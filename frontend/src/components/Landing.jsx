@@ -2,6 +2,8 @@ import { useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import ErrorBox from './ErrorBox'
+import { BookText, Eye, MailCheck, Receipt, SearchCheck } from 'lucide-react'
+import { ICON } from '../icons'
 
 const REPO = 'https://github.com/Diosvely/MiniERP'
 const MIN_PASSWORD = 8   // el mismo mínimo que "Cambiar contraseña"
@@ -54,14 +56,14 @@ export default function Landing() {
         <h2>{t('landingTitle')}</h2>
         <p className="entrada-sub">{t('landingSubtitle')}</p>
         <ul className="entrada-puntos">
-          {['pgc', 'tax', 'audit'].map((k, i) => (
+          {[['pgc', BookText], ['tax', Receipt], ['audit', SearchCheck]].map(([k, Icon]) => (
             <li key={k}>
-              <span aria-hidden="true">{['📒', '🧾', '🔍'][i]}</span>
+              <Icon size={22} strokeWidth={1.75} aria-hidden="true" className="entrada-icono" />
               <div><strong>{t(`landingPoint.${k}.title`)}</strong><span>{t(`landingPoint.${k}.text`)}</span></div>
             </li>
           ))}
         </ul>
-        <button type="button" className="boton-demo" disabled={busy} onClick={guest}>👁 {t('viewDemo')}</button>
+        <button type="button" className="boton-demo" disabled={busy} onClick={guest}><Eye {...ICON} /> {t('viewDemo')}</button>
         <p className="ayuda">{t('landingDemoHelp')}</p>
       </section>
 
@@ -77,7 +79,7 @@ export default function Landing() {
 
         {sent ? (
           <div id="panel-acceso" role="tabpanel" aria-labelledby="tab-signup" className="enviado">
-            <p className="exito">✉ {t('landingCheckEmail').replace('{e}', email)}</p>
+            <p className="exito"><MailCheck {...ICON} /> {t('landingCheckEmail').replace('{e}', email)}</p>
             <p className="ayuda">{t('landingCheckEmailHelp')}</p>
             <button type="button" className="secundario" onClick={() => reset('signin')}>{t('landingSignIn')}</button>
           </div>

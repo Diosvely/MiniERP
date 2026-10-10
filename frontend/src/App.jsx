@@ -7,6 +7,8 @@ import Landing from './components/Landing'
 import Glossary from './components/Glossary'
 import Link from './components/Link'
 import { useHashRoute } from './router'
+import { BookOpen } from 'lucide-react'
+import { ICON } from './icons'
 
 export default function App() {
   const [session, setSession] = useState(null)
@@ -40,7 +42,7 @@ function Layout({ session }) {
       <header className="cabecera">
         <h1>{t('appTitle')}</h1>
         <div className="cabecera-acciones">
-          <Link to="/glosario" className="enlace-glosario">📖 {t('glossary')}</Link>
+          <Link to="/glosario" className="enlace-glosario" aria-label={t('glossary')}><BookOpen {...ICON} /> <span>{t('glossary')}</span></Link>
           <LanguageSwitch />
         </div>
       </header>

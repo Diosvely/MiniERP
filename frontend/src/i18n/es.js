@@ -804,11 +804,11 @@ export default {
   accountSearch: 'Nº o nombre (caja, bancos…)',
   tplTitle: '¿Qué ha pasado?',
   tpl: {
-    purchase: { label: '🛒 He comprado mercaderías', concept: 'Compra de mercaderías' },
-    sale: { label: '💶 He vendido', concept: 'Venta de mercaderías' },
-    collect: { label: '📥 He cobrado a un cliente', concept: 'Cobro de cliente' },
-    pay: { label: '📤 He pagado a un proveedor', concept: 'Pago a proveedor' },
-    payroll: { label: '👥 Nómina', concept: 'Nómina del mes' },
+    purchase: { label: 'He comprado mercaderías', concept: 'Compra de mercaderías' },
+    sale: { label: 'He vendido', concept: 'Venta de mercaderías' },
+    collect: { label: 'He cobrado a un cliente', concept: 'Cobro de cliente' },
+    pay: { label: 'He pagado a un proveedor', concept: 'Pago a proveedor' },
+    payroll: { label: 'Nómina', concept: 'Nómina del mes' },
   },
   tplNote: 'Rellenan las cuentas; tú escribes los importes y pulsas "=" en la línea del total. No calculan el {tax}: para una factura con el impuesto calculado, usa',
   tplLoaded: 'Plantilla cargada: escribe los importes en los campos marcados y pulsa "=" en la línea del total.',
@@ -826,6 +826,11 @@ export default {
   glossaryBack: 'Volver',
   glossaryAll: 'Ver todo el glosario',
   glossaryWhatIs: 'Qué es',
+
+// v0.27.0 · Accesibilidad: etiquetas visibles en el alta de empresa
+  fieldIndustry: 'Sector',
+  fieldTerritory: 'Territorio fiscal',
+  vatNoExample: 'Ej.: B12345674',
 
   industry: {
     services: 'Servicios',

@@ -211,7 +211,7 @@ export default function InvoiceForm({ company, invoiceType, invoices, onPosted }
         return (
           <div key={i} className="linea-factura">
             <div className="cuenta-linea">
-              <input list={listId} placeholder={t('baseAccount')} value={l.account_no} autoComplete="off"
+              <input list={listId} placeholder={t('baseAccount')} aria-label={t('baseAccount')} value={l.account_no} autoComplete="off"
                      inputMode="numeric" className={l.account_no.trim() && !account ? 'invalido' : ''}
                      onChange={(e) => setLine(i, 'account_no', e.target.value)} />
               <span className="nombre-cuenta">
@@ -219,9 +219,9 @@ export default function InvoiceForm({ company, invoiceType, invoices, onPosted }
                 {account && reduces(l) && <strong className="reduce"> · {t('reduces')}</strong>}
               </span>
             </div>
-            <input placeholder={t('baseAmount')} inputMode="decimal" value={l.amount}
+            <input placeholder={t('baseAmount')} aria-label={t('baseAmount')} inputMode="decimal" value={l.amount}
                    onChange={(e) => setLine(i, 'amount', e.target.value)} />
-            <select value={l.tax_code} onChange={(e) => setLine(i, 'tax_code', e.target.value)}>
+            <select value={l.tax_code} aria-label={t('taxCode')} onChange={(e) => setLine(i, 'tax_code', e.target.value)}>
               <option value="">{t('taxCode')}</option>
               {taxes.map((x) => (
                 <option key={x.tax_code} value={x.tax_code}>{taxLabel(x, t, language)}</option>

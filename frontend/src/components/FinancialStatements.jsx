@@ -5,6 +5,8 @@ import { workYear } from '../workDate'
 import { money } from '../format'
 import { changePct, prevCutoff } from '../compare'
 import ErrorBox from './ErrorBox'
+import ReportActions from './ReportActions'
+import { downloadXlsx, fileName } from '../exportXlsx'
 
 // Balance de situación y Cuenta de Pérdidas y Ganancias (modelo PYMES del PGC)
 //   statement: 'balance' | 'pyg' · columnas ejercicio actual y anterior, como en las cuentas anuales
@@ -71,13 +73,37 @@ export default function FinancialStatements({ company, statement }) {
   const diff = (r) => Number(r.amount) - Number(r.amount_prev)
   const pct = (r) => changePct(r.amount, r.amount_prev, language)
 
+  // Excel: las partidas visibles con su sangría, los dos ejercicios y la variación (números, no texto)
+  const title = statement === 'balance' ? t('balanceSheet') : t('incomeStatement')
+  const filters = `${t('year')} ${year}${toDate ? ` · ${t('fsAt').replace('{d}', shortDate(toDate))}` : ''}`
+  const exportExcel = () => downloadXlsx({
+    title: `${title} · ${company.name ?? ''}`, subtitle: filters, sheet: title,
+    file: fileName(title, company.name, year, toDate),
+    columns: [
+      { header: t('fsLine'), key: 'label', type: 'text', width: 60 },
+      { header: String(year), key: 'amount', type: 'money' },
+      ...(hasPrev ? [
+        { header: String(Number(year) - 1), key: 'amount_prev', type: 'money' },
+        { header: t('fsChange'), key: 'change', type: 'money' },
+        { header: '%', key: 'pct', type: 'pct' },
+      ] : []),
+    ],
+    rows: visible.map((r) => ({
+      label: `${'   '.repeat(r.level)}${label(r)}`, amount: r.amount, amount_prev: r.amount_prev, change: diff(r),
+      pct: Math.abs(Number(r.amount_prev)) < 0.005 ? null : diff(r) / Math.abs(Number(r.amount_prev)),
+    })),
+  })
+
   const amount = (code) => Number(rows.find((r) => r.code === code)?.amount ?? 0)
   const difference = statement === 'balance' ? amount('ACT') - amount('PNP') : 0
   const visible = rows.filter((r) => !hideZero || r.is_total || Number(r.amount) !== 0 || Number(r.amount_prev) !== 0)
 
   return (
     <section className="tarjeta">
-      <h2>{statement === 'balance' ? t('balanceSheet') : t('incomeStatement')}</h2>
+      <div className="titulo-informe">
+        <h2>{statement === 'balance' ? t('balanceSheet') : t('incomeStatement')}</h2>
+        {rows.length > 0 && <ReportActions onExcel={exportExcel} info={`${company.name} · ${filters}`} />}
+      </div>
       <p className="ayuda">{statement === 'balance' ? t('balanceSheetHelp') : t('incomeStatementHelp')}</p>
       <div className="rejilla-tres">
         <label>{t('year')}

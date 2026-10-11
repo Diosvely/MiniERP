@@ -7,6 +7,8 @@ import { accountName, money } from '../format'
 import Empty from './Empty'
 import { companyPath, navigate } from '../router'
 import ErrorBox from './ErrorBox'
+import ReportActions from './ReportActions'
+import { downloadXlsx, fileName } from '../exportXlsx'
 import Link from './Link'
 
 const LEVELS = [['', 'levelPosting'], ['3', 'levelAccount'], ['2', 'levelSubgroup'], ['1', 'levelGroup']]
@@ -132,7 +134,23 @@ export default function Reports({ company, params = [] }) {
 
       {view === 'trial' && (
         <section className="tarjeta">
-          <h2>{t('trialBalance')} {year}</h2>
+          <div className="titulo-informe">
+            <h2>{t('trialBalance')} {year}</h2>
+            {trial.length > 0 && <ReportActions info={`${company.name} · ${t('year')} ${year}${toDate ? ` · ${t('toDate')} ${toDate}` : ''}`}
+              onExcel={() => downloadXlsx({
+                title: `${t('trialBalance')} · ${company.name}`, sheet: t('trialBalance'),
+                subtitle: `${t('year')} ${year}${toDate ? ` · ${t('toDate')} ${toDate}` : ''}`,
+                file: fileName(t('trialBalance'), company.name, year, toDate),
+                columns: [
+                  { header: t('account'), key: 'no', type: 'text', width: 12 },
+                  { header: t('accountName'), key: 'name', type: 'text', width: 44 },
+                  { header: t('debit'), key: 'd', type: 'money' }, { header: t('credit'), key: 'c', type: 'money' },
+                  { header: t('debitBalance'), key: 'sd', type: 'money' }, { header: t('creditBalance'), key: 'sc', type: 'money' },
+                ],
+                rows: trial.map((r) => ({ no: r.account_no, name: name(r) ?? '', d: r.total_debit, c: r.total_credit,
+                  sd: Number(r.debit_balance) || null, sc: Number(r.credit_balance) || null })),
+              })} />}
+          </div>
           <p className="ayuda">{t('trialBalanceHelp')}</p>
           <div className="tabla-scroll">
             <table className="informe">
@@ -174,7 +192,23 @@ export default function Reports({ company, params = [] }) {
 
       {view === 'ledger' && (
         <section className="tarjeta">
-          <h2>{t('generalLedger')} {ledgerAccount && `· ${ledgerAccount} ${accountInfo ? accountName(accountInfo, language) : ''}`}</h2>
+          <div className="titulo-informe">
+            <h2>{t('generalLedger')} {ledgerAccount && `· ${ledgerAccount} ${accountInfo ? accountName(accountInfo, language) : ''}`}</h2>
+            {ledger.length > 0 && <ReportActions info={`${company.name} · ${t('year')} ${year}${toDate ? ` · ${t('toDate')} ${toDate}` : ''}`}
+              onExcel={() => downloadXlsx({
+                title: `${t('generalLedger')} ${ledgerAccount} ${accountInfo ? accountName(accountInfo, language) : ''} · ${company.name}`,
+                subtitle: `${t('year')} ${year}${toDate ? ` · ${t('toDate')} ${toDate}` : ''}`, sheet: ledgerAccount,
+                file: fileName(t('generalLedger'), ledgerAccount, company.name, year),
+                columns: [
+                  { header: t('date'), key: 'date', type: 'date', width: 12 }, { header: t('entry'), key: 'no', type: 'int', width: 9 },
+                  { header: t('description'), key: 'desc', type: 'text', width: 50 },
+                  { header: t('debit'), key: 'd', type: 'money' }, { header: t('credit'), key: 'c', type: 'money' },
+                  { header: t('balance'), key: 'bal', type: 'money' },
+                ],
+                rows: ledger.map((r) => ({ date: r.posting_date, no: r.entry_no, desc: r.description,
+                  d: Number(r.debit) || null, c: Number(r.credit) || null, bal: r.running_balance })),
+              })} />}
+          </div>
           {!ledgerAccount && <p className="ayuda">{t('chooseAccount')}</p>}
           {ledgerAccount && (
             <div className="tabla-scroll">

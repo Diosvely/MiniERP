@@ -72,6 +72,8 @@ export default {
   demoHelp: 'Empresas de ejemplo para consultar: libro diario, cuentas e informes. Solo lectura.',
   demoBadge: 'DEMO',
   readOnly: 'Solo lectura · empresa de demostración',
+  // v0.30.0 · Exportar e imprimir
+  exportExcel: 'Excel', print: 'Imprimir', fsLine: 'Partida', accountName: 'Nombre de la cuenta',
   // v0.30.0 · Cascada del EFE y evolución de los ratios
   cfw: {
     title: 'De dónde viene y a dónde va el dinero del año',

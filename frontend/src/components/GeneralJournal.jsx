@@ -7,6 +7,8 @@ import { money } from '../format'
 import Empty from './Empty'
 import { companyPath } from '../router'
 import ErrorBox from './ErrorBox'
+import ReportActions from './ReportActions'
+import { downloadXlsx, fileName } from '../exportXlsx'
 import Link from './Link'
 
 
@@ -68,9 +70,33 @@ export default function GeneralJournal({ company, readOnly, refreshKey }) {
     setReversing(null); setReload((k) => k + 1)
   }
 
+  // Excel: una fila por apunte de los asientos visibles (con el filtro y la búsqueda aplicados)
+  const range = [from && `${t('fromDate')} ${from}`, to && `${t('toDate')} ${to}`, q && `"${search.trim()}"`].filter(Boolean).join(' · ')
+  const exportExcel = () => downloadXlsx({
+    title: `${t('generalJournal')} · ${company.name}`, subtitle: range, sheet: t('generalJournal'),
+    file: fileName(t('generalJournal'), company.name, from, to),
+    columns: [
+      { header: t('date'), key: 'date', type: 'date', width: 12 },
+      { header: t('entry'), key: 'entry', type: 'int', width: 9 },
+      { header: t('documentNo'), key: 'doc', type: 'text', width: 16 },
+      { header: t('account'), key: 'account', type: 'text', width: 12 },
+      { header: t('accountName'), key: 'name', type: 'text', width: 36 },
+      { header: t('description'), key: 'desc', type: 'text', width: 44 },
+      { header: t('debit'), key: 'debit', type: 'money' },
+      { header: t('credit'), key: 'credit', type: 'money' },
+    ],
+    rows: visible.flatMap((e) => e.lines.map((l) => ({
+      date: e.posting_date, entry: e.entry_no, doc: e.document_no, account: l.account_no, name: name(l),
+      desc: l.description ?? e.entry_description, debit: Number(l.debit) || null, credit: Number(l.credit) || null,
+    }))),
+  })
+
   return (
     <section className="tarjeta">
-      <h2>{t('generalJournal')}</h2>
+      <div className="titulo-informe">
+        <h2>{t('generalJournal')}</h2>
+        {visible.length > 0 && <ReportActions onExcel={exportExcel} info={`${company.name}${range ? ` · ${range}` : ''}`} />}
+      </div>
       <div className="rejilla-tres">
         <label>{t('fromDate')}<input type="date" value={from} onChange={(e) => setFrom(e.target.value)} /></label>
         <label>{t('toDate')}<input type="date" value={to} onChange={(e) => setTo(e.target.value)} /></label>

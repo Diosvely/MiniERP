@@ -578,3 +578,27 @@ a.num-asiento { font-variant-numeric: tabular-nums; }
 .tendencia-ratio .punto { fill: var(--primario); stroke: var(--tarjeta); stroke-width: 1.5; }
 .tendencia-ratio .anio { fill: var(--suave); font-size: 10px; }
 .tendencia-ratio .valor { fill: var(--texto); font-size: 10px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* --- v0.30.0: exportar a Excel e imprimir --- */
+.titulo-informe { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.titulo-informe h2 { margin: 0; }
+.acciones-informe { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.acciones-informe button { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: .9rem; }
+.solo-impresion { display: none; }
+@media print {
+  /* La hoja impresa: solo el informe, en blanco y negro, sin menús ni botones (también desde el modo oscuro) */
+  :root { --fondo: #fff; --tarjeta: #fff; --texto: #000; --suave: #333; --borde: #bbb; --primario: #000; }
+  body, main { background: #fff !important; color: #000; }
+  main, main:has(.empresa-layout) { max-width: none; padding: 0; }
+  .cabecera, .empresa-cabecera, .menu-empresa, .boton-menu, .ruta, .acciones-informe, .rejilla-tres, .pestanas,
+  .leyenda-ratios, button:not(.ratio-fila), .busy, .aviso-modo, .ia-analista, .desplegar { display: none !important; }
+  .empresa-layout { display: block; }
+  .tarjeta { border: 0; padding: 0; margin: 0 0 12px; box-shadow: none; }
+  .solo-impresion { display: block; margin: 0 0 8px; font-size: .85rem; color: #333; }
+  .tabla-ancha, .tabla-scroll { overflow: visible !important; }
+  table { font-size: 9pt; }
+  tr, .asiento { break-inside: avoid; }
+  thead { display: table-header-group; }   /* la cabecera de la tabla se repite en cada página */
+  a { color: #000; text-decoration: none; }
+  svg .area { opacity: .15; }
+}

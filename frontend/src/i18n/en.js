@@ -73,6 +73,8 @@ export default {
   demoHelp: 'Sample companies to explore: general journal, accounts and reports. Read only.',
   demoBadge: 'DEMO',
   readOnly: 'Read only · demo company',
+  // v0.30.0 · Export and print
+  exportExcel: 'Excel', print: 'Print', fsLine: 'Line', accountName: 'Account name',
   // v0.30.0 · Cash flow waterfall and ratio trends
   cfw: {
     title: 'Where the year\'s cash came from and where it went',

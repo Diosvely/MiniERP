@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import ErrorBox from './ErrorBox'
+import Turnstile, { CAPTCHA_KEY } from './Turnstile'
 import { BookText, Eye, MailCheck, Receipt, SearchCheck } from 'lucide-react'
 import { ICON } from '../icons'
 
@@ -11,7 +12,7 @@ const MIN_PASSWORD = 8   // el mismo mínimo que "Cambiar contraseña"
 // PANTALLA DE ENTRADA (sin sesión): qué es esto, ver la demo sin registrarse, o entrar / crear cuenta.
 // Es lo primero que ve quien llega desde el portfolio: la demo va arriba y en grande.
 export default function Landing() {
-  const { t } = useI18n()
+  const { t, language } = useI18n()
   const [tab, setTab] = useState('signin')       // 'signin' | 'signup'
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -19,14 +20,21 @@ export default function Landing() {
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
   const [sent, setSent] = useState(false)        // cuenta creada: falta confirmar el correo
+  // CAPTCHA (Turnstile): un token por intento. Sin clave configurada no se pide.
+  const [token, setToken] = useState(null)
+  const [round, setRound] = useState(0)          // al cambiar, el widget pide un token nuevo
+  const waiting = Boolean(CAPTCHA_KEY) && !token
+  const captcha = CAPTCHA_KEY ? { captchaToken: token } : undefined
+  const used = () => setRound((r) => r + 1)
+  const fromLink = new URLSearchParams(window.location.search).has('demo')   // llegó con ?demo
 
   const reset = (next) => { setTab(next); setError(''); setSent(false); setShow(false) }
 
   // Invitado: sesión anónima de Supabase, solo puede ver las empresas demo
   async function guest() {
     setError(''); setBusy(true)
-    const { error } = await supabase.auth.signInAnonymously()
-    setBusy(false)
+    const { error } = await supabase.auth.signInAnonymously({ options: captcha })
+    setBusy(false); used()
     if (error) setError(error.message)
   }
 
@@ -36,13 +44,13 @@ export default function Landing() {
     if (tab === 'signup' && password.length < MIN_PASSWORD) return setError(t('passwordShort'))
     setBusy(true)
     if (tab === 'signin') {
-      const { error } = await supabase.auth.signInWithPassword({ email, password })
-      setBusy(false)
+      const { error } = await supabase.auth.signInWithPassword({ email, password, options: captcha })
+      setBusy(false); used()
       if (error) setError(error.message)
       return
     }
-    const { data, error } = await supabase.auth.signUp({ email, password })
-    setBusy(false)
+    const { data, error } = await supabase.auth.signUp({ email, password, options: captcha })
+    setBusy(false); used()
     if (error) return setError(error.message)
     // Con la confirmación por correo activada, Supabase no abre sesión hasta que se pulsa el enlace
     if (!data.session) { setSent(true); setPassword('') }
@@ -63,7 +71,10 @@ export default function Landing() {
             </li>
           ))}
         </ul>
-        <button type="button" className="boton-demo" disabled={busy} onClick={guest}><Eye {...ICON} /> {t('viewDemo')}</button>
+        <Turnstile onToken={setToken} resetKey={round} language={language} />
+        {waiting && <p className="ayuda captcha-espera" role="status">{t('captchaWaiting')}</p>}
+        <button type="button" className={fromLink ? 'boton-demo resaltado' : 'boton-demo'} autoFocus={fromLink}
+                disabled={busy || waiting} onClick={guest}><Eye {...ICON} /> {t('viewDemo')}</button>
         <p className="ayuda">{t('landingDemoHelp')}</p>
       </section>
 
@@ -105,7 +116,7 @@ export default function Landing() {
               </p>
             )}
 
-            <button type="submit" disabled={busy}>
+            <button type="submit" disabled={busy || waiting}>
               {busy ? `${t('loadingData')}…` : t(tab === 'signin' ? 'signIn' : 'landingCreate')}
             </button>
             <ErrorBox error={error} />

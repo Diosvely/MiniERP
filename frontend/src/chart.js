@@ -14,3 +14,18 @@ export function niceTicks(min, max) {
   if (ticks.length < 2) ticks.push(lo + step)   // todo a cero: al menos un tramo
   return ticks
 }
+
+// Tramos de una cascada: del saldo inicial al final pasando por cada flujo.
+//   start: saldo inicial · steps: [{ key, value }] · → [{ key, from, to, kind: 'total' | 'up' | 'down' }]
+// Cada flujo empieza donde acabó el anterior; el último tramo es el saldo final (de 0 al resultado).
+export function waterfall(start, steps) {
+  const bars = [{ key: 'start', from: 0, to: Number(start), kind: 'total' }]
+  let acc = Number(start)
+  for (const s of steps) {
+    const v = Number(s.value)
+    bars.push({ key: s.key, from: acc, to: acc + v, kind: v >= 0 ? 'up' : 'down' })
+    acc += v
+  }
+  bars.push({ key: 'end', from: 0, to: acc, kind: 'total' })
+  return bars
+}

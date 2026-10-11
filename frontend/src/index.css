@@ -559,3 +559,22 @@ a.num-asiento { font-variant-numeric: tabular-nums; }
 .estado th small { display: block; font-weight: 400; color: var(--suave); font-size: .75rem; }
 .estado td.variacion { color: var(--suave); font-variant-numeric: tabular-nums; }
 .estado td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* --- v0.30.0: cascada del EFE y evolución de los ratios --- */
+.figura-cascada { margin: 4px 0 8px; }
+.figura-cascada figcaption { font-weight: 600; margin-bottom: 4px; }
+.cascada { width: 100%; }
+.cascada svg { display: block; max-width: 100%; height: auto; overflow: visible; }
+.cascada .cero { stroke: var(--suave); stroke-width: 1; }
+.cascada .conector { stroke: var(--suave); stroke-dasharray: 3 3; }
+.cascada .tramo.total rect { fill: var(--primario); }
+.cascada .tramo.up rect { fill: var(--exito); }
+.cascada .tramo.down rect { fill: var(--aviso); }
+.cascada .valor { fill: var(--texto); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.cascada .etiqueta { fill: var(--suave); font-size: 11px; }
+.tendencia-ratio svg { display: block; width: 100%; max-width: 420px; height: auto; overflow: visible; }
+.tendencia-ratio .zona { fill: var(--exito); opacity: .12; }
+.tendencia-ratio .linea { fill: none; stroke: var(--primario); stroke-width: 2; stroke-linejoin: round; }
+.tendencia-ratio .punto { fill: var(--primario); stroke: var(--tarjeta); stroke-width: 1.5; }
+.tendencia-ratio .anio { fill: var(--suave); font-size: 10px; }
+.tendencia-ratio .valor { fill: var(--texto); font-size: 10px; font-weight: 600; font-variant-numeric: tabular-nums; }

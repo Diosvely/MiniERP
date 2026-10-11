@@ -73,6 +73,17 @@ export default {
   demoHelp: 'Sample companies to explore: general journal, accounts and reports. Read only.',
   demoBadge: 'DEMO',
   readOnly: 'Read only · demo company',
+  // v0.30.0 · Cash flow waterfall and ratio trends
+  cfw: {
+    title: 'Where the year\'s cash came from and where it went',
+    start: 'Opening cash', A: 'Operating', B: 'Investing', C: 'Financing', end: 'Closing cash',
+    startShort: 'Opening', AShort: 'Operat.', BShort: 'Invest.', CShort: 'Financ.', endShort: 'Closing',
+    summary: 'Cash flow waterfall: from {a} opening cash to {b} closing cash',
+  },
+  ratioTrend: {
+    summary: 'Trend of {r}: {a} → {b}',
+    band: 'The green band is the ratio\'s reference zone.',
+  },
   // v0.30.0 · Comparative statements
   fsAt: 'at {d}', fsClosing: 'year end', fsChange: 'Change',
   fsCompareBalance: 'Compared with the previous year-end balance sheet. Change: amount and % versus that year.',

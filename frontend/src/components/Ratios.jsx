@@ -5,6 +5,7 @@ import { workYear } from '../workDate'
 import { money } from '../format'
 import AiAnalyst from './AiAnalyst'
 import ErrorBox from './ErrorBox'
+import RatioTrend from './RatioTrend'
 
 // Ratios financieros (Modo auditor): liquidez, solvencia, rentabilidad, actividad y flujos de caja
 // Cada ratio con su valoración frente a la zona de referencia, el año anterior y, al pulsarlo,
@@ -19,6 +20,8 @@ export default function Ratios({ company }) {
   const [open, setOpen] = useState({})
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  // Evolución de todos los ejercicios: se pide la primera vez que se despliega un ratio ({ año: { código: valor } })
+  const [history, setHistory] = useState(null)
 
   const locale = language === 'en' ? 'en-GB' : 'es-ES'
   const en = language === 'en'
@@ -71,6 +74,19 @@ export default function Ratios({ company }) {
   }
   const badge = { ok: '✓', low: '▼', high: '▲' }
 
+  // Al desplegar un ratio por primera vez se piden los ratios de todos los ejercicios (en paralelo, una vez)
+  async function toggleRatio(code) {
+    setOpen({ ...open, [code]: !open[code] })
+    if (history || years.length < 2) return
+    setHistory({})
+    const all = await Promise.all(years.map((y) => supabase.rpc('financial_ratios', { p_company: company.id, p_year: y })))
+    const h = {}
+    all.forEach((res, i) => { h[years[i]] = Object.fromEntries((res.data ?? []).map((r) => [r.code, r.value])) })
+    setHistory(h)
+  }
+  const trendPoints = (code) => (history ? years.filter((y) => history[y]?.[code] != null)
+    .map((y) => ({ year: y, value: Number(history[y][code]) })) : [])
+
   return (
     <>
       <section className="tarjeta">
@@ -103,7 +119,7 @@ export default function Ratios({ company }) {
               {list.map((r) => (
                 <li key={r.code} className={open[r.code] ? 'abierto' : ''}>
                   <button type="button" className="ratio-fila" aria-expanded={!!open[r.code]}
-                          onClick={() => setOpen({ ...open, [r.code]: !open[r.code] })}>
+                          onClick={() => toggleRatio(r.code)}>
                     <span className="ratio-nombre">
                       <span className="desplegar">{open[r.code] ? '▾' : '▸'}</span> {en ? r.label_en : r.label}
                     </span>
@@ -121,6 +137,10 @@ export default function Ratios({ company }) {
                       {r.num != null && r.den != null && <p>= {detail(r)} = <strong>{fmt(r.value, r.unit)}</strong></p>}
                       {reference(r) && <p className="ayuda">{t('ratioReference')}: {reference(r)}</p>}
                       <p>{en ? r.help_en : r.help}</p>
+                      {trendPoints(r.code).length >= 3 && (
+                        <RatioTrend points={trendPoints(r.code)} refMin={r.ref_min} refMax={r.ref_max}
+                                    fmt={(v) => fmt(v, r.unit)} label={en ? r.label_en : r.label} />
+                      )}
                     </div>
                   )}
                 </li>

@@ -5,6 +5,7 @@ import { workYear } from '../workDate'
 import { money } from '../format'
 import AiAnalyst from './AiAnalyst'
 import ErrorBox from './ErrorBox'
+import CashWaterfall from './CashWaterfall'
 
 // Estado de flujos de efectivo por los dos métodos (como el "Cash Flow Statement" de BC / SAP)
 //   indirecto: el modelo normal del PGC (parte del resultado) · directo: cobros y pagos por su contrapartida (NIC 7)
@@ -97,6 +98,12 @@ export default function CashFlow({ company }) {
             <span>= {t('cashClosing')}: {m(check.cash_closing)}</span>
             <strong>{check.balanced ? `✓ ${t('cashFlowBalanced')}` : `⚠ ${t('cashFlowUnbalanced')}`}</strong>
           </div>
+        )}
+        {check && (
+          <figure className="figura-cascada">
+            <figcaption>{t('cfw.title')}</figcaption>
+            <CashWaterfall check={check} method={method} />
+          </figure>
         )}
 
         <div className="tabla-ancha">

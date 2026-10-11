@@ -72,6 +72,17 @@ export default {
   demoHelp: 'Empresas de ejemplo para consultar: libro diario, cuentas e informes. Solo lectura.',
   demoBadge: 'DEMO',
   readOnly: 'Solo lectura · empresa de demostración',
+  // v0.30.0 · Cascada del EFE y evolución de los ratios
+  cfw: {
+    title: 'De dónde viene y a dónde va el dinero del año',
+    start: 'Efectivo inicial', A: 'Explotación', B: 'Inversión', C: 'Financiación', end: 'Efectivo final',
+    startShort: 'Inicial', AShort: 'Explot.', BShort: 'Invers.', CShort: 'Financ.', endShort: 'Final',
+    summary: 'Cascada del estado de flujos de efectivo: de {a} de efectivo inicial a {b} de efectivo final',
+  },
+  ratioTrend: {
+    summary: 'Evolución de {r}: {a} → {b}',
+    band: 'La franja verde es la zona de referencia del ratio.',
+  },
   // v0.30.0 · Estados comparativos
   fsAt: 'a {d}', fsClosing: 'cierre', fsChange: 'Variación',
   fsCompareBalance: 'Se compara con el balance de cierre del ejercicio anterior. Variación: importe y % frente a ese año.',

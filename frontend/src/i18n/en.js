@@ -86,6 +86,12 @@ export default {
   deleteCompanyButton: 'Delete the company forever',
   deleteCompanyProgress: 'Deleting… {n} entries left',
   deleteCompanyDemoHint: 'This is a published demo: stop publishing it to be able to delete it.',
+  // v0.29.0 · Audit trail
+  goBack: 'Back',
+  openEntry: 'See the whole entry',
+  openLedger: 'See the general ledger of this account',
+  entryNotFound: 'Entry {n} of fiscal year {y} not found.',
+  entryDetailHelp: 'Click an account to see its general ledger and follow the trail. “Back” returns you to where you were.',
   publishDemo: 'Publish as demo',
   unpublishDemo: 'Stop publishing as demo',
   companyLimit: 'You have reached your account limit of {n} company(ies).',
@@ -692,6 +698,7 @@ export default {
     accounts: { label: 'Chart of accounts', sub: 'Spanish GAAP accounts' },
     partners: { label: 'Customers and suppliers', sub: 'Business partners' },
     access: { label: 'Access', sub: 'Who can enter and with which role' },
+    asiento: { label: 'Journal entry', sub: 'Entry details' },
   },
 
 // v0.25.0 · Empty states with the next action

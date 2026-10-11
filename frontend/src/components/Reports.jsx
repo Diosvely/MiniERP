@@ -5,23 +5,26 @@ import { useI18n } from '../i18n'
 import { workYear } from '../workDate'
 import { accountName, money } from '../format'
 import Empty from './Empty'
-import { companyPath } from '../router'
+import { companyPath, navigate } from '../router'
 import ErrorBox from './ErrorBox'
+import Link from './Link'
 
 const LEVELS = [['', 'levelPosting'], ['3', 'levelAccount'], ['2', 'levelSubgroup'], ['1', 'levelGroup']]
 
 // Informes del auditor: sumas y saldos, libro mayor y saldos anómalos
-export default function Reports({ company }) {
+// params (desde la ruta): ['mayor', cuenta, año] abre directamente el libro mayor de esa cuenta (rastro contable)
+export default function Reports({ company, params = [] }) {
   const { t, language } = useI18n()
-  const [view, setView] = useState('trial')
+  const fromLink = params[0] === 'mayor' && params[1]
+  const [view, setView] = useState(fromLink ? 'ledger' : 'trial')
   const [years, setYears] = useState([])
-  const [year, setYear] = useState(() => workYear(company))   // año de la fecha de trabajo
+  const [year, setYear] = useState(() => (fromLink && Number(params[2])) || workYear(company))   // año de la fecha de trabajo
   const [level, setLevel] = useState('')
   const [toDate, setToDate] = useState('')
   const [trial, setTrial] = useState([])
   const [anomalies, setAnomalies] = useState([])
   const [accounts, setAccounts] = useState([])
-  const [ledgerAccount, setLedgerAccount] = useState('')
+  const [ledgerAccount, setLedgerAccount] = useState(fromLink ? params[1] : '')
   const [ledger, setLedger] = useState([])
   const [error, setError] = useState('')
 
@@ -67,6 +70,15 @@ export default function Reports({ company }) {
     })
     return () => { alive = false }
   }, [company.id, year, ledgerAccount, toDate])
+
+  // La dirección sigue al mayor que se está viendo: al volver desde un asiento («atrás») se abre esta misma cuenta
+  useEffect(() => {
+    if (view === 'ledger' && ledgerAccount) {
+      navigate(companyPath(company.id, `reports/mayor/${ledgerAccount}/${year}`), { replace: true })
+    } else {
+      navigate(companyPath(company.id, 'reports'), { replace: true })
+    }
+  }, [view, ledgerAccount, year, company.id])
 
   const anomalyOf = (no) => anomalies.find((a) => a.account_no === no)
   const sum = (field) => trial.reduce((s, r) => s + Number(r[field]), 0)
@@ -176,7 +188,10 @@ export default function Reports({ company }) {
                 <tbody>
                   {ledger.map((r, i) => (
                     <tr key={i}>
-                      <td>{r.posting_date}</td><td>{r.entry_no}</td><td>{r.description}</td>
+                      <td>{r.posting_date}</td>
+                      <td><Link to={companyPath(company.id, `asiento/${year}/${r.entry_no}`)} className="num-asiento"
+                                title={t('openEntry')}>{r.entry_no}</Link></td>
+                      <td>{r.description}</td>
                       <td className="num">{Number(r.debit) ? m(r.debit) : ''}</td>
                       <td className="num">{Number(r.credit) ? m(r.credit) : ''}</td>
                       <td className="num">{side(r.running_balance)}</td>

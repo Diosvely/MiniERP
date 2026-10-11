@@ -7,6 +7,7 @@ import { money } from '../format'
 import Empty from './Empty'
 import { companyPath } from '../router'
 import ErrorBox from './ErrorBox'
+import Link from './Link'
 
 
 // Libro diario: asientos contabilizados entre dos fechas, con búsqueda y anulación (contraasiento)
@@ -108,7 +109,11 @@ export default function GeneralJournal({ company, readOnly, refreshKey }) {
               <tbody>
                 {e.lines.map((l) => (
                   <tr key={l.line_no}>
-                    <td><span className="codigo">{l.account_no}</span> {name(l)}</td>
+                    <td>
+                      <Link to={companyPath(company.id, `reports/mayor/${l.account_no}/${e.fiscal_year}`)} className="enlace" title={t('openLedger')}>
+                        <span className="codigo">{l.account_no}</span> {name(l)}
+                      </Link>
+                    </td>
                     <td className="num">{Number(l.debit) ? money(l.debit, language) : ''}</td>
                     <td className="num">{Number(l.credit) ? money(l.credit, language) : ''}</td>
                   </tr>

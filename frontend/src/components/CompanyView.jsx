@@ -17,6 +17,7 @@ import CashFlow from './CashFlow'
 import Ratios from './Ratios'
 import EntryTutor from './EntryTutor'
 import CompanyAccess from './CompanyAccess'
+import EntryDetail from './EntryDetail'
 import DeleteCompany from './DeleteCompany'
 import Home from './Home'
 import Term from './Term'
@@ -51,6 +52,8 @@ const SCREENS = [
   { id: 'accounts', group: 'menuMasterData' },
   { id: 'partners', group: 'menuMasterData', basic: true },
   { id: 'access', group: 'menuMasterData', owner: true },
+  // Ficha de un asiento: no sale en ningún menú, se llega desde el libro mayor (#/…/asiento/<año>/<nº>)
+  { id: 'asiento', group: 'menuAccounting', basic: 'hidden', menu: false },
 ]
 // Orden del menú Básico (8 entradas como máximo): de lo que más se usa a lo que menos
 const BASIC_ORDER = ['home', 'invoices', 'entry', 'journal', 'settlement', 'balance', 'pyg', 'partners']
@@ -89,7 +92,7 @@ export default function CompanyView({ company: base, readOnly, canPublish, isOwn
   const byId = Object.fromEntries(screens.map((s) => [s.id, s]))
   const menu = mode === 'basic'
     ? [['', BASIC_ORDER.filter((id) => byId[id])]]
-    : [...new Set(screens.map((s) => s.group))].map((g) => [g, screens.filter((s) => s.group === g).map((s) => s.id)])
+    : [...new Set(screens.map((s) => s.group))].map((g) => [g, screens.filter((s) => s.group === g && s.menu !== false).map((s) => s.id)])
 
   // Textos del menú: el de la liquidación dice IVA (303) o IGIC (420) según el territorio
   const tax = company.tax_territory === 'canary_islands' ? { tax: 'IGIC', form: '420' } : { tax: 'IVA', form: '303' }
@@ -101,6 +104,8 @@ export default function CompanyView({ company: base, readOnly, canPublish, isOwn
   const route = useHashRoute()
   const fromRoute = route[0] === 'empresa' && route[1] === company.id ? route[2] : null
   const section = allowed.includes(fromRoute) ? fromRoute : 'home'
+  // Lo que va detrás de la pantalla: asiento/<año>/<nº> · reports/mayor/<cuenta>/<año>
+  const params = section === fromRoute ? route.slice(3) : []
   useEffect(() => {
     if (fromRoute !== section) navigate(companyPath(company.id, section), { replace: true })
   }, [fromRoute, section, company.id])
@@ -249,7 +254,8 @@ export default function CompanyView({ company: base, readOnly, canPublish, isOwn
         {section === 'pyg' && <FinancialStatements company={company} statement="pyg" />}
         {section === 'cashflow' && <CashFlow company={company} />}
         {section === 'ratios' && <Ratios company={company} />}
-        {section === 'reports' && <Reports company={company} />}
+        {section === 'reports' && <Reports company={company} params={params} />}
+        {section === 'asiento' && <EntryDetail key={params.join('/')} company={company} year={params[0]} entryNo={params[1]} />}
         {section === 'accounts' && <Accounts company={company} readOnly={readOnly} />}
         {section === 'partners' && <Partners company={company} readOnly={readOnly} />}
         {section === 'access' && isOwner && <CompanyAccess company={company} />}

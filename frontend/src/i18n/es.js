@@ -85,6 +85,12 @@ export default {
   deleteCompanyButton: 'Borrar la empresa para siempre',
   deleteCompanyProgress: 'Borrando… quedan {n} asientos',
   deleteCompanyDemoHint: 'Es una demo publicada: deja de publicarla para poder borrarla.',
+  // v0.29.0 · Rastro contable
+  goBack: 'Volver',
+  openEntry: 'Ver el asiento completo',
+  openLedger: 'Ver el libro mayor de esta cuenta',
+  entryNotFound: 'No encuentro el asiento {n} del ejercicio {y}.',
+  entryDetailHelp: 'Pulsa una cuenta para ver su libro mayor y seguir el rastro. «Volver» te devuelve a donde estabas.',
   publishDemo: 'Publicar como demo',
   unpublishDemo: 'Dejar de publicar como demo',
   companyLimit: 'Has alcanzado el límite de {n} empresa(s) de tu cuenta.',
@@ -691,6 +697,7 @@ export default {
     accounts: { label: 'Plan de cuentas', sub: 'Cuentas y subcuentas del PGC' },
     partners: { label: 'Clientes y proveedores', sub: 'Terceros' },
     access: { label: 'Accesos', sub: 'Quién entra y con qué rol' },
+    asiento: { label: 'Asiento', sub: 'Ficha del asiento' },
   },
 
 // v0.25.0 · Estados vacíos con la siguiente acción

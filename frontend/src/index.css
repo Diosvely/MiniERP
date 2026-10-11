@@ -602,3 +602,27 @@ a.num-asiento { font-variant-numeric: tabular-nums; }
   a { color: #000; text-decoration: none; }
   svg .area { opacity: .15; }
 }
+
+/* --- v0.30.0: pulido · números alineados, filtros y tablas en el móvil --- */
+body { line-height: 1.45; }
+h2 { letter-spacing: -.01em; }
+/* Todas las cifras con dígitos del mismo ancho: las columnas de importes se leen de un vistazo */
+td.num, th.num, .num, .kpi-valor, .ultimos strong { font-variant-numeric: tabular-nums; }
+td.num { white-space: nowrap; }
+@media (max-width: 560px) {
+  /* Filtros: uno debajo de otro, cada uno a todo el ancho */
+  .rejilla-tres { grid-template-columns: minmax(0, 1fr); }
+  /* Sumas y saldos y libro mayor como TARJETAS: una por cuenta o por movimiento, cada importe con su nombre */
+  table.tarjetas-movil thead { display: none; }
+  table.tarjetas-movil, table.tarjetas-movil tbody { display: block; }
+  table.tarjetas-movil tr { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; padding: 8px 0;
+                            border-bottom: 1px solid var(--borde); }
+  table.tarjetas-movil td { display: block; padding: 0; border: 0; }
+  table.tarjetas-movil td.celda-titulo { grid-column: 1 / -1; font-weight: 500; }
+  table.tarjetas-movil td.celda-fecha { color: var(--suave); }
+  table.tarjetas-movil td.celda-asiento { text-align: right; }
+  table.tarjetas-movil td.num { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 12px; }
+  table.tarjetas-movil td.num:empty { display: none; }
+  table.tarjetas-movil td.num::before { content: attr(data-label); color: var(--suave); font-variant-numeric: normal; }
+  table.tarjetas-movil tr.total td { grid-column: 1 / -1; font-weight: 700; }
+}

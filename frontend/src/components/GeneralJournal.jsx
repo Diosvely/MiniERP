@@ -3,7 +3,7 @@ import { supabase } from '../supabase'
 import { fetchAll } from '../paging'
 import { useI18n } from '../i18n'
 import { workMonthStart } from '../workDate'
-import { money } from '../format'
+import { money, shortDate } from '../format'
 import Empty from './Empty'
 import { companyPath } from '../router'
 import ErrorBox from './ErrorBox'
@@ -118,7 +118,7 @@ export default function GeneralJournal({ company, readOnly, refreshKey }) {
           <article key={e.entry_id} className={e.reversed_by_no ? 'asiento anulado' : 'asiento'}>
             <header>
               <strong>{t('entry')} {e.entry_no}</strong>
-              <span>{e.posting_date}{e.document_no ? ` · ${e.document_no}` : ''}</span>
+              <span>{shortDate(e.posting_date)}{e.document_no ? ` · ${e.document_no}` : ''}</span>
             </header>
             <div className="etiquetas">
               {e.source === 'invoice' && <span className="etiqueta">{t('sourceInvoice')}</span>}

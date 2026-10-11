@@ -3,7 +3,7 @@ import { supabase } from '../supabase'
 import { fetchAll } from '../paging'
 import { useI18n } from '../i18n'
 import { workYear } from '../workDate'
-import { accountName, money } from '../format'
+import { accountName, money, shortDate } from '../format'
 import Empty from './Empty'
 import { companyPath, navigate } from '../router'
 import ErrorBox from './ErrorBox'
@@ -153,7 +153,7 @@ export default function Reports({ company, params = [] }) {
           </div>
           <p className="ayuda">{t('trialBalanceHelp')}</p>
           <div className="tabla-scroll">
-            <table className="informe">
+            <table className="informe tarjetas-movil">
               <thead>
                 <tr>
                   <th>{t('account')}</th>
@@ -168,17 +168,20 @@ export default function Reports({ company, params = [] }) {
                     <tr key={r.account_no} className={a ? `anomalia ${a.severity}` : ''}
                         onClick={() => openLedger(r.account_no)}
                         title={a ? (language === 'en' ? a.note_en : a.note) ?? '' : ''}>
-                      <td><span className="codigo">{r.account_no}</span> {name(r) ?? ''} {a && '⚠'}</td>
-                      <td className="num">{m(r.total_debit)}</td><td className="num">{m(r.total_credit)}</td>
-                      <td className="num">{Number(r.debit_balance) ? m(r.debit_balance) : ''}</td>
-                      <td className="num">{Number(r.credit_balance) ? m(r.credit_balance) : ''}</td>
+                      <td className="celda-titulo"><span className="codigo">{r.account_no}</span> {name(r) ?? ''} {a && '⚠'}</td>
+                      <td className="num" data-label={t('debit')}>{m(r.total_debit)}</td>
+                      <td className="num" data-label={t('credit')}>{m(r.total_credit)}</td>
+                      <td className="num" data-label={t('debitBalance')}>{Number(r.debit_balance) ? m(r.debit_balance) : ''}</td>
+                      <td className="num" data-label={t('creditBalance')}>{Number(r.credit_balance) ? m(r.credit_balance) : ''}</td>
                     </tr>
                   )
                 })}
                 <tr className="total">
-                  <td>{t('total')} {balanced ? '✓' : '⚠'}</td>
-                  <td className="num">{m(totals.d)}</td><td className="num">{m(totals.c)}</td>
-                  <td className="num">{m(totals.sd)}</td><td className="num">{m(totals.sc)}</td>
+                  <td className="celda-titulo">{t('total')} {balanced ? '✓' : '⚠'}</td>
+                  <td className="num" data-label={t('debit')}>{m(totals.d)}</td>
+                  <td className="num" data-label={t('credit')}>{m(totals.c)}</td>
+                  <td className="num" data-label={t('debitBalance')}>{m(totals.sd)}</td>
+                  <td className="num" data-label={t('creditBalance')}>{m(totals.sc)}</td>
                 </tr>
               </tbody>
             </table>
@@ -212,7 +215,7 @@ export default function Reports({ company, params = [] }) {
           {!ledgerAccount && <p className="ayuda">{t('chooseAccount')}</p>}
           {ledgerAccount && (
             <div className="tabla-scroll">
-              <table className="informe">
+              <table className="informe tarjetas-movil">
                 <thead>
                   <tr>
                     <th>{t('date')}</th><th>{t('entry')}</th><th>{t('description')}</th>
@@ -222,19 +225,20 @@ export default function Reports({ company, params = [] }) {
                 <tbody>
                   {ledger.map((r, i) => (
                     <tr key={i}>
-                      <td>{r.posting_date}</td>
-                      <td><Link to={companyPath(company.id, `asiento/${year}/${r.entry_no}`)} className="num-asiento"
+                      <td className="celda-fecha">{shortDate(r.posting_date)}</td>
+                      <td className="celda-asiento"><Link to={companyPath(company.id, `asiento/${year}/${r.entry_no}`)} className="num-asiento"
                                 title={t('openEntry')}>{r.entry_no}</Link></td>
-                      <td>{r.description}</td>
-                      <td className="num">{Number(r.debit) ? m(r.debit) : ''}</td>
-                      <td className="num">{Number(r.credit) ? m(r.credit) : ''}</td>
-                      <td className="num">{side(r.running_balance)}</td>
+                      <td className="celda-titulo">{r.description}</td>
+                      <td className="num" data-label={t('debit')}>{Number(r.debit) ? m(r.debit) : ''}</td>
+                      <td className="num" data-label={t('credit')}>{Number(r.credit) ? m(r.credit) : ''}</td>
+                      <td className="num" data-label={t('balance')}>{side(r.running_balance)}</td>
                     </tr>
                   ))}
                   <tr className="total">
-                    <td colSpan={3}>{t('total')}</td>
-                    <td className="num">{m(ledgerDebit)}</td><td className="num">{m(ledgerCredit)}</td>
-                    <td className="num">{side(ledgerDebit - ledgerCredit)}</td>
+                    <td colSpan={3} className="celda-titulo">{t('total')}</td>
+                    <td className="num" data-label={t('debit')}>{m(ledgerDebit)}</td>
+                    <td className="num" data-label={t('credit')}>{m(ledgerCredit)}</td>
+                    <td className="num" data-label={t('balance')}>{side(ledgerDebit - ledgerCredit)}</td>
                   </tr>
                 </tbody>
               </table>

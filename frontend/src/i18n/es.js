@@ -72,6 +72,21 @@ export default {
   demoHelp: 'Empresas de ejemplo para consultar: libro diario, cuentas e informes. Solo lectura.',
   demoBadge: 'DEMO',
   readOnly: 'Solo lectura · empresa de demostración',
+  // v0.30.0 · Indicadores del Inicio
+  homePathDone: 'Ruta completada · ver los pasos',
+  kpi: {
+    listLabel: 'Indicadores a {d}',
+    cash: 'Tesorería', cashSince: 'en el ejercicio', cashLink: 'Balance',
+    result: 'Resultado de {y}', profit: 'Beneficio', loss: 'Pérdida', resultLink: 'Cuenta de resultados',
+    tax: '{tax} del {q}T', taxPay: 'A ingresar', taxRefund: 'A compensar o devolver',
+    taxDetail: 'repercutido {o} − soportado {i}', taxLink: 'Liquidar {tax} ({form})',
+    receivable: 'Pendiente de cobro', receivableDetail: '{n} clientes con saldo', receivableLink: 'Clientes',
+    payable: 'Pendiente de pago', payableDetail: '{n} proveedores y acreedores con saldo', payableLink: 'Proveedores',
+    chartTitle: 'Tesorería a fin de mes · {y}', chartTable: 'Ver como tabla', chartShow: 'Ver el gráfico',
+    chartHelp: 'Saldo de caja y bancos (grupo 57) el último día de cada mes. Pasa el ratón por el gráfico para ver cada importe.',
+    chartSummary: 'Tesorería a fin de mes: {a} al empezar, {b} al final; máximo {m}',
+    month: 'Mes', thousand: 'mil',
+  },
   // v0.29.0 · Borrar la empresa
   deleteCompanyMenu: 'Borrar empresa',
   deleteCompanyTitle: 'Borrar la empresa',

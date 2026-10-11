@@ -346,7 +346,7 @@ a.enlace:hover { text-decoration: underline; }
 .paso.hecho .paso-texto strong { color: var(--suave); }
 .paso.siguiente { border: 2px solid var(--primario); background: color-mix(in srgb, var(--primario) 7%, var(--tarjeta)); }
 .paso.siguiente .paso-numero { background: var(--primario); color: var(--sobre-color); }
-.paso.pendiente { opacity: .9; }
+/* v0.30.0: .paso.pendiente ya no lleva opacidad: bajaba el contraste de sus enlaces por debajo de 4,5:1 */
 @container (max-width: 520px) {
   .paso { flex-wrap: wrap; }
   .paso a.boton { margin-left: 42px; }
@@ -513,3 +513,44 @@ td a.enlace { color: inherit; }
 td a.enlace .codigo, a.num-asiento { color: var(--primario); }
 td a.enlace:hover .codigo, td a.enlace:focus-visible .codigo, a.num-asiento:hover { text-decoration: underline; }
 a.num-asiento { font-variant-numeric: tabular-nums; }
+
+/* --- v0.30.0: indicadores del Inicio y gráfico de tesorería --- */
+.inicio-cabecera { grid-column: 1 / -1; }
+/* Las tarjetas de indicadores se reparten según el ancho de SU columna (arriba a todo el ancho o debajo de la ruta) */
+.inicio-cabecera, .inicio-principal { container-type: inline-size; }
+.kpis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 0 0 16px; }
+.kpis > li { display: block; padding: 0; border: 0; }
+.kpis > li:first-child { grid-column: 1 / -1; }
+@container (min-width: 760px) {
+  .kpis { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .kpis > li, .kpis > li:first-child { grid-column: span 2; }
+  .kpis > li:nth-child(n+4) { grid-column: span 3; }
+}
+.kpi { height: 100%; background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 12px; padding: 14px 16px;
+       display: flex; flex-direction: column; gap: 4px; text-decoration: none; color: inherit; }
+.kpi:hover, .kpi:focus-visible { border-color: var(--primario); }
+.kpi-titulo { display: flex; align-items: center; gap: 6px; color: var(--suave); font-size: .85rem; }
+.kpi-titulo .icono-svg { color: var(--primario); }
+.kpi-valor { color: var(--texto); white-space: nowrap; font-size: 1.45rem; font-weight: 650; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+.kpi-detalle { color: var(--suave); font-size: .82rem; }
+.kpi-detalle span { font-size: inherit; }   /* el "li span" general no se aplica dentro de las tarjetas */
+.kpi-detalle .sube { color: var(--exito); }
+.kpi-detalle .baja { color: var(--aviso); }
+.kpi-pie { color: var(--primario); font-size: .82rem; margin-top: auto; padding-top: 2px; }
+.grafico-cabecera { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.grafico-cabecera h2 { margin: 0; }
+.grafico { position: relative; width: 100%; }
+.grafico svg { display: block; max-width: 100%; height: auto; overflow: visible; }
+.grafico .rejilla line { stroke: var(--borde); stroke-width: 1; }
+.grafico .eje text { fill: var(--suave); font-size: 11px; font-variant-numeric: tabular-nums; }
+.grafico .linea { fill: none; stroke: var(--primario); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.grafico .area { fill: var(--primario); opacity: .10; }
+.grafico .punto { fill: var(--primario); stroke: var(--tarjeta); stroke-width: 2; }
+.grafico .cruz { stroke: var(--suave); stroke-dasharray: 3 3; }
+.grafico .valor-final { fill: var(--texto); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.grafico .tooltip { position: absolute; pointer-events: none; background: var(--tarjeta); border: 1px solid var(--borde);
+                    border-radius: 8px; padding: 6px 10px; font-size: .85rem; box-shadow: 0 4px 14px rgba(0,0,0,.12); white-space: nowrap; }
+.grafico .tooltip strong { font-variant-numeric: tabular-nums; }
+.grafico-tesoreria .ayuda { margin: 0; }
+.ruta-plegada summary { cursor: pointer; font-weight: 600; color: var(--exito); }
+.ruta-plegada[open] summary { margin-bottom: 8px; }

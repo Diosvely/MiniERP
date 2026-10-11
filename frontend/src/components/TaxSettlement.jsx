@@ -1,14 +1,13 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
+import { todayIso, workQuarter, workYear } from '../workDate'
 import { money, taxLabel } from '../format'
 import Empty from './Empty'
 import Loading from './Loading'
 import { companyPath } from '../router'
 import ErrorBox from './ErrorBox'
 
-const today = () => new Date().toISOString().slice(0, 10)
-const currentQuarter = () => Math.floor(new Date().getMonth() / 3) + 1
 
 // Liquidación trimestral de IVA (modelo 303) / IGIC (modelo 420)
 // Como "Calc. and Post VAT Settlement" de Business Central
@@ -17,8 +16,8 @@ export default function TaxSettlement({ company, readOnly }) {
   const [types, setTypes] = useState(null)   // null = aún cargando
   const [years, setYears] = useState([])
   const [taxType, setTaxType] = useState('')
-  const [year, setYear] = useState(new Date().getFullYear())
-  const [quarter, setQuarter] = useState(currentQuarter())
+  const [year, setYear] = useState(() => workYear(company))   // año de la fecha de trabajo
+  const [quarter, setQuarter] = useState(() => workQuarter(company))
   const [refund, setRefund] = useState(false)
   const [acceptDiff, setAcceptDiff] = useState(false)
   const [calc, setCalc] = useState(null)
@@ -131,7 +130,7 @@ export default function TaxSettlement({ company, readOnly }) {
         <section className="tarjeta liquidacion-borrador">
           <h2>{t('draftForm').replace('{form}', calc.form)} · {calc.quarter}T {calc.year}</h2>
           <p className="ayuda">{calc.period_start} → {calc.period_end}</p>
-          {calc.period_end >= today() && !calc.settled && <p className="aviso">⚠ {t('quarterNotEnded')}</p>}
+          {calc.period_end >= todayIso() && !calc.settled && <p className="aviso">⚠ {t('quarterNotEnded')}</p>}
 
           {['output', 'input'].map((side) => (
             <div key={side}>

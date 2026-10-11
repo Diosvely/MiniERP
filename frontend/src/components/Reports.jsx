@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { fetchAll } from '../paging'
 import { useI18n } from '../i18n'
+import { workYear } from '../workDate'
 import { accountName, money } from '../format'
 import Empty from './Empty'
 import { companyPath } from '../router'
@@ -14,7 +15,7 @@ export default function Reports({ company }) {
   const { t, language } = useI18n()
   const [view, setView] = useState('trial')
   const [years, setYears] = useState([])
-  const [year, setYear] = useState(new Date().getFullYear())
+  const [year, setYear] = useState(() => workYear(company))   // año de la fecha de trabajo
   const [level, setLevel] = useState('')
   const [toDate, setToDate] = useState('')
   const [trial, setTrial] = useState([])

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
+import { workYear } from '../workDate'
 import { money } from '../format'
 import AiAnalyst from './AiAnalyst'
 import ErrorBox from './ErrorBox'
@@ -13,7 +14,7 @@ const GROUPS = ['liquidity', 'solvency', 'profitability', 'activity', 'cash']
 export default function Ratios({ company }) {
   const { t, language } = useI18n()
   const [years, setYears] = useState([])
-  const [year, setYear] = useState(new Date().getFullYear())
+  const [year, setYear] = useState(() => workYear(company))   // año de la fecha de trabajo
   const [rows, setRows] = useState([])
   const [open, setOpen] = useState({})
   const [loading, setLoading] = useState(false)

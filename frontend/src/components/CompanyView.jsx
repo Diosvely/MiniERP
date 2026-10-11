@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import Accounts from './Accounts'
@@ -23,6 +23,8 @@ import Term from './Term'
 import { SECTION_TERM } from '../glossary'
 import { companyPath, navigate, useHashRoute } from '../router'
 import ErrorBox from './ErrorBox'
+import Loading from './Loading'
+import { computeWorkDate } from '../workDate'
 
 // PANTALLAS de la empresa. Dos menús sobre las mismas pantallas (como los "perfiles" de Business Central):
 //   · Modo BÁSICO (por defecto): lista corta, solo lo del día a día, en lenguaje sencillo.
@@ -60,8 +62,24 @@ const saveMode = (m) => { try { localStorage.setItem('erp-modo', m) } catch { /*
 //   readOnly   → empresa demo de otro usuario (o rol viewer): solo consultar
 //   canPublish → el propietario de la app o el titular de los datos (Miembro) publican/despublican la demo
 //   isOwner    → el propietario de la app: ve el apartado Accesos (quién entra y con qué rol)
-export default function CompanyView({ company, readOnly, canPublish, isOwner, onChanged, onBack }) {
+export default function CompanyView({ company: base, readOnly, canPublish, isOwner, onChanged, onBack }) {
   const { t } = useI18n()
+
+  // FECHA DE TRABAJO (Work Date de BC): hoy si la empresa está al día; si es histórica o importada, la de su
+  // último asiento. Se calcula una vez al abrir la empresa y las pantallas la leen de company.work_date.
+  const [work, setWork] = useState(null)
+  useEffect(() => {
+    let alive = true
+    Promise.all([
+      supabase.from('fiscal_years').select('starting_date, ending_date, status').eq('company_id', base.id),
+      supabase.from('journal_entries').select('posting_date').eq('company_id', base.id).eq('status', 'posted')
+        .order('posting_date', { ascending: false }).limit(1),
+    ]).then(([y, e]) => {
+      if (alive) setWork(computeWorkDate({ years: y.data ?? [], lastPosted: e.data?.[0]?.posting_date ?? null }))
+    })
+    return () => { alive = false }
+  }, [base.id])
+  const company = useMemo(() => ({ ...base, work_date: work ?? undefined }), [base, work])
   const [mode, setModeState] = useState(savedMode)
   const setMode = (m) => { setModeState(m); saveMode(m) }
 
@@ -214,6 +232,7 @@ export default function CompanyView({ company, readOnly, canPublish, isOwner, on
           </p>
         )}
 
+        {work === null ? <Loading /> : (<>
         {section === 'home' && <Home company={company} readOnly={readOnly} mode={mode} onAuditor={() => setMode('auditor')} />}
         {section === 'entry' && !readOnly && <EntryTutor company={company} onLoad={setDraft} />}
         {section === 'entry' && !readOnly && (
@@ -234,6 +253,7 @@ export default function CompanyView({ company, readOnly, canPublish, isOwner, on
         {section === 'accounts' && <Accounts company={company} readOnly={readOnly} />}
         {section === 'partners' && <Partners company={company} readOnly={readOnly} />}
         {section === 'access' && isOwner && <CompanyAccess company={company} />}
+        </>)}
       </section>
     </div>
   )

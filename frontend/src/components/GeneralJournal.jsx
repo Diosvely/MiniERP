@@ -2,19 +2,19 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { fetchAll } from '../paging'
 import { useI18n } from '../i18n'
+import { workMonthStart } from '../workDate'
 import { money } from '../format'
 import Empty from './Empty'
 import { companyPath } from '../router'
 import ErrorBox from './ErrorBox'
 
-const yearStart = () => `${new Date().getFullYear()}-01-01`
 
 // Libro diario: asientos contabilizados entre dos fechas, con búsqueda y anulación (contraasiento)
 //   como el "Diario entre fechas" de A3 y "Reverse Transaction" de Business Central / FB08 de SAP
 export default function GeneralJournal({ company, readOnly, refreshKey }) {
   const { t, language } = useI18n()
   const [rows, setRows] = useState([])
-  const [from, setFrom] = useState(yearStart())
+  const [from, setFrom] = useState(() => workMonthStart(company))   // desde el día 1 del mes de la fecha de trabajo
   const [to, setTo] = useState('')
   const [search, setSearch] = useState('')
   const [reversing, setReversing] = useState(null)      // { entry_id, date, reason }

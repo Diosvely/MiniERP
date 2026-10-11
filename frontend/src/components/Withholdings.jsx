@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
+import { workQuarter, workYear } from '../workDate'
 import { money } from '../format'
 import ErrorBox from './ErrorBox'
 
-const currentQuarter = () => Math.floor(new Date().getMonth() / 3) + 1
 
 // Casillas del borrador: modelo 111 (actividades económicas, dinerarias) y modelo 115 (alquileres)
 const BOXES = { 111: ['07', '08', '09'], 115: ['01', '02', '03'] }
@@ -14,8 +14,8 @@ const BOXES = { 111: ['07', '08', '09'], 115: ['01', '02', '03'] }
 export default function Withholdings({ company }) {
   const { t, language } = useI18n()
   const [years, setYears] = useState([])
-  const [year, setYear] = useState(new Date().getFullYear())
-  const [quarter, setQuarter] = useState(currentQuarter())
+  const [year, setYear] = useState(() => workYear(company))   // año de la fecha de trabajo
+  const [quarter, setQuarter] = useState(() => workQuarter(company))
   const [summary, setSummary] = useState([])
   const [detail, setDetail] = useState([])
   const [error, setError] = useState('')

@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
+import { workYear } from '../workDate'
 import { money } from '../format'
 import Empty from './Empty'
 import Loading from './Loading'
@@ -16,7 +17,7 @@ export default function ProRata({ company, readOnly }) {
   const [types, setTypes] = useState(null)   // null = aún cargando
   const [taxType, setTaxType] = useState('')
   const [years, setYears] = useState([])
-  const [year, setYear] = useState(new Date().getFullYear())
+  const [year, setYear] = useState(() => workYear(company))   // año de la fecha de trabajo
   const [rows, setRows] = useState([])
   const [pct, setPct] = useState('')
   const [calc, setCalc] = useState(null)

@@ -87,6 +87,7 @@ export default function Home({ company, readOnly, mode, onAuditor }) {
           <p className="ayuda">
             {t(`territory.${company.tax_territory}`)} · {tax}
             {info.year && <> · {t('homeYear').replace('{y}', info.year)}</>}
+            {company.work_date && <> · 📅 {t('homeWorkDate').replace('{d}', date(company.work_date))}</>}
             {info.imported && <> · 📥 {t('homeImportedFrom').replace('{s}', t(`importSource.${info.imported.source}`))}</>}
           </p>
         </section>

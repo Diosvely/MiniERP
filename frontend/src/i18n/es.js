@@ -632,6 +632,7 @@ export default {
   menuHome: 'Inicio',
   homeHello: 'Hola 👋 · {c}',
   homeYear: 'Ejercicio {y}',
+  homeWorkDate: 'Fecha de trabajo {d}',
   homeImportedFrom: 'Importada de {s}',
   homePathTitle: 'Tu primer trimestre, paso a paso',
   homePathIntro: 'Sigue estos pasos para llevar la contabilidad de un trimestre con {tax}. Cada paso se marca solo cuando lo haces.',

@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { fetchAll } from '../paging'
 import { useI18n } from '../i18n'
+import { workDate } from '../workDate'
 import { accountName, money, taxLabel } from '../format'
 import Link from './Link'
 import { companyPath } from '../router'
 import ErrorBox from './ErrorBox'
 
-const today = () => new Date().toISOString().slice(0, 10)
 const emptyLine = () => ({ account_no: '', amount: '', tax_code: '', description: '' })
 // Cuentas que REDUCEN la factura (regla del lado): devoluciones, rappels y pronto pago
 const REDUCING = ['606', '608', '609', '706', '708', '709']
@@ -17,7 +17,7 @@ const cents = (v) => Math.round((parseFloat(String(v).replace(',', '.')) || 0) *
 export default function InvoiceForm({ company, invoiceType, invoices, onPosted }) {
   const { t, language } = useI18n()
   const emptyHeader = () => ({
-    document_kind: 'invoice', partner_id: '', external_document_no: '', invoice_date: today(),
+    document_kind: 'invoice', partner_id: '', external_document_no: '', invoice_date: workDate(company),
     posting_date: '', description: '', corrected_invoice_id: '', corrected_reference: '', withholding_code: '',
   })
   const [header, setHeader] = useState(emptyHeader())

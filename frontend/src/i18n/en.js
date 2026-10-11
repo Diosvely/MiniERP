@@ -633,6 +633,7 @@ export default {
   menuHome: 'Home',
   homeHello: 'Hello 👋 · {c}',
   homeYear: 'Fiscal year {y}',
+  homeWorkDate: 'Work date {d}',
   homeImportedFrom: 'Imported from {s}',
   homePathTitle: 'Your first quarter, step by step',
   homePathIntro: 'Follow these steps to keep the books for one quarter with {tax}. Each step is ticked automatically when you do it.',

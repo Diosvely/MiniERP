@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { supabase } from '../supabase'
+import { fetchAll } from '../paging'
 import { useI18n } from '../i18n'
 import { accountName, money } from '../format'
 import Link from './Link'
@@ -51,8 +52,8 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
   const [missing, setMissing] = useState([])     // grupos del PGC sin subcuenta al aplicar una plantilla
 
   // Solo subcuentas (posting): son las únicas donde se puede apuntar
-  const loadAccounts = () => supabase.from('gl_accounts').select('id, account_no, name, name_en')
-    .eq('company_id', company.id).eq('account_type', 'posting').order('account_no')
+  const loadAccounts = () => fetchAll(() => supabase.from('gl_accounts').select('id, account_no, name, name_en')
+    .eq('company_id', company.id).eq('account_type', 'posting').order('account_no'))
     .then(({ data }) => { setAccounts(data ?? []); return data ?? [] })
 
   useEffect(() => {

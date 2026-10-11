@@ -113,6 +113,7 @@ const RULES = [
   [/duplicate key value violates unique constraint/i, 'duplicate'],
   [/JWT expired|invalid JWT/i, 'sessionExpired'],
   [/Failed to fetch|NetworkError|Load failed|fetch failed/i, 'network'],
+  [/statement timeout|canceling statement/i, 'timeout'],
 ]
 
 // Rellena {1}, {2}… con los datos sacados del mensaje

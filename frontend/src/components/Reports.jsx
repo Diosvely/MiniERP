@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
+import { fetchAll } from '../paging'
 import { useI18n } from '../i18n'
 import { accountName, money } from '../format'
 import Empty from './Empty'
@@ -31,8 +32,8 @@ export default function Reports({ company }) {
   useEffect(() => {
     Promise.all([
       supabase.from('fiscal_years').select('year').eq('company_id', company.id).order('year'),
-      supabase.from('gl_accounts').select('account_no, name, name_en')
-        .eq('company_id', company.id).eq('account_type', 'posting').order('account_no'),
+      fetchAll(() => supabase.from('gl_accounts').select('account_no, name, name_en')
+        .eq('company_id', company.id).eq('account_type', 'posting').order('account_no')),
     ]).then(([y, a]) => {
       if (y.error || a.error) return setError((y.error || a.error).message)
       setYears(y.data.map((r) => r.year))
@@ -44,20 +45,26 @@ export default function Reports({ company }) {
   // Sumas y saldos + anomalías del mismo nivel y fecha
   useEffect(() => {
     const args = { p_company: company.id, p_year: Number(year), p_level: level ? Number(level) : null, p_to_date: toDate || null }
-    Promise.all([supabase.rpc('trial_balance', args), supabase.rpc('balance_anomalies', args)])
+    Promise.all([fetchAll(() => supabase.rpc('trial_balance', args)), supabase.rpc('balance_anomalies', args)])
       .then(([tb, an]) => {
         if (tb.error || an.error) return setError((tb.error || an.error).message)
         setError(''); setTrial(tb.data); setAnomalies(an.data)
       })
   }, [company.id, year, level, toDate])
 
-  // Libro mayor de una subcuenta
+  // Libro mayor de una subcuenta: la función filtra primero y calcula el saldo después (0029),
+  // y se lee por páginas porque una cuenta puede tener más de 1.000 apuntes en un año
   useEffect(() => {
     if (!ledgerAccount) return setLedger([])
-    let q = supabase.from('v_general_ledger').select('*').eq('company_id', company.id)
-      .eq('fiscal_year', Number(year)).eq('account_no', ledgerAccount)
-    if (toDate) q = q.lte('posting_date', toDate)
-    q.order('posting_date').order('entry_no').then(({ data, error }) => (error ? setError(error.message) : setLedger(data)))
+    let alive = true
+    fetchAll(() => supabase.rpc('general_ledger', {
+      p_company: company.id, p_year: Number(year), p_account: ledgerAccount, p_to_date: toDate || null,
+    })).then(({ data, error }) => {
+      if (!alive) return
+      if (error) return setError(error.message)
+      setError(''); setLedger(data)
+    })
+    return () => { alive = false }
   }, [company.id, year, ledgerAccount, toDate])
 
   const anomalyOf = (no) => anomalies.find((a) => a.account_no === no)

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
+import { fetchAll } from '../paging'
 import { useI18n } from '../i18n'
 import { accountName, money, taxLabel } from '../format'
 import Link from './Link'
@@ -39,8 +40,8 @@ export default function InvoiceForm({ company, invoiceType, invoices, onPosted }
     Promise.all([
       supabase.from('v_partners').select('id, name, partner_type, account_no, blocked, tax_territory, equivalence_surcharge')
         .eq('company_id', company.id).in('partner_type', types).order('name'),
-      supabase.from('gl_accounts').select('id, account_no, name, name_en, template_account')
-        .eq('company_id', company.id).eq('account_type', 'posting').order('account_no'),
+      fetchAll(() => supabase.from('gl_accounts').select('id, account_no, name, name_en, template_account')
+        .eq('company_id', company.id).eq('account_type', 'posting').order('account_no')),
       supabase.from('v_tax_setup').select('tax_code, tax_type, rate_pct, rate_category, equivalence_surcharge_pct, description, description_en, blocked')
         .eq('company_id', company.id).eq('blocked', false).order('tax_type').order('rate_pct', { ascending: false }),
       supabase.from('tax_codes').select('code, exemption_key'),

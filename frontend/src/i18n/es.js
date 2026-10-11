@@ -780,6 +780,7 @@ export default {
     importRowsErrors: { title: 'Importación cancelada: {1} filas con errores', hint: 'No se ha guardado nada. Corrige el fichero y vuelve a intentarlo.' },
     captcha: { title: 'No se ha podido comprobar que no eres un robot', hint: 'Espera a que aparezca la marca ✓ del recuadro y vuelve a intentarlo. Si no aparece, recarga la página.' },
     network: { title: 'No hay conexión con el servidor', hint: 'Revisa tu conexión a internet y vuelve a intentarlo.' },
+    timeout: { title: 'La consulta ha tardado demasiado', hint: 'Prueba con menos datos: elige un ejercicio, una cuenta o un rango de fechas más corto. Si se repite, puede que falte ejecutar la última migración en Supabase.' },
   },
 
 // v0.26.0 · Pantalla de entrada

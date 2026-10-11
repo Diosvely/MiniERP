@@ -781,6 +781,7 @@ export default {
     importRowsErrors: { title: 'Import cancelled: {1} rows with errors', hint: 'Nothing was saved. Fix the file and try again.' },
     captcha: { title: 'We could not check that you are not a robot', hint: 'Wait for the ✓ in the box and try again. If it does not appear, reload the page.' },
     network: { title: 'No connection to the server', hint: 'Check your internet connection and try again.' },
+    timeout: { title: 'The query took too long', hint: 'Try with less data: choose one fiscal year, one account or a shorter date range. If it keeps happening, the latest migration may be missing in Supabase.' },
   },
 
  // v0.26.0 · Landing screen

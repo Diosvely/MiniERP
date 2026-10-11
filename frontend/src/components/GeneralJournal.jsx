@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
+import { fetchAll } from '../paging'
 import { useI18n } from '../i18n'
 import { money } from '../format'
 import Empty from './Empty'
@@ -21,12 +22,20 @@ export default function GeneralJournal({ company, readOnly, refreshKey }) {
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
 
+  // Por páginas: un año de una empresa importada tiene miles de apuntes (Supabase da 1.000 por consulta)
   useEffect(() => {
-    let q = supabase.from('v_general_journal').select('*').eq('company_id', company.id)
-    if (from) q = q.gte('posting_date', from)
-    if (to) q = q.lte('posting_date', to)
-    q.order('posting_date').order('entry_no').order('line_no')
-      .then(({ data, error }) => (error ? setError(error.message) : setRows(data)))
+    let alive = true
+    fetchAll(() => {
+      let q = supabase.from('v_general_journal').select('*').eq('company_id', company.id)
+      if (from) q = q.gte('posting_date', from)
+      if (to) q = q.lte('posting_date', to)
+      return q.order('posting_date').order('entry_no').order('line_no')
+    }).then(({ data, error }) => {
+      if (!alive) return
+      if (error) return setError(error.message)
+      setRows(data)
+    })
+    return () => { alive = false }
   }, [company.id, from, to, refreshKey, reload])
 
   // Agrupar las líneas por asiento

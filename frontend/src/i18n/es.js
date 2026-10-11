@@ -72,6 +72,10 @@ export default {
   demoHelp: 'Empresas de ejemplo para consultar: libro diario, cuentas e informes. Solo lectura.',
   demoBadge: 'DEMO',
   readOnly: 'Solo lectura · empresa de demostración',
+  // v0.30.0 · Estados comparativos
+  fsAt: 'a {d}', fsClosing: 'cierre', fsChange: 'Variación',
+  fsCompareBalance: 'Se compara con el balance de cierre del ejercicio anterior. Variación: importe y % frente a ese año.',
+  fsComparePyg: 'Se compara con el mismo periodo del ejercicio anterior. Variación: importe y % frente a ese año.',
   // v0.30.0 · Indicadores del Inicio
   homePathDone: 'Ruta completada · ver los pasos',
   kpi: {

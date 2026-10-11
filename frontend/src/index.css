@@ -554,3 +554,8 @@ a.num-asiento { font-variant-numeric: tabular-nums; }
 .grafico-tesoreria .ayuda { margin: 0; }
 .ruta-plegada summary { cursor: pointer; font-weight: 600; color: var(--exito); }
 .ruta-plegada[open] summary { margin-bottom: 8px; }
+
+/* --- v0.30.0: Balance y PyG comparativos (análisis horizontal) --- */
+.estado th small { display: block; font-weight: 400; color: var(--suave); font-size: .75rem; }
+.estado td.variacion { color: var(--suave); font-variant-numeric: tabular-nums; }
+.estado td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }

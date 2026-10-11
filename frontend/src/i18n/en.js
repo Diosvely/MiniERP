@@ -73,6 +73,10 @@ export default {
   demoHelp: 'Sample companies to explore: general journal, accounts and reports. Read only.',
   demoBadge: 'DEMO',
   readOnly: 'Read only · demo company',
+  // v0.30.0 · Comparative statements
+  fsAt: 'at {d}', fsClosing: 'year end', fsChange: 'Change',
+  fsCompareBalance: 'Compared with the previous year-end balance sheet. Change: amount and % versus that year.',
+  fsComparePyg: 'Compared with the same period of the previous year. Change: amount and % versus that year.',
   // v0.30.0 · Home indicators
   homePathDone: 'Path completed · see the steps',
   kpi: {

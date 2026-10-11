@@ -22,7 +22,9 @@ Proyecto de aprendizaje en evolución.
 > - an **auditor mode** that imports real journals from Sage and Business Central;
 > - an open-source **AI analyst** and an **AI journal-entry tutor** whose proposals are validated by the ERP;
 > - a guided home screen, a Basic / Auditor menu, plain-language error messages, journal-entry templates and an
->   in-app glossary with Business Central / SAP equivalents. Accessible: no axe-core issues (WCAG 2 A/AA).
+>   in-app glossary with Business Central / SAP equivalents. Accessible: no axe-core issues (WCAG 2 A/AA);
+> - an audit trail (ledger → journal entry → ledger of each account), a per-company work date, and fast reports
+>   on real multi-year journals (tens of thousands of lines).
 >
 > Data model inspired by Business Central and SAP FI. Database in English, bilingual UI (Spanish / English),
 > multi-company and multi-user, with guest access to demo companies (CAPTCHA-protected). Accounting rules are enforced
@@ -46,7 +48,7 @@ española y el funcionamiento real de un ERP. Los ERP comerciales son caros y di
 propia, así que decidí **construir uno**. Diseñar la tabla de asientos obliga a entender *por qué* un ERP impone
 cada regla. Además, todo el código está en inglés para practicar el vocabulario técnico de BC y SAP.
 
-## ¿Qué hace hoy? (v0.28.0)
+## ¿Qué hace hoy? (v0.29.0)
 
 **Primeros pasos y navegación**
 - **Pantalla de Inicio** en cada empresa:
@@ -56,6 +58,9 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
 - **Modo Básico / Auditor:** un menú corto en lenguaje sencillo para quien empieza (8 entradas) o el menú completo
   por áreas para revisar.
 - **Cada pantalla tiene su enlace** (`#/empresa/<id>/balance`): se puede recargar, volver atrás y compartir.
+- **Fecha de trabajo de cada empresa** (la *Work Date* de BC): hoy si la empresa está al día, o la de su último
+  asiento si es histórica o importada. De ella salen el año de los informes, el trimestre de las liquidaciones, el
+  "Desde" del diario y la fecha de los asientos y facturas nuevos.
 - Estados vacíos con la **siguiente acción** ("Configurar impuestos", "Hacer un asiento") y aviso de carga.
 - **Errores en lenguaje claro:** cuando la base de datos rechaza algo, se explica qué ha pasado, qué hacer y se ofrece
   un botón para ir a la pantalla donde se arregla ("El asiento no cuadra: falta 210,00; pulsa =").
@@ -107,12 +112,19 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
   - zonas de referencia y explicación de cada uno.
 - **Libro diario**, **sumas y saldos**, **libro mayor** y **saldos anómalos** (saldo contrario a su naturaleza y
   reclasificación al cierre).
+- **Rastro contable:** el nº de asiento del mayor abre la **ficha del asiento**, y cada cuenta de la ficha (y del
+  diario) abre su libro mayor; una anulación lleva a su pareja. Como el FBL3N → FB03 de SAP. "Volver" y el botón
+  atrás deshacen el camino.
+- **Rápido con contabilidades reales:** el mayor filtra antes de calcular el saldo (0,2 s con 120.000 apuntes) y
+  las listas largas se leen por páginas, sin el corte de 1.000 filas de Supabase.
 
 **Modo auditor: contabilidades reales**
 - **Importación de diarios** de **Sage** (Excel) y **Business Central**: vista previa, creación de subcuentas,
   contabilización mes a mes y cierre de cada ejercicio.
 - Las empresas importadas son privadas. Se publican como demo **solo si su titular lo decide**, con su mención y
   con datos anonimizados.
+- **Borrar la empresa entera** (solo su admin): resumen de lo que se borra, confirmación escribiendo el nombre y
+  progreso por tandas. Sirve para enseñar una importación y quitarla después. Una demo publicada no se puede borrar.
 
 **Inteligencia artificial** (Cloudflare Workers AI, modelos open source)
 - **Analista IA:** interpreta el balance, la PyG, el EFE y los ratios ya calculados (fortalezas, alertas y
@@ -152,7 +164,7 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
 | Web | **React + Vite** | Componentes por pantalla, i18n propio (es/en), rutas con almohadilla, iconos `lucide-react` |
 | IA | **Cloudflare Workers AI** + Pages Functions | `/api/ai` (Mistral Small 3.1) y `/api/tutor` (gpt-oss-120b); la clave nunca llega al navegador |
 | Despliegue | **Cloudflare Pages** | Despliegue automático desde `main`, dirección de prueba por rama y cabeceras de seguridad (`_headers`) |
-| Calidad | **GitHub Actions** + **Vitest** | 22 pruebas SQL, 47 tests de la web, lint, build y auditoría de dependencias en cada Pull Request |
+| Calidad | **GitHub Actions** + **Vitest** | 23 pruebas SQL, 62 tests de la web, lint, build y auditoría de dependencias en cada Pull Request |
 | Versionado | Git + GitHub | Ramas, Pull Requests, `main` protegida, versiones etiquetadas y decisiones documentadas (ADR) |
 
 **Principio clave:** la web nunca es la única barrera. Aunque alguien manipule el navegador, PostgreSQL rechaza:
@@ -197,10 +209,10 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 ├── .github/workflows/ci.yml   integración continua: pruebas SQL, lint, build y auditoría
 ├── scripts/test-db.sh         ejecuta todas las pruebas SQL, cada una en una base limpia
 ├── database/
-│   ├── migrations/            0001 → 0028, se ejecutan en orden en Supabase
+│   ├── migrations/            0001 → 0029, se ejecutan en orden en Supabase
 │   ├── reset/                 reset del schema antiguo (solo histórico)
 │   ├── seed/                  datos de ejemplo (opcional)
-│   └── tests/                 pruebas automáticas en SQL (fases 1 → 22) y simulador de Supabase
+│   └── tests/                 pruebas automáticas en SQL (fases 1 → 23) y simulador de Supabase
 ├── frontend/                  web React + Vite
 │   ├── .env.example           variables de entorno (sin valores reales)
 │   ├── public/_headers        cabeceras de seguridad (CSP…) que aplica Cloudflare Pages
@@ -209,7 +221,10 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 │   └── src/
 │       ├── components/        Inicio, empresas, menú, asientos, diario, facturas, impuestos, informes, IA…
 │       ├── i18n/              diccionarios es.js / en.js y motor de idioma
-│       ├── router.js          rutas #/empresa/<id>/<pantalla>
+│       ├── router.js          rutas #/empresa/<id>/<pantalla> (y …/asiento/<año>/<nº>, …/reports/mayor/<cuenta>/<año>)
+│       ├── workDate.js        fecha de trabajo de cada empresa
+│       ├── paging.js          lecturas de más de 1.000 filas, por páginas
+│       ├── deleteCompany.js   borrar una empresa por tandas
 │       ├── activity.js        aviso "Cargando…" global
 │       ├── errors.js          errores de la base de datos en lenguaje claro
 │       ├── templates.js       plantillas de asientos frecuentes
@@ -224,24 +239,27 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
     ├── modelo-datos.md        tablas, funciones, vistas
     ├── glosario.md            vocabulario contable bilingüe
     ├── capturas/              capturas de la app para el README
-    └── decisiones/            ADR 0001 → 0025
+    └── decisiones/            ADR 0001 → 0026
 ```
 
 ## Calidad
 
 - **Integración continua** (GitHub Actions) en cada Pull Request:
-  - las 22 pruebas de la base de datos sobre PostgreSQL 16, cada una en una base limpia con todas las migraciones;
-  - **47 tests de la web con Vitest**: formatos, rutas, importadores, errores, idiomas (español e inglés con las
-    mismas claves), glosario, plantillas y la defensa de las funciones de IA;
+  - las 23 pruebas de la base de datos sobre PostgreSQL 16, cada una en una base limpia con todas las migraciones
+    (la fase 23 vigila también que toda clave foránea tenga índice);
+  - **62 tests de la web con Vitest**: formatos, rutas, importadores, errores, idiomas (español e inglés con las
+    mismas claves), glosario, plantillas, la defensa de las funciones de IA, la lectura por páginas, el borrado por
+    tandas y la fecha de trabajo;
   - lint, build y auditoría de dependencias de la web.
 - **Accesibilidad** comprobada con axe-core (WCAG 2 A/AA) en las pantallas principales, en modo claro y oscuro.
+- **Rendimiento** probado en local con una contabilidad de 120.000 apuntes antes de cada entrega.
 - La rama `main` está protegida: solo se fusiona con los checks en verde.
 
 ## Instalación propia
 
 1. **Base de datos.** En un proyecto de Supabase:
    - activa **`pg_cron`** en *Database → Extensions* (para la limpieza de invitados);
-   - en el *SQL Editor*, ejecuta en orden `database/migrations/0001` … `0028`.
+   - en el *SQL Editor*, ejecuta en orden `database/migrations/0001` … `0029`.
 2. **API.** En *Project Settings → Data API → Exposed schemas*, añade `erp`.
 3. **Invitados** (opcional, **después** de la migración 0015): *Authentication → Sign In / Providers* → activa
    **Allow anonymous sign-ins**.
@@ -260,6 +278,8 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
    VITE_SUPABASE_KEY=sb_publishable_...
    VITE_TURNSTILE_SITE_KEY=           # opcional: CAPTCHA (paso 8)
    ```
+   Si el CAPTCHA ya está activado en Supabase, en local **hace falta** la `VITE_TURNSTILE_SITE_KEY` (la misma Site Key)
+   y que el widget de Turnstile acepte `localhost`; si no, no se puede entrar. Entra por `http://localhost:5173`.
    Después:
    ```bash
    npm install
@@ -288,15 +308,15 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 Con PostgreSQL instalado (Linux, WSL o Git Bash):
 
 ```bash
-bash scripts/test-db.sh            # las 22 pruebas, cada una en una base limpia
-bash scripts/test-db.sh fase22     # solo las que contienen "fase22"
+bash scripts/test-db.sh            # las 23 pruebas, cada una en una base limpia
+bash scripts/test-db.sh fase23     # solo las que contienen "fase23"
 ```
 
 ### Tests de la web
 
 ```bash
 cd frontend
-npm test                           # 47 tests con Vitest
+npm test                           # 62 tests con Vitest
 ```
 
 ### Importar una contabilidad propia
@@ -333,13 +353,15 @@ cuadrados. El ERP también lee directamente los diarios de Sage (Excel) y Busine
 - [x] **v0.26.0**: errores en lenguaje claro, pantalla de entrada y plantillas de asientos
 - [x] **v0.27.0**: glosario en la app, accesibilidad, colores e iconos, capturas en el README
 - [x] **v0.28.0**: seguridad (cabeceras, IA endurecida, CAPTCHA, limpieza de invitados y tests de la web)
+- [x] **v0.29.0**: libro mayor rápido con datos reales, borrar empresa, fecha de trabajo y rastro contable
 - [ ] Inmovilizado: fichas de activos, plan de amortización y asiento mensual a contabilidad
 - [ ] Inventario y nóminas
 - [ ] IA: supuestos prácticos autocorregidos
 - [ ] Presupuesto frente a real (hojas "Ppto" de los ficheros importados)
 - [ ] Puente a Power BI (vistas para conectar directamente)
 
-*Proyecto de estudio: los tipos impositivos y las reglas fiscales se contrastan con la AEAT y la ATC; no es asesoramiento fiscal. Las respuestas de la IA son orientativas y siempre se revisan antes de contabilizar.*
+*Proyecto de estudio: los tipos impositivos y las reglas fiscales se contrastan con la AEAT y la ATC; no es
+asesoramiento fiscal. Las respuestas de la IA son orientativas y siempre se revisan antes de contabilizar.*
 
 ## Autor
 

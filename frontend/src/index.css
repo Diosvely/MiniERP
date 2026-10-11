@@ -490,3 +490,26 @@ form.tarjeta > label { font-size: .9rem; font-weight: 500; margin-bottom: -4px; 
 .captcha { min-height: 65px; display: flex; justify-content: center; }
 .captcha-espera { text-align: center; }
 .boton-demo.resaltado { box-shadow: 0 0 0 4px color-mix(in srgb, var(--primario) 35%, transparent); }
+
+/* --- v0.29.0: borrar la empresa (zona de peligro) --- */
+.zona-peligro { border-left: 4px solid var(--aviso); }
+.zona-peligro h2 { display: flex; align-items: center; gap: 8px; }
+.borrar-resumen { margin: 0 0 8px; padding-left: 20px; }
+button.peligro { background: var(--aviso); color: var(--sobre-color); display: inline-flex; align-items: center; gap: 6px; }
+button.secundario.peligro { background: transparent; color: var(--aviso); border-color: var(--aviso); }
+.borrado-progreso { display: flex; flex-direction: column; gap: 4px; margin: 10px 0; color: var(--suave); }
+.borrado-progreso progress { width: 100%; height: 10px; }
+
+/* --- v0.29.0: ficha del asiento (rastro contable) --- */
+.ficha-cabecera { display: flex; justify-content: space-between; align-items: center; gap: 10px; flex-wrap: wrap; }
+.ficha-cabecera h2 { margin: 0; }
+.ficha-datos { display: flex; flex-wrap: wrap; gap: 6px 24px; margin: 10px 0; }
+.ficha-datos dt { color: var(--suave); font-size: .85rem; }
+.ficha-datos dd { margin: 0; }
+.ficha-asiento.anulado table { opacity: .6; }
+a.etiqueta { text-decoration: none; color: inherit; }
+a.etiqueta:hover, a.etiqueta:focus-visible { text-decoration: underline; }
+td a.enlace { color: inherit; }
+td a.enlace .codigo, a.num-asiento { color: var(--primario); }
+td a.enlace:hover .codigo, td a.enlace:focus-visible .codigo, a.num-asiento:hover { text-decoration: underline; }
+a.num-asiento { font-variant-numeric: tabular-nums; }

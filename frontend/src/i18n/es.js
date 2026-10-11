@@ -72,6 +72,25 @@ export default {
   demoHelp: 'Empresas de ejemplo para consultar: libro diario, cuentas e informes. Solo lectura.',
   demoBadge: 'DEMO',
   readOnly: 'Solo lectura · empresa de demostración',
+  // v0.29.0 · Borrar la empresa
+  deleteCompanyMenu: 'Borrar empresa',
+  deleteCompanyTitle: 'Borrar la empresa',
+  deleteCompanyIntro: 'Se borrará «{c}» entera, con todos sus datos:',
+  deleteCompanyEntries: '{n} asientos contabilizados y borradores, con sus apuntes',
+  deleteCompanyInvoices: '{n} facturas',
+  deleteCompanyPartners: '{n} clientes, proveedores y acreedores',
+  deleteCompanyRest: 'el plan de cuentas, los ejercicios, los impuestos, las liquidaciones, los cierres y los accesos de otros usuarios',
+  deleteCompanyWarning: 'No se puede deshacer. Si quieres conservar algo, expórtalo antes.',
+  deleteCompanyType: 'Para confirmar, escribe el nombre de la empresa: {c}',
+  deleteCompanyButton: 'Borrar la empresa para siempre',
+  deleteCompanyProgress: 'Borrando… quedan {n} asientos',
+  deleteCompanyDemoHint: 'Es una demo publicada: deja de publicarla para poder borrarla.',
+  // v0.29.0 · Rastro contable
+  goBack: 'Volver',
+  openEntry: 'Ver el asiento completo',
+  openLedger: 'Ver el libro mayor de esta cuenta',
+  entryNotFound: 'No encuentro el asiento {n} del ejercicio {y}.',
+  entryDetailHelp: 'Pulsa una cuenta para ver su libro mayor y seguir el rastro. «Volver» te devuelve a donde estabas.',
   publishDemo: 'Publicar como demo',
   unpublishDemo: 'Dejar de publicar como demo',
   companyLimit: 'Has alcanzado el límite de {n} empresa(s) de tu cuenta.',
@@ -619,6 +638,7 @@ export default {
   menuHome: 'Inicio',
   homeHello: 'Hola 👋 · {c}',
   homeYear: 'Ejercicio {y}',
+  homeWorkDate: 'Fecha de trabajo {d}',
   homeImportedFrom: 'Importada de {s}',
   homePathTitle: 'Tu primer trimestre, paso a paso',
   homePathIntro: 'Sigue estos pasos para llevar la contabilidad de un trimestre con {tax}. Cada paso se marca solo cuando lo haces.',
@@ -677,6 +697,7 @@ export default {
     accounts: { label: 'Plan de cuentas', sub: 'Cuentas y subcuentas del PGC' },
     partners: { label: 'Clientes y proveedores', sub: 'Terceros' },
     access: { label: 'Accesos', sub: 'Quién entra y con qué rol' },
+    asiento: { label: 'Asiento', sub: 'Ficha del asiento' },
   },
 
 // v0.25.0 · Estados vacíos con la siguiente acción
@@ -780,6 +801,7 @@ export default {
     importRowsErrors: { title: 'Importación cancelada: {1} filas con errores', hint: 'No se ha guardado nada. Corrige el fichero y vuelve a intentarlo.' },
     captcha: { title: 'No se ha podido comprobar que no eres un robot', hint: 'Espera a que aparezca la marca ✓ del recuadro y vuelve a intentarlo. Si no aparece, recarga la página.' },
     network: { title: 'No hay conexión con el servidor', hint: 'Revisa tu conexión a internet y vuelve a intentarlo.' },
+    timeout: { title: 'La consulta ha tardado demasiado', hint: 'Prueba con menos datos: elige un ejercicio, una cuenta o un rango de fechas más corto. Si se repite, puede que falte ejecutar la última migración en Supabase.' },
   },
 
 // v0.26.0 · Pantalla de entrada

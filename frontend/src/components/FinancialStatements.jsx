@@ -1,6 +1,7 @@
 import { Fragment, useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
+import { workYear } from '../workDate'
 import { money } from '../format'
 import ErrorBox from './ErrorBox'
 
@@ -9,7 +10,7 @@ import ErrorBox from './ErrorBox'
 export default function FinancialStatements({ company, statement }) {
   const { t, language } = useI18n()
   const [years, setYears] = useState([])
-  const [year, setYear] = useState(new Date().getFullYear())
+  const [year, setYear] = useState(() => workYear(company))   // año de la fecha de trabajo
   const [toDate, setToDate] = useState('')
   const [hideZero, setHideZero] = useState(true)
   const [rows, setRows] = useState([])

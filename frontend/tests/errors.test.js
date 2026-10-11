@@ -25,6 +25,7 @@ describe('friendlyError · errores de la base de datos en lenguaje claro', () =>
     expect(friendlyError('new row violates row-level security policy for table "x"', tEs).title).toMatch(/permiso/)
     expect(friendlyError('TypeError: Failed to fetch', tEs).title).toMatch(/conexión/)
     expect(friendlyError('captcha protection: request disallowed (captcha verification process failed)', tEs).title).toMatch(/robot/)
+    expect(friendlyError('canceling statement due to statement timeout', tEs).title).toBe('La consulta ha tardado demasiado')
   })
   it('en inglés', () => {
     expect(friendlyError('Invoice A-7 of Abogada Ruiz is already registered', tEn, 'en').title).toBe('Invoice A-7 from Abogada Ruiz is already registered')

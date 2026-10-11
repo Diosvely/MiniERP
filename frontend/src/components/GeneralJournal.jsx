@@ -1,19 +1,21 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
+import { fetchAll } from '../paging'
 import { useI18n } from '../i18n'
+import { workMonthStart } from '../workDate'
 import { money } from '../format'
 import Empty from './Empty'
 import { companyPath } from '../router'
 import ErrorBox from './ErrorBox'
+import Link from './Link'
 
-const yearStart = () => `${new Date().getFullYear()}-01-01`
 
 // Libro diario: asientos contabilizados entre dos fechas, con búsqueda y anulación (contraasiento)
 //   como el "Diario entre fechas" de A3 y "Reverse Transaction" de Business Central / FB08 de SAP
 export default function GeneralJournal({ company, readOnly, refreshKey }) {
   const { t, language } = useI18n()
   const [rows, setRows] = useState([])
-  const [from, setFrom] = useState(yearStart())
+  const [from, setFrom] = useState(() => workMonthStart(company))   // desde el día 1 del mes de la fecha de trabajo
   const [to, setTo] = useState('')
   const [search, setSearch] = useState('')
   const [reversing, setReversing] = useState(null)      // { entry_id, date, reason }
@@ -21,12 +23,20 @@ export default function GeneralJournal({ company, readOnly, refreshKey }) {
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
 
+  // Por páginas: un año de una empresa importada tiene miles de apuntes (Supabase da 1.000 por consulta)
   useEffect(() => {
-    let q = supabase.from('v_general_journal').select('*').eq('company_id', company.id)
-    if (from) q = q.gte('posting_date', from)
-    if (to) q = q.lte('posting_date', to)
-    q.order('posting_date').order('entry_no').order('line_no')
-      .then(({ data, error }) => (error ? setError(error.message) : setRows(data)))
+    let alive = true
+    fetchAll(() => {
+      let q = supabase.from('v_general_journal').select('*').eq('company_id', company.id)
+      if (from) q = q.gte('posting_date', from)
+      if (to) q = q.lte('posting_date', to)
+      return q.order('posting_date').order('entry_no').order('line_no')
+    }).then(({ data, error }) => {
+      if (!alive) return
+      if (error) return setError(error.message)
+      setRows(data)
+    })
+    return () => { alive = false }
   }, [company.id, from, to, refreshKey, reload])
 
   // Agrupar las líneas por asiento
@@ -99,7 +109,11 @@ export default function GeneralJournal({ company, readOnly, refreshKey }) {
               <tbody>
                 {e.lines.map((l) => (
                   <tr key={l.line_no}>
-                    <td><span className="codigo">{l.account_no}</span> {name(l)}</td>
+                    <td>
+                      <Link to={companyPath(company.id, `reports/mayor/${l.account_no}/${e.fiscal_year}`)} className="enlace" title={t('openLedger')}>
+                        <span className="codigo">{l.account_no}</span> {name(l)}
+                      </Link>
+                    </td>
                     <td className="num">{Number(l.debit) ? money(l.debit, language) : ''}</td>
                     <td className="num">{Number(l.credit) ? money(l.credit, language) : ''}</td>
                   </tr>

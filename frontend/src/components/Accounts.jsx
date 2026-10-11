@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
+import { fetchAll } from '../paging'
 import { useI18n } from '../i18n'
 import { accountName } from '../format'
 import AccountImport from './AccountImport'
@@ -15,11 +16,12 @@ export default function Accounts({ company, readOnly }) {
   const [error, setError] = useState('')
 
   async function load() {
-    const { data, error } = await supabase
+    // Por páginas: una empresa importada puede pasar de 1.000 cuentas (352 del PGC + sus subcuentas)
+    const { data, error } = await fetchAll(() => supabase
       .from('gl_accounts')
       .select('id, account_no, name, name_en, account_type, account_category')
       .eq('company_id', company.id)
-      .order('account_no')
+      .order('account_no'))
     if (error) setError(error.message)
     else setAccounts(data)
   }

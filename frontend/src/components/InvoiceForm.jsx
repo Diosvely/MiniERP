@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
+import { fetchAll } from '../paging'
 import { useI18n } from '../i18n'
+import { workDate } from '../workDate'
 import { accountName, money, taxLabel } from '../format'
 import Link from './Link'
 import { companyPath } from '../router'
 import ErrorBox from './ErrorBox'
 
-const today = () => new Date().toISOString().slice(0, 10)
 const emptyLine = () => ({ account_no: '', amount: '', tax_code: '', description: '' })
 // Cuentas que REDUCEN la factura (regla del lado): devoluciones, rappels y pronto pago
 const REDUCING = ['606', '608', '609', '706', '708', '709']
@@ -16,7 +17,7 @@ const cents = (v) => Math.round((parseFloat(String(v).replace(',', '.')) || 0) *
 export default function InvoiceForm({ company, invoiceType, invoices, onPosted }) {
   const { t, language } = useI18n()
   const emptyHeader = () => ({
-    document_kind: 'invoice', partner_id: '', external_document_no: '', invoice_date: today(),
+    document_kind: 'invoice', partner_id: '', external_document_no: '', invoice_date: workDate(company),
     posting_date: '', description: '', corrected_invoice_id: '', corrected_reference: '', withholding_code: '',
   })
   const [header, setHeader] = useState(emptyHeader())
@@ -39,8 +40,8 @@ export default function InvoiceForm({ company, invoiceType, invoices, onPosted }
     Promise.all([
       supabase.from('v_partners').select('id, name, partner_type, account_no, blocked, tax_territory, equivalence_surcharge')
         .eq('company_id', company.id).in('partner_type', types).order('name'),
-      supabase.from('gl_accounts').select('id, account_no, name, name_en, template_account')
-        .eq('company_id', company.id).eq('account_type', 'posting').order('account_no'),
+      fetchAll(() => supabase.from('gl_accounts').select('id, account_no, name, name_en, template_account')
+        .eq('company_id', company.id).eq('account_type', 'posting').order('account_no')),
       supabase.from('v_tax_setup').select('tax_code, tax_type, rate_pct, rate_category, equivalence_surcharge_pct, description, description_en, blocked')
         .eq('company_id', company.id).eq('blocked', false).order('tax_type').order('rate_pct', { ascending: false }),
       supabase.from('tax_codes').select('code, exemption_key'),

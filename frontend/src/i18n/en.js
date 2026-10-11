@@ -73,6 +73,25 @@ export default {
   demoHelp: 'Sample companies to explore: general journal, accounts and reports. Read only.',
   demoBadge: 'DEMO',
   readOnly: 'Read only · demo company',
+  // v0.29.0 · Delete the company
+  deleteCompanyMenu: 'Delete company',
+  deleteCompanyTitle: 'Delete the company',
+  deleteCompanyIntro: '“{c}” will be deleted entirely, with all its data:',
+  deleteCompanyEntries: '{n} posted and draft entries, with their lines',
+  deleteCompanyInvoices: '{n} invoices',
+  deleteCompanyPartners: '{n} customers, vendors and creditors',
+  deleteCompanyRest: 'the chart of accounts, fiscal years, taxes, settlements, closings and other users’ access',
+  deleteCompanyWarning: 'This cannot be undone. If you want to keep anything, export it first.',
+  deleteCompanyType: 'To confirm, type the company name: {c}',
+  deleteCompanyButton: 'Delete the company forever',
+  deleteCompanyProgress: 'Deleting… {n} entries left',
+  deleteCompanyDemoHint: 'This is a published demo: stop publishing it to be able to delete it.',
+  // v0.29.0 · Audit trail
+  goBack: 'Back',
+  openEntry: 'See the whole entry',
+  openLedger: 'See the general ledger of this account',
+  entryNotFound: 'Entry {n} of fiscal year {y} not found.',
+  entryDetailHelp: 'Click an account to see its general ledger and follow the trail. “Back” returns you to where you were.',
   publishDemo: 'Publish as demo',
   unpublishDemo: 'Stop publishing as demo',
   companyLimit: 'You have reached your account limit of {n} company(ies).',
@@ -620,6 +639,7 @@ export default {
   menuHome: 'Home',
   homeHello: 'Hello 👋 · {c}',
   homeYear: 'Fiscal year {y}',
+  homeWorkDate: 'Work date {d}',
   homeImportedFrom: 'Imported from {s}',
   homePathTitle: 'Your first quarter, step by step',
   homePathIntro: 'Follow these steps to keep the books for one quarter with {tax}. Each step is ticked automatically when you do it.',
@@ -678,6 +698,7 @@ export default {
     accounts: { label: 'Chart of accounts', sub: 'Spanish GAAP accounts' },
     partners: { label: 'Customers and suppliers', sub: 'Business partners' },
     access: { label: 'Access', sub: 'Who can enter and with which role' },
+    asiento: { label: 'Journal entry', sub: 'Entry details' },
   },
 
 // v0.25.0 · Empty states with the next action
@@ -781,6 +802,7 @@ export default {
     importRowsErrors: { title: 'Import cancelled: {1} rows with errors', hint: 'Nothing was saved. Fix the file and try again.' },
     captcha: { title: 'We could not check that you are not a robot', hint: 'Wait for the ✓ in the box and try again. If it does not appear, reload the page.' },
     network: { title: 'No connection to the server', hint: 'Check your internet connection and try again.' },
+    timeout: { title: 'The query took too long', hint: 'Try with less data: choose one fiscal year, one account or a shorter date range. If it keeps happening, the latest migration may be missing in Supabase.' },
   },
 
  // v0.26.0 · Landing screen

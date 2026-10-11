@@ -2,6 +2,31 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.29.0] - 2026-10-11
+### Añadido
+- **Borrar la empresa entera** (zona de peligro): resumen de lo que se borra, confirmación escribiendo el nombre y
+  progreso por tandas. Solo el admin; no se puede borrar una demo publicada.
+- **Fecha de trabajo** de cada empresa (`src/workDate.js`): hoy, o la del último asiento si la empresa es histórica
+  o importada. Es el año, el trimestre y la fecha por defecto de todas las pantallas, y se muestra en el Inicio.
+- **Rastro contable:** ficha del asiento (`#/empresa/<id>/asiento/<año>/<nº>`) desde el libro mayor; cada cuenta de
+  la ficha y del diario abre su libro mayor (`…/reports/mayor/<cuenta>/<año>`).
+- Migración `0029_performance.sql`:
+  - `erp.general_ledger(empresa, año, cuenta, hasta)`;
+  - `erp.delete_company_step(empresa)`;
+  - índices en las claves foráneas que no los tenían.
+- Prueba `test_fase23_performance.sql`.
+- Tests de la web: lectura por páginas, borrado por tandas, fecha de trabajo y rutas del rastro (62 en total).
+- Error en lenguaje claro para *statement timeout*.
+### Cambiado
+- El libro mayor usa `erp.general_ledger` en lugar de la vista `v_general_ledger` (que se mantiene).
+- El diario, el mayor, sumas y saldos y las listas de cuentas se leen por páginas (`src/paging.js`).
+- "Descartar" en la importación borra la empresa por tandas.
+### Corregido
+- El libro mayor daba *statement timeout* con empresas de varios años.
+- Las listas de más de 1.000 filas se cortaban sin aviso y los totales salían mal.
+- Borrar una empresa grande tardaba minutos (claves foráneas sin índice).
+- La fecha "de hoy" se calculaba en UTC.
+
 ## [0.28.0] - 2026-10-11
 ### Añadido
 - **Cabeceras de seguridad** (`frontend/public/_headers`): Content-Security-Policy, X-Frame-Options,

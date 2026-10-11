@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import Accounts from './Accounts'
@@ -17,11 +17,15 @@ import CashFlow from './CashFlow'
 import Ratios from './Ratios'
 import EntryTutor from './EntryTutor'
 import CompanyAccess from './CompanyAccess'
+import EntryDetail from './EntryDetail'
+import DeleteCompany from './DeleteCompany'
 import Home from './Home'
 import Term from './Term'
 import { SECTION_TERM } from '../glossary'
 import { companyPath, navigate, useHashRoute } from '../router'
 import ErrorBox from './ErrorBox'
+import Loading from './Loading'
+import { computeWorkDate } from '../workDate'
 
 // PANTALLAS de la empresa. Dos menús sobre las mismas pantallas (como los "perfiles" de Business Central):
 //   · Modo BÁSICO (por defecto): lista corta, solo lo del día a día, en lenguaje sencillo.
@@ -48,6 +52,8 @@ const SCREENS = [
   { id: 'accounts', group: 'menuMasterData' },
   { id: 'partners', group: 'menuMasterData', basic: true },
   { id: 'access', group: 'menuMasterData', owner: true },
+  // Ficha de un asiento: no sale en ningún menú, se llega desde el libro mayor (#/…/asiento/<año>/<nº>)
+  { id: 'asiento', group: 'menuAccounting', basic: 'hidden', menu: false },
 ]
 // Orden del menú Básico (8 entradas como máximo): de lo que más se usa a lo que menos
 const BASIC_ORDER = ['home', 'invoices', 'entry', 'journal', 'settlement', 'balance', 'pyg', 'partners']
@@ -59,8 +65,24 @@ const saveMode = (m) => { try { localStorage.setItem('erp-modo', m) } catch { /*
 //   readOnly   → empresa demo de otro usuario (o rol viewer): solo consultar
 //   canPublish → el propietario de la app o el titular de los datos (Miembro) publican/despublican la demo
 //   isOwner    → el propietario de la app: ve el apartado Accesos (quién entra y con qué rol)
-export default function CompanyView({ company, readOnly, canPublish, isOwner, onChanged, onBack }) {
+export default function CompanyView({ company: base, readOnly, canPublish, isOwner, onChanged, onBack }) {
   const { t } = useI18n()
+
+  // FECHA DE TRABAJO (Work Date de BC): hoy si la empresa está al día; si es histórica o importada, la de su
+  // último asiento. Se calcula una vez al abrir la empresa y las pantallas la leen de company.work_date.
+  const [work, setWork] = useState(null)
+  useEffect(() => {
+    let alive = true
+    Promise.all([
+      supabase.from('fiscal_years').select('starting_date, ending_date, status').eq('company_id', base.id),
+      supabase.from('journal_entries').select('posting_date').eq('company_id', base.id).eq('status', 'posted')
+        .order('posting_date', { ascending: false }).limit(1),
+    ]).then(([y, e]) => {
+      if (alive) setWork(computeWorkDate({ years: y.data ?? [], lastPosted: e.data?.[0]?.posting_date ?? null }))
+    })
+    return () => { alive = false }
+  }, [base.id])
+  const company = useMemo(() => ({ ...base, work_date: work ?? undefined }), [base, work])
   const [mode, setModeState] = useState(savedMode)
   const setMode = (m) => { setModeState(m); saveMode(m) }
 
@@ -70,7 +92,7 @@ export default function CompanyView({ company, readOnly, canPublish, isOwner, on
   const byId = Object.fromEntries(screens.map((s) => [s.id, s]))
   const menu = mode === 'basic'
     ? [['', BASIC_ORDER.filter((id) => byId[id])]]
-    : [...new Set(screens.map((s) => s.group))].map((g) => [g, screens.filter((s) => s.group === g).map((s) => s.id)])
+    : [...new Set(screens.map((s) => s.group))].map((g) => [g, screens.filter((s) => s.group === g && s.menu !== false).map((s) => s.id)])
 
   // Textos del menú: el de la liquidación dice IVA (303) o IGIC (420) según el territorio
   const tax = company.tax_territory === 'canary_islands' ? { tax: 'IGIC', form: '420' } : { tax: 'IVA', form: '303' }
@@ -82,6 +104,8 @@ export default function CompanyView({ company, readOnly, canPublish, isOwner, on
   const route = useHashRoute()
   const fromRoute = route[0] === 'empresa' && route[1] === company.id ? route[2] : null
   const section = allowed.includes(fromRoute) ? fromRoute : 'home'
+  // Lo que va detrás de la pantalla: asiento/<año>/<nº> · reports/mayor/<cuenta>/<año>
+  const params = section === fromRoute ? route.slice(3) : []
   useEffect(() => {
     if (fromRoute !== section) navigate(companyPath(company.id, section), { replace: true })
   }, [fromRoute, section, company.id])
@@ -108,6 +132,10 @@ export default function CompanyView({ company, readOnly, canPublish, isOwner, on
     setPublishing(null)
     onChanged({ ...company, is_demo: demo, data_credit: credit?.trim() || company.data_credit })
   }
+
+  // Borrar la empresa: solo su admin, y nunca mientras sea una demo publicada (primero se despublica)
+  const [deleting, setDeleting] = useState(false)
+  const canDelete = company.my_role === 'admin'
 
   const group = mode === 'auditor' ? byId[section]?.group : ''
 
@@ -158,12 +186,25 @@ export default function CompanyView({ company, readOnly, canPublish, isOwner, on
             </button>
           </div>
         )}
+        {canDelete && (
+          <div className="menu-grupo">
+            <button type="button" className="secundario peligro" disabled={company.is_demo}
+                    title={company.is_demo ? t('deleteCompanyDemoHint') : undefined}
+                    onClick={() => { setDeleting(true); setMenuOpen(false); window.scrollTo?.({ top: 0 }) }}>
+              {t('deleteCompanyMenu')}
+            </button>
+            {company.is_demo && <small className="ayuda">{t('deleteCompanyDemoHint')}</small>}
+          </div>
+        )}
       </aside>
 
       <section className="empresa-contenido">
         {readOnly && <p className="solo-lectura">👁 {t('readOnly')}</p>}
         <ErrorBox error={error} company={company} />
         {company.is_data_owner && <p className="titular">🤝 {t('dataOwnerBanner')}</p>}
+        {deleting && !company.is_demo && (
+          <DeleteCompany company={company} onCancel={() => setDeleting(false)} onDeleted={onBack} />
+        )}
         {publishing && (
           <section className="tarjeta publicar-demo">
             <h2>{t('publishTitle')}</h2>
@@ -196,6 +237,7 @@ export default function CompanyView({ company, readOnly, canPublish, isOwner, on
           </p>
         )}
 
+        {work === null ? <Loading /> : (<>
         {section === 'home' && <Home company={company} readOnly={readOnly} mode={mode} onAuditor={() => setMode('auditor')} />}
         {section === 'entry' && !readOnly && <EntryTutor company={company} onLoad={setDraft} />}
         {section === 'entry' && !readOnly && (
@@ -212,10 +254,12 @@ export default function CompanyView({ company, readOnly, canPublish, isOwner, on
         {section === 'pyg' && <FinancialStatements company={company} statement="pyg" />}
         {section === 'cashflow' && <CashFlow company={company} />}
         {section === 'ratios' && <Ratios company={company} />}
-        {section === 'reports' && <Reports company={company} />}
+        {section === 'reports' && <Reports company={company} params={params} />}
+        {section === 'asiento' && <EntryDetail key={params.join('/')} company={company} year={params[0]} entryNo={params[1]} />}
         {section === 'accounts' && <Accounts company={company} readOnly={readOnly} />}
         {section === 'partners' && <Partners company={company} readOnly={readOnly} />}
         {section === 'access' && isOwner && <CompanyAccess company={company} />}
+        </>)}
       </section>
     </div>
   )

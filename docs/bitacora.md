@@ -729,3 +729,33 @@ asientos frecuentes.
 
 **Siguiente paso:** el módulo de **Inmovilizado**: fichas de activos, plan de amortización y asiento mensual a  contabilidad.
 
+## 2026-10-11 · v0.29.0 · Rendimiento con muchos datos, borrar empresas, fecha de trabajo y rastro contable
+
+**Qué se hizo**
+- **Libro mayor rápido:** función `erp.general_ledger` (migración 0029). Primero filtra y después calcula el saldo:
+  de 6,9 s (timeout en Supabase) a 0,2 s con 120.000 apuntes.
+- **Índices en todas las claves foráneas:** borrar una empresa grande pasa de 148 s a tandas de 0,5 s.
+- **Lecturas de más de 1.000 filas** por páginas (`fetchAll`) en el diario, el mayor, sumas y saldos y las cuentas.
+- **Borrar empresa:** zona de peligro con resumen de lo que se borra, confirmación escribiendo el nombre y barra de
+  progreso. Solo el admin y nunca una demo publicada. Los Miembros pueden importar y borrar después.
+- **Fecha de trabajo** de cada empresa (hoy, o la del último asiento si es histórica) en todos los filtros y
+  formularios. Corregida de paso la fecha "de hoy", que se calculaba en UTC.
+- **Rastro contable:** del mayor a la ficha del asiento, y de cada cuenta a su mayor, con "Volver" y el botón atrás.
+- Prueba SQL fase 23 y 15 tests nuevos de la web (62 en total).
+
+**Lo que se aprende en esta fase**
+- **Probar con datos reales:** todo funcionaba con 20 asientos. Con 60.000 aparecieron el timeout, el límite de
+  1.000 filas y el borrado lento. Ahora se prueba en local con un volumen grande antes de entregar.
+- **El orden importa en SQL:** una función de ventana sobre una vista se calcula *antes* del `where`. Filtrar
+  primero es la diferencia entre 7 s y 0,2 s.
+- **Una clave foránea sin índice es un borrado lento:** PostgreSQL comprueba cada fila que apunta a la que se borra.
+- **Un límite que no avisa es peor que un error:** Supabase corta a 1.000 filas en silencio y los totales salían
+  mal sin que nada lo dijera.
+- **Work Date (BC) / periodo abierto (SAP):** la fecha por defecto la decide la empresa, no el reloj.
+- **El rastro contable** (mayor → asiento → otra cuenta) es la herramienta básica del auditor. Si cada paso tiene su
+  dirección, el botón atrás funciona solo.
+
+**Decisiones:** ADR 0026 · Rendimiento con muchos datos, borrar empresas, fecha de trabajo y rastro contable.
+
+**Siguiente paso:** el módulo de **Inmovilizado**: fichas de activos, plan de amortización y asiento mensual a contabilidad.
+

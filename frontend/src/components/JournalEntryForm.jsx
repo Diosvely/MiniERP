@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from 'react'
 import { supabase } from '../supabase'
+import { fetchAll } from '../paging'
 import { useI18n } from '../i18n'
+import { workDate } from '../workDate'
 import { accountName, money } from '../format'
 import Link from './Link'
 import { companyPath } from '../router'
@@ -9,7 +11,6 @@ import { TEMPLATES } from '../templates'
 import Term from './Term'
 import { ICON } from '../icons'
 
-const today = () => new Date().toISOString().slice(0, 10)
 const emptyLine = () => ({ accountText: '', gl_account_id: '', debit: '', credit: '', description: '' })
 
 // Búsqueda sin acentos ni mayúsculas: "camion" encuentra "Camión"
@@ -37,7 +38,7 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
   const { t, language } = useI18n()
   const [accounts, setAccounts] = useState([])
   const [fiscalYears, setFiscalYears] = useState([])
-  const [header, setHeader] = useState({ posting_date: today(), description: '', document_no: '' })
+  const [header, setHeader] = useState({ posting_date: workDate(company), description: '', document_no: '' })
   const [lines, setLines] = useState([emptyLine(), emptyLine()])
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
@@ -51,8 +52,8 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
   const [missing, setMissing] = useState([])     // grupos del PGC sin subcuenta al aplicar una plantilla
 
   // Solo subcuentas (posting): son las únicas donde se puede apuntar
-  const loadAccounts = () => supabase.from('gl_accounts').select('id, account_no, name, name_en')
-    .eq('company_id', company.id).eq('account_type', 'posting').order('account_no')
+  const loadAccounts = () => fetchAll(() => supabase.from('gl_accounts').select('id, account_no, name, name_en')
+    .eq('company_id', company.id).eq('account_type', 'posting').order('account_no'))
     .then(({ data }) => { setAccounts(data ?? []); return data ?? [] })
 
   useEffect(() => {

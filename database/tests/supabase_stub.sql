@@ -9,7 +9,8 @@ do $$ begin
 end $$;
 
 create schema if not exists auth;
-create table if not exists auth.users (id uuid primary key, email text, created_at timestamptz default now());
+create table if not exists auth.users (id uuid primary key, email text, created_at timestamptz default now(),
+                                       is_anonymous boolean not null default false);   -- invitados (Supabase)
 
 -- En Supabase, auth.uid() sale del token JWT. Aquí, de una variable de sesión.
 create or replace function auth.uid() returns uuid language sql stable as $$

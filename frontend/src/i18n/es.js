@@ -524,6 +524,7 @@ export default {
     db_not_updated: 'Falta ejecutar una migración en Supabase (SQL Editor)',
     ai_user_limit: 'Has llegado a tu límite diario de consultas de IA. Mañana tendrás más.',
     bad_request: 'Petición incorrecta.',
+    too_large: 'La petición es demasiado grande.',
   },
 
   // ---- Tutor de asientos (paso 126) ----

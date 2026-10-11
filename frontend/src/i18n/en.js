@@ -525,6 +525,7 @@ export default {
     db_not_updated: 'A migration has not been run in Supabase yet (SQL Editor)',
     ai_user_limit: 'You have reached your daily AI limit. You will have more tomorrow.',
     bad_request: 'Bad request.',
+    too_large: 'The request is too large.',
   },
 
 // ---- Entry tutor (step 126) ----

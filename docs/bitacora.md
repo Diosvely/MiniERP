@@ -759,3 +759,28 @@ asientos frecuentes.
 
 **Siguiente paso:** el módulo de **Inmovilizado**: fichas de activos, plan de amortización y asiento mensual a contabilidad.
 
+## 2026-10-11 · v0.29.1 · Seguridad: titular de los datos, licencia MIT y dependencias
+
+**Qué se hizo**
+- **Corregido un fallo de seguridad** que encontró una revisión externa: cualquier usuario registrado podía
+  nombrarse a sí mismo **titular de los datos** de su empresa y, con eso, usar la IA y publicar su empresa como demo
+  pública. Migración 0030: un trigger hace que solo el propietario de la app pueda poner esa marca.
+- Prueba SQL fase 24 (falla sin la corrección). 24 pruebas SQL en total.
+- Revisión en producción de titulares y demos.
+- **Licencia MIT**, **`SECURITY.md`** (avisos privados), **Dependabot** y la lista de comprobación
+  `docs/seguridad-supabase.md`.
+
+**Lo que se aprende en esta fase**
+- **RLS protege filas, no columnas:** la política "el admin gestiona los usuarios de su empresa" era correcta hasta
+  que la tabla ganó una columna que da poder. Cada columna nueva se revisa contra las políticas que ya existen.
+- **Un trigger para las reglas de "antes → después":** quitar la marca sí, ponerla no. Eso no se expresa bien con
+  RLS.
+- **Una segunda mirada encuentra lo que no ves:** la revisión de otro agente detectó una regresión de la v0.24.0.
+  Antes de corregir, se reproduce; y la prueba tiene que fallar sin la corrección.
+- **Un repositorio público sin licencia no es libre:** legalmente nadie podía reutilizarlo. Con la MIT sí, citando
+  la autoría.
+
+**Decisiones:** ADR 0027 · Protección del titular de los datos, licencia MIT y dependencias.
+
+**Siguiente paso:** probar el ERP con una contabilidad de verdad y pulir lo que salga. Después, el **Inmovilizado**.
+

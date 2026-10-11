@@ -2,6 +2,19 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.29.1] - 2026-10-11
+### Seguridad
+- **Corregido:** un admin de su propia empresa podía marcarse como titular de los datos
+  (`erp.company_users.data_owner`) y, con eso, usar la IA y publicar su empresa como demo con cualquier mención.
+  Migración `0030_protect_data_owner.sql`: solo el propietario de la app pone esa marca. Regresión desde la v0.24.0
+  (migración 0027), encontrada en una revisión de seguridad externa.
+- Prueba `test_fase24_data_owner.sql`.
+- `SECURITY.md`: cómo avisar de un fallo en privado.
+- Dependabot (`.github/dependabot.yml`) para npm y GitHub Actions.
+- `docs/seguridad-supabase.md`: lista de ajustes del panel de Supabase y consultas de revisión.
+### Añadido
+- Licencia **MIT** (`LICENSE`).
+
 ## [0.29.0] - 2026-10-11
 ### Añadido
 - **Borrar la empresa entera** (zona de peligro): resumen de lo que se borra, confirmación escribiendo el nombre y

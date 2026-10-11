@@ -17,6 +17,7 @@ import CashFlow from './CashFlow'
 import Ratios from './Ratios'
 import EntryTutor from './EntryTutor'
 import CompanyAccess from './CompanyAccess'
+import DeleteCompany from './DeleteCompany'
 import Home from './Home'
 import Term from './Term'
 import { SECTION_TERM } from '../glossary'
@@ -109,6 +110,10 @@ export default function CompanyView({ company, readOnly, canPublish, isOwner, on
     onChanged({ ...company, is_demo: demo, data_credit: credit?.trim() || company.data_credit })
   }
 
+  // Borrar la empresa: solo su admin, y nunca mientras sea una demo publicada (primero se despublica)
+  const [deleting, setDeleting] = useState(false)
+  const canDelete = company.my_role === 'admin'
+
   const group = mode === 'auditor' ? byId[section]?.group : ''
 
   return (
@@ -158,12 +163,25 @@ export default function CompanyView({ company, readOnly, canPublish, isOwner, on
             </button>
           </div>
         )}
+        {canDelete && (
+          <div className="menu-grupo">
+            <button type="button" className="secundario peligro" disabled={company.is_demo}
+                    title={company.is_demo ? t('deleteCompanyDemoHint') : undefined}
+                    onClick={() => { setDeleting(true); setMenuOpen(false); window.scrollTo?.({ top: 0 }) }}>
+              {t('deleteCompanyMenu')}
+            </button>
+            {company.is_demo && <small className="ayuda">{t('deleteCompanyDemoHint')}</small>}
+          </div>
+        )}
       </aside>
 
       <section className="empresa-contenido">
         {readOnly && <p className="solo-lectura">👁 {t('readOnly')}</p>}
         <ErrorBox error={error} company={company} />
         {company.is_data_owner && <p className="titular">🤝 {t('dataOwnerBanner')}</p>}
+        {deleting && !company.is_demo && (
+          <DeleteCompany company={company} onCancel={() => setDeleting(false)} onDeleted={onBack} />
+        )}
         {publishing && (
           <section className="tarjeta publicar-demo">
             <h2>{t('publishTitle')}</h2>

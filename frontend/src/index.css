@@ -490,3 +490,12 @@ form.tarjeta > label { font-size: .9rem; font-weight: 500; margin-bottom: -4px; 
 .captcha { min-height: 65px; display: flex; justify-content: center; }
 .captcha-espera { text-align: center; }
 .boton-demo.resaltado { box-shadow: 0 0 0 4px color-mix(in srgb, var(--primario) 35%, transparent); }
+
+/* --- v0.29.0: borrar la empresa (zona de peligro) --- */
+.zona-peligro { border-left: 4px solid var(--aviso); }
+.zona-peligro h2 { display: flex; align-items: center; gap: 8px; }
+.borrar-resumen { margin: 0 0 8px; padding-left: 20px; }
+button.peligro { background: var(--aviso); color: var(--sobre-color); display: inline-flex; align-items: center; gap: 6px; }
+button.secundario.peligro { background: transparent; color: var(--aviso); border-color: var(--aviso); }
+.borrado-progreso { display: flex; flex-direction: column; gap: 4px; margin: 10px 0; color: var(--suave); }
+.borrado-progreso progress { width: 100%; height: 10px; }

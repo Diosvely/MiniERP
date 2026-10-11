@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { supabase } from '../supabase'
+import { deleteCompany } from '../deleteCompany'
 import { useI18n } from '../i18n'
 import { money } from '../format'
 import { readJournal } from '../importers'
@@ -99,7 +100,7 @@ export default function JournalImport({ onDone, onCancel }) {
 
   // Si el fichero no sirve: se borra la empresa creada para la prueba
   async function discard() {
-    if (ids) await supabase.rpc('delete_company', { p_company: ids.company_id })
+    if (ids) await deleteCompany(supabase, ids.company_id).catch(() => {})   // por tandas (0029)
     onCancel()
   }
 

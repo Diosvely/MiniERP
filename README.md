@@ -25,8 +25,9 @@ Proyecto de aprendizaje en evolución.
 >   in-app glossary with Business Central / SAP equivalents. Accessible: no axe-core issues (WCAG 2 A/AA).
 >
 > Data model inspired by Business Central and SAP FI. Database in English, bilingual UI (Spanish / English),
-> multi-company and multi-user, with guest access to demo companies. Accounting rules are enforced by PostgreSQL,
-> and every pull request is checked by CI. Learning project, work in progress.
+> multi-company and multi-user, with guest access to demo companies (CAPTCHA-protected). Accounting rules are enforced
+> by PostgreSQL, security headers and a strict CSP protect the web, and every pull request is checked by CI
+> (SQL tests, web unit tests, lint, build and dependency audit). Learning project, work in progress.
 
 | Inicio guiado | Asiento con plantilla |
 |---|---|
@@ -45,7 +46,7 @@ española y el funcionamiento real de un ERP. Los ERP comerciales son caros y di
 propia, así que decidí **construir uno**. Diseñar la tabla de asientos obliga a entender *por qué* un ERP impone
 cada regla. Además, todo el código está en inglés para practicar el vocabulario técnico de BC y SAP.
 
-## ¿Qué hace hoy? (v0.27.0)
+## ¿Qué hace hoy? (v0.28.0)
 
 **Primeros pasos y navegación**
 - **Pantalla de Inicio** en cada empresa:
@@ -134,16 +135,24 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
 - **Empresas DEMO** de solo lectura y **acceso como invitado sin registro**.
 - **Español / inglés** con selector de bandera, en móvil y en ordenador.
 
+**Seguridad**
+- **Cabeceras HTTP** con una CSP estricta (solo el propio dominio, Supabase y Cloudflare Turnstile), protección contra
+  *clickjacking*, HSTS y `Permissions-Policy`.
+- **CAPTCHA (Cloudflare Turnstile)** en la demo, el registro y el acceso. Los invitados de más de 7 días **se borran
+  solos** cada noche (`pg_cron`).
+- Las funciones de IA validan cada petición (UUID y tamaño) y nunca devuelven errores internos al navegador.
+- La web solo usa la clave **publicable** de Supabase; quién puede ver o hacer cada cosa lo decide PostgreSQL (RLS).
+
 ## Arquitectura
 
 | Capa | Tecnología | Notas |
 |---|---|---|
 | Base de datos | **PostgreSQL** en Supabase (schema `erp`) | Las reglas contables viven en la base de datos: triggers, funciones y RLS |
-| Autenticación | Supabase Auth | Correo y contraseña · invitados con *anonymous sign-ins* |
+| Autenticación | Supabase Auth + **Cloudflare Turnstile** | Correo y contraseña · invitados con *anonymous sign-ins* · CAPTCHA |
 | Web | **React + Vite** | Componentes por pantalla, i18n propio (es/en), rutas con almohadilla, iconos `lucide-react` |
 | IA | **Cloudflare Workers AI** + Pages Functions | `/api/ai` (Mistral Small 3.1) y `/api/tutor` (gpt-oss-120b); la clave nunca llega al navegador |
-| Despliegue | **Cloudflare Pages** | Despliegue automático desde `main` y dirección de prueba por rama |
-| Calidad | **GitHub Actions** | Pruebas SQL, lint, build y auditoría de dependencias en cada Pull Request |
+| Despliegue | **Cloudflare Pages** | Despliegue automático desde `main`, dirección de prueba por rama y cabeceras de seguridad (`_headers`) |
+| Calidad | **GitHub Actions** + **Vitest** | 22 pruebas SQL, 47 tests de la web, lint, build y auditoría de dependencias en cada Pull Request |
 | Versionado | Git + GitHub | Ramas, Pull Requests, `main` protegida, versiones etiquetadas y decisiones documentadas (ADR) |
 
 **Principio clave:** la web nunca es la única barrera. Aunque alguien manipule el navegador, PostgreSQL rechaza:
@@ -188,12 +197,15 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 ├── .github/workflows/ci.yml   integración continua: pruebas SQL, lint, build y auditoría
 ├── scripts/test-db.sh         ejecuta todas las pruebas SQL, cada una en una base limpia
 ├── database/
-│   ├── migrations/            0001 → 0027, se ejecutan en orden en Supabase
+│   ├── migrations/            0001 → 0028, se ejecutan en orden en Supabase
 │   ├── reset/                 reset del schema antiguo (solo histórico)
 │   ├── seed/                  datos de ejemplo (opcional)
-│   └── tests/                 pruebas automáticas en SQL (fases 1 → 21) y simulador de Supabase
+│   └── tests/                 pruebas automáticas en SQL (fases 1 → 22) y simulador de Supabase
 ├── frontend/                  web React + Vite
+│   ├── .env.example           variables de entorno (sin valores reales)
+│   ├── public/_headers        cabeceras de seguridad (CSP…) que aplica Cloudflare Pages
 │   ├── functions/api/         Pages Functions: ai.js (Analista IA) y tutor.js (Tutor de asientos)
+│   ├── tests/                 tests de la web con Vitest (npm test)
 │   └── src/
 │       ├── components/        Inicio, empresas, menú, asientos, diario, facturas, impuestos, informes, IA…
 │       ├── i18n/              diccionarios es.js / en.js y motor de idioma
@@ -212,21 +224,24 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
     ├── modelo-datos.md        tablas, funciones, vistas
     ├── glosario.md            vocabulario contable bilingüe
     ├── capturas/              capturas de la app para el README
-    └── decisiones/            ADR 0001 → 0024
+    └── decisiones/            ADR 0001 → 0025
 ```
 
 ## Calidad
 
 - **Integración continua** (GitHub Actions) en cada Pull Request:
-  - las 21 pruebas de la base de datos sobre PostgreSQL 16, cada una en una base limpia con todas las migraciones;
+  - las 22 pruebas de la base de datos sobre PostgreSQL 16, cada una en una base limpia con todas las migraciones;
+  - **47 tests de la web con Vitest**: formatos, rutas, importadores, errores, idiomas (español e inglés con las
+    mismas claves), glosario, plantillas y la defensa de las funciones de IA;
   - lint, build y auditoría de dependencias de la web.
 - **Accesibilidad** comprobada con axe-core (WCAG 2 A/AA) en las pantallas principales, en modo claro y oscuro.
 - La rama `main` está protegida: solo se fusiona con los checks en verde.
 
 ## Instalación propia
 
-1. **Base de datos.** En un proyecto de Supabase → *SQL Editor*, ejecuta en orden `database/migrations/0001` …
-   `0027`.
+1. **Base de datos.** En un proyecto de Supabase:
+   - activa **`pg_cron`** en *Database → Extensions* (para la limpieza de invitados);
+   - en el *SQL Editor*, ejecuta en orden `database/migrations/0001` … `0028`.
 2. **API.** En *Project Settings → Data API → Exposed schemas*, añade `erp`.
 3. **Invitados** (opcional, **después** de la migración 0015): *Authentication → Sign In / Providers* → activa
    **Allow anonymous sign-ins**.
@@ -238,10 +253,12 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
    ```
    Para dar acceso a otra persona a una empresa: que se registre (o créala en *Authentication › Users › Add
    user*) y después, en la empresa, abre **Accesos** (modo Auditor).
-5. **Web.** En `frontend/`, crea `.env.local` (nunca se sube a Git; usa solo la clave **publicable**):
+5. **Web.** En `frontend/`, copia `.env.example` como `.env.local` (nunca se sube a Git; usa solo la clave
+   **publicable**):
    ```
    VITE_SUPABASE_URL=https://TU-PROYECTO.supabase.co
    VITE_SUPABASE_KEY=sb_publishable_...
+   VITE_TURNSTILE_SITE_KEY=           # opcional: CAPTCHA (paso 8)
    ```
    Después:
    ```bash
@@ -260,15 +277,33 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
      `AI_MODEL` / `TUTOR_MODEL` son opcionales, para probar otro modelo;
    - vuelve a desplegar, porque los bindings solo se aplican a los despliegues nuevos;
    - el plan gratuito incluye 10.000 *neuronas* al día.
+8. **CAPTCHA** (opcional, recomendado si la web es pública). **En este orden**:
+   - Cloudflare → **Turnstile** → crea un widget para tu dominio de Pages (y `localhost`);
+   - en Pages, añade `VITE_TURNSTILE_SITE_KEY` (Production y Preview) y despliega;
+   - comprueba que aparece el recuadro y, **después**, en Supabase → *Authentication → Attack Protection* activa el
+     CAPTCHA con Turnstile y su *Secret Key*. Si lo activas antes, nadie podrá entrar.
 
 ### Pruebas de la base de datos (PostgreSQL local)
 
 Con PostgreSQL instalado (Linux, WSL o Git Bash):
 
 ```bash
-bash scripts/test-db.sh            # las 21 pruebas, cada una en una base limpia
-bash scripts/test-db.sh fase21     # solo las que contienen "fase21"
+bash scripts/test-db.sh            # las 22 pruebas, cada una en una base limpia
+bash scripts/test-db.sh fase22     # solo las que contienen "fase22"
 ```
+
+### Tests de la web
+
+```bash
+cd frontend
+npm test                           # 47 tests con Vitest
+```
+
+### Importar una contabilidad propia
+
+Para traer el diario de otro programa, prepáralo con la **plantilla del laboratorio**: una fila por apunte con
+`fecha;asiento;tipo;cuenta;nombre;debe;haber;concepto;documento`, subcuentas de la misma longitud y asientos
+cuadrados. El ERP también lee directamente los diarios de Sage (Excel) y Business Central (CSV).
 
 ## Hoja de ruta
 
@@ -297,15 +332,14 @@ bash scripts/test-db.sh fase21     # solo las que contienen "fase21"
 - [x] **v0.25.0**: Inicio guiado, modo Básico/Auditor, rutas, estados vacíos y de carga, integración continua
 - [x] **v0.26.0**: errores en lenguaje claro, pantalla de entrada y plantillas de asientos
 - [x] **v0.27.0**: glosario en la app, accesibilidad, colores e iconos, capturas en el README
-- [ ] v0.28.0: seguridad (cabeceras, endurecer la IA, CAPTCHA, limpieza de invitados y tests de la web)
+- [x] **v0.28.0**: seguridad (cabeceras, IA endurecida, CAPTCHA, limpieza de invitados y tests de la web)
 - [ ] Inmovilizado: fichas de activos, plan de amortización y asiento mensual a contabilidad
 - [ ] Inventario y nóminas
 - [ ] IA: supuestos prácticos autocorregidos
 - [ ] Presupuesto frente a real (hojas "Ppto" de los ficheros importados)
 - [ ] Puente a Power BI (vistas para conectar directamente)
 
-*Proyecto de estudio: los tipos impositivos y las reglas fiscales se contrastan con la AEAT y la ATC; no es
-asesoramiento fiscal. Las respuestas de la IA son orientativas y siempre se revisan antes de contabilizar.*
+*Proyecto de estudio: los tipos impositivos y las reglas fiscales se contrastan con la AEAT y la ATC; no es asesoramiento fiscal. Las respuestas de la IA son orientativas y siempre se revisan antes de contabilizar.*
 
 ## Autor
 

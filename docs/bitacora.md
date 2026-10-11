@@ -695,3 +695,37 @@ asientos frecuentes.
 
 **Siguiente paso:** v0.28.0. Seguridad: cabeceras HTTP, endurecer `/api/ai` y `/api/tutor`, CAPTCHA, limpieza de invitados y tests de la web con Vitest.
 
+## 2026-10-11 · v0.28.0 · Seguridad: cabeceras, IA endurecida, CAPTCHA, limpieza de invitados y tests
+
+**Qué se hizo**
+- **Cabeceras HTTP** (`public/_headers`):
+  - CSP ajustada al código real (solo el propio dominio, Supabase y Turnstile);
+  - anti-iframe, `nosniff`, `Referrer-Policy`, `Permissions-Policy`, HSTS y COOP;
+  - comprobado sirviendo la build: ninguna violación de la CSP.
+- **`/api/ai` y `/api/tutor`:** sin detalles internos en la respuesta (van a `console.error`), `company_id` validado
+  como UUID antes de llamar a Supabase y cuerpo limitado (413).
+- **CAPTCHA Cloudflare Turnstile** en la demo, el registro y el acceso. El enlace `?demo` ya no crea invitados al
+  cargar.
+- **Migración 0028:** `erp.cleanup_guests(7)` y tarea diaria con `pg_cron`. Borra los invitados de más de 7 días sin
+  dejar filas huérfanas. Prueba fase 22.
+- **Vitest:** 47 tests de la web en la CI.
+- `frontend/.env.example` con las variables necesarias, sin valores reales.
+- Fuera de la versión: **plantilla del laboratorio** (Excel y CSV) y su especificación, para preparar datasets que se
+  importan a la primera.
+
+**Lo que se aprende en esta fase**
+- **Defensa en capas:** la base de datos ya decidía los permisos (RLS). Ahora además el borde (cabeceras, CAPTCHA) y
+  las funciones (validación y errores opacos) reducen lo que un atacante puede intentar y lo que puede aprender.
+- **Un error interno es información para el atacante:** "permission denied for table journal_entries" le dice qué
+  tablas hay. Al usuario, un código; al registro, el detalle.
+- **El orden de despliegue importa:** el CAPTCHA se activa en Supabase *después* de que producción tenga el widget, o
+  nadie podría entrar. El interruptor de Supabase es el plan de vuelta atrás.
+- **Las claves foráneas que no existen también importan:** sin FK hacia `auth.users`, borrar un usuario deja filas
+  huérfanas. Se revisa antes de escribir el `delete`, y un test lo vigila.
+- **Un test que nunca falla no prueba nada:** cada prueba nueva se valida rompiendo el código a propósito.
+- **Los tests no van en `functions/`:** Cloudflare convierte en ruta todo lo que hay en esa carpeta.
+
+**Decisiones:** ADR 0025 · Seguridad: cabeceras HTTP, IA endurecida, CAPTCHA, limpieza de invitados y tests de la web.
+
+**Siguiente paso:** el módulo de **Inmovilizado**: fichas de activos, plan de amortización y asiento mensual a  contabilidad.
+

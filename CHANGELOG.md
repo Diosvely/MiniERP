@@ -2,6 +2,28 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.28.0] - 2026-10-11
+### Añadido
+- **Cabeceras de seguridad** (`frontend/public/_headers`): Content-Security-Policy, X-Frame-Options,
+  X-Content-Type-Options, Referrer-Policy, Permissions-Policy, Strict-Transport-Security y
+  Cross-Origin-Opener-Policy.
+- **CAPTCHA con Cloudflare Turnstile** en "Ver la demo", "Crear cuenta" e "Iniciar sesión"
+  (`VITE_TURNSTILE_SITE_KEY`).
+- **Limpieza automática de invitados:** migración `0028_guest_cleanup.sql` con `erp.cleanup_guests(días)` y tarea
+  diaria de `pg_cron`. Prueba `test_fase22_guest_cleanup.sql`.
+- **Tests de la web con Vitest** (47) en `frontend/tests/`, ejecutados en la CI (`npm test`).
+- `frontend/.env.example` con las variables de entorno.
+- Error en lenguaje claro para el CAPTCHA.
+### Cambiado
+- El enlace `?demo` ya no crea un invitado al cargar la página: abre la entrada con el botón de la demo destacado.
+- `/api/ai` y `/api/tutor` responden solo con un código de error, sin el texto interno de PostgreSQL ni del modelo;
+  el detalle queda en el registro de Cloudflare.
+- `/api/ai` y `/api/tutor` validan que `company_id` sea un UUID (400) y limitan el tamaño de la petición (413).
+- Simulador de Supabase de las pruebas: `auth.users.is_anonymous`.
+### Seguridad
+- Un robot ya no puede crear usuarios anónimos sin resolver el CAPTCHA, ni leer mensajes internos de la base de datos
+  a través de la IA.
+
 ## [0.27.0] - 2026-10-10
 ### Añadido
 - **Glosario en la app:**

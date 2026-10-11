@@ -105,6 +105,7 @@ const RULES = [
   [/^User already registered/, 'userExists'],
   [/^New password should be different/, 'samePassword'],
   [/rate limit|For security purposes, you can only request/i, 'rateLimit'],
+  [/captcha/i, 'captcha'],
 
   // Genéricos de PostgreSQL / PostgREST / red (al final: los concretos tienen prioridad)
   [/Could not find the function|PGRST202|schema cache/i, 'dbNotUpdated'],

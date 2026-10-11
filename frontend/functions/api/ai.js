@@ -20,6 +20,23 @@ const DEFAULT_MODEL = '@cf/mistralai/mistral-small-3.1-24b-instruct'
 const json = (body, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json; charset=utf-8' } })
 
+// ---- Defensa de la entrada (v0.28.0) ----
+// · Cuerpo de la petición pequeño: aquí solo llegan { company_id, year | text, language }. Lo demás se rechaza (413).
+// · company_id con formato UUID antes de llamar a Supabase (400): no se gasta ni una consulta con basura.
+// · Los errores internos (PostgreSQL, modelo) se escriben en el registro de Cloudflare (console.error),
+//   NUNCA en la respuesta: el navegador solo recibe un código (context_denied, ai_failed…).
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+export const isUuid = (v) => typeof v === 'string' && UUID.test(v)
+
+export async function readBody(request, max) {
+  if (Number(request.headers.get('Content-Length') ?? 0) > max) return { error: 'too_large' }
+  const text = await request.text()
+  if (text.length > max) return { error: 'too_large' }
+  try { return { body: JSON.parse(text) } } catch { return { error: 'bad_request' } }
+}
+const logError = (where, detail) => console.error(`[api] ${where}:`, String(detail ?? '').slice(0, 500))
+const MAX_BODY = 2048   // { company_id, year, language } ocupa ~100 bytes
+
 const INSTRUCTIONS = {
   es: `Eres un auditor y profesor de contabilidad española (PGC PYMES). Analizas una empresa a partir de un resumen
 en JSON que ha calculado un ERP: balance, cuenta de pérdidas y ganancias, estado de flujos de efectivo y ratios.
@@ -111,11 +128,11 @@ export async function onRequestPost({ request, env }) {
   const auth = request.headers.get('Authorization') ?? ''
   if (!auth.startsWith('Bearer ')) return json({ error: 'not_signed_in' }, 401)
 
-  let body
-  try { body = await request.json() } catch { return json({ error: 'bad_request' }, 400) }
+  const { body, error } = await readBody(request, MAX_BODY)
+  if (error) return json({ error }, error === 'too_large' ? 413 : 400)
   const language = body.language === 'en' ? 'en' : 'es'
   const year = Number(body.year)
-  if (!body.company_id || !Number.isInteger(year)) return json({ error: 'bad_request' }, 400)
+  if (!isUuid(body.company_id) || !Number.isInteger(year) || year < 1900 || year > 2200) return json({ error: 'bad_request' }, 400)
 
   // Resumen de la empresa con la sesión del usuario: la base de datos decide si puede
   const ctx = await fetch(`${env.VITE_SUPABASE_URL}/rest/v1/rpc/ai_context`, {
@@ -130,8 +147,8 @@ export async function onRequestPost({ request, env }) {
     const e = await ctx.json().catch(() => ({}))
     // PGRST202: la función no existe en Supabase → falta ejecutar la migración
     if (e.code === 'PGRST202' || ctx.status === 404) return json({ error: 'db_not_updated', detail: '0024' }, 500)
-    const status = ctx.status === 401 ? 401 : 403
-    return json({ error: 'context_denied', detail: e.message ?? '' }, status)
+    logError('ai_context', e.message)
+    return json({ error: 'context_denied' }, ctx.status === 401 ? 401 : 403)
   }
   const context = await ctx.json()
 
@@ -145,7 +162,8 @@ export async function onRequestPost({ request, env }) {
   if (!quota.ok) {
     const q = await quota.json().catch(() => ({}))
     if (q.code === 'PGRST202') return json({ error: 'db_not_updated', detail: '0027' }, 500)
-    return json({ error: /limit/i.test(q.message ?? '') ? 'ai_user_limit' : 'context_denied', detail: q.message ?? '' }, 429)
+    if (!/limit/i.test(q.message ?? '')) logError('ai_consume', q.message)
+    return json({ error: /limit/i.test(q.message ?? '') ? 'ai_user_limit' : 'context_denied' }, 429)
   }
 
   const model = env.AI_MODEL || DEFAULT_MODEL
@@ -162,7 +180,8 @@ export async function onRequestPost({ request, env }) {
   } catch (e) {
     // Límite diario gratuito agotado (se reinicia a las 00:00 UTC) u otro fallo del modelo
     const quota = /limit|quota|neuron|429/i.test(String(e?.message ?? e))
-    return json({ error: quota ? 'ai_quota' : 'ai_failed', detail: String(e?.message ?? e).slice(0, 300) }, quota ? 429 : 502)
+    logError(`modelo ${model}`, e?.message ?? e)
+    return json({ error: quota ? 'ai_quota' : 'ai_failed' }, quota ? 429 : 502)
   }
 
   const text = responseText(out)

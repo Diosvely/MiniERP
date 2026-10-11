@@ -485,3 +485,8 @@ p a.enlace, .ayuda a.enlace, .aviso a.enlace, .entrada-pie a { text-decoration: 
 .caja-error-titulo .icono-svg { margin-top: 2px; }
 .boton-demo { display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
 form.tarjeta > label { font-size: .9rem; font-weight: 500; margin-bottom: -4px; }
+
+/* --- v0.28.0: CAPTCHA (Turnstile) y demo destacada al llegar con ?demo --- */
+.captcha { min-height: 65px; display: flex; justify-content: center; }
+.captcha-espera { text-align: center; }
+.boton-demo.resaltado { box-shadow: 0 0 0 4px color-mix(in srgb, var(--primario) 35%, transparent); }

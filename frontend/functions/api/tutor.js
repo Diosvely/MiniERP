@@ -22,6 +22,23 @@ const MAX_TEXT = 1000
 const json = (body, status = 200) =>
   new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json; charset=utf-8' } })
 
+// ---- Defensa de la entrada (v0.28.0) ----
+// · Cuerpo de la petición pequeño: aquí solo llegan { company_id, year | text, language }. Lo demás se rechaza (413).
+// · company_id con formato UUID antes de llamar a Supabase (400): no se gasta ni una consulta con basura.
+// · Los errores internos (PostgreSQL, modelo) se escriben en el registro de Cloudflare (console.error),
+//   NUNCA en la respuesta: el navegador solo recibe un código (context_denied, ai_failed…).
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+export const isUuid = (v) => typeof v === 'string' && UUID.test(v)
+
+export async function readBody(request, max) {
+  if (Number(request.headers.get('Content-Length') ?? 0) > max) return { error: 'too_large' }
+  const text = await request.text()
+  if (text.length > max) return { error: 'too_large' }
+  try { return { body: JSON.parse(text) } } catch { return { error: 'bad_request' } }
+}
+const logError = (where, detail) => console.error(`[api] ${where}:`, String(detail ?? '').slice(0, 500))
+const MAX_BODY = 4096   // { company_id, text (≤ 1.000 caracteres), language }
+
 const INSTRUCTIONS = {
   es: `Eres profesor de contabilidad española (PGC 2007, modificado por el RD 1/2021). Un alumno describe una operación
 y tú propones el asiento. Recibes en JSON el plan de cuentas (chart_of_accounts), los tipos de IVA / IGIC VIGENTES de
@@ -181,22 +198,27 @@ export async function onRequestPost({ request, env }) {
   if (!auth.startsWith('Bearer ')) return json({ error: 'not_signed_in' }, 401)
 
   let body
-  try { body = await request.json() } catch { return json({ error: 'bad_request' }, 400) }
+  const read = await readBody(request, MAX_BODY)
+  if (read.error) return json({ error: read.error }, read.error === 'too_large' ? 413 : 400)
+  body = read.body
   const language = body.language === 'en' ? 'en' : 'es'
   const text = typeof body.text === 'string' ? body.text.trim().slice(0, MAX_TEXT) : ''
-  if (!body.company_id || text.length < 5) return json({ error: 'bad_request' }, 400)
+  if (!isUuid(body.company_id) || text.length < 5) return json({ error: 'bad_request' }, 400)
 
   const ctx = await rpc(env, auth, 'entry_tutor_context', { p_company: body.company_id, p_language: language })
   // PGRST202: la función no existe en Supabase → falta ejecutar la migración
   if (!ctx.ok && (ctx.body?.code === 'PGRST202' || ctx.status === 404)) return json({ error: 'db_not_updated', detail: '0025' }, 500)
-  if (!ctx.ok) return json({ error: 'context_denied', detail: ctx.body?.message ?? '' }, ctx.status === 401 ? 401 : 403)
+  if (!ctx.ok) {
+    logError('entry_tutor_context', ctx.body?.message)
+    return json({ error: 'context_denied' }, ctx.status === 401 ? 401 : 403)
+  }
 
   // Cuota diaria de IA por usuario (el owner no tiene límite): la segunda vuelta no cuenta aparte
   const quota = await rpc(env, auth, 'ai_consume', { p_company: body.company_id })
   if (!quota.ok) {
     if (quota.body?.code === 'PGRST202') return json({ error: 'db_not_updated', detail: '0027' }, 500)
-    return json({ error: /limit/i.test(quota.body?.message ?? '') ? 'ai_user_limit' : 'context_denied',
-                  detail: quota.body?.message ?? '' }, 429)
+    if (!/limit/i.test(quota.body?.message ?? '')) logError('ai_consume', quota.body?.message)
+    return json({ error: /limit/i.test(quota.body?.message ?? '') ? 'ai_user_limit' : 'context_denied' }, 429)
   }
 
   let model = env.TUTOR_MODEL || DEFAULT_MODEL
@@ -222,7 +244,8 @@ export async function onRequestPost({ request, env }) {
       }
       if (!out) {
         const q = /limit|quota|neuron|429/i.test(String(failure?.message ?? failure))
-        return json({ error: q ? 'ai_quota' : 'ai_failed', detail: String(failure?.message ?? failure).slice(0, 300) }, q ? 429 : 502)
+        logError(`modelo ${model}`, failure?.message ?? failure)
+        return json({ error: q ? 'ai_quota' : 'ai_failed' }, q ? 429 : 502)
       }
     }
     const answer = responseText(out)
@@ -235,7 +258,10 @@ export async function onRequestPost({ request, env }) {
       p_company: body.company_id,
       p_proposal: { partner_name: proposal.partner_name, valuation_rule: proposal.valuation_rule || undefined, lines: proposal.lines },
     })
-    if (!v.ok) return json({ error: 'validation_failed', detail: v.body?.message ?? '' }, 502)
+    if (!v.ok) {
+      logError('validate_proposed_entry', v.body?.message)
+      return json({ error: 'validation_failed' }, 502)
+    }
     validation = v.body
     const problems = validation.checks.filter((c) => c.level === 'error' || REPAIRABLE.includes(c.code))
     if (problems.length === 0) break

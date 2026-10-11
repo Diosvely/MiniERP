@@ -524,6 +524,7 @@ export default {
     db_not_updated: 'Falta ejecutar una migración en Supabase (SQL Editor)',
     ai_user_limit: 'Has llegado a tu límite diario de consultas de IA. Mañana tendrás más.',
     bad_request: 'Petición incorrecta.',
+    too_large: 'La petición es demasiado grande.',
   },
 
   // ---- Tutor de asientos (paso 126) ----
@@ -777,6 +778,7 @@ export default {
     taxNeedsAccounts: { title: 'El impuesto {1} necesita su cuenta de soportado (472) y de repercutido (477)', hint: 'Vuelve a pasar el asistente de impuestos.' },
     lineTaxNotApplicable: { title: 'Línea {1}: ese tipo de impuesto no encaja con esta factura', hint: 'Revisa el tipo (ISP, intracomunitaria, exportación, recargo) y el país del tercero. La regla exacta está en el detalle técnico.' },
     importRowsErrors: { title: 'Importación cancelada: {1} filas con errores', hint: 'No se ha guardado nada. Corrige el fichero y vuelve a intentarlo.' },
+    captcha: { title: 'No se ha podido comprobar que no eres un robot', hint: 'Espera a que aparezca la marca ✓ del recuadro y vuelve a intentarlo. Si no aparece, recarga la página.' },
     network: { title: 'No hay conexión con el servidor', hint: 'Revisa tu conexión a internet y vuelve a intentarlo.' },
   },
 
@@ -831,6 +833,10 @@ export default {
   fieldIndustry: 'Sector',
   fieldTerritory: 'Territorio fiscal',
   vatNoExample: 'Ej.: B12345674',
+
+// v0.28.0 · CAPTCHA (Cloudflare Turnstile)
+  captchaWaiting: 'Comprobando que no eres un robot…',
+ 
 
   industry: {
     services: 'Servicios',

@@ -525,6 +525,7 @@ export default {
     db_not_updated: 'A migration has not been run in Supabase yet (SQL Editor)',
     ai_user_limit: 'You have reached your daily AI limit. You will have more tomorrow.',
     bad_request: 'Bad request.',
+    too_large: 'The request is too large.',
   },
 
 // ---- Entry tutor (step 126) ----
@@ -778,6 +779,7 @@ export default {
     taxNeedsAccounts: { title: 'Tax {1} needs an input (472) and an output (477) account', hint: 'Run the tax assistant again.' },
     lineTaxNotApplicable: { title: 'Line {1}: that tax rate does not fit this invoice', hint: 'Check the rate (reverse charge, intra-EU, export, surcharge) and the partner’s country. The exact rule is in the technical detail.' },
     importRowsErrors: { title: 'Import cancelled: {1} rows with errors', hint: 'Nothing was saved. Fix the file and try again.' },
+    captcha: { title: 'We could not check that you are not a robot', hint: 'Wait for the ✓ in the box and try again. If it does not appear, reload the page.' },
     network: { title: 'No connection to the server', hint: 'Check your internet connection and try again.' },
   },
 
@@ -832,6 +834,9 @@ export default {
   fieldIndustry: 'Industry',
   fieldTerritory: 'Tax territory',
   vatNoExample: 'e.g. B12345674',
+
+ // v0.28.0 · CAPTCHA (Cloudflare Turnstile)
+  captchaWaiting: 'Checking that you are not a robot…',
 
   industry: {
     services: 'Services',

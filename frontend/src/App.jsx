@@ -14,13 +14,10 @@ export default function App() {
   const [session, setSession] = useState(null)
 
   useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session)
-      // Enlace para compartir: https://…/?demo → entra como invitado sin registrarse
-      if (!data.session && new URLSearchParams(window.location.search).has('demo')) {
-        supabase.auth.signInAnonymously()
-      }
-    })
+    // Enlace para compartir: https://…/?demo abre la entrada con el botón de la demo destacado.
+    // Ya NO se crea el invitado solo al cargar la página: hace falta pulsar el botón (y el CAPTCHA),
+    // para que un robot que visite el enlace no llene la base de datos de usuarios anónimos.
+    supabase.auth.getSession().then(({ data }) => setSession(data.session))
     const { data } = supabase.auth.onAuthStateChange((_event, s) => setSession(s))
     return () => data.subscription.unsubscribe()
   }, [])

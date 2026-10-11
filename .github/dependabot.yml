@@ -1,0 +1,20 @@
+# Dependabot: propone actualizaciones de dependencias con un Pull Request que pasa por la misma CI.
+# Solo se fusionan en verde. Las actualizaciones menores (minor / patch) llegan juntas en un único PR a la semana.
+version: 2
+updates:
+  - package-ecosystem: npm
+    directory: /frontend
+    schedule:
+      interval: weekly
+      day: monday
+    open-pull-requests-limit: 5
+    groups:
+      dependencias-menores:
+        update-types: [minor, patch]
+    ignore:
+      # xlsx se instala desde el CDN oficial de SheetJS, no desde npm: Dependabot no puede actualizarlo
+      - dependency-name: xlsx
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

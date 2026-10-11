@@ -48,7 +48,7 @@ española y el funcionamiento real de un ERP. Los ERP comerciales son caros y di
 propia, así que decidí **construir uno**. Diseñar la tabla de asientos obliga a entender *por qué* un ERP impone
 cada regla. Además, todo el código está en inglés para practicar el vocabulario técnico de BC y SAP.
 
-## ¿Qué hace hoy? (v0.29.0)
+## ¿Qué hace hoy? (v0.29.1)
 
 **Primeros pasos y navegación**
 - **Pantalla de Inicio** en cada empresa:
@@ -154,6 +154,9 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
   solos** cada noche (`pg_cron`).
 - Las funciones de IA validan cada petición (UUID y tamaño) y nunca devuelven errores internos al navegador.
 - La web solo usa la clave **publicable** de Supabase; quién puede ver o hacer cada cosa lo decide PostgreSQL (RLS).
+- Solo el propietario nombra **titulares de los datos** (trigger en la base de datos, v0.29.1).
+- **Dependabot** vigila las dependencias, y los fallos de seguridad se avisan en privado ([SECURITY.md](SECURITY.md)).
+  La lista de ajustes del panel de Supabase está en [`docs/seguridad-supabase.md`](docs/seguridad-supabase.md).
 
 ## Arquitectura
 
@@ -164,7 +167,7 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
 | Web | **React + Vite** | Componentes por pantalla, i18n propio (es/en), rutas con almohadilla, iconos `lucide-react` |
 | IA | **Cloudflare Workers AI** + Pages Functions | `/api/ai` (Mistral Small 3.1) y `/api/tutor` (gpt-oss-120b); la clave nunca llega al navegador |
 | Despliegue | **Cloudflare Pages** | Despliegue automático desde `main`, dirección de prueba por rama y cabeceras de seguridad (`_headers`) |
-| Calidad | **GitHub Actions** + **Vitest** | 23 pruebas SQL, 62 tests de la web, lint, build y auditoría de dependencias en cada Pull Request |
+| Calidad | **GitHub Actions** + **Vitest** + Dependabot | 24 pruebas SQL, 62 tests de la web, lint, build y auditoría de dependencias en cada Pull Request |
 | Versionado | Git + GitHub | Ramas, Pull Requests, `main` protegida, versiones etiquetadas y decisiones documentadas (ADR) |
 
 **Principio clave:** la web nunca es la única barrera. Aunque alguien manipule el navegador, PostgreSQL rechaza:
@@ -207,12 +210,15 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 
 ```
 ├── .github/workflows/ci.yml   integración continua: pruebas SQL, lint, build y auditoría
+├── .github/dependabot.yml     actualizaciones de dependencias (npm y GitHub Actions)
+├── LICENSE                    licencia MIT
+├── SECURITY.md                cómo avisar de un fallo de seguridad
 ├── scripts/test-db.sh         ejecuta todas las pruebas SQL, cada una en una base limpia
 ├── database/
-│   ├── migrations/            0001 → 0029, se ejecutan en orden en Supabase
+│   ├── migrations/            0001 → 0030, se ejecutan en orden en Supabase
 │   ├── reset/                 reset del schema antiguo (solo histórico)
 │   ├── seed/                  datos de ejemplo (opcional)
-│   └── tests/                 pruebas automáticas en SQL (fases 1 → 23) y simulador de Supabase
+│   └── tests/                 pruebas automáticas en SQL (fases 1 → 24) y simulador de Supabase
 ├── frontend/                  web React + Vite
 │   ├── .env.example           variables de entorno (sin valores reales)
 │   ├── public/_headers        cabeceras de seguridad (CSP…) que aplica Cloudflare Pages
@@ -238,14 +244,15 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
     ├── guia-git.md            guía de Git (plantilla)
     ├── modelo-datos.md        tablas, funciones, vistas
     ├── glosario.md            vocabulario contable bilingüe
+    ├── seguridad-supabase.md  lista de ajustes de seguridad del panel de Supabase
     ├── capturas/              capturas de la app para el README
-    └── decisiones/            ADR 0001 → 0026
+    └── decisiones/            ADR 0001 → 0027
 ```
 
 ## Calidad
 
 - **Integración continua** (GitHub Actions) en cada Pull Request:
-  - las 23 pruebas de la base de datos sobre PostgreSQL 16, cada una en una base limpia con todas las migraciones
+  - las 24 pruebas de la base de datos sobre PostgreSQL 16, cada una en una base limpia con todas las migraciones
     (la fase 23 vigila también que toda clave foránea tenga índice);
   - **62 tests de la web con Vitest**: formatos, rutas, importadores, errores, idiomas (español e inglés con las
     mismas claves), glosario, plantillas, la defensa de las funciones de IA, la lectura por páginas, el borrado por
@@ -259,7 +266,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 
 1. **Base de datos.** En un proyecto de Supabase:
    - activa **`pg_cron`** en *Database → Extensions* (para la limpieza de invitados);
-   - en el *SQL Editor*, ejecuta en orden `database/migrations/0001` … `0029`.
+   - en el *SQL Editor*, ejecuta en orden `database/migrations/0001` … `0030`.
 2. **API.** En *Project Settings → Data API → Exposed schemas*, añade `erp`.
 3. **Invitados** (opcional, **después** de la migración 0015): *Authentication → Sign In / Providers* → activa
    **Allow anonymous sign-ins**.
@@ -308,8 +315,8 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 Con PostgreSQL instalado (Linux, WSL o Git Bash):
 
 ```bash
-bash scripts/test-db.sh            # las 23 pruebas, cada una en una base limpia
-bash scripts/test-db.sh fase23     # solo las que contienen "fase23"
+bash scripts/test-db.sh            # las 24 pruebas, cada una en una base limpia
+bash scripts/test-db.sh fase24     # solo las que contienen "fase24"
 ```
 
 ### Tests de la web
@@ -354,6 +361,7 @@ cuadrados. El ERP también lee directamente los diarios de Sage (Excel) y Busine
 - [x] **v0.27.0**: glosario en la app, accesibilidad, colores e iconos, capturas en el README
 - [x] **v0.28.0**: seguridad (cabeceras, IA endurecida, CAPTCHA, limpieza de invitados y tests de la web)
 - [x] **v0.29.0**: libro mayor rápido con datos reales, borrar empresa, fecha de trabajo y rastro contable
+- [x] **v0.29.1**: seguridad (solo el propietario nombra titulares de los datos), licencia MIT, SECURITY.md y Dependabot
 - [ ] Inmovilizado: fichas de activos, plan de amortización y asiento mensual a contabilidad
 - [ ] Inventario y nóminas
 - [ ] IA: supuestos prácticos autocorregidos
@@ -367,3 +375,5 @@ asesoramiento fiscal. Las respuestas de la IA son orientativas y siempre se revi
 
 **Diosvely Perez Arteaga** · Controller financiero en transición hacia Data & ERP · Canarias, España.
 Proyecto personal de aprendizaje: sugerencias y comentarios bienvenidos en *Issues*.
+
+Publicado con licencia **MIT** ([LICENSE](LICENSE)): puedes usarlo, modificarlo y compartirlo citando la autoría.

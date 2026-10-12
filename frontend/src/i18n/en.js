@@ -73,6 +73,38 @@ export default {
   demoHelp: 'Sample companies to explore: general journal, accounts and reports. Read only.',
   demoBadge: 'DEMO',
   readOnly: 'Read only · demo company',
+  // v0.30.0 · Export and print
+  exportExcel: 'Excel', print: 'Print', fsLine: 'Line', accountName: 'Account name',
+  // v0.30.0 · Cash flow waterfall and ratio trends
+  cfw: {
+    title: 'Where the year\'s cash came from and where it went',
+    start: 'Opening cash', A: 'Operating', B: 'Investing', C: 'Financing', end: 'Closing cash',
+    startShort: 'Opening', AShort: 'Operat.', BShort: 'Invest.', CShort: 'Financ.', endShort: 'Closing',
+    summary: 'Cash flow waterfall: from {a} opening cash to {b} closing cash',
+  },
+  ratioTrend: {
+    summary: 'Trend of {r}: {a} → {b}',
+    band: 'The green band is the ratio\'s reference zone.',
+  },
+  // v0.30.0 · Comparative statements
+  fsAt: 'at {d}', fsClosing: 'year end', fsChange: 'Change',
+  fsCompareBalance: 'Compared with the previous year-end balance sheet. Change: amount and % versus that year.',
+  fsComparePyg: 'Compared with the same period of the previous year. Change: amount and % versus that year.',
+  // v0.30.0 · Home indicators
+  homePathDone: 'Path completed · see the steps',
+  kpi: {
+    listLabel: 'Indicators at {d}',
+    cash: 'Cash', cashSince: 'this fiscal year', cashLink: 'Balance sheet',
+    result: 'Result for {y}', profit: 'Profit', loss: 'Loss', resultLink: 'Income statement',
+    tax: '{tax} for Q{q}', taxPay: 'To pay', taxRefund: 'To carry forward or refund',
+    taxDetail: 'output {o} − input {i}', taxLink: 'Settle {tax} ({form})',
+    receivable: 'Receivables', receivableDetail: '{n} customers with a balance', receivableLink: 'Customers',
+    payable: 'Payables', payableDetail: '{n} vendors and creditors with a balance', payableLink: 'Vendors',
+    chartTitle: 'Month-end cash · {y}', chartTable: 'Show as table', chartShow: 'Show the chart',
+    chartHelp: 'Cash and bank balance (group 57) on the last day of each month. Hover over the chart to see each amount.',
+    chartSummary: 'Month-end cash: {a} at the start, {b} at the end; highest {m}',
+    month: 'Month', thousand: 'k',
+  },
   // v0.29.0 · Delete the company
   deleteCompanyMenu: 'Delete company',
   deleteCompanyTitle: 'Delete the company',

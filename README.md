@@ -24,20 +24,22 @@ Proyecto de aprendizaje en evolución.
 > - a guided home screen, a Basic / Auditor menu, plain-language error messages, journal-entry templates and an
 >   in-app glossary with Business Central / SAP equivalents. Accessible: no axe-core issues (WCAG 2 A/AA);
 > - an audit trail (ledger → journal entry → ledger of each account), a per-company work date, and fast reports
->   on real multi-year journals (tens of thousands of lines).
+>   on real multi-year journals (tens of thousands of lines);
+> - a home dashboard (cash, result, VAT, receivables, payables and month-end cash chart), comparative statements with
+>   horizontal analysis, a cash-flow waterfall, ratio trends, and Excel export / print for every report.
 >
 > Data model inspired by Business Central and SAP FI. Database in English, bilingual UI (Spanish / English),
 > multi-company and multi-user, with guest access to demo companies (CAPTCHA-protected). Accounting rules are enforced
 > by PostgreSQL, security headers and a strict CSP protect the web, and every pull request is checked by CI
 > (SQL tests, web unit tests, lint, build and dependency audit). Learning project, work in progress.
 
-| Inicio guiado | Asiento con plantilla |
+| Inicio con indicadores | Asiento con plantilla |
 |---|---|
-| ![Inicio con la ruta guiada](docs/capturas/02-inicio.png) | ![Asiento con plantilla y cuadre](docs/capturas/03-asiento-plantilla.png) |
+| ![Inicio con indicadores y tesorería mes a mes](docs/capturas/02-inicio.png) | ![Asiento con plantilla y cuadre](docs/capturas/03-asiento-plantilla.png) |
 | **Balance (modo oscuro) con el glosario** | **Modo auditor de una empresa importada** |
 | ![Balance con el globo del glosario](docs/capturas/04-balance-oscuro.png) | ![Recorrido del auditor](docs/capturas/05-modo-auditor.png) |
 
-Más capturas: [pantalla de entrada](docs/capturas/01-entrada.png) · [errores en lenguaje claro](docs/capturas/06-errores-claros.png) · [Inicio en el móvil](docs/capturas/07-inicio-movil.png)
+Más capturas: [pantalla de entrada](docs/capturas/01-entrada.png) · [errores en lenguaje claro](docs/capturas/06-errores-claros.png) · [Inicio en el móvil](docs/capturas/07-inicio-movil.png) · [cascada del EFE](docs/capturas/08-efe-cascada.png) · [Balance comparativo](docs/capturas/09-balance-comparativo.png) · [libro mayor en el móvil](docs/capturas/10-mayor-movil.png)
 
 ---
 
@@ -48,13 +50,17 @@ española y el funcionamiento real de un ERP. Los ERP comerciales son caros y di
 propia, así que decidí **construir uno**. Diseñar la tabla de asientos obliga a entender *por qué* un ERP impone
 cada regla. Además, todo el código está en inglés para practicar el vocabulario técnico de BC y SAP.
 
-## ¿Qué hace hoy? (v0.29.1)
+## ¿Qué hace hoy? (v0.30.0)
 
 **Primeros pasos y navegación**
 - **Pantalla de Inicio** en cada empresa:
   - **ruta guiada** "Tu primer trimestre, paso a paso" (impuestos → tercero → factura → diario → liquidación →
     balance). Los pasos se marcan solos al hacerlos.
   - en las empresas importadas y las demos, un **recorrido de auditor** por las cuentas.
+  - **indicadores** a la fecha de trabajo: tesorería, resultado (frente al año anterior), IVA/IGIC del trimestre,
+    pendiente de cobro y de pago, y la **tesorería a fin de mes** en un gráfico. Cada cifra lleva a su informe. Salen
+    arriba en las empresas importadas y demos; en una empresa propia, cuando ya tiene lo básico (y la ruta se pliega
+    al completarla).
 - **Modo Básico / Auditor:** un menú corto en lenguaje sencillo para quien empieza (8 entradas) o el menú completo
   por áreas para revisar.
 - **Cada pantalla tiene su enlace** (`#/empresa/<id>/balance`): se puede recargar, volver atrás y compartir.
@@ -103,15 +109,20 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
 
 **Estados financieros e informes (mirada de auditor)**
 - **Balance de situación** y **cuenta de pérdidas y ganancias** (modelo PYMES del PGC), con desglose hasta la
-  subcuenta.
+  subcuenta y **análisis horizontal**: año anterior, variación en importe y en %. A mitad de ejercicio, la PyG se
+  compara con el mismo periodo y el Balance con el cierre anterior (NIC 34).
 - **Estado de flujos de efectivo** por el método **directo** y el **indirecto**, con el cuadre del auditor entre
-  los dos.
+  los dos, y una **cascada** que enseña de dónde viene y a dónde va el dinero del año.
 - **Ratios:**
   - liquidez, solvencia, endeudamiento y rentabilidad;
   - periodos medios de cobro y de pago;
-  - zonas de referencia y explicación de cada uno.
+  - zonas de referencia y explicación de cada uno;
+  - **evolución de cada ratio** en todos los ejercicios, con su zona de referencia sombreada.
 - **Libro diario**, **sumas y saldos**, **libro mayor** y **saldos anómalos** (saldo contrario a su naturaleza y
   reclasificación al cierre).
+- **Exportar a Excel** (importes como números y fechas como fechas, listos para una tabla dinámica o Power BI) e
+  **imprimir / guardar en PDF** el Balance, la PyG, el EFE, sumas y saldos, el mayor y el diario.
+- En el móvil, el mayor y sumas y saldos se ven como **tarjetas**, y las fechas van en formato dd/mm/aaaa.
 - **Rastro contable:** el nº de asiento del mayor abre la **ficha del asiento**, y cada cuenta de la ficha (y del
   diario) abre su libro mayor; una anulación lleva a su pareja. Como el FBL3N → FB03 de SAP. "Volver" y el botón
   atrás deshacen el camino.
@@ -167,7 +178,7 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
 | Web | **React + Vite** | Componentes por pantalla, i18n propio (es/en), rutas con almohadilla, iconos `lucide-react` |
 | IA | **Cloudflare Workers AI** + Pages Functions | `/api/ai` (Mistral Small 3.1) y `/api/tutor` (gpt-oss-120b); la clave nunca llega al navegador |
 | Despliegue | **Cloudflare Pages** | Despliegue automático desde `main`, dirección de prueba por rama y cabeceras de seguridad (`_headers`) |
-| Calidad | **GitHub Actions** + **Vitest** + Dependabot | 24 pruebas SQL, 62 tests de la web, lint, build y auditoría de dependencias en cada Pull Request |
+| Calidad | **GitHub Actions** + **Vitest** + Dependabot | 26 pruebas SQL, 75 tests de la web, lint, build y auditoría de dependencias en cada Pull Request |
 | Versionado | Git + GitHub | Ramas, Pull Requests, `main` protegida, versiones etiquetadas y decisiones documentadas (ADR) |
 
 **Principio clave:** la web nunca es la única barrera. Aunque alguien manipule el navegador, PostgreSQL rechaza:
@@ -215,10 +226,10 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 ├── SECURITY.md                cómo avisar de un fallo de seguridad
 ├── scripts/test-db.sh         ejecuta todas las pruebas SQL, cada una en una base limpia
 ├── database/
-│   ├── migrations/            0001 → 0030, se ejecutan en orden en Supabase
+│   ├── migrations/            0001 → 0032, se ejecutan en orden en Supabase
 │   ├── reset/                 reset del schema antiguo (solo histórico)
 │   ├── seed/                  datos de ejemplo (opcional)
-│   └── tests/                 pruebas automáticas en SQL (fases 1 → 24) y simulador de Supabase
+│   └── tests/                 pruebas automáticas en SQL (fases 1 → 26) y simulador de Supabase
 ├── frontend/                  web React + Vite
 │   ├── .env.example           variables de entorno (sin valores reales)
 │   ├── public/_headers        cabeceras de seguridad (CSP…) que aplica Cloudflare Pages
@@ -231,6 +242,9 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 │       ├── workDate.js        fecha de trabajo de cada empresa
 │       ├── paging.js          lecturas de más de 1.000 filas, por páginas
 │       ├── deleteCompany.js   borrar una empresa por tandas
+│       ├── chart.js           marcas de los ejes y tramos de la cascada (gráficos en SVG, sin librerías)
+│       ├── compare.js         análisis horizontal: variación frente al año anterior
+│       ├── exportXlsx.js      exportar los informes a Excel
 │       ├── activity.js        aviso "Cargando…" global
 │       ├── errors.js          errores de la base de datos en lenguaje claro
 │       ├── templates.js       plantillas de asientos frecuentes
@@ -246,17 +260,17 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
     ├── glosario.md            vocabulario contable bilingüe
     ├── seguridad-supabase.md  lista de ajustes de seguridad del panel de Supabase
     ├── capturas/              capturas de la app para el README
-    └── decisiones/            ADR 0001 → 0027
+    └── decisiones/            ADR 0001 → 0028
 ```
 
 ## Calidad
 
 - **Integración continua** (GitHub Actions) en cada Pull Request:
-  - las 24 pruebas de la base de datos sobre PostgreSQL 16, cada una en una base limpia con todas las migraciones
+  - las 26 pruebas de la base de datos sobre PostgreSQL 16, cada una en una base limpia con todas las migraciones
     (la fase 23 vigila también que toda clave foránea tenga índice);
-  - **62 tests de la web con Vitest**: formatos, rutas, importadores, errores, idiomas (español e inglés con las
+  - **75 tests de la web con Vitest**: formatos, rutas, importadores, errores, idiomas (español e inglés con las
     mismas claves), glosario, plantillas, la defensa de las funciones de IA, la lectura por páginas, el borrado por
-    tandas y la fecha de trabajo;
+    tandas, la fecha de trabajo, los gráficos, el análisis horizontal y la exportación a Excel;
   - lint, build y auditoría de dependencias de la web.
 - **Accesibilidad** comprobada con axe-core (WCAG 2 A/AA) en las pantallas principales, en modo claro y oscuro.
 - **Rendimiento** probado en local con una contabilidad de 120.000 apuntes antes de cada entrega.
@@ -266,7 +280,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 
 1. **Base de datos.** En un proyecto de Supabase:
    - activa **`pg_cron`** en *Database → Extensions* (para la limpieza de invitados);
-   - en el *SQL Editor*, ejecuta en orden `database/migrations/0001` … `0030`.
+   - en el *SQL Editor*, ejecuta en orden `database/migrations/0001` … `0032`.
 2. **API.** En *Project Settings → Data API → Exposed schemas*, añade `erp`.
 3. **Invitados** (opcional, **después** de la migración 0015): *Authentication → Sign In / Providers* → activa
    **Allow anonymous sign-ins**.
@@ -315,15 +329,15 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 Con PostgreSQL instalado (Linux, WSL o Git Bash):
 
 ```bash
-bash scripts/test-db.sh            # las 24 pruebas, cada una en una base limpia
-bash scripts/test-db.sh fase24     # solo las que contienen "fase24"
+bash scripts/test-db.sh            # las 26 pruebas, cada una en una base limpia
+bash scripts/test-db.sh fase25     # solo las que contienen "fase25"
 ```
 
 ### Tests de la web
 
 ```bash
 cd frontend
-npm test                           # 62 tests con Vitest
+npm test                           # 75 tests con Vitest
 ```
 
 ### Importar una contabilidad propia
@@ -362,6 +376,7 @@ cuadrados. El ERP también lee directamente los diarios de Sage (Excel) y Busine
 - [x] **v0.28.0**: seguridad (cabeceras, IA endurecida, CAPTCHA, limpieza de invitados y tests de la web)
 - [x] **v0.29.0**: libro mayor rápido con datos reales, borrar empresa, fecha de trabajo y rastro contable
 - [x] **v0.29.1**: seguridad (solo el propietario nombra titulares de los datos), licencia MIT, SECURITY.md y Dependabot
+- [x] **v0.30.0**: Inicio con indicadores, Balance y PyG comparativos, cascada del EFE, evolución de ratios, Excel e imprimir
 - [ ] Inmovilizado: fichas de activos, plan de amortización y asiento mensual a contabilidad
 - [ ] Inventario y nóminas
 - [ ] IA: supuestos prácticos autocorregidos

@@ -7,6 +7,8 @@ import Link from './Link'
 import Empty from './Empty'
 import Loading from './Loading'
 import ErrorBox from './ErrorBox'
+import HomeKpis from './HomeKpis'
+import { workDate } from '../workDate'
 import { BookText, PenLine, Receipt, Scale, SearchCheck } from 'lucide-react'
 import { ICON } from '../icons'
 
@@ -14,6 +16,12 @@ import { ICON } from '../icons'
 //   · Empresa propia → RUTA GUIADA de 6 pasos para llevar un trimestre (cada paso se marca solo al hacerlo)
 //   · Empresa importada o de solo lectura (demo) → RECORRIDO DEL AUDITOR por los informes
 //   · Siempre: accesos rápidos (si puedes escribir) y los 5 últimos asientos contabilizados
+// INDICADORES (v0.30.0): 5 cifras a la fecha de trabajo y la tesorería mes a mes (erp.home_kpis). Dependen de quién entra:
+//   · Empresa importada o demo (auditor) → indicadores arriba, y debajo el recorrido del auditor.
+//   · Empresa propia que empieza → primero la ruta guiada; sin indicadores hasta tener lo básico (impuestos, tercero,
+//     factura y asiento: los 4 primeros pasos), porque saldrían a cero y no dicen nada.
+//   · Con lo básico hecho → los indicadores aparecen debajo de la ruta; con la ruta completa, suben arriba y la ruta
+//     se queda plegada ("✓ Ruta completada · ver los pasos").
 // Las comprobaciones son consultas ligeras a las vistas que ya existen (select id … limit 1): no hay funciones nuevas.
 
 // [id del paso, pantalla a la que lleva, consulta que dice si está hecho]
@@ -38,6 +46,7 @@ export default function Home({ company, readOnly, mode, onAuditor }) {
   const [error, setError] = useState('')
   const to = (section) => companyPath(company.id, section)
   const tax = company.tax_territory === 'canary_islands' ? 'IGIC' : 'IVA'
+  const wd = workDate(company)   // fecha de trabajo: los indicadores se calculan a esta fecha
 
   useEffect(() => {
     let alive = true
@@ -49,7 +58,9 @@ export default function Home({ company, readOnly, mode, onAuditor }) {
       supabase.from('journal_entries').select('id, entry_no, posting_date, description')
         .eq('company_id', id).eq('status', 'posted')
         .order('posting_date', { ascending: false }).order('entry_no', { ascending: false }).limit(5),
-    ]).then(async ([checks, imp, years, entries]) => {
+      // Indicadores: si fallan (p. ej. falta la migración 0031), el Inicio se ve igual, solo que sin ellos
+      supabase.rpc('home_kpis', { p_company: id, p_date: wd }),
+    ]).then(async ([checks, imp, years, entries, kpis]) => {
       const failed = [...checks, imp, years, entries].find((r) => r.error)
       if (failed) throw failed.error
       // Importe de cada asiento = suma del Debe de sus líneas (una sola consulta para los 5)
@@ -66,10 +77,11 @@ export default function Home({ company, readOnly, mode, onAuditor }) {
         imported: imp.data?.[0] ?? null,
         year: (years.data ?? []).find((y) => y.status === 'open')?.year ?? years.data?.[0]?.year ?? null,
         latest: (entries.data ?? []).map((e) => ({ ...e, amount: total(e.id) })),
+        kpis: kpis.error ? null : kpis.data,
       })
     }).catch((e) => alive && setError(e.message ?? String(e)))
     return () => { alive = false }
-  }, [company.id])
+  }, [company.id, wd])
 
   if (error) return <ErrorBox error={error} company={company} />
   if (!info) return <Loading />
@@ -77,11 +89,16 @@ export default function Home({ company, readOnly, mode, onAuditor }) {
   const tour = readOnly || Boolean(info.imported)
   const next = STEPS.findIndex(([key]) => !info.done[key])
   const doneCount = STEPS.filter(([key]) => info.done[key]).length
+  const pathComplete = doneCount === STEPS.length
+  const basics = ['taxes', 'partners', 'invoice', 'journal'].every((k) => info.done[k])
+  const showKpis = Boolean(info.kpis) && Number(info.kpis.entries) > 0 && (tour || basics)
+  const kpisFirst = showKpis && (tour || pathComplete)
+  const kpiBlock = showKpis && <HomeKpis company={company} kpis={info.kpis} />
   const date = (d) => new Date(`${d}T00:00:00`).toLocaleDateString(language === 'en' ? 'en-GB' : 'es-ES')
 
   return (
     <div className="inicio">
-      <div className="inicio-principal">
+      <div className="inicio-cabecera">
         <section className="tarjeta saludo">
           <h2>{t('homeHello').replace('{c}', company.name)}</h2>
           <p className="ayuda">
@@ -91,7 +108,10 @@ export default function Home({ company, readOnly, mode, onAuditor }) {
             {info.imported && <> · 📥 {t('homeImportedFrom').replace('{s}', t(`importSource.${info.imported.source}`))}</>}
           </p>
         </section>
+        {kpisFirst && kpiBlock}
+      </div>
 
+      <div className="inicio-principal">
         {tour ? (
           <section className="tarjeta ruta-guiada">
             <h2><SearchCheck {...ICON} /> {t(info.imported ? 'homeTourImported' : 'homeTourDemo')}</h2>
@@ -115,6 +135,20 @@ export default function Home({ company, readOnly, mode, onAuditor }) {
               ))}
             </ol>
           </section>
+        ) : pathComplete ? (
+          // Ruta terminada: se queda plegada debajo de los indicadores, por si se quiere repasar
+          <details className="tarjeta ruta-plegada">
+            <summary>✓ {t('homePathDone')}</summary>
+            <ol className="pasos">
+              {STEPS.map(([key, section]) => (
+                <li key={key} className="paso hecho">
+                  <span className="paso-numero" aria-hidden="true">✓</span>
+                  <div className="paso-texto"><strong>{t(`homeStep.${key}.title`).replace('{tax}', tax)}</strong></div>
+                  <Link to={to(section)} className="boton secundario">{t('homeOpen')}</Link>
+                </li>
+              ))}
+            </ol>
+          </details>
         ) : (
           <section className="tarjeta ruta-guiada">
             <div className="ruta-cabecera">
@@ -145,6 +179,8 @@ export default function Home({ company, readOnly, mode, onAuditor }) {
             </ol>
           </section>
         )}
+
+        {showKpis && !kpisFirst && kpiBlock}
       </div>
 
       <div className="inicio-lateral">

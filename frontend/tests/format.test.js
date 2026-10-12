@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { money, accountName, taxLabel } from '../src/format.js'
+import { money, accountName, taxLabel, shortDate } from '../src/format.js'
 import { tEs, tEn } from './helpers.js'
 
 describe('money · importes con formato de cada idioma', () => {
@@ -38,5 +38,13 @@ describe('taxLabel · nombre corto de un tipo de impuesto', () => {
     const l = taxLabel({ tax_type: 'VAT', rate_pct: 0, rate_category: 'export', exemption_key: 'E2' }, tEn, 'en')
     expect(l).toContain('(E2)')
     expect(l).not.toMatch(/0 %/)
+  })
+})
+
+describe('shortDate · fecha corta sin desfase de zona horaria', () => {
+  it('2024-01-02 → 02/01/2024; vacío → ""', () => {
+    expect(shortDate('2024-01-02')).toBe('02/01/2024')
+    expect(shortDate('2024-12-31T23:30:00')).toBe('31/12/2024')
+    expect(shortDate(null)).toBe('')
   })
 })

@@ -5,6 +5,9 @@ import { workYear } from '../workDate'
 import { money } from '../format'
 import AiAnalyst from './AiAnalyst'
 import ErrorBox from './ErrorBox'
+import ReportActions from './ReportActions'
+import { downloadXlsx, fileName } from '../exportXlsx'
+import CashWaterfall from './CashWaterfall'
 
 // Estado de flujos de efectivo por los dos métodos (como el "Cash Flow Statement" de BC / SAP)
 //   indirecto: el modelo normal del PGC (parte del resultado) · directo: cobros y pagos por su contrapartida (NIC 7)
@@ -61,13 +64,24 @@ export default function CashFlow({ company }) {
   }
 
   const visible = rows.filter((r) => !hideZero || r.is_total || Number(r.amount) !== 0 || Number(r.amount_prev) !== 0)
+  const methodName = t(`cashFlowMethod.${method}`)
+  const exportExcel = () => downloadXlsx({
+    title: `${t('cashFlowTitle')} · ${company.name ?? ''}`, subtitle: `${t('year')} ${year} · ${methodName}`, sheet: t('cashFlowTitle'),
+    file: fileName(t('cashFlowTitle'), methodName, company.name, year),
+    columns: [{ header: t('fsLine'), key: 'label', type: 'text', width: 70 },
+      { header: String(year), key: 'amount', type: 'money' }, { header: String(Number(year) - 1), key: 'prev', type: 'money' }],
+    rows: visible.map((r) => ({ label: `${'   '.repeat(r.level)}${label(r)}`, amount: r.amount, prev: r.amount_prev })),
+  })
   const activities = ['A', 'B', 'C']
   const same = (a, b) => Math.abs(Number(a) - Number(b)) < 0.005
 
   return (
     <>
       <section className="tarjeta">
-        <h2>{t('cashFlowTitle')}</h2>
+        <div className="titulo-informe">
+          <h2>{t('cashFlowTitle')}</h2>
+          {rows.length > 0 && <ReportActions onExcel={exportExcel} info={`${company.name} · ${t('year')} ${year} · ${methodName}`} />}
+        </div>
         <p className="ayuda">{method === 'indirect' ? t('cashFlowIndirectHelp') : t('cashFlowDirectHelp')}</p>
 
         <div className="pestanas">
@@ -97,6 +111,12 @@ export default function CashFlow({ company }) {
             <span>= {t('cashClosing')}: {m(check.cash_closing)}</span>
             <strong>{check.balanced ? `✓ ${t('cashFlowBalanced')}` : `⚠ ${t('cashFlowUnbalanced')}`}</strong>
           </div>
+        )}
+        {check && (
+          <figure className="figura-cascada">
+            <figcaption>{t('cfw.title')}</figcaption>
+            <CashWaterfall check={check} method={method} />
+          </figure>
         )}
 
         <div className="tabla-ancha">

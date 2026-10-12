@@ -346,7 +346,7 @@ a.enlace:hover { text-decoration: underline; }
 .paso.hecho .paso-texto strong { color: var(--suave); }
 .paso.siguiente { border: 2px solid var(--primario); background: color-mix(in srgb, var(--primario) 7%, var(--tarjeta)); }
 .paso.siguiente .paso-numero { background: var(--primario); color: var(--sobre-color); }
-.paso.pendiente { opacity: .9; }
+/* v0.30.0: .paso.pendiente ya no lleva opacidad: bajaba el contraste de sus enlaces por debajo de 4,5:1 */
 @container (max-width: 520px) {
   .paso { flex-wrap: wrap; }
   .paso a.boton { margin-left: 42px; }
@@ -513,3 +513,116 @@ td a.enlace { color: inherit; }
 td a.enlace .codigo, a.num-asiento { color: var(--primario); }
 td a.enlace:hover .codigo, td a.enlace:focus-visible .codigo, a.num-asiento:hover { text-decoration: underline; }
 a.num-asiento { font-variant-numeric: tabular-nums; }
+
+/* --- v0.30.0: indicadores del Inicio y gráfico de tesorería --- */
+.inicio-cabecera { grid-column: 1 / -1; }
+/* Las tarjetas de indicadores se reparten según el ancho de SU columna (arriba a todo el ancho o debajo de la ruta) */
+.inicio-cabecera, .inicio-principal { container-type: inline-size; }
+.kpis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 0 0 16px; }
+.kpis > li { display: block; padding: 0; border: 0; }
+.kpis > li:first-child { grid-column: 1 / -1; }
+@container (min-width: 760px) {
+  .kpis { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+  .kpis > li, .kpis > li:first-child { grid-column: span 2; }
+  .kpis > li:nth-child(n+4) { grid-column: span 3; }
+}
+.kpi { height: 100%; background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 12px; padding: 14px 16px;
+       display: flex; flex-direction: column; gap: 4px; text-decoration: none; color: inherit; }
+.kpi:hover, .kpi:focus-visible { border-color: var(--primario); }
+.kpi-titulo { display: flex; align-items: center; gap: 6px; color: var(--suave); font-size: .85rem; }
+.kpi-titulo .icono-svg { color: var(--primario); }
+.kpi-valor { color: var(--texto); white-space: nowrap; font-size: 1.45rem; font-weight: 650; font-variant-numeric: tabular-nums; letter-spacing: -.01em; }
+.kpi-detalle { color: var(--suave); font-size: .82rem; }
+.kpi-detalle span { font-size: inherit; }   /* el "li span" general no se aplica dentro de las tarjetas */
+.kpi-detalle .sube { color: var(--exito); }
+.kpi-detalle .baja { color: var(--aviso); }
+.kpi-pie { color: var(--primario); font-size: .82rem; margin-top: auto; padding-top: 2px; }
+.grafico-cabecera { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.grafico-cabecera h2 { margin: 0; }
+.grafico { position: relative; width: 100%; }
+.grafico svg { display: block; max-width: 100%; height: auto; overflow: visible; }
+.grafico .rejilla line { stroke: var(--borde); stroke-width: 1; }
+.grafico .eje text { fill: var(--suave); font-size: 11px; font-variant-numeric: tabular-nums; }
+.grafico .linea { fill: none; stroke: var(--primario); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.grafico .area { fill: var(--primario); opacity: .10; }
+.grafico .punto { fill: var(--primario); stroke: var(--tarjeta); stroke-width: 2; }
+.grafico .cruz { stroke: var(--suave); stroke-dasharray: 3 3; }
+.grafico .valor-final { fill: var(--texto); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.grafico .tooltip { position: absolute; pointer-events: none; background: var(--tarjeta); border: 1px solid var(--borde);
+                    border-radius: 8px; padding: 6px 10px; font-size: .85rem; box-shadow: 0 4px 14px rgba(0,0,0,.12); white-space: nowrap; }
+.grafico .tooltip strong { font-variant-numeric: tabular-nums; }
+.grafico-tesoreria .ayuda { margin: 0; }
+.ruta-plegada summary { cursor: pointer; font-weight: 600; color: var(--exito); }
+.ruta-plegada[open] summary { margin-bottom: 8px; }
+
+/* --- v0.30.0: Balance y PyG comparativos (análisis horizontal) --- */
+.estado th small { display: block; font-weight: 400; color: var(--suave); font-size: .75rem; }
+.estado td.variacion { color: var(--suave); font-variant-numeric: tabular-nums; }
+.estado td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* --- v0.30.0: cascada del EFE y evolución de los ratios --- */
+.figura-cascada { margin: 4px 0 8px; }
+.figura-cascada figcaption { font-weight: 600; margin-bottom: 4px; }
+.cascada { width: 100%; }
+.cascada svg { display: block; max-width: 100%; height: auto; overflow: visible; }
+.cascada .cero { stroke: var(--suave); stroke-width: 1; }
+.cascada .conector { stroke: var(--suave); stroke-dasharray: 3 3; }
+.cascada .tramo.total rect { fill: var(--primario); }
+.cascada .tramo.up rect { fill: var(--exito); }
+.cascada .tramo.down rect { fill: var(--aviso); }
+.cascada .valor { fill: var(--texto); font-size: 12px; font-weight: 600; font-variant-numeric: tabular-nums; }
+.cascada .etiqueta { fill: var(--suave); font-size: 11px; }
+.tendencia-ratio svg { display: block; width: 100%; max-width: 420px; height: auto; overflow: visible; }
+.tendencia-ratio .zona { fill: var(--exito); opacity: .12; }
+.tendencia-ratio .linea { fill: none; stroke: var(--primario); stroke-width: 2; stroke-linejoin: round; }
+.tendencia-ratio .punto { fill: var(--primario); stroke: var(--tarjeta); stroke-width: 1.5; }
+.tendencia-ratio .anio { fill: var(--suave); font-size: 10px; }
+.tendencia-ratio .valor { fill: var(--texto); font-size: 10px; font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* --- v0.30.0: exportar a Excel e imprimir --- */
+.titulo-informe { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; }
+.titulo-informe h2 { margin: 0; }
+.acciones-informe { display: flex; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
+.acciones-informe button { display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; font-size: .9rem; }
+.solo-impresion { display: none; }
+@media print {
+  /* La hoja impresa: solo el informe, en blanco y negro, sin menús ni botones (también desde el modo oscuro) */
+  :root { --fondo: #fff; --tarjeta: #fff; --texto: #000; --suave: #333; --borde: #bbb; --primario: #000; }
+  body, main { background: #fff !important; color: #000; }
+  main, main:has(.empresa-layout) { max-width: none; padding: 0; }
+  .cabecera, .empresa-cabecera, .menu-empresa, .boton-menu, .ruta, .acciones-informe, .rejilla-tres, .pestanas,
+  .leyenda-ratios, button:not(.ratio-fila), .busy, .aviso-modo, .ia-analista, .desplegar { display: none !important; }
+  .empresa-layout { display: block; }
+  .tarjeta { border: 0; padding: 0; margin: 0 0 12px; box-shadow: none; }
+  .solo-impresion { display: block; margin: 0 0 8px; font-size: .85rem; color: #333; }
+  .tabla-ancha, .tabla-scroll { overflow: visible !important; }
+  table { font-size: 9pt; }
+  tr, .asiento { break-inside: avoid; }
+  thead { display: table-header-group; }   /* la cabecera de la tabla se repite en cada página */
+  a { color: #000; text-decoration: none; }
+  svg .area { opacity: .15; }
+}
+
+/* --- v0.30.0: pulido · números alineados, filtros y tablas en el móvil --- */
+body { line-height: 1.45; }
+h2 { letter-spacing: -.01em; }
+/* Todas las cifras con dígitos del mismo ancho: las columnas de importes se leen de un vistazo */
+td.num, th.num, .num, .kpi-valor, .ultimos strong { font-variant-numeric: tabular-nums; }
+td.num { white-space: nowrap; }
+@media (max-width: 560px) {
+  /* Filtros: uno debajo de otro, cada uno a todo el ancho */
+  .rejilla-tres { grid-template-columns: minmax(0, 1fr); }
+  /* Sumas y saldos y libro mayor como TARJETAS: una por cuenta o por movimiento, cada importe con su nombre */
+  table.tarjetas-movil thead { display: none; }
+  table.tarjetas-movil, table.tarjetas-movil tbody { display: block; }
+  table.tarjetas-movil tr { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; padding: 8px 0;
+                            border-bottom: 1px solid var(--borde); }
+  table.tarjetas-movil td { display: block; padding: 0; border: 0; }
+  table.tarjetas-movil td.celda-titulo { grid-column: 1 / -1; font-weight: 500; }
+  table.tarjetas-movil td.celda-fecha { color: var(--suave); }
+  table.tarjetas-movil td.celda-asiento { text-align: right; }
+  table.tarjetas-movil td.num { grid-column: 1 / -1; display: flex; justify-content: space-between; gap: 12px; }
+  table.tarjetas-movil td.num:empty { display: none; }
+  table.tarjetas-movil td.num::before { content: attr(data-label); color: var(--suave); font-variant-numeric: normal; }
+  table.tarjetas-movil tr.total td { grid-column: 1 / -1; font-weight: 700; }
+}

@@ -72,6 +72,38 @@ export default {
   demoHelp: 'Empresas de ejemplo para consultar: libro diario, cuentas e informes. Solo lectura.',
   demoBadge: 'DEMO',
   readOnly: 'Solo lectura · empresa de demostración',
+  // v0.30.0 · Exportar e imprimir
+  exportExcel: 'Excel', print: 'Imprimir', fsLine: 'Partida', accountName: 'Nombre de la cuenta',
+  // v0.30.0 · Cascada del EFE y evolución de los ratios
+  cfw: {
+    title: 'De dónde viene y a dónde va el dinero del año',
+    start: 'Efectivo inicial', A: 'Explotación', B: 'Inversión', C: 'Financiación', end: 'Efectivo final',
+    startShort: 'Inicial', AShort: 'Explot.', BShort: 'Invers.', CShort: 'Financ.', endShort: 'Final',
+    summary: 'Cascada del estado de flujos de efectivo: de {a} de efectivo inicial a {b} de efectivo final',
+  },
+  ratioTrend: {
+    summary: 'Evolución de {r}: {a} → {b}',
+    band: 'La franja verde es la zona de referencia del ratio.',
+  },
+  // v0.30.0 · Estados comparativos
+  fsAt: 'a {d}', fsClosing: 'cierre', fsChange: 'Variación',
+  fsCompareBalance: 'Se compara con el balance de cierre del ejercicio anterior. Variación: importe y % frente a ese año.',
+  fsComparePyg: 'Se compara con el mismo periodo del ejercicio anterior. Variación: importe y % frente a ese año.',
+  // v0.30.0 · Indicadores del Inicio
+  homePathDone: 'Ruta completada · ver los pasos',
+  kpi: {
+    listLabel: 'Indicadores a {d}',
+    cash: 'Tesorería', cashSince: 'en el ejercicio', cashLink: 'Balance',
+    result: 'Resultado de {y}', profit: 'Beneficio', loss: 'Pérdida', resultLink: 'Cuenta de resultados',
+    tax: '{tax} del {q}T', taxPay: 'A ingresar', taxRefund: 'A compensar o devolver',
+    taxDetail: 'repercutido {o} − soportado {i}', taxLink: 'Liquidar {tax} ({form})',
+    receivable: 'Pendiente de cobro', receivableDetail: '{n} clientes con saldo', receivableLink: 'Clientes',
+    payable: 'Pendiente de pago', payableDetail: '{n} proveedores y acreedores con saldo', payableLink: 'Proveedores',
+    chartTitle: 'Tesorería a fin de mes · {y}', chartTable: 'Ver como tabla', chartShow: 'Ver el gráfico',
+    chartHelp: 'Saldo de caja y bancos (grupo 57) el último día de cada mes. Pasa el ratón por el gráfico para ver cada importe.',
+    chartSummary: 'Tesorería a fin de mes: {a} al empezar, {b} al final; máximo {m}',
+    month: 'Mes', thousand: 'mil',
+  },
   // v0.29.0 · Borrar la empresa
   deleteCompanyMenu: 'Borrar empresa',
   deleteCompanyTitle: 'Borrar la empresa',

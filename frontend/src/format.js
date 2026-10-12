@@ -27,3 +27,11 @@ export function taxLabel(x, t, language) {
   if (Number(x.rate_pct) > 0 || !x.exemption_key) return `${type} ${rate}`
   return `${type} · ${t(`taxCategory.${x.rate_category}`)} (${x.exemption_key})`
 }
+
+// Fecha corta: 2024-01-02 → 02/01/2024 (igual en español y en inglés británico). Sin desfase de zona horaria:
+// se lee el texto de la fecha, no se convierte a Date.
+export function shortDate(iso) {
+  if (!iso) return ''
+  const [y, m, d] = String(iso).slice(0, 10).split('-')
+  return `${d}/${m}/${y}`
+}

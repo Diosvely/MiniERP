@@ -784,3 +784,33 @@ asientos frecuentes.
 
 **Siguiente paso:** probar el ERP con una contabilidad de verdad y pulir lo que salga. Después, el **Inmovilizado**.
 
+## 2026-10-12 · v0.30.0 · Bloque visual: indicadores, estados comparativos, gráficos y exportación
+
+**Qué se hizo**
+- **Inicio con indicadores** (migración 0031):
+  - tesorería, resultado, IVA/IGIC del trimestre, pendiente de cobro y de pago, y la tesorería a fin de mes;
+  - según quién entra: el auditor ve las cifras arriba y quien empieza ve primero la ruta guiada.
+- **Balance y PyG** con variación en importe y en % frente al año anterior. Corregido el Balance intermedio, que
+  ahora se compara con el cierre anterior (migración 0032).
+- **Cascada del EFE** y **evolución de cada ratio** en el tiempo. El gráfico del IVA se descartó por no aportar nada.
+- **Excel e Imprimir** en los seis informes principales.
+- **Pulido:** tarjetas en el móvil, fechas dd/mm/aaaa y números alineados.
+- 26 pruebas SQL (fases 25 y 26 nuevas) y 75 tests de la web.
+
+**Lo que se aprende en esta fase**
+- **Menos es más:** un gráfico se justifica si responde a una pregunta mejor que la tabla. La cascada del EFE sí
+  (30 líneas en 5 barras); el IVA trimestral no (4 cifras).
+- **Honestidad visual:** con área, el eje empieza en 0; la variación no se colorea (un gasto que sube no siempre es
+  malo); el signo se escribe, no se deja solo al color.
+- **Indicadores que respetan la contabilidad:** sin regularización ni cierre, y sin el asiento de liquidación en el
+  IVA del trimestre. Si no, las cifras engañan justo en las fechas clave.
+- **Comparar bien es contabilidad (NIC 34):** el Balance es una foto, que se compara con la última foto aprobada; la
+  PyG es una película, que se compara con el mismo tramo.
+- **Rendimiento de verdad:** el *JIT* de PostgreSQL puede tardar más que la propia consulta, y comprobar permisos
+  fila a fila multiplica el tiempo. Se mide antes de entregar.
+- **Excel y las fechas:** un objeto `Date` cambia de día con la zona horaria; el número de serie de Excel no.
+
+**Decisiones:** ADR 0028 · Bloque visual: indicadores, estados comparativos, gráficos con criterio y exportación.
+
+**Siguiente paso:** usar el ERP con contabilidad real y pulir lo que salga. Después, el **Inmovilizado**.
+

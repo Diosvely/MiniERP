@@ -2,6 +2,29 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.30.0] - 2026-10-12
+### Añadido
+- **Inicio con indicadores** a la fecha de trabajo:
+  - tesorería, resultado frente al año anterior, IVA/IGIC del trimestre, pendiente de cobro y de pago;
+  - gráfico de tesorería a fin de mes, con "Ver como tabla";
+  - se muestran según el tipo de empresa y el avance de la ruta guiada;
+  - migración `0031_home_kpis.sql` (`erp.home_kpis`) y prueba `test_fase25_home_kpis.sql`.
+- **Análisis horizontal** en el Balance y la PyG: variación en importe y en %, y el año anterior también al
+  desplegar una partida.
+- **Cascada del EFE** (de dónde viene y a dónde va el dinero) y **evolución de cada ratio** en todos los ejercicios.
+- **Exportar a Excel** e **Imprimir / guardar en PDF** en el Balance, la PyG, el EFE, sumas y saldos, el mayor y el
+  diario.
+- Mayor y sumas y saldos en **tarjetas** en el móvil.
+- `src/chart.js`, `src/compare.js` y `src/exportXlsx.js`, con sus tests (75 en total).
+### Cambiado
+- Fechas en formato dd/mm/aaaa en el diario y el mayor; cifras con `tabular-nums` en todas las tablas.
+- En la ruta guiada completa, los pasos se pliegan bajo los indicadores.
+### Corregido
+- **Balance a mitad de ejercicio:** ahora se compara con el cierre del ejercicio anterior, no con la misma fecha del
+  año anterior (migración `0032_comparative_statements.sql`, prueba `test_fase26_comparative.sql`).
+- Contraste insuficiente en los pasos pendientes del recorrido del auditor.
+- La tabla del Balance y la PyG con desplazamiento horizontal ahora se puede mover con el teclado.
+
 ## [0.29.1] - 2026-10-11
 ### Seguridad
 - **Corregido:** un admin de su propia empresa podía marcarse como titular de los datos

@@ -92,6 +92,25 @@ export default {
   fsComparePyg: 'Compared with the same period of the previous year. Change: amount and % versus that year.',
   // v0.30.0 · Home indicators
   homePathDone: 'Path completed · see the steps',
+  // ---- Web usage, owner only (v0.31.0) ----
+  usage: {
+    title: 'Web usage',
+    intro: 'Only you can see this. Last {d} days, excluding you and without personal data: just counts.',
+    guests: 'Demo visitors',
+    guestsDetail: 'today {a} · 7 days {b}',
+    signups: 'Sign-ups',
+    signupsDetail: '7 days {a} · {b} users in total',
+    active: 'Active (7 days)',
+    activeDetail: 'signed in this week, out of {b} registered',
+    companies: 'Companies created',
+    companiesDetail: 'imports {a} · AI requests {b}',
+    chartTitle: 'Demo visitors per day (last {d} days)',
+    chartSummary: 'Demo visitors per day over the last {d} days: {n} in total; the busiest day, {day} with {m}.',
+    day: 'Day',
+    noVisits: 'No demo visits in this period yet.',
+    help: 'A visitor is a browser that clicked “View the demo” (coming back from the same browser does not count twice). To see how many people reach the home page without clicking it, and from where, use Cloudflare Web Analytics.',
+    dbMissing: 'Migration 0034 has not been run in Supabase yet.',
+  },
   kpi: {
     listLabel: 'Indicators at {d}',
     cash: 'Cash', cashSince: 'this fiscal year', cashLink: 'Balance sheet',

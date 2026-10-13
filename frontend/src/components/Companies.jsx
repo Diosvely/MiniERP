@@ -8,6 +8,7 @@ import Link from './Link'
 import { companyPath, navigate, useHashRoute } from '../router'
 import Empty from './Empty'
 import ErrorBox from './ErrorBox'
+import WebUsage from './WebUsage'
 
 const emptyForm = { name: '', vat_registration_no: '', industry: 'services', tax_territory: 'canary_islands' }
 
@@ -172,6 +173,7 @@ export default function Companies({ session }) {
           </div>
         </section>
       )}
+      {isOwner && <WebUsage />}
 
       {!isGuest && canCreate && (importing
         ? <JournalImport onDone={imported} onCancel={() => { setImporting(false); load() }} />

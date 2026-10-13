@@ -91,6 +91,25 @@ export default {
   fsComparePyg: 'Se compara con el mismo periodo del ejercicio anterior. Variación: importe y % frente a ese año.',
   // v0.30.0 · Indicadores del Inicio
   homePathDone: 'Ruta completada · ver los pasos',
+  // ---- Uso de la web, solo el propietario (v0.31.0) ----
+  usage: {
+    title: 'Uso de la web',
+    intro: 'Solo lo ves tú. Últimos {d} días, sin contarte a ti y sin datos personales: solo recuentos.',
+    guests: 'Visitantes de la demo',
+    guestsDetail: 'hoy {a} · 7 días {b}',
+    signups: 'Registros',
+    signupsDetail: '7 días {a} · {b} usuarios en total',
+    active: 'Activos (7 días)',
+    activeDetail: 'han entrado esta semana, de {b} registrados',
+    companies: 'Empresas creadas',
+    companiesDetail: 'importaciones {a} · consultas a la IA {b}',
+    chartTitle: 'Visitantes de la demo por día (últimos {d} días)',
+    chartSummary: 'Visitantes de la demo por día en los últimos {d} días: {n} en total; el día con más, {day} con {m}.',
+    day: 'Día',
+    noVisits: 'Aún no hay visitas a la demo en este periodo.',
+    help: 'Un visitante es un navegador que ha pulsado «Ver la demo» (si vuelve desde el mismo navegador no cuenta dos veces). Para ver cuánta gente llega a la portada sin pulsarla, y desde dónde, usa Cloudflare Web Analytics.',
+    dbMissing: 'Falta ejecutar la migración 0034 en Supabase.',
+  },
   kpi: {
     listLabel: 'Indicadores a {d}',
     cash: 'Tesorería', cashSince: 'en el ejercicio', cashLink: 'Balance',

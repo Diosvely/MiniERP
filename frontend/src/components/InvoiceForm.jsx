@@ -38,7 +38,7 @@ export default function InvoiceForm({ company, invoiceType, invoices, onPosted }
     // Compras: cuentas de gastos (6) e inmovilizado (2) · Ventas: ingresos (7)
     const groups = purchase ? ['6', '2'] : ['7']
     Promise.all([
-      supabase.from('v_partners').select('id, name, partner_type, account_no, blocked, tax_territory, equivalence_surcharge')
+      supabase.from('v_partners').select('id, name, partner_type, account_no, blocked, tax_territory, equivalence_surcharge, withholding_code')
         .eq('company_id', company.id).in('partner_type', types).order('name'),
       fetchAll(() => supabase.from('gl_accounts').select('id, account_no, name, name_en, template_account')
         .eq('company_id', company.id).eq('account_type', 'posting').order('account_no')),
@@ -61,6 +61,13 @@ export default function InvoiceForm({ company, invoiceType, invoices, onPosted }
   }, [company.id, invoiceType])
 
   const set = (field) => (e) => { setHeader({ ...header, [field]: e.target.value }); setPreview(null) }
+  // Al elegir el tercero de una factura recibida, su retención por defecto (la ficha manda, como en BC o SAP)
+  const choosePartner = (e) => {
+    const p = partners.find((x) => x.id === e.target.value)
+    setHeader({ ...header, partner_id: e.target.value,
+                withholding_code: purchase ? p?.withholding_code ?? '' : header.withholding_code })
+    setPreview(null)
+  }
   const setLine = (i, field, value) => {
     setLines((prev) => prev.map((l, j) => (j === i ? { ...l, [field]: value } : l)))
     setPreview(null)
@@ -139,7 +146,7 @@ export default function InvoiceForm({ company, invoiceType, invoices, onPosted }
           </select>
         </label>
         <label>{purchase ? t('vendorOrCreditor') : t('customerOrDebtor')}
-          <select value={header.partner_id} onChange={set('partner_id')}>
+          <select value={header.partner_id} onChange={choosePartner}>
             <option value="">—</option>
             {partners.map((p) => (
               <option key={p.id} value={p.id}>{p.account_no} · {p.name}</option>
@@ -198,6 +205,9 @@ export default function InvoiceForm({ company, invoiceType, invoices, onPosted }
               </option>
             ))}
           </select>
+          {purchase && partner?.withholding_code && header.withholding_code === partner.withholding_code && (
+            <span className="ayuda"> {t('withholdingFromPartner')}</span>
+          )}
         </label>
       )}
 

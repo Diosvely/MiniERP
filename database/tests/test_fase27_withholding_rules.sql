@@ -48,6 +48,7 @@ begin
   assert (select legal_form from erp.business_partners where id = abogada) = 'individual', 'NIF → persona física';
   assert (select legal_form from erp.business_partners where id = bufete) = 'company', 'CIF → entidad';
   assert (select legal_form from erp.business_partners where id = casero) = 'individual', 'NIE → persona física';
+  assert (select legal_form from erp.v_partners where id = abogada) = 'individual', 'la web la ve en v_partners';
   raise notice 'OK  · forma jurídica a partir del NIF / NIE / CIF';
 
   -- ---------- 2. La ficha: qué retención admite cada tercero ----------
@@ -98,7 +99,8 @@ begin
 
   -- ---------- 6. La ficha manda ----------
   update erp.business_partners set withholding_code = 'IRPF15' where id = abogada;
-  v := erp.validate_proposed_entry(e, '{"partner_name": "Abogada Pérez", "lines": [
+  assert (select withholding_code from erp.v_partners where id = abogada) = 'IRPF15';
+  v :=erp.validate_proposed_entry(e, '{"partner_name": "Abogada Pérez", "lines": [
     {"account": "623", "side": "debit",  "amount": 1000, "role": "base"},
     {"account": "472", "side": "debit",  "amount": 70,   "role": "tax", "tax_code": "IGIC7", "tax_base": 1000},
     {"account": "410", "side": "credit", "amount": 1070, "role": "partner"}]}');

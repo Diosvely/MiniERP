@@ -4,7 +4,7 @@
 // El usuario describe una operación y la IA propone el asiento. La IA PROPONE, el ERP COMPRUEBA, el usuario DECIDE.
 // 1. Pide a Supabase erp.entry_tutor_context CON LA SESIÓN DEL USUARIO (solo el owner; PGC, impuestos vigentes, NRV).
 // 2. El modelo de Workers AI propone el asiento en JSON (cuentas del PGC, impuestos por su código, NRV de la lista).
-// 3. erp.validate_proposed_entry lo comprueba: subcuentas reales, cuota del impuesto, Debe = Haber, criterio…
+// 3. erp.validate_proposed_entry lo comprueba: subcuentas reales, cuota del impuesto, retención (0033), Debe = Haber…
 // 4. Si hay errores, se le devuelven al modelo UNA vez para que lo corrija (la "segunda vuelta").
 // Nada se contabiliza: la web carga el resultado como borrador en el formulario de asientos.
 // Usa el mismo binding "AI" y las mismas variables que /api/ai.
@@ -14,9 +14,13 @@
 // Si falla o no responde, se usa Mistral Small como respaldo. TUTOR_MODEL permite probar otro sin tocar el código.
 const DEFAULT_MODEL = '@cf/openai/gpt-oss-120b'
 const FALLBACK_MODEL = '@cf/mistralai/mistral-small-3.1-24b-instruct'
-// Avisos de criterio (0026) que también merecen una segunda vuelta, aunque el asiento cuadre
-const REPAIRABLE = ['same_account_both_sides', 'depreciation_mismatch', 'disposal_depreciation_side',
-                    'asset_supplier_misuse', 'valuation_rule_mismatch', 'fixed_asset_supplier']
+// Avisos de criterio (0026) y de retenciones (0033) que también merecen una segunda vuelta, aunque el asiento cuadre.
+// Solo los de nivel "warning": un "info" (por ejemplo, recordar la retención de un alquiler) no se le devuelve a la IA.
+export const REPAIRABLE = ['same_account_both_sides', 'depreciation_mismatch', 'disposal_depreciation_side',
+                    'asset_supplier_misuse', 'valuation_rule_mismatch', 'fixed_asset_supplier',
+                    'withholding_missing', 'partner_withholding_missing', 'withholding_not_applicable']
+export const needsRepair = (checks) =>
+  checks.filter((c) => c.level === 'error' || (c.level === 'warning' && REPAIRABLE.includes(c.code)))
 const MAX_TEXT = 1000
 
 const json = (body, status = 200) =>
@@ -42,14 +46,21 @@ const MAX_BODY = 4096   // { company_id, text (≤ 1.000 caracteres), language }
 const INSTRUCTIONS = {
   es: `Eres profesor de contabilidad española (PGC 2007, modificado por el RD 1/2021). Un alumno describe una operación
 y tú propones el asiento. Recibes en JSON el plan de cuentas (chart_of_accounts), los tipos de IVA / IGIC VIGENTES de
-la empresa (tax_codes), las retenciones (withholdings) y las normas de registro y valoración (valuation_rules).
+la empresa (tax_codes), las retenciones (withholdings), cuándo se aplican (withholding_rules) y las normas de registro y valoración (valuation_rules).
 
 Reglas:
 - Usa SOLO cuentas de chart_of_accounts, con su número de 3 o 4 dígitos (por ejemplo "217", "4751", "523").
 - Impuestos: una línea con "role": "tax", el "tax_code" de tax_codes que corresponda y su "tax_base". La cuota la calcula el ERP:
   pon tu cálculo en "amount", pero el código es lo importante. Si la empresa es de Canarias es IGIC, no IVA.
   Si tax_setup es false, usa la cuenta 472 / 477 sin tax_code.
-- Retenciones (IRPF): "role": "withholding" con la cuenta de withholdings.
+- Retenciones (IRPF): sigue withholding_rules. Una línea "role": "withholding" con su "withholding_code" de withholdings
+  y su "tax_base" (la base, sin impuesto): al Haber si la empresa retiene (factura recibida, 4751); al Debe si es un cliente
+  quien retiene a la empresa (factura emitida, 473). La cuenta y el importe los calcula el ERP.
+  · Profesional persona física (autónomo/a: abogado, asesora, arquitecto…) → IRPF15 (IRPF7 si inicia su actividad).
+  · Profesional que es una sociedad (SL, SA…) → sin retención.
+  · Alquiler de un local o inmueble urbano → IRPF19 (el renting de vehículos o maquinaria no lleva).
+  · El tercero queda por base + impuesto − retención.
+  Ejemplo: abogada autónoma, 1.000 € + IGIC 7 % → 623 1.000 (Debe), 472 70 (Debe), 4751 150 (Haber), 410 920 (Haber).
 - El tercero: "role": "partner". Bancos y caja: "role": "cash". El resto: "role": "base" u "other".
 - Guía de cuentas del tercero:
   · 400 Proveedores: SOLO mercaderías y materias primas (grupo 60).
@@ -80,14 +91,21 @@ Responde SOLO con un objeto JSON válido, sin texto antes ni después:
  "question": "una pregunta corta para que el alumno compruebe que lo ha entendido"}`,
   en: `You are a teacher of Spanish accounting (Spanish GAAP – PGC 2007, amended by RD 1/2021). A student describes a
 transaction and you propose the journal entry. You receive in JSON the chart of accounts (chart_of_accounts), the
-company's CURRENT VAT / IGIC rates (tax_codes), withholdings and the valuation rules (valuation_rules).
+company's CURRENT VAT / IGIC rates (tax_codes), withholdings, when they apply (withholding_rules) and the valuation rules (valuation_rules).
 
 Rules:
 - Use ONLY accounts from chart_of_accounts, with their 3 or 4 digit number (for example "217", "4751", "523").
 - Taxes: one line with "role": "tax", the matching "tax_code" from tax_codes and its "tax_base". The ERP calculates the amount:
   put your calculation in "amount", but the code is what matters. If the company is in the Canary Islands it is IGIC, not VAT.
   If tax_setup is false, use account 472 / 477 without tax_code.
-- Withholdings (IRPF): "role": "withholding" with the account from withholdings.
+- Withholdings (IRPF): follow withholding_rules. One line with "role": "withholding", its "withholding_code" from
+  withholdings and its "tax_base" (the base, without tax): credit when the company withholds (invoice received, 4751); debit
+  when a customer withholds from the company (invoice issued, 473). The ERP calculates account and amount.
+  · Professional who is a natural person (self-employed lawyer, adviser, architect…) → IRPF15 (IRPF7 if just starting).
+  · Professional that is a company (SL, SA…) → no withholding.
+  · Rent of urban premises → IRPF19 (renting vehicles or machinery has none).
+  · The third party is owed base + tax − withholding.
+  Example: self-employed lawyer, 1,000 € + 7 % IGIC → 623 1,000 (debit), 472 70 (debit), 4751 150 (credit), 410 920 (credit).
 - The third party: "role": "partner". Banks and cash: "role": "cash". Anything else: "role": "base" or "other".
 - Third-party account guide:
   · 400 Suppliers: ONLY goods for resale and raw materials (group 60).
@@ -118,8 +136,10 @@ Reply ONLY with a valid JSON object, with no text before or after:
 }
 
 const REPAIR = {
-  es: (checks) => `El ERP ha encontrado estos errores en tu asiento: ${checks}. Corrígelo y responde de nuevo SOLO con el JSON completo.`,
-  en: (checks) => `The ERP found these errors in your entry: ${checks}. Fix it and reply again ONLY with the complete JSON.`,
+  es: (checks) => `El ERP ha encontrado estos errores en tu asiento: ${checks}. Corrígelo y responde de nuevo SOLO con el JSON completo.`
+    + (/withholding/.test(checks) ? ' Retenciones: aplica withholding_rules; si el profesional es una sociedad, quítala o no la pongas y explícalo en assumptions.' : ''),
+  en: (checks) => `The ERP found these errors in your entry: ${checks}. Fix it and reply again ONLY with the complete JSON.`
+    + (/withholding/.test(checks) ? ' Withholdings: follow withholding_rules; if the professional is a company, leave it out and say so in assumptions.' : ''),
 }
 
 // Texto de la respuesta: { response } (Mistral, Llama), al estilo OpenAI { choices }, o Responses API (gpt-oss)
@@ -165,6 +185,7 @@ export function parseProposal(text) {
         role: str(l?.role) || 'other',
         tax_code: str(l?.tax_code) || undefined,
         tax_base: l?.tax_base == null ? undefined : Number(l.tax_base),
+        withholding_code: str(l?.withholding_code).toUpperCase() || undefined,
         description: str(l?.description).slice(0, 200),
       })),
     }
@@ -263,7 +284,7 @@ export async function onRequestPost({ request, env }) {
       return json({ error: 'validation_failed' }, 502)
     }
     validation = v.body
-    const problems = validation.checks.filter((c) => c.level === 'error' || REPAIRABLE.includes(c.code))
+    const problems = needsRepair(validation.checks)
     if (problems.length === 0) break
     // Segunda vuelta: se le enseñan los errores y los avisos de criterio del ERP
     const errors = problems.map((c) => `${c.code} ${c.detail ?? ''}`.trim()).join('; ')

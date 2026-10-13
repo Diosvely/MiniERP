@@ -78,6 +78,21 @@ create trigger partner_withholding_validate
   before insert or update on erp.business_partners
   for each row execute function erp.tg_partner_withholding_validate();
 
+-- La vista de la web, con los dos datos nuevos al final (una vista solo admite columnas nuevas al final)
+create or replace view erp.v_partners with (security_invoker = true) as
+select bp.id, bp.company_id, bp.partner_type, bp.vat_registration_no, bp.name, bp.tax_territory,
+       bp.email, bp.blocked, bp.created_at,
+       g.account_no,
+       coalesce((select sum(l.debit - l.credit)
+                 from erp.journal_lines l
+                 join erp.journal_entries e on e.id = l.entry_id
+                 where l.gl_account_id = bp.gl_account_id and e.status = 'posted'), 0) as balance,
+       bp.equivalence_surcharge,
+       bp.legal_form,
+       bp.withholding_code
+from erp.business_partners bp
+left join erp.gl_accounts g on g.id = bp.gl_account_id;
+
 -- Los terceros que ya existen: forma jurídica a partir de su NIF
 update erp.business_partners
 set legal_form = erp.legal_form_from_tax_id(vat_registration_no)

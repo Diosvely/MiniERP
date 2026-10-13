@@ -10,6 +10,12 @@ describe('friendlyError · errores de la base de datos en lenguaje claro', () =>
     expect(f.to).toBeNull()
     expect(f.technical).toMatch(/^Unbalanced entry/)
   })
+  it('retenciones en la ficha del tercero (v0.31.0)', () => {
+    const f = friendlyError('Professional withholding (IRPF) does not apply to companies', tEs, 'es')
+    expect(f.title).toBe('A una entidad no se le practica la retención de profesionales')
+    expect(f.to).toBe('partners')
+    expect(friendlyError('Withholding only applies to vendors and creditors', tEn, 'en').title).toContain('vendors and creditors')
+  })
   it('sin ejercicio: lleva a Cierre del ejercicio', () => {
     const f = friendlyError({ message: 'No fiscal year for date 2027-01-15' }, tEs, 'es')
     expect(f.title).toContain('2027-01-15')

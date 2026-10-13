@@ -49,6 +49,8 @@ const RULES = [
   [/^Partner (.+) has no posting account$/, 'partnerNoAccount', 'partners'],
   [/^Partner name is required$/, 'partnerName'],
   [/^Account (\S+) must start with (\S+) for this partner type$/, 'partnerAccountPrefix'],
+  [/^Professional withholding \(IRPF\) does not apply to companies$/, 'professionalWithholdingCompany', 'partners'],
+  [/^Withholding only applies to vendors and creditors$/, 'withholdingOnlyVendors', 'partners'],
 
   // Facturas
   [/^Invoice (.+) of (.+) is already registered$/, 'invoiceDuplicate', 'invoices'],

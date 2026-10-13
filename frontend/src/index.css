@@ -552,6 +552,14 @@ a.num-asiento { font-variant-numeric: tabular-nums; }
                     border-radius: 8px; padding: 6px 10px; font-size: .85rem; box-shadow: 0 4px 14px rgba(0,0,0,.12); white-space: nowrap; }
 .grafico .tooltip strong { font-variant-numeric: tabular-nums; }
 .grafico-tesoreria .ayuda { margin: 0; }
+/* Uso de la web (v0.31.0): 4 cifras y las barras de visitantes por día */
+.uso-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; margin: 8px 0 14px; padding: 0; }
+.uso-kpis > li { display: flex; flex-direction: column; gap: 2px; padding: 12px 14px; border: 1px solid var(--borde); }
+.uso-kpis .kpi-valor { font-size: 1.3rem; }
+.uso-kpis .kpi:hover { border-color: var(--borde); }   /* no es un enlace */
+.uso-web h3 { margin: 4px 0 6px; font-size: .95rem; }
+.grafico .barra { fill: var(--primario); }
+.grafico .barra.activa { opacity: .75; }
 .ruta-plegada summary { cursor: pointer; font-weight: 600; color: var(--exito); }
 .ruta-plegada[open] summary { margin-bottom: 8px; }
 

@@ -31,6 +31,10 @@ describe('parseProposal y responseText · Tutor de asientos', () => {
     expect(p.lines[0]).toMatchObject({ account: '5721', side: 'credit', amount: 100, role: 'other' })
   })
   it('sin lista de líneas → null', () => expect(parseProposal('{"explanation":"x"}')).toBeNull())
+  it('guarda el código de la retención (lo comprueba el ERP)', () => {
+    const p = parseProposal('{"lines":[{"account":"4751","side":"credit","amount":150,"role":"withholding","withholding_code":"irpf15","tax_base":1000}]}')
+    expect(p.lines[0]).toMatchObject({ role: 'withholding', withholding_code: 'IRPF15', tax_base: 1000 })
+  })
   it('lee los tres formatos de respuesta de los modelos', () => {
     expect(responseText({ response: 'a' })).toBe('a')
     expect(responseText({ choices: [{ message: { content: 'b' } }] })).toBe('b')

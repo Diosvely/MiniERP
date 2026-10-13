@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { niceTicks } from '../src/chart.js'
+import { niceTicks, barPath } from '../src/chart.js'
 
 describe('niceTicks · marcas redondas del eje del gráfico', () => {
   it('de 0 a 49.980 → 0 · 25.000 · 50.000 (pocas marcas, redondas, que cubren el rango)', () => {
@@ -29,5 +29,15 @@ describe('waterfall · cascada del EFE', () => {
     const b = waterfall(-200, [{ key: 'A', value: 300 }])
     expect(b[0]).toMatchObject({ from: 0, to: -200 })
     expect(b.at(-1)).toMatchObject({ from: 0, to: 100 })
+  })
+})
+
+describe('panel de uso de la web (v0.31.0)', () => {
+  it('recuentos pequeños: marcas enteras (nunca 0,5 visitantes)', () => {
+    for (const max of [0, 1, 2, 3, 7, 13]) expect(niceTicks(0, Math.max(max, 2)).every(Number.isInteger)).toBe(true)
+  })
+  it('barra con la base recta en el eje y el radio limitado al tamaño de la barra', () => {
+    expect(barPath(10, 20, 8, 30, 4)).toBe('M10,50V24Q10,20 14,20H14Q18,20 18,24V50Z')
+    expect(barPath(0, 0, 10, 2, 4)).toContain('V2Q')   // barra muy baja: radio 2
   })
 })

@@ -29,3 +29,9 @@ export function waterfall(start, steps) {
   bars.push({ key: 'end', from: 0, to: acc, kind: 'total' })
   return bars
 }
+
+// Barra con las esquinas de ARRIBA redondeadas (radio r) y la base recta, apoyada en el eje: x, y = esquina superior
+export function barPath(x, y, w, h, r = 4) {
+  const rr = Math.max(0, Math.min(r, w / 2, h))
+  return `M${x},${y + h}V${y + rr}Q${x},${y} ${x + rr},${y}H${x + w - rr}Q${x + w},${y} ${x + w},${y + rr}V${y + h}Z`
+}

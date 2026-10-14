@@ -39,7 +39,7 @@ Proyecto de aprendizaje en evolución.
 | **Balance (modo oscuro) con el glosario** | **Modo auditor de una empresa importada** |
 | ![Balance con el globo del glosario](docs/capturas/04-balance-oscuro.png) | ![Recorrido del auditor](docs/capturas/05-modo-auditor.png) |
 
-Más capturas: [pantalla de entrada](docs/capturas/01-entrada.png) · [errores en lenguaje claro](docs/capturas/06-errores-claros.png) · [Inicio en el móvil](docs/capturas/07-inicio-movil.png) · [cascada del EFE](docs/capturas/08-efe-cascada.png) · [Balance comparativo](docs/capturas/09-balance-comparativo.png) · [libro mayor en el móvil](docs/capturas/10-mayor-movil.png)
+Más capturas: [pantalla de entrada](docs/capturas/01-entrada.png) · [errores en lenguaje claro](docs/capturas/06-errores-claros.png) · [Inicio en el móvil](docs/capturas/07-inicio-movil.png) · [cascada del EFE](docs/capturas/08-efe-cascada.png) · [Balance comparativo](docs/capturas/09-balance-comparativo.png) · [libro mayor en el móvil](docs/capturas/10-mayor-movil.png) · [cobros y pagos](docs/capturas/11-cobros-pagos.png)
 
 ---
 
@@ -50,7 +50,7 @@ española y el funcionamiento real de un ERP. Los ERP comerciales son caros y di
 propia, así que decidí **construir uno**. Diseñar la tabla de asientos obliga a entender *por qué* un ERP impone
 cada regla. Además, todo el código está en inglés para practicar el vocabulario técnico de BC y SAP.
 
-## ¿Qué hace hoy? (v0.31.0)
+## ¿Qué hace hoy? (v0.32.0)
 
 **Primeros pasos y navegación**
 - **Pantalla de Inicio** en cada empresa:
@@ -61,7 +61,7 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
     pendiente de cobro y de pago, y la **tesorería a fin de mes** en un gráfico. Cada cifra lleva a su informe. Salen
     arriba en las empresas importadas y demos; en una empresa propia, cuando ya tiene lo básico (y la ruta se pliega
     al completarla).
-- **Modo Básico / Auditor:** un menú corto en lenguaje sencillo para quien empieza (8 entradas) o el menú completo
+- **Modo Básico / Auditor:** un menú corto en lenguaje sencillo para quien empieza (9 entradas) o el menú completo
   por áreas para revisar.
 - **Cada pantalla tiene su enlace** (`#/empresa/<id>/balance`): se puede recargar, volver atrás y compartir.
 - **Fecha de trabajo de cada empresa** (la *Work Date* de BC): hoy si la empresa está al día, o la de su último
@@ -106,6 +106,10 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
   - compensación de cuotas y devolución en el 4T;
   - cuadre *libro registro ↔ contabilidad*;
   - bloqueo del trimestre declarado.
+- **Cobros y pagos contra la factura** (como la liquidación de BC o la compensación de partidas abiertas de SAP):
+  se paga o se cobra una o varias facturas, entera o en parte, y el ERP hace el asiento. Los pagos hechos a mano se
+  **vinculan** sin asiento nuevo. **Antigüedad de saldos** a una fecha, con el saldo contable al lado para detectar
+  movimientos sin vincular. Días de pago del tercero, vencimiento y estado de cada factura.
 
 **Estados financieros e informes (mirada de auditor)**
 - **Balance de situación** y **cuenta de pérdidas y ganancias** (modelo PYMES del PGC), con desglose hasta la
@@ -182,7 +186,7 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
 | Web | **React + Vite** | Componentes por pantalla, i18n propio (es/en), rutas con almohadilla, iconos `lucide-react` |
 | IA | **Cloudflare Workers AI** + Pages Functions | `/api/ai` (Mistral Small 3.1) y `/api/tutor` (gpt-oss-120b); la clave nunca llega al navegador |
 | Despliegue | **Cloudflare Pages** | Despliegue automático desde `main`, dirección de prueba por rama y cabeceras de seguridad (`_headers`) |
-| Calidad | **GitHub Actions** + **Vitest** + Dependabot | 28 pruebas SQL, 83 tests de la web, lint, build y auditoría de dependencias en cada Pull Request |
+| Calidad | **GitHub Actions** + **Vitest** + Dependabot | 29 pruebas SQL, 89 tests de la web, lint, build y auditoría de dependencias en cada Pull Request |
 | Versionado | Git + GitHub | Ramas, Pull Requests, `main` protegida, versiones etiquetadas y decisiones documentadas (ADR) |
 
 **Principio clave:** la web nunca es la única barrera. Aunque alguien manipule el navegador, PostgreSQL rechaza:
@@ -230,7 +234,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 ├── SECURITY.md                cómo avisar de un fallo de seguridad
 ├── scripts/test-db.sh         ejecuta todas las pruebas SQL, cada una en una base limpia
 ├── database/
-│   ├── migrations/            0001 → 0034, se ejecutan en orden en Supabase
+│   ├── migrations/            0001 → 0035, se ejecutan en orden en Supabase
 │   ├── reset/                 reset del schema antiguo (solo histórico)
 │   ├── seed/                  datos de ejemplo (opcional)
 │   └── tests/                 pruebas automáticas en SQL (fases 1 → 26) y simulador de Supabase
@@ -264,15 +268,15 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
     ├── glosario.md            vocabulario contable bilingüe
     ├── seguridad-supabase.md  lista de ajustes de seguridad del panel de Supabase
     ├── capturas/              capturas de la app para el README
-    └── decisiones/            ADR 0001 → 0029
+    └── decisiones/            ADR 0001 → 0030
 ```
 
 ## Calidad
 
 - **Integración continua** (GitHub Actions) en cada Pull Request:
-  - las 28 pruebas de la base de datos sobre PostgreSQL 16, cada una en una base limpia con todas las migraciones
+  - las 29 pruebas de la base de datos sobre PostgreSQL 16, cada una en una base limpia con todas las migraciones
     (la fase 23 vigila también que toda clave foránea tenga índice);
-  - **83 tests de la web con Vitest**: formatos, rutas, importadores, errores, idiomas (español e inglés con las
+  - **89 tests de la web con Vitest**: formatos, rutas, importadores, errores, idiomas (español e inglés con las
     mismas claves), glosario, plantillas, la defensa de las funciones de IA, la lectura por páginas, el borrado por
     tandas, la fecha de trabajo, los gráficos, el análisis horizontal y la exportación a Excel;
   - lint, build y auditoría de dependencias de la web.
@@ -284,7 +288,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 
 1. **Base de datos.** En un proyecto de Supabase:
    - activa **`pg_cron`** en *Database → Extensions* (para la limpieza de invitados);
-   - en el *SQL Editor*, ejecuta en orden `database/migrations/0001` … `0034`.
+   - en el *SQL Editor*, ejecuta en orden `database/migrations/0001` … `0035`.
 2. **API.** En *Project Settings → Data API → Exposed schemas*, añade `erp`.
 3. **Invitados** (opcional, **después** de la migración 0015): *Authentication → Sign In / Providers* → activa
    **Allow anonymous sign-ins**.
@@ -333,7 +337,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 Con PostgreSQL instalado (Linux, WSL o Git Bash):
 
 ```bash
-bash scripts/test-db.sh            # las 28 pruebas, cada una en una base limpia
+bash scripts/test-db.sh            # las 29 pruebas, cada una en una base limpia
 bash scripts/test-db.sh fase25     # solo las que contienen "fase25"
 ```
 
@@ -341,7 +345,7 @@ bash scripts/test-db.sh fase25     # solo las que contienen "fase25"
 
 ```bash
 cd frontend
-npm test                           # 83 tests con Vitest
+npm test                           # 89 tests con Vitest
 ```
 
 ### Importar una contabilidad propia
@@ -382,6 +386,7 @@ cuadrados. El ERP también lee directamente los diarios de Sage (Excel) y Busine
 - [x] **v0.29.1**: seguridad (solo el propietario nombra titulares de los datos), licencia MIT, SECURITY.md y Dependabot
 - [x] **v0.30.0**: Inicio con indicadores, Balance y PyG comparativos, cascada del EFE, evolución de ratios, Excel e imprimir
 - [x] **v0.31.0**: IA guiada por reglas (retenciones calculadas por el ERP desde la ficha del tercero) y panel de uso de la web
+- [x] **v0.32.0**: cobros y pagos contra la factura, vencimientos y antigüedad de saldos
 - [ ] Inmovilizado: fichas de activos, plan de amortización y asiento mensual a contabilidad
 - [ ] Inventario y nóminas
 - [ ] IA: supuestos prácticos autocorregidos

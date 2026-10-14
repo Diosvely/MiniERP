@@ -13,7 +13,7 @@ export default function Partners({ company, readOnly }) {
   const { t, language } = useI18n()
   const emptyForm = {
     type: 'customer', name: '', vat: '', territory: company.tax_territory,
-    accountMode: 'auto', accountNo: '', email: '', surcharge: false, legalForm: '', withholding: '',
+    accountMode: 'auto', accountNo: '', email: '', surcharge: false, legalForm: '', withholding: '', paymentDays: '0',
   }
   const [partners, setPartners] = useState([])
   const [whCodes, setWhCodes] = useState([])
@@ -56,6 +56,7 @@ export default function Partners({ company, readOnly }) {
     if (canSurcharge(form) && form.surcharge) extra.equivalence_surcharge = true
     if (canWithhold(form.type) && form.legalForm) extra.legal_form = form.legalForm
     if (canWithhold(form.type) && formCodes.some((c) => c.code === form.withholding)) extra.withholding_code = form.withholding
+    if (Number(form.paymentDays) > 0) extra.payment_days = Math.min(365, Math.round(Number(form.paymentDays)))
     if (Object.keys(extra).length) {
       const { error: e2 } = await supabase.from('business_partners').update(extra).eq('id', data.partner_id)
       if (e2) setError(e2.message)
@@ -81,6 +82,15 @@ export default function Partners({ company, readOnly }) {
   async function changeWithholding(p, code) {
     setError('')
     const { error } = await supabase.from('business_partners').update({ withholding_code: code || null }).eq('id', p.id)
+    if (error) return setError(error.message)
+    load()
+  }
+  // Días de pago (vencimiento = fecha de factura + días), como las condiciones de pago de la ficha en BC
+  async function changeDays(p, value) {
+    const days = Math.max(0, Math.min(365, Math.round(Number(value) || 0)))
+    if (days === Number(p.payment_days ?? 0)) return
+    setError('')
+    const { error } = await supabase.from('business_partners').update({ payment_days: days }).eq('id', p.id)
     if (error) return setError(error.message)
     load()
   }
@@ -119,6 +129,9 @@ export default function Partners({ company, readOnly }) {
             </select>
           </div>
           <input type="email" placeholder={t('emailOptional')} value={form.email} onChange={change('email')} />
+          <label className="dias-pago">{t('paymentDays')}
+            <input type="number" min="0" max="365" inputMode="numeric" value={form.paymentDays} onChange={change('paymentDays')} />
+          </label>
           {canWithhold(form.type) && (
             <div className="rejilla-cabecera ficha-fiscal">
               <label>{t('legalForm')}
@@ -189,7 +202,14 @@ export default function Partners({ company, readOnly }) {
                 {t(`partnerType.${p.partner_type}`)} · {p.vat_registration_no ?? '—'} · {t(`territory.${p.tax_territory}`)}
                 {p.legal_form && <>{' · '}{t(`legalFormName.${p.legal_form}`)}</>}
                 {' · '}{t('balance')}: {balanceText(p.balance)}
+                {readOnly && Number(p.payment_days) > 0 && <>{' · '}{t('paymentDaysShort').replace('{n}', p.payment_days)}</>}
               </span>
+              {!readOnly && (
+                <label className="retencion-tercero">{t('paymentDays')}
+                  <input key={`${p.id}-${p.payment_days}`} type="number" min="0" max="365" inputMode="numeric" className="dias"
+                         defaultValue={p.payment_days ?? 0} onBlur={(e) => changeDays(p, e.target.value)} />
+                </label>
+              )}
               {canWithhold(p.partner_type) && (readOnly
                 ? p.withholding_code && <span className="insignia">{p.withholding_code}</span>
                 : (

@@ -634,3 +634,33 @@ td.num { white-space: nowrap; }
   table.tarjetas-movil td.num::before { content: attr(data-label); color: var(--suave); font-variant-numeric: normal; }
   table.tarjetas-movil tr.total td { grid-column: 1 / -1; font-weight: 700; }
 }
+/* --- v0.32.0: Cobros y pagos --- */
+.pagos h3 { margin: 10px 0 6px; font-size: .95rem; }
+.partidas li { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto 8.5em; gap: 4px 12px; align-items: center; }
+.partidas li.marcada { background: color-mix(in srgb, var(--primario) 7%, transparent); }
+.partidas input[type=checkbox] { width: 18px; height: 18px; margin: 0; }
+.partida-info { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.partida-info strong { display: flex; flex-direction: row; flex-wrap: wrap; gap: 6px; align-items: center; }
+.partida-info .insignia { flex: none; width: auto; }
+.partida-pendiente { color: var(--texto) !important; font-variant-numeric: tabular-nums; text-align: right; white-space: nowrap; }
+.pagos input.importe { width: 100%; text-align: right; padding: 6px 8px; font-variant-numeric: tabular-nums; }
+@media (max-width: 560px) {
+  .partidas li { grid-template-columns: 22px minmax(0, 1fr) auto; }
+  .partidas input.importe { grid-column: 2 / 4; }
+}
+.vencida { color: var(--aviso); font-weight: 600; }
+.vista-asiento { display: flex; flex-wrap: wrap; gap: 4px 16px; align-items: baseline; padding: 10px 12px; margin: 8px 0;
+                 border: 1px dashed var(--borde); border-radius: 8px; font-variant-numeric: tabular-nums; }
+.vista-asiento span { color: var(--texto); }
+.fila-botones { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 8px; }
+.vincular { border-top: 1px solid var(--borde); margin-top: 12px; padding-top: 4px; }
+.lista-radio li { padding: 6px 0; }
+.lista-radio .opcion { flex-wrap: wrap; }
+.anular-pago { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; max-width: 420px; }
+.estado-factura { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-top: 4px; font-size: .85rem; }
+.estado-factura.paid .insignia { background: var(--exito); color: var(--sobre-color); }
+.estado-factura .enlace { font-size: inherit; }
+.retencion-tercero input.dias, .dias-pago input { width: 6em; padding: 6px 8px; }
+.antiguedad td .enlace { font-size: inherit; text-align: left; }
+.antiguedad td.fuerte { font-weight: 600; color: var(--texto); }
+.antiguedad .descuadre { display: block; color: var(--aviso); font-size: .8rem; font-weight: 500; white-space: nowrap; }

@@ -22,6 +22,44 @@ Corregido
 La limpieza nocturna de invitados ya no hace perder la historia de visitas a la demo (erp.guest_history).
 Dos desplegables sin etiqueta en Terceros, y el territorio, que se salía de la tarjeta en el móvil.
 
+## [0.32.0] - 2026-10-14
+### Añadido
+- **Cobros y pagos contra la factura:**
+  - pagar o cobrar una o varias facturas, entera o en parte; el ERP hace el asiento;
+  - vista previa del asiento, anulación con contraasiento, y vinculación de pagos hechos a mano sin asiento nuevo;
+  - migración `0035_payments.sql` y prueba `test_fase29_payments.sql`.
+- **Antigüedad de saldos** de proveedores y clientes a una fecha, por tramos, con el saldo contable para detectar
+  movimientos sin vincular; con Excel e imprimir.
+- **Días de pago** en la ficha del tercero y **vencimiento** de las facturas nuevas.
+- **Estado de cada factura** (pagada, en parte o pendiente, vencida) en el libro registro, con enlace a pagar o cobrar.
+- Término «Partida abierta» en el glosario; `src/payments.js` con sus tests (89 en total).
+### Cambiado
+- El nº de asiento de las facturas y de los pagos lleva a la ficha del asiento.
+- El diario marca los asientos de pagos y cobros.
+- El menú Básico tiene 9 entradas.
+
+## [0.31.0] - 2026-10-13
+### Añadido
+- **Retenciones guiadas por reglas:**
+  - ficha del tercero con **forma jurídica** (sale del NIF) y **retención por defecto**;
+  - reglas de retención en la base de datos (`erp.withholding_rules`: 623 profesionales, 621 alquiler);
+  - el ERP calcula en el Tutor la retención y lo que queda a pagar al tercero;
+  - avisos de retención que falta o que no procede;
+  - migración `0033_withholding_rules.sql` y prueba `test_fase27_withholding_rules.sql`.
+- La **factura recibida** toma la retención de la ficha del tercero.
+- **Panel «Uso de la web»** solo para el propietario: visitantes de la demo, registros, activos, empresas,
+  importaciones y consultas a la IA, con barras por día. Migración `0034_web_usage.sql` y prueba
+  `test_fase28_web_usage.sql`.
+- `src/partnerTax.js` y `barPath` en `src/chart.js`, con sus tests (83 en total).
+### Cambiado
+- **Tutor de asientos:**
+  - instrucciones con las reglas de retención y un ejemplo resuelto;
+  - la IA indica el código de la retención;
+  - los avisos informativos ya no provocan una segunda vuelta.
+### Corregido
+- La limpieza nocturna de invitados ya no hace perder la historia de visitas a la demo (`erp.guest_history`).
+- Dos desplegables sin etiqueta en Terceros, y el territorio, que se salía de la tarjeta en el móvil.
+
 ## [0.30.0] - 2026-10-12
 ### Añadido
 - **Inicio con indicadores** a la fecha de trabajo:

@@ -111,6 +111,9 @@ export const GLOSSARY = {
   withholding: { bc: 'IRPF withholding', sap: 'Withholding tax',
     es: { term: 'Retención de IRPF', def: 'Parte de la factura de un profesional o de un alquiler que el pagador ingresa en Hacienda por cuenta del perceptor (4751).', ex: 'Modelos 111 (profesionales) y 115 (alquileres).' },
     en: { term: 'Income tax withholding', def: 'Part of a professional’s or landlord’s invoice that the payer pays to the tax office on their behalf (4751).', ex: 'Forms 111 (professionals) and 115 (rents).' } },
+  openItem: { bc: 'Open Vendor / Customer Ledger Entries', sap: 'Open items (FBL1N / FBL5N)',
+    es: { term: 'Partida abierta', def: 'Factura que aún no está pagada o cobrada del todo. Un pago se aplica contra ella (la «liquida») y el resto queda pendiente.', ex: 'Factura de 1.060 € con un pago de 500 €: quedan 560 € pendientes.' },
+    en: { term: 'Open item', def: 'An invoice not yet fully paid or collected. A payment is applied to it and the rest stays open.', ex: 'Invoice of €1,060 with a €500 payment: €560 stays open.' } },
   accrual: { bc: 'Accrual', sap: 'Accrual',
     es: { term: 'Devengo', def: 'Los ingresos y gastos se anotan cuando ocurren, no cuando se cobran o se pagan.' },
     en: { term: 'Accrual', def: 'Income and expenses are recorded when they occur, not when they are collected or paid.' } },
@@ -119,6 +122,6 @@ export const GLOSSARY = {
 // Pantalla de la empresa → término que la explica (el ⓘ junto a la ruta "Informes › Balance")
 export const SECTION_TERM = {
   entry: 'entry', journal: 'journal', closing: 'closing', invoices: 'invoice', settlement: 'settlement',
-  withholdings: 'withholding', prorata: 'prorata', taxes: 'vat', balance: 'balance', pyg: 'pyg',
+  withholdings: 'withholding', payments: 'openItem', prorata: 'prorata', taxes: 'vat', balance: 'balance', pyg: 'pyg',
   cashflow: 'cashflow', ratios: 'ratio', reports: 'trialBalance', accounts: 'subaccount', partners: 'partner',
 }

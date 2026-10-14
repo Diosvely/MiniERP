@@ -844,3 +844,27 @@ asientos frecuentes.
 **Siguiente paso:** usar el ERP con contabilidad real y anotar cada fallo de la IA: cada uno será una regla o un caso
 de prueba de las fases 2 a 4. Después, el **Inmovilizado**.
 
+## 2026-10-14 · v0.32.0 · Cobros y pagos contra la factura (Tesorería I)
+
+**Qué se hizo**
+- **Pagos y cobros aplicados a facturas** (migración 0035): el ERP hace el asiento, se pueden anular y se pueden
+  vincular los pagos que ya estaban hechos a mano.
+- **Antigüedad de saldos** a una fecha, con el saldo contable al lado.
+- **Días de pago, vencimiento y estado** de cada factura.
+- 29 pruebas SQL (fase 29 nueva) y 89 tests de la web.
+
+**Lo que se aprende en esta fase**
+- **Partida abierta:** una factura sin pagar del todo. El pago se aplica contra ella; es la «liquidación» de BC y la
+  «compensación» de SAP (F-53 para pagar, F-28 para cobrar).
+- **Cuentas controladas:** en SAP y BC la 400/410 no se mueve a mano; se mueve desde Pagos. Es lo que en Versat se
+  llamaba cuentas controladas. Los ERP españoles lo permiten, y controlan después con cuadres y punteo.
+- **Pendiente real:** el total de la factura menos la retención (eso va a Hacienda, no al proveedor), menos las
+  rectificativas, menos lo pagado.
+- **Antigüedad de saldos:** la herramienta del controller para cobrar. Lo vencido hace más de 90 días es un riesgo de
+  impago (y, en contabilidad, un posible deterioro de créditos: cuentas 490 y 694).
+- **El saldo contable y las facturas tienen que cuadrar.** Si no cuadran, hay pagos sin vincular o saldos importados.
+
+**Decisiones:** ADR 0030 · Cobros y pagos contra la factura.
+
+**Siguiente paso:** v0.33.0 · cuentas controladas (modo estricto estilo SAP/BC o guiado estilo español) y controles
+de auditor en una pantalla «Comprobaciones».

@@ -814,3 +814,33 @@ asientos frecuentes.
 
 **Siguiente paso:** usar el ERP con contabilidad real y pulir lo que salga. Después, el **Inmovilizado**.
 
+## 2026-10-13 · v0.31.0 · IA guiada por reglas (retenciones) y panel de uso de la web
+
+**Qué se hizo**
+- **Retenciones guiadas por reglas** (migración 0033):
+  - la ficha del tercero manda (forma jurídica y retención por defecto);
+  - las reglas de cuándo hay retención están en la base de datos;
+  - el ERP calcula la retención y lo que queda a pagar;
+  - la IA corrige en una segunda vuelta si falta la retención.
+- **Factura recibida** con la retención de la ficha del tercero.
+- **Panel «Uso de la web»** (migración 0034): visitantes de la demo, registros y uso, solo para el propietario. Con
+  la historia a salvo de la limpieza nocturna.
+- 28 pruebas SQL (fases 27 y 28 nuevas) y 83 tests de la web.
+
+**Lo que se aprende en esta fase**
+- **Por qué alucina una IA en contabilidad:** acertaba el IGIC porque el ERP lo restringía y lo recalculaba, y fallaba
+  el IRPF porque nadie lo hacía. Lo que no está en una regla queda al azar del modelo.
+- **La IA clasifica, la base de datos contabiliza:** como los grupos contables de BC o la determinación de cuentas
+  de SAP. La IA entiende la operación; las cuentas, los tipos y los importes salen de datos maestros y reglas.
+- **La retención en la factura:** profesional persona física 15 % (7 % en inicio de actividad), alquiler de local
+  19 %. Se calcula sobre la base, sin impuesto, y el tercero cobra base + impuesto − retención: 1.000 + 70 − 150 = 920.
+  Una SL que presta servicios profesionales no lleva retención.
+- **El NIF dice la forma jurídica:** un NIF o NIE es de una persona física; un CIF, de una entidad.
+- **Medir sin rastrear:** los usuarios anónimos de la demo ya son el recuento. Al borrar datos, antes se guarda lo
+  que se quiere seguir midiendo.
+
+**Decisiones:** ADR 0029 · IA guiada por reglas (retenciones) y panel de uso de la web.
+
+**Siguiente paso:** usar el ERP con contabilidad real y anotar cada fallo de la IA: cada uno será una regla o un caso
+de prueba de las fases 2 a 4. Después, el **Inmovilizado**.
+

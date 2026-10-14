@@ -2,6 +2,26 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+[0.31.0] - 2026-10-13
+Añadido
+Retenciones guiadas por reglas:
+ficha del tercero con forma jurídica (sale del NIF) y retención por defecto;
+reglas de retención en la base de datos (erp.withholding_rules: 623 profesionales, 621 alquiler);
+el ERP calcula en el Tutor la retención y lo que queda a pagar al tercero;
+avisos de retención que falta o que no procede;
+migración 0033_withholding_rules.sql y prueba test_fase27_withholding_rules.sql.
+La factura recibida toma la retención de la ficha del tercero.
+Panel «Uso de la web» solo para el propietario: visitantes de la demo, registros, activos, empresas, importaciones y consultas a la IA, con barras por día. Migración 0034_web_usage.sql y prueba test_fase28_web_usage.sql.
+src/partnerTax.js y barPath en src/chart.js, con sus tests (83 en total).
+Cambiado
+Tutor de asientos:
+instrucciones con las reglas de retención y un ejemplo resuelto;
+la IA indica el código de la retención;
+los avisos informativos ya no provocan una segunda vuelta.
+Corregido
+La limpieza nocturna de invitados ya no hace perder la historia de visitas a la demo (erp.guest_history).
+Dos desplegables sin etiqueta en Terceros, y el territorio, que se salía de la tarjeta en el móvil.
+
 ## [0.30.0] - 2026-10-12
 ### Añadido
 - **Inicio con indicadores** a la fecha de trabajo:

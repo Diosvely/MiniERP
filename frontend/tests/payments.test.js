@@ -40,3 +40,16 @@ describe('cobros y pagos (v0.32.0)', () => {
     expect(linkCandidates(lines, 'collection')).toEqual([])
   })
 })
+
+import { agingTotals, difference } from '../src/payments.js'
+describe('antigüedad de saldos', () => {
+  const rows = [
+    { not_due: 0, d1_30: 12.1, d31_60: 0, d61_90: 0, d90_plus: 0, total: 12.1, account_balance: 12.1 },
+    { not_due: 0, d1_30: 0, d31_60: 0, d61_90: 0, d90_plus: 605, total: 605, account_balance: 505 },
+  ]
+  it('totales sin errores de céntimos y terceros que no cuadran con su cuenta', () => {
+    expect(agingTotals(rows)).toMatchObject({ d1_30: 12.1, d90_plus: 605, total: 617.1, account_balance: 517.1, unmatched: 1 })
+    expect(difference(rows[1])).toBe(-100)
+    expect(difference(rows[0])).toBe(0)
+  })
+})

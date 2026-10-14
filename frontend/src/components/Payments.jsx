@@ -9,6 +9,7 @@ import { buildApplications, linkCandidates, partnersWithPending, previewEntry } 
 import Link from './Link'
 import Empty from './Empty'
 import ErrorBox from './ErrorBox'
+import Aging from './Aging'
 
 // COBROS Y PAGOS (v0.32.0): se paga o se cobra CONTRA EL TERCERO Y SUS FACTURAS, y el ERP hace el asiento.
 // Como el diario de pagos de Business Central (tipo de cuenta Proveedor + liquidar) o la compensación de partidas
@@ -17,6 +18,7 @@ import ErrorBox from './ErrorBox'
 //   · Registrar: tercero → sus facturas pendientes (la más vencida arriba) → importes → banco o caja → asiento
 //   · ¿Ya lo pagaste con un asiento manual? Se VINCULA a sus facturas sin crear otro asiento
 //   · Historial con anulación (contraasiento) y enlace a cada asiento
+//   · Antigüedad de saldos: lo pendiente por tramos de vencimiento y el saldo contable al lado
 export default function Payments({ company, readOnly }) {
   const { t, language } = useI18n()
   const [type, setType] = useState('payment')                // payment = pagos · collection = cobros
@@ -128,11 +130,16 @@ export default function Payments({ company, readOnly }) {
   return (
     <>
       <nav className="pestanas">
-        {['payment', 'collection'].map((ty) => (
+        {['payment', 'collection', 'aging'].map((ty) => (
           <button key={ty} type="button" className={type === ty ? 'activa' : ''} onClick={() => changeType(ty)}>{t(`pay.tab.${ty}`)}</button>
         ))}
       </nav>
 
+      {type === 'aging' ? (
+        <Aging company={company} onPay={readOnly ? null : (invType, id) => {
+          changeType(invType === 'purchase' ? 'payment' : 'collection'); setPartnerId(id)
+        }} />
+      ) : (<>
       <section className="tarjeta pagos">
         <h2>{t(type === 'payment' ? 'pay.titlePayment' : 'pay.titleCollection')}</h2>
         <p className="ayuda">{t(type === 'payment' ? 'pay.introPayment' : 'pay.introCollection')}</p>
@@ -278,6 +285,7 @@ export default function Payments({ company, readOnly }) {
           ))}
         </ul>
       </section>
+      </>)}
     </>
   )
 }

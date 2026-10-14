@@ -54,3 +54,14 @@ export function linkCandidates(lines, paymentType, linked = new Set()) {
                    linked: linked.has(`${l.fiscal_year}/${l.entry_no}`) }))
     .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : b.entry_no - a.entry_no))
 }
+
+// ANTIGÜEDAD DE SALDOS: fila de totales y si el saldo contable cuadra con lo pendiente de las facturas
+export const AGING_BUCKETS = ['not_due', 'd1_30', 'd31_60', 'd61_90', 'd90_plus']
+export function agingTotals(rows) {
+  const keys = [...AGING_BUCKETS, 'total', 'account_balance']
+  const tot = Object.fromEntries(keys.map((k) => [k, rows.reduce((s, r) => s + Math.round(Number(r[k] ?? 0) * 100), 0) / 100]))
+  return { ...tot, unmatched: rows.filter((r) => unmatched(r)).length }
+}
+// Diferencia entre la cuenta del tercero y sus facturas pendientes (pagos a mano sin vincular, saldos importados…)
+export const difference = (r) => (Math.round(Number(r.account_balance ?? 0) * 100) - Math.round(Number(r.total ?? 0) * 100)) / 100
+export const unmatched = (r) => difference(r) !== 0

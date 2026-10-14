@@ -657,3 +657,10 @@ td.num { white-space: nowrap; }
 .lista-radio li { padding: 6px 0; }
 .lista-radio .opcion { flex-wrap: wrap; }
 .anular-pago { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; max-width: 420px; }
+.estado-factura { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; margin-top: 4px; font-size: .85rem; }
+.estado-factura.paid .insignia { background: var(--exito); color: var(--sobre-color); }
+.estado-factura .enlace { font-size: inherit; }
+.retencion-tercero input.dias, .dias-pago input { width: 6em; padding: 6px 8px; }
+.antiguedad td .enlace { font-size: inherit; text-align: left; }
+.antiguedad td.fuerte { font-weight: 600; color: var(--texto); }
+.antiguedad .descuadre { display: block; color: var(--aviso); font-size: .8rem; font-weight: 500; white-space: nowrap; }

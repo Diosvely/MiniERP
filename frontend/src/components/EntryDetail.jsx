@@ -68,6 +68,7 @@ export default function EntryDetail({ company, year, entryNo }) {
       <div className="etiquetas">
         {e.source === 'invoice' && <span className="etiqueta">{t('sourceInvoice')}</span>}
         {e.source === 'settlement' && <span className="etiqueta">{t('sourceSettlement')}</span>}
+        {e.source === 'payment' && <span className="etiqueta">{t('sourcePayment')}</span>}
         {e.source === 'closing' && <span className="etiqueta">🔒 {t('sourceClosing')}</span>}
         {/* La pareja de una anulación suele estar en el mismo ejercicio; si no, la ficha avisa de que no la encuentra */}
         {e.reversal_of_no && (

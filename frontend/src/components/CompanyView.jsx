@@ -12,6 +12,7 @@ import Reports from './Reports'
 import FinancialStatements from './FinancialStatements'
 import YearClosing from './YearClosing'
 import Withholdings from './Withholdings'
+import Payments from './Payments'
 import ProRata from './ProRata'
 import CashFlow from './CashFlow'
 import Ratios from './Ratios'
@@ -40,6 +41,7 @@ const SCREENS = [
   { id: 'journal', group: 'menuAccounting', basic: true },
   { id: 'closing', group: 'menuAccounting' },
   { id: 'invoices', group: 'menuInvoices', basic: true },
+  { id: 'payments', group: 'menuInvoices', basic: true },
   { id: 'settlement', group: 'menuTaxes', basic: true },
   { id: 'withholdings', group: 'menuTaxes' },
   { id: 'prorata', group: 'menuTaxes' },
@@ -55,8 +57,8 @@ const SCREENS = [
   // Ficha de un asiento: no sale en ningún menú, se llega desde el libro mayor (#/…/asiento/<año>/<nº>)
   { id: 'asiento', group: 'menuAccounting', basic: 'hidden', menu: false },
 ]
-// Orden del menú Básico (8 entradas como máximo): de lo que más se usa a lo que menos
-const BASIC_ORDER = ['home', 'invoices', 'entry', 'journal', 'settlement', 'balance', 'pyg', 'partners']
+// Orden del menú Básico (9 entradas como máximo): de lo que más se usa a lo que menos
+const BASIC_ORDER = ['home', 'invoices', 'payments', 'entry', 'journal', 'settlement', 'balance', 'pyg', 'partners']
 
 // Modo elegido: se guarda en este navegador (si no deja guardar, siempre empieza en Básico)
 const savedMode = () => { try { return localStorage.getItem('erp-modo') === 'auditor' ? 'auditor' : 'basic' } catch { return 'basic' } }
@@ -246,6 +248,7 @@ export default function CompanyView({ company: base, readOnly, canPublish, isOwn
         {section === 'journal' && <GeneralJournal company={company} readOnly={readOnly} refreshKey={refreshKey} />}
         {section === 'closing' && <YearClosing company={company} readOnly={readOnly} />}
         {section === 'invoices' && <Invoices company={company} readOnly={readOnly} />}
+        {section === 'payments' && <Payments company={company} readOnly={readOnly} />}
         {section === 'settlement' && <TaxSettlement company={company} readOnly={readOnly} />}
         {section === 'prorata' && <ProRata company={company} readOnly={readOnly} />}
         {section === 'withholdings' && <Withholdings company={company} />}

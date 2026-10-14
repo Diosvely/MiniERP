@@ -16,6 +16,12 @@ describe('friendlyError · errores de la base de datos en lenguaje claro', () =>
     expect(f.to).toBe('partners')
     expect(friendlyError('Withholding only applies to vendors and creditors', tEn, 'en').title).toContain('vendors and creditors')
   })
+  it('cobros y pagos (v0.32.0)', () => {
+    const f = friendlyError('Invoice C-2026-0001 only has 560.00 pending (you applied 600.00)', tEs, 'es')
+    expect(f.title).toBe('La factura C-2026-0001 solo tiene 560,00 pendientes (has aplicado 600,00)')
+    expect(friendlyError('This entry belongs to a payment: cancel the payment instead', tEs, 'es').to).toBe('payments')
+    expect(friendlyError('Choose a cash or bank account (57)', tEn, 'en').title).toBe('Choose a bank or cash account (57)')
+  })
   it('sin ejercicio: lleva a Cierre del ejercicio', () => {
     const f = friendlyError({ message: 'No fiscal year for date 2027-01-15' }, tEs, 'es')
     expect(f.title).toContain('2027-01-15')

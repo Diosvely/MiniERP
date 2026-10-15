@@ -1,0 +1,193 @@
+-- =====================================================================
+-- erp.run_audit_checks · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
+-- Definida en: 0037_audit_checks 0039_review_fixes   →   la vigente es la de 0039_review_fixes
+-- =====================================================================
+
+CREATE OR REPLACE FUNCTION erp.run_audit_checks(p_company uuid, p_year integer, p_to_date date DEFAULT NULL::date)
+ RETURNS TABLE(code text, sort integer, area text, status text, title text, title_en text, why text, why_en text, fix text, fix_en text, screen text, book numeric, ledger numeric, difference numeric, items integer, details jsonb)
+ LANGUAGE plpgsql
+ STABLE
+AS $function$
+declare
+  v_to     date := coalesce(p_to_date, (select f.ending_date from erp.fiscal_years f where f.company_id = p_company and f.year = p_year));
+  v_type   text := (select case c.tax_territory when 'canary_islands' then 'IGIC' else 'VAT' end from erp.companies c where c.id = p_company);
+  r        record;
+  v_sev    text;
+  v_prefix text;
+  v_sign   int;
+  v_err    boolean;
+  v_book numeric; v_ledger numeric; v_items int; v_det jsonb;
+begin
+  if v_type is null or v_to is null then return; end if;     -- empresa o ejercicio que no existe (o no se puede ver)
+
+  for r in select * from erp.audit_checks c order by c.sort loop
+    v_book := null; v_ledger := null; v_items := 0; v_det := '[]'; v_sev := r.severity;
+
+    if r.code in ('vat_input', 'vat_output') then
+      -- 472 al Debe (soportado) · 477 al Haber (repercutido); sin liquidación ni prorrata
+      v_prefix := case r.code when 'vat_input' then '472' else '477' end;
+      v_sign   := case r.code when 'vat_input' then 1 else -1 end;
+      select coalesce(sum(v_sign * (a.debit - a.credit)) filter (where a.source = 'invoice'), 0),
+             coalesce(sum(v_sign * (a.debit - a.credit)), 0)
+      into v_book, v_ledger
+      from erp.audit_lines(p_company, p_year, v_to) a
+      where a.account_no like v_prefix || '%' and a.source not in ('settlement', 'pro_rata');
+      -- Detalle: asientos manuales o importados (cada uno junto con su contraasiento: si se anularon, no salen)
+      with g as (
+        select a.k, a.source, min(a.account_no) as account_no, sum(v_sign * (a.debit - a.credit)) as amount
+        from erp.audit_lines(p_company, p_year, v_to) a
+        where a.account_no like v_prefix || '%' and a.source in ('manual', 'import')
+        group by a.k, a.source having sum(a.debit - a.credit) <> 0
+      ), n as (
+        select g.*, e.entry_no, e.posting_date, row_number() over (order by e.posting_date, e.entry_no) as rn
+        from g join erp.journal_entries e on e.id = g.k
+      )
+      select count(*)::int,
+             coalesce(jsonb_agg(jsonb_build_object('entry_id', n.k, 'entry_no', n.entry_no, 'posting_date', n.posting_date,
+                                                   'source', n.source, 'account_no', n.account_no, 'amount', n.amount)
+                                order by n.rn) filter (where n.rn <= 50), '[]')
+      into v_items, v_det
+      from n;
+
+    elsif r.code = 'tax_quota' then
+      -- v0.33.1: apuntes manuales o importados en 472 / 477 con base y tipo, cuya cuota no es base × tipo
+      --   (tolerancia de 1 céntimo por redondeo; un asiento ya anulado no cuenta)
+      with x as (
+        select e.id as entry_id, e.entry_no, e.posting_date,
+               case when e.import_batch_id is not null then 'import' else 'manual' end as source,
+               g.account_no, l.tax_code, c.rate_pct, l.tax_base,
+               abs(l.debit - l.credit) as amount, round(abs(l.tax_base) * c.rate_pct / 100, 2) as expected
+        from erp.journal_lines l
+        join erp.journal_entries e on e.id = l.entry_id
+        join erp.fiscal_years fy on fy.id = e.fiscal_year_id
+        join erp.gl_accounts g on g.id = l.gl_account_id
+        join erp.tax_codes c on c.code = l.tax_code
+        where e.company_id = p_company and fy.year = p_year and e.status = 'posted' and e.entry_type = 'normal'
+          and e.posting_date <= v_to and e.reversal_of is null
+          and not exists (select 1 from erp.journal_entries rv
+                          where rv.reversal_of = e.id and rv.status = 'posted' and rv.posting_date <= v_to)
+          and not exists (select 1 from erp.invoices i where i.entry_id = e.id)
+          and (g.account_no like '472%' or g.account_no like '477%')
+          and coalesce(l.tax_base, 0) <> 0
+      ), n as (
+        select x.*, row_number() over (order by x.posting_date, x.entry_no) as rn
+        from x where abs(x.amount - x.expected) > 0.01
+      )
+      select count(*)::int,
+             coalesce(jsonb_agg(jsonb_build_object('entry_id', n.entry_id, 'entry_no', n.entry_no, 'posting_date', n.posting_date,
+                                                   'source', n.source, 'account_no', n.account_no, 'tax_code', n.tax_code,
+                                                   'rate_pct', n.rate_pct, 'tax_base', n.tax_base,
+                                                   'amount', n.amount, 'expected', n.expected)
+                                order by n.rn) filter (where n.rn <= 50), '[]')
+      into v_items, v_det
+      from n;
+
+    elsif r.code = 'withholdings' then
+      -- Libro: retenciones practicadas en facturas recibidas (modelos 111 / 115)
+      select coalesce(sum(w.withholding_amount), 0) into v_book
+      from erp.v_withholding_register w
+      where w.company_id = p_company and w.fiscal_year = p_year and w.side = 'withheld' and w.posting_date <= v_to;
+      -- Contabilidad: asientos que ABONAN la 4751 (las retenciones). Los que la cargan son el ingreso en Hacienda.
+      -- Un contraasiento va con su original (por eso se agrupa por k y el signo es el del original).
+      with g as (
+        select a.k, a.source, min(a.account_no) as account_no, sum(a.credit - a.debit) as amount,
+               (select sum(l.credit - l.debit) from erp.journal_lines l join erp.gl_accounts ga on ga.id = l.gl_account_id
+                where l.entry_id = a.k and ga.account_no like '4751%') as original
+        from erp.audit_lines(p_company, p_year, v_to) a
+        where a.account_no like '4751%'
+        group by a.k, a.source
+      ), n as (
+        select g.*, e.entry_no, e.posting_date,
+               row_number() over (order by e.posting_date, e.entry_no) as rn
+        from g join erp.journal_entries e on e.id = g.k
+        where g.original > 0
+      )
+      select coalesce(sum(n.amount), 0),
+             count(*) filter (where n.source in ('manual', 'import') and n.amount <> 0)::int,
+             coalesce(jsonb_agg(jsonb_build_object('entry_id', n.k, 'entry_no', n.entry_no, 'posting_date', n.posting_date,
+                                                   'source', n.source, 'account_no', n.account_no, 'amount', n.amount)
+                                order by n.rn) filter (where n.source in ('manual', 'import') and n.amount <> 0), '[]')
+      into v_ledger, v_items, v_det
+      from n;
+
+    elsif r.code = 'partners' then
+      with x as (
+        select 'purchase' as t, a.* from erp.aging(p_company, 'purchase', v_to) a
+        union all
+        select 'sale', a.* from erp.aging(p_company, 'sale', v_to) a
+      ), d as (
+        select x.*, row_number() over (order by abs(x.account_balance - x.total) desc, x.partner_name) as rn
+        from x where x.account_balance <> x.total
+      )
+      select coalesce(sum(d.total), 0), coalesce(sum(d.account_balance), 0), count(*)::int,
+             coalesce(jsonb_agg(jsonb_build_object('partner_id', d.partner_id, 'partner_name', d.partner_name,
+                                                   'account_no', d.partner_account_no, 'invoice_type', d.t,
+                                                   'pending', d.total, 'balance', d.account_balance,
+                                                   'amount', d.account_balance - d.total)
+                                order by d.rn) filter (where d.rn <= 50), '[]')
+      into v_book, v_ledger, v_items, v_det
+      from d;
+
+    elsif r.code = 'anomalies' then
+      select count(*)::int, bool_or(b.severity = 'error'),
+             coalesce(jsonb_agg(jsonb_build_object('account_no', b.account_no, 'account_name', b.name, 'expected', b.expected,
+                                                   'amount', b.balance, 'reclass_to', b.reclass_to, 'severity', b.severity,
+                                                   'note', b.note, 'note_en', b.note_en)), '[]')
+      into v_items, v_err, v_det
+      from erp.balance_anomalies(p_company, p_year, null, v_to) b;
+      if v_err then v_sev := 'error'; end if;
+      v_det := coalesce((select jsonb_agg(j.d) from jsonb_array_elements(v_det) with ordinality j(d, n) where j.n <= 50), '[]');
+
+    elsif r.code = 'tax_territory' then
+      with g as (
+        select a.k, a.source, min(a.account_no) as account_no, min(a.tax_code) as tax_code, sum(a.debit - a.credit) as amount
+        from erp.audit_lines(p_company, p_year, v_to) a join erp.tax_codes c on c.code = a.tax_code
+        where c.tax_type <> v_type
+        group by a.k, a.source
+        having count(*) filter (where a.entry_id = a.k) > count(*) filter (where a.entry_id <> a.k)  -- sin anular
+      ), n as (
+        select g.*, e.entry_no, e.posting_date, row_number() over (order by e.posting_date, e.entry_no) as rn
+        from g join erp.journal_entries e on e.id = g.k
+      )
+      select count(*)::int,
+             coalesce(jsonb_agg(jsonb_build_object('entry_id', n.k, 'entry_no', n.entry_no, 'posting_date', n.posting_date,
+                                                   'source', n.source, 'account_no', n.account_no, 'tax_code', n.tax_code,
+                                                   'amount', n.amount)
+                                order by n.rn) filter (where n.rn <= 50), '[]')
+      into v_items, v_det
+      from n;
+
+    elsif r.code = 'controlled' then
+      -- Manuales sin anular que tocan una cuenta controlada; no cuentan los vinculados a un pago (ya están conciliados)
+      with m as (
+        select distinct a.entry_id, a.entry_no, a.posting_date
+        from erp.audit_lines(p_company, p_year, v_to) a
+        where a.source = 'manual' and a.entry_id = a.k
+      ), h as (
+        select m.*, erp.entry_controlled_lines(m.entry_id) as hit
+        from m
+        where not exists (select 1 from erp.journal_entries x
+                          where x.reversal_of = m.entry_id and x.status = 'posted' and x.posting_date <= v_to)
+          and not exists (select 1 from erp.payments py where py.entry_id = m.entry_id and py.linked)
+      ), n as (
+        select h.*, row_number() over (order by h.posting_date, h.entry_no) as rn
+        from h where jsonb_array_length(h.hit) > 0
+      )
+      select count(*)::int,
+             coalesce(jsonb_agg(jsonb_build_object('entry_id', n.entry_id, 'entry_no', n.entry_no, 'posting_date', n.posting_date,
+                                                   'account_no', n.hit->0->>'account_no', 'modules', n.hit->0->'modules')
+                                order by n.rn) filter (where n.rn <= 50), '[]')
+      into v_items, v_det
+      from n;
+    end if;
+
+    code := r.code; sort := r.sort; area := r.area;
+    status := case when coalesce(v_ledger, 0) = coalesce(v_book, 0) and v_items = 0 then 'ok' else v_sev end;
+    title := r.title; title_en := r.title_en; why := r.why; why_en := r.why_en; fix := r.fix; fix_en := r.fix_en;
+    screen := r.screen; book := v_book; ledger := v_ledger;
+    difference := case when v_book is null then null else v_ledger - v_book end;
+    items := v_items; details := v_det;
+    return next;
+  end loop;
+end $function$
+;

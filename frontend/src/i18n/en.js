@@ -854,6 +854,7 @@ export default {
     ok: {
       vat_input: 'Account 472 matches the register of received invoices.',
       vat_output: 'Account 477 matches the register of issued invoices.',
+      tax_quota: 'Every manual 472 / 477 amount equals base × rate.',
       withholdings: 'Account 4751 matches the invoice withholdings (forms 111 / 115).',
       partners: 'Every vendor and customer matches its open invoices.',
       anomalies: 'No account has a balance opposite to its nature.',
@@ -862,6 +863,7 @@ export default {
     },
     book: { vat_input: 'VAT register', vat_output: 'VAT register', withholdings: 'Forms 111 / 115', partners: 'Open invoices' },
     ledger: { vat_input: 'Books (472)', vat_output: 'Books (477)', withholdings: 'Books (4751)', partners: 'Account balances' },
+    quotaCell: '{a} (base {b} × {r}% = {e})',
     seeCases: 'See the {n} cases',
     seeCase: 'See the case',
     firstN: 'showing the first {n}',

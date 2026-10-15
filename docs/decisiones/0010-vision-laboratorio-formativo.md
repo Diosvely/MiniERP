@@ -1,20 +1,33 @@
-# ADR 0010 ∑ VisiÛn: laboratorio de pr·ctica contable, complemento a la formaciÛn oficial
+# ADR 0010 ¬∑ Visi√≥n: laboratorio de pr√°ctica contable, complemento a la formaci√≥n oficial
 
-**Fecha:** 2026-10-06 ∑ **Estado:** aceptada
+**Fecha:** 2026-10-06 ¬∑ **Estado:** aceptada ¬∑ matizada el 2026-10-15 por las ADR 0016 y 0021 (ver al final)
 
 ## Contexto
 En FP ya se usan programas reales con licencias educativas (ContaSol de Software DELSOL, Sage 50 con Sage Educa);
-en la universidad la contabilidad se enseÒa sobre todo con teorÌa, papel y Excel. Esas herramientas son para
-trabajar, no para aprender: no explican el porquÈ, requieren licencia o instalaciÛn del centro y no corrigen ejercicios.
+en la universidad la contabilidad se ense√±a sobre todo con teor√≠a, papel y Excel. Esas herramientas son para
+trabajar, no para aprender: no explican el porqu√©, requieren licencia o instalaci√≥n del centro y no corrigen ejercicios.
 
-## DecisiÛn
-1. El Mini ERP es un laboratorio de pr·ctica de contabilidad espaÒola que complementa la formaciÛn oficial;
+## Decisi√≥n
+1. El Mini ERP es un laboratorio de pr√°ctica de contabilidad espa√±ola que complementa la formaci√≥n oficial;
    no compite con ContaSol, Sage ni A3, ni es un software contable para empresas reales.
 2. El autor es el primer estudiante del laboratorio.
-3. P˙blico: autodidactas, alumnos de FP o universidad que practican en casa, personas en reconversiÛn profesional
-   y candidatos que se preparan para trabajar en una gestorÌa.
-4. Diferencia: explicar el porquÈ contable, acceso web sin instalaciÛn y, en el futuro, supuestos pr·cticos autocorregidos.
+3. P√∫blico: autodidactas, alumnos de FP o universidad que practican en casa, personas en reconversi√≥n profesional
+   y candidatos que se preparan para trabajar en una gestor√≠a.
+4. Diferencia: explicar el porqu√© contable, acceso web sin instalaci√≥n y, en el futuro, supuestos pr√°cticos autocorregidos.
 5. No se cobra por usar el ERP.
 
 ## Consecuencias
-- No se aceptan contabilidades reales de empresas en el ERP. 
+- No se aceptan contabilidades reales de empresas en el ERP.
+
+## Actualizaci√≥n (2026-10-15): contabilidades reales
+Una revisi√≥n externa se√±al√≥ que esta consecuencia (¬´no se aceptan contabilidades reales¬ª) contradice la ADR 0016
+(importaci√≥n de diarios reales). Las dos se refieren a cosas distintas, y queda as√≠:
+
+1. **Lo que sigue en pie:** el Mini ERP **no es el programa oficial** con el que una empresa lleva y presenta su
+   contabilidad. No hay libros legalizados, ni presentaci√≥n a la AEAT (SII, Verifactu, modelos), ni garant√≠a. Para
+   eso est√°n ContaSol, Sage o A3.
+2. **Lo que s√≠ se permite:** **estudiar** contabilidades reales con las herramientas del laboratorio (ADR 0016):
+   importar el diario de otro ERP o registrar operaciones reales para practicar y encontrar fallos.
+   - Siempre en una empresa **privada** de quien la importa.
+   - Los datos reales **nunca entran en el repositorio**; las pruebas usan datos inventados.
+   - Solo se publica como demo si su **titular** lo decide, **anonimizada** y con su **menci√≥n** (ADR 0021 y 0027).

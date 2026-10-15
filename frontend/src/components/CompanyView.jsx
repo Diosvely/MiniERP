@@ -9,6 +9,7 @@ import Taxes from './Taxes'
 import Invoices from './Invoices'
 import TaxSettlement from './TaxSettlement'
 import Reports from './Reports'
+import Checks from './Checks'
 import FinancialStatements from './FinancialStatements'
 import YearClosing from './YearClosing'
 import Withholdings from './Withholdings'
@@ -51,6 +52,7 @@ const SCREENS = [
   { id: 'cashflow', group: 'menuReports' },
   { id: 'ratios', group: 'menuReports' },
   { id: 'reports', group: 'menuReports' },
+  { id: 'checks', group: 'menuReports' },
   { id: 'accounts', group: 'menuMasterData' },
   { id: 'partners', group: 'menuMasterData', basic: true },
   { id: 'access', group: 'menuMasterData', owner: true },
@@ -258,6 +260,7 @@ export default function CompanyView({ company: base, readOnly, canPublish, isOwn
         {section === 'cashflow' && <CashFlow company={company} />}
         {section === 'ratios' && <Ratios company={company} />}
         {section === 'reports' && <Reports company={company} params={params} />}
+        {section === 'checks' && <Checks company={company} readOnly={readOnly} onChanged={onChanged} />}
         {section === 'asiento' && <EntryDetail key={params.join('/')} company={company} year={params[0]} entryNo={params[1]} />}
         {section === 'accounts' && <Accounts company={company} readOnly={readOnly} />}
         {section === 'partners' && <Partners company={company} readOnly={readOnly} />}

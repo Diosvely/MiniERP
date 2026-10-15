@@ -1,10 +1,11 @@
 import { money } from './format'
+import { moduleScreen } from './controlled'
 
 // ERRORES EN LENGUAJE CLARO
 // La base de datos protege las reglas contables y, cuando algo no se puede hacer, responde con un mensaje técnico en
 // inglés ("Unbalanced entry: debit 100 ≠ credit 90 (difference 10)"). Aquí se reconoce cada mensaje con un patrón,
 // se sacan sus datos ({1}, {2}…) y se traduce a: QUÉ HA PASADO (title) + QUÉ HACER (hint) + DÓNDE ARREGLARLO (to).
-//   [patrón, clave del i18n (err.<clave>.title / .hint), pantalla donde se arregla (opcional)]
+//   [patrón, clave del i18n (err.<clave>.title / .hint), pantalla donde se arregla (opcional; o una función del mensaje)]
 // Si un mensaje no se reconoce, se muestra tal cual (muchos ya vienen traducidos por la propia pantalla).
 const RULES = [
   // Ejercicios y periodos
@@ -30,6 +31,9 @@ const RULES = [
   [/^This entry belongs to a tax settlement/, 'entryFromSettlement', 'settlement'],
   [/^This entry belongs to a year-end closing/, 'entryFromClosing', 'closing'],
   [/^This entry is a pro rata regularization/, 'entryFromProRata', 'prorata'],
+  // Cuentas controladas (v0.33.0, modo estricto): la pantalla depende del módulo que mueve la cuenta
+  [/^Account (\S+) is controlled by (.+?): register it from that screen/, 'controlled', (m) => moduleScreen(m[2])],
+  [/^Invalid control mode/, 'controlMode'],
 
   // Cuentas
   [/^Line (\d+): account (\S+) is a heading account$/, 'lineHeadingAccount', 'accounts'],
@@ -158,7 +162,7 @@ export function friendlyError(error, t, language = 'es') {
     return {
       title: fill(title, values),
       hint: hint === `err.${key}.hint` ? '' : fill(hint, values),
-      to: to ?? null,
+      to: (typeof to === 'function' ? to(m) : to) ?? null,
       technical: message,
     }
   }

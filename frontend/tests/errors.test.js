@@ -22,6 +22,14 @@ describe('friendlyError · errores de la base de datos en lenguaje claro', () =>
     expect(friendlyError('This entry belongs to a payment: cancel the payment instead', tEs, 'es').to).toBe('payments')
     expect(friendlyError('Choose a cash or bank account (57)', tEn, 'en').title).toBe('Choose a bank or cash account (57)')
   })
+  it('cuenta controlada en modo estricto (v0.33.0): lleva a la pantalla de su módulo', () => {
+    const msg = (a, m) => `Account ${a} is controlled by ${m}: register it from that screen (or switch the company to guided mode)`
+    const f = friendlyError(msg('41000001', 'invoices, payments'), tEs, 'es')
+    expect(f.title).toBe('La 41000001 es una cuenta controlada: no admite asientos manuales')
+    expect(f.to).toBe('payments')
+    expect(friendlyError(msg('47200021', 'invoices, settlement'), tEs, 'es').to).toBe('invoices')
+    expect(friendlyError(msg('47500001', 'settlement'), tEn, 'en').to).toBe('settlement')
+  })
   it('sin ejercicio: lleva a Cierre del ejercicio', () => {
     const f = friendlyError({ message: 'No fiscal year for date 2027-01-15' }, tEs, 'es')
     expect(f.title).toContain('2027-01-15')

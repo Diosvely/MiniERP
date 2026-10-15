@@ -1010,7 +1010,7 @@ export default {
 
 // v0.27.0 · In-app glossary
   glossary: 'Glossary',
-  glossaryIntro: 'Key terms of Spanish accounting, with their name in Business Central and SAP. On any screen, press ⓘ next to a term to see its explanation.',
+  glossaryIntro: 'Key terms of Spanish accounting, with their PGC accounts and their name in Business Central and SAP. On any screen, press ⓘ next to a term to see its explanation.',
   glossarySearch: 'Search a term (debit, pro rata, 472…)',
   glossaryCount: '{n} of {m} terms',
   glossaryBack: 'Back',

@@ -6,7 +6,8 @@ import { ICON } from '../icons'
 
 const norm = (s) => String(s ?? '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
 
-// PÁGINA GLOSARIO (#/glosario): todos los términos, con buscador, en el idioma elegido y con su nombre en BC y SAP.
+// PÁGINA GLOSARIO (#/glosario): todos los términos, con buscador, en el idioma elegido, con sus cuentas del PGC
+// y su nombre en BC y SAP (el buscador también encuentra por cuenta: «472»).
 // Se abre desde la cabecera o desde cualquier globo ⓘ, con sesión o sin ella.
 export default function Glossary() {
   const { t, language } = useI18n()
@@ -15,7 +16,7 @@ export default function Glossary() {
     .map(([id, g]) => ({ id, ...g, ...(g[language] ?? g.es) }))
     .sort((a, b) => a.term.localeCompare(b.term, language))
   const query = norm(q).trim()
-  const shown = query ? entries.filter((e) => norm(`${e.term} ${e.def} ${e.bc} ${e.sap}`).includes(query)) : entries
+  const shown = query ? entries.filter((e) => norm(`${e.term} ${e.def} ${e.bc} ${e.sap} ${(e.pgc ?? []).join(' ')}`).includes(query)) : entries
 
   return (
     <section className="tarjeta glosario">
@@ -34,7 +35,7 @@ export default function Glossary() {
             <dd>
               {e.def}
               {e.ex && <span className="globo-ejemplo">{e.ex}</span>}
-              <span className="globo-erp">Business Central: {e.bc} · SAP: {e.sap}</span>
+              <span className="globo-erp">{e.pgc?.length ? `PGC: ${e.pgc.join(', ')} · ` : ''}Business Central: {e.bc} · SAP: {e.sap}</span>
             </dd>
           </div>
         ))}

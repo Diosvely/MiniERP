@@ -1009,7 +1009,7 @@ export default {
 
   // v0.27.0 · Glosario en la app
   glossary: 'Glosario',
-  glossaryIntro: 'Los términos clave de la contabilidad española, con su nombre en Business Central y en SAP. En las pantallas, pulsa ⓘ junto a un término para ver su explicación.',
+  glossaryIntro: 'Los términos clave de la contabilidad española, con sus cuentas del PGC y su nombre en Business Central y en SAP. En las pantallas, pulsa ⓘ junto a un término para ver su explicación.',
   glossarySearch: 'Buscar un término (debe, prorrata, 472…)',
   glossaryCount: '{n} de {m} términos',
   glossaryBack: 'Volver',

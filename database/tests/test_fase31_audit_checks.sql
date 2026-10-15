@@ -60,12 +60,13 @@ begin
   select partner_id into cli     from erp.create_partner(e, 'customer', 'Cliente Madrid SL', 'B11111119');
 
   -- ---------- 1. Catálogo y empresa vacía: todo en verde ----------
-  assert (select count(*) from erp.audit_checks) = 7, 'siete comprobaciones';
+  -- (la 0039 añade «tax_quota»: 8 comprobaciones)
+  assert (select count(*) from erp.audit_checks) = 8, 'ocho comprobaciones';
   assert (select count(*) from erp.run_audit_checks(e, 2026) where status <> 'ok') = 0, 'empresa vacía: todo ok';
   assert (select string_agg(code, ',' order by sort) from erp.run_audit_checks(e, 2026))
-         = 'vat_input,vat_output,withholdings,partners,anomalies,tax_territory,controlled';
+         = 'vat_input,vat_output,tax_quota,withholdings,partners,anomalies,tax_territory,controlled';
   perform public.manual(e, '2026-01-02', '[["57200001",10000,0],["10000001",0,10000]]');
-  raise notice 'OK  · siete comprobaciones; empresa vacía, todo ok';
+  raise notice 'OK  · ocho comprobaciones; empresa vacía, todo ok';
 
   -- ---------- 2. Con facturas, todo cuadra ----------
   f1 := public.factura(e, 'purchase', abogada, '2026-02-10', '[{"account_no":"62300001","amount":1000,"tax_code":"VAT21"}]', 'IRPF15');
@@ -144,7 +145,7 @@ select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000b2
 do $$
 declare e uuid := (select v from public.ctx where k = 'empresa');
 begin
-  assert (select count(*) from erp.run_audit_checks(e, 2026)) = 7, 'el lector las ve';
+  assert (select count(*) from erp.run_audit_checks(e, 2026)) = 8, 'el lector las ve';
   assert public.chk(e, 'partners') = 'ok · 0 · 0 · 0', public.chk(e, 'partners');
 end $$;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000c3', false) \gset

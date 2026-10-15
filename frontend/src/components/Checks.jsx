@@ -11,7 +11,7 @@ import ErrorBox from './ErrorBox'
 
 const ICONS = { ok: '✓', info: 'ℹ', warning: '⚠', error: '✕' }
 // Comprobaciones cuyo detalle es una lista de asientos (con enlace a su ficha)
-const BY_ENTRY = ['vat_input', 'vat_output', 'withholdings', 'tax_territory', 'controlled']
+const BY_ENTRY = ['vat_input', 'vat_output', 'tax_quota', 'withholdings', 'tax_territory', 'controlled']
 
 // COMPROBACIONES (v0.33.0): los controles posteriores de los ERP españoles (A3, Sage), a una fecha.
 // La base de datos los calcula (erp.run_audit_checks, 0037) y aquí se enseñan con el porqué, el detalle enlazado
@@ -74,7 +74,10 @@ export default function Checks({ company, readOnly, onChanged }) {
       head = [t('chk.col.entry'), t('chk.col.date'), t('chk.col.account'), r.code === 'controlled' ? t('chk.col.module') : t('chk.col.amount'), t('chk.col.source')]
       body = d.map((x) => [entryLink(x), shortDate(x.posting_date), x.account_no,
         r.code === 'controlled' ? (x.modules ?? []).map((mm) => t(`ctl.module.${mm}`)).join(' / ')
-          : r.code === 'tax_territory' ? `${x.tax_code} · ${m(x.amount)}` : m(x.amount),
+          : r.code === 'tax_territory' ? `${x.tax_code} · ${m(x.amount)}`
+          : r.code === 'tax_quota' ? t('chk.quotaCell').replace('{a}', m(x.amount)).replace('{b}', m(x.tax_base))
+              .replace('{r}', Number(x.rate_pct).toLocaleString(en ? 'en-GB' : 'es-ES')).replace('{e}', m(x.expected))
+          : m(x.amount),
         x.source ? t(`chk.source.${x.source}`) : t('chk.source.manual')])
     } else if (r.code === 'partners') {
       head = [t('chk.col.partner'), t('chk.col.account'), t('chk.col.pending'), t('chk.col.balance'), t('chk.col.difference')]

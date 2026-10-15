@@ -853,6 +853,7 @@ export default {
     ok: {
       vat_input: 'La 472 coincide con el libro registro de facturas recibidas.',
       vat_output: 'La 477 coincide con el libro registro de facturas emitidas.',
+      tax_quota: 'Todas las cuotas manuales de la 472 / 477 son base × tipo.',
       withholdings: 'La 4751 coincide con las retenciones de las facturas (modelos 111 / 115).',
       partners: 'Cada proveedor y cliente cuadra con sus facturas pendientes.',
       anomalies: 'Ninguna cuenta tiene el saldo al revés de su naturaleza.',
@@ -861,6 +862,7 @@ export default {
     },
     book: { vat_input: 'Libro registro', vat_output: 'Libro registro', withholdings: 'Modelos 111 / 115', partners: 'Facturas pendientes' },
     ledger: { vat_input: 'Contabilidad (472)', vat_output: 'Contabilidad (477)', withholdings: 'Contabilidad (4751)', partners: 'Saldo de sus cuentas' },
+    quotaCell: '{a} (base {b} × {r} % = {e})',
     seeCases: 'Ver los {n} casos',
     seeCase: 'Ver el caso',
     firstN: 'se muestran los {n} primeros',

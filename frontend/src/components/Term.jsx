@@ -49,7 +49,7 @@ export default function Term({ id, children }) {
           <strong>{e.term}</strong>
           <span>{e.def}</span>
           {e.ex && <span className="globo-ejemplo">{e.ex}</span>}
-          <span className="globo-erp">BC: {g.bc} · SAP: {g.sap}</span>
+          <span className="globo-erp">{g.pgc?.length ? `PGC: ${g.pgc.join(', ')} · ` : ''}BC: {g.bc} · SAP: {g.sap}</span>
           <Link to="/glosario" className="enlace">{t('glossaryAll')} →</Link>
         </span>
       )}

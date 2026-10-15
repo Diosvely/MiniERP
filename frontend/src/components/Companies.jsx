@@ -10,7 +10,7 @@ import Empty from './Empty'
 import ErrorBox from './ErrorBox'
 import WebUsage from './WebUsage'
 
-const emptyForm = { name: '', vat_registration_no: '', industry: 'services', tax_territory: 'canary_islands' }
+const emptyForm = { name: '', vat_registration_no: '', industry: 'services', tax_territory: 'canary_islands', control_mode: 'strict' }
 
 // Lista de empresas: las mías + las de demostración (solo lectura) + alta de empresa
 export default function Companies({ session }) {
@@ -204,6 +204,12 @@ export default function Companies({ session }) {
               <option key={tt} value={tt}>{t(`territory.${tt}`)}</option>
             ))}
           </select>
+          {/* Cuentas controladas (v0.33.0): estricto como SAP / BC, o guiado como los ERP españoles. Se cambia en Comprobaciones. */}
+          <label htmlFor="alta-control">{t('controlModeLabel')}</label>
+          <select id="alta-control" value={form.control_mode} onChange={change('control_mode')} aria-describedby="alta-control-ayuda">
+            {['strict', 'guided'].map((cm) => <option key={cm} value={cm}>{t(`controlMode.${cm}.label`)}</option>)}
+          </select>
+          <p id="alta-control-ayuda" className="ayuda">{t(`controlMode.${form.control_mode}.help`)}</p>
           <button type="submit">{t('createCompany')}</button>
         </form>
       ) : (

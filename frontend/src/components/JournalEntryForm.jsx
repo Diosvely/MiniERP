@@ -10,6 +10,7 @@ import ErrorBox from './ErrorBox'
 import { TEMPLATES } from '../templates'
 import Term from './Term'
 import { ICON } from '../icons'
+import { controlledLines, moduleScreen } from '../controlled'
 
 const emptyLine = () => ({ accountText: '', gl_account_id: '', debit: '', credit: '', description: '' })
 
@@ -50,6 +51,7 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
   const undoTimer = useRef(null)
   const [suggest, setSuggest] = useState(null)   // { line, active } · lista de cuentas abierta bajo una línea
   const [missing, setMissing] = useState([])     // grupos del PGC sin subcuenta al aplicar una plantilla
+  const [rules, setRules] = useState([])         // cuentas controladas (0036): qué módulo mueve cada cuenta
 
   // Solo subcuentas (posting): son las únicas donde se puede apuntar
   const loadAccounts = () => fetchAll(() => supabase.from('gl_accounts').select('id, account_no, name, name_en')
@@ -61,6 +63,7 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
     supabase.from('fiscal_years').select('id, year, starting_date, ending_date, status')
       .eq('company_id', company.id)
       .then(({ data }) => setFiscalYears(data ?? []))
+    supabase.from('control_rules').select('account_prefix, modules, side').then(({ data }) => setRules(data ?? []))
   }, [company.id])
 
   // Asiento propuesto por el Tutor: se recargan las cuentas (puede haber subcuentas nuevas) y se rellenan las líneas.
@@ -96,6 +99,17 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
   const difference = totalDebit - totalCredit
   const usedLines = lines.filter((l) => l.gl_account_id && (cents(l.debit) || cents(l.credit)))
   const balanced = difference === 0 && totalDebit > 0 && usedLines.length >= 2
+
+  // CUENTAS CONTROLADAS (v0.33.0): ¿el asiento toca una cuenta que solo mueve su módulo (410, 430, 472…)?
+  //   estricto → no se puede contabilizar (la base de datos tampoco lo dejaría): solo borrador
+  //   guiado   → se contabiliza, con aviso (y saldrá en Comprobaciones)
+  const strict = company.control_mode === 'strict'
+  const controlled = controlledLines(usedLines.map((l) => ({
+    account_no: accounts.find((a) => a.id === l.gl_account_id)?.account_no, debit: cents(l.debit) / 100, credit: cents(l.credit) / 100,
+  })), rules)
+  const ctlModules = [...new Set(controlled.flatMap((c) => c.modules))]
+  const ctlScreen = moduleScreen(ctlModules)
+  const blocked = strict && controlled.length > 0
 
   const byNo = (no) => accounts.find((a) => a.account_no === no)
 
@@ -297,6 +311,7 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
   }
 
   const tax = company.tax_territory === 'canary_islands' ? 'IGIC' : 'IVA'
+  const screenLabel = (id) => t(`nav.${id}.label`).replace('{tax}', tax).replace('{form}', tax === 'IGIC' ? '420' : '303')
 
   return (
     <section className="tarjeta formulario-asiento">
@@ -421,9 +436,23 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
         <span>{balanced ? `✓ ${t('balanced')}` : `${t('difference')}: ${money(difference / 100, language)}`}</span>
       </div>
 
+      {controlled.length > 0 && (
+        <div className={blocked ? 'aviso-controlada estricto' : 'aviso-controlada'} role="status">
+          <p className="aviso-controlada-titulo">
+            {blocked ? '⛔' : '⚠'} {t(blocked ? 'ctl.strictTitle' : 'ctl.guidedTitle')
+              .replace('{a}', [...new Set(controlled.map((c) => c.account_no))].join(', '))}{' '}
+            <Term id="controlledAccount">{t('ctl.what')}</Term>
+          </p>
+          <p>{t(blocked ? 'ctl.strictHelp' : 'ctl.guidedHelp')
+              .replace('{m}', ctlModules.map((m) => t(`ctl.module.${m}`)).join(t('ctl.or')))}</p>
+          <Link to={companyPath(company.id, ctlScreen)} className="boton secundario">{t('err.goTo')} {screenLabel(ctlScreen)} →</Link>
+        </div>
+      )}
+
       <div className="fila">
         <button type="button" className="secundario" disabled={saving} onClick={() => save(false)}>{t('saveDraft')}</button>
-        <button type="button" disabled={saving || !balanced} onClick={() => save(true)}>{t('post')}</button>
+        <button type="button" disabled={saving || !balanced || blocked} title={blocked ? t('ctl.postDisabled') : undefined}
+                onClick={() => save(true)}>{t('post')}</button>
       </div>
 
       <ErrorBox error={error} company={company} />

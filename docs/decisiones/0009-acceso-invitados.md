@@ -1,19 +1,19 @@
-# ADR 0009 · Acceso de invitados a las empresas demo
+# ADR 0009 Â· Acceso de invitados a las empresas demo
 
-**Fecha:** 2026-10-06 · **Estado:** aceptada
+**Fecha:** 2026-10-06 Â· **Estado:** aceptada
 
 ## Contexto
 Para compartir el proyecto en LinkedIn, cualquiera debe poder ver las empresas demo sin registrarse.
 
 ## Opciones
-1. Usuario demo compartido con contraseña pública: cualquiera podría cambiarla o usar la cuenta para escribir.
-2. Lectura con la clave anónima (rol `anon`): abriría datos sin sesión y obligaría a duplicar todas las políticas.
-3. **Inicios de sesión anónimos de Supabase** (elegida): sesión temporal sin email marcada con `is_anonymous`.
+1. Usuario demo compartido con contraseÃ±a pÃºblica: cualquiera podrÃ­a cambiarla o usar la cuenta para escribir.
+2. Lectura con la clave anÃ³nima (rol `anon`): abrirÃ­a datos sin sesiÃ³n y obligarÃ­a a duplicar todas las polÃ­ticas.
+3. **Inicios de sesiÃ³n anÃ³nimos de Supabase** (elegida): sesiÃ³n temporal sin email marcada con `is_anonymous`.
 
-## Decisión
+## DecisiÃ³n
 - Un invitado solo lee empresas con `is_demo = true`; `can_write` e `is_admin` devuelven falso; no crea empresas.
 - Enlace `/?demo` para entrar directamente; el propietario lo copia desde la web.
-- Limpieza periódica de invitados antiguos desde el SQL Editor.
+- Limpieza periÃ³dica de invitados antiguos desde el SQL Editor.
 
 ## Pendiente
-CAPTCHA en el alta anónima si el volumen de visitas lo requiere.
+CAPTCHA en el alta anÃ³nima si el volumen de visitas lo requiere.

@@ -19,3 +19,8 @@ del laboratorio, sin Power BI de por medio, y con varios ejercicios por fichero.
 ## Consecuencias
 - Balance, PyG, sumas y saldos, mayor, anómalos y cierre funcionan igual con datos importados.
 - No hay libro registro ni 303 en las empresas importadas (los diarios no traen facturas).
+
+## Relación con la ADR 0010 (2026-10-15)
+La ADR 0010 dice que el ERP no es un software contable para empresas reales: no sustituye al programa oficial.
+Importar un diario real **para estudiarlo** es compatible con eso, con las condiciones del punto 6 y de la ADR 0021.
+Detalle en la actualización al final de la ADR 0010.

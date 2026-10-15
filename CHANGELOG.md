@@ -22,6 +22,32 @@ Corregido
 La limpieza nocturna de invitados ya no hace perder la historia de visitas a la demo (erp.guest_history).
 Dos desplegables sin etiqueta en Terceros, y el territorio, que se salía de la tarjeta en el móvil.
 
+## [0.33.0] - 2026-10-15
+### Añadido
+- **Cuentas controladas** (como SAP, Business Central o Versat):
+  - reglas por prefijo en la base de datos (400/410/430/440, 472/477, 4750, 4700);
+  - **modo estricto o guiado** por empresa;
+  - en estricto, un asiento manual sobre esas cuentas no se contabiliza;
+  - migración `0036_controlled_accounts.sql` y prueba `test_fase30_controlled_accounts.sql`.
+- **Comprobaciones del auditor** a una fecha: 472/477 frente al libro registro, 4751 frente al 111/115, terceros
+  frente a sus facturas, saldos anómalos, impuesto del otro territorio y asientos manuales sobre cuentas controladas.
+  Migración `0037_audit_checks.sql` y prueba `test_fase31_audit_checks.sql`.
+- Pantalla **Comprobaciones** (menú Auditor) con el modo de control, cifras, casos enlazados y la pantalla donde se
+  arregla.
+- **Aviso en el formulario de asiento** antes de contabilizar sobre una cuenta controlada, y error traducido con
+  enlace a su módulo.
+- **Conceptos** en la base de datos (`erp.concepts`), con sus cuentas del PGC: migración `0038_concepts.sql` y prueba
+  `test_fase32_concepts.sql`.
+- Glosario: 4 términos nuevos (cuenta controlada, modo estricto o guiado, antigüedad de saldos, comprobación) y las
+  cuentas del PGC de cada término; el buscador encuentra por cuenta.
+- `src/controlled.js` con sus tests, y `tests/glossary.test.js`, que falla si el glosario y `erp.concepts` se separan
+  (98 tests en total).
+### Cambiado
+- Las empresas nuevas se crean en modo estricto (se elige al darlas de alta); las existentes y las importadas siguen
+  en guiado.
+### Corregido
+- Contraste del «✓ Cuadra» de los totales del asiento (WCAG AA).
+
 ## [0.32.0] - 2026-10-14
 ### Añadido
 - **Cobros y pagos contra la factura:**

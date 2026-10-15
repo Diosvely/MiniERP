@@ -868,3 +868,32 @@ de prueba de las fases 2 a 4. Después, el **Inmovilizado**.
 
 **Siguiente paso:** v0.33.0 · cuentas controladas (modo estricto estilo SAP/BC o guiado estilo español) y controles
 de auditor en una pantalla «Comprobaciones».
+
+## 2026-10-15 · v0.33.0 · Cuentas controladas y comprobaciones del auditor
+
+**Qué se hizo**
+- **Cuentas controladas** con un interruptor por empresa (migración 0036):
+  - **estricto** como SAP/BC: un asiento manual sobre la 410, la 430 o la 472 no se contabiliza;
+  - **guiado** como un ERP español: avisa y lo deja revisar.
+- **Comprobaciones del auditor** a una fecha (0037), en una pantalla nueva con el detalle enlazado.
+- **Conceptos**: el glosario también en la base de datos (0038), con sus cuentas del PGC.
+- 32 pruebas SQL (fases 30, 31 y 32 nuevas) y 98 tests de la web.
+
+**Lo que se aprende en esta fase**
+- **Controlar antes o después:**
+  - SAP y BC impiden el error (cuenta asociada, sin registro directo);
+  - los ERP españoles lo detectan con cuadres;
+  - un auditor hace estos mismos cuadres en cualquier empresa.
+- **El cuadre del IVA:** la 472/477, sin la liquidación, debe salir entera de las facturas. Lo que sobra es un
+  asiento manual que no está en el libro registro ni en el 303/420.
+- **La 4751 frente al 111:** la retención de un profesional sale de su factura. Una anotada a mano no estará en el
+  resumen, salvo las de nómina, que el ERP aún no gestiona.
+- **Por qué existen las cuentas controladas:** no es burocracia, es que la factura sepa si está pagada y el libro de
+  IVA cuadre con la contabilidad.
+- **Restricciones diferidas en PostgreSQL:** la regla se comprueba al final de la transacción, cuando el documento ya
+  existe (`DEFERRABLE INITIALLY DEFERRED`).
+
+**Decisiones:** ADR 0031 · Cuentas controladas (modo estricto o guiado) y comprobaciones del auditor.
+
+**Siguiente paso:** v0.34.0 · catálogo de operaciones y Tutor «dónde se registra»: la IA clasifica la operación y el
+ERP dice en qué pantalla se hace y con qué asiento.

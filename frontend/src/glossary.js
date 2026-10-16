@@ -137,5 +137,5 @@ export const GLOSSARY = {
 export const SECTION_TERM = {
   entry: 'entry', journal: 'journal', closing: 'closing', invoices: 'invoice', settlement: 'settlement',
   withholdings: 'withholding', payments: 'openItem', prorata: 'prorata', taxes: 'vat', balance: 'balance', pyg: 'pyg',
-  cashflow: 'cashflow', ratios: 'ratio', reports: 'trialBalance', checks: 'auditCheck', accounts: 'subaccount', partners: 'partner',
+  cashflow: 'cashflow', ratios: 'ratio', reports: 'trialBalance', checks: 'auditCheck', assets: 'depreciation', accounts: 'subaccount', partners: 'partner',
 }

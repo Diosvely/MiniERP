@@ -2,6 +2,28 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.35.0] - 2026-10-16
+### Añadido
+- **Inmovilizado** (migración `0041_fixed_assets.sql`, prueba `test_fase36_fixed_assets.sql`):
+  - ficha del activo, dada de alta desde la factura recibida o sin factura;
+  - amortización lineal por meses (el primer mes, por días) con cuadro de amortización y asiento 68x/28x hasta la fecha
+    que se elija;
+  - baja o venta con su factura emitida a la cuenta del activo, y resultado en 67x/77x; se puede deshacer;
+  - tabla fiscal del art. 12.1.a LIS, con aviso si la amortización contable supera el máximo;
+  - las cuentas 20x/21x/22x y 28x pasan a ser controladas por el módulo.
+- **Integración** (migración `0042_assets_integration.sql`, prueba `test_fase37_assets_integration.sql`):
+  - comprobaciones «inmovilizado frente a sus fichas» y «amortización pendiente»;
+  - aviso en el cierre del ejercicio;
+  - términos «Inmovilizado» y «Valor neto contable» en el glosario.
+- Pantalla **Inmovilizado** (menú Auditor › Contabilidad y acceso desde el Inicio). `src/assets.js` con sus tests
+  (104 en total).
+### Cambiado
+- Las facturas emitidas admiten líneas a la cuenta del activo (20x/21x/22x) para vender inmovilizado.
+- La prueba de operaciones al azar (fase 34) compra, amortiza y vende activos.
+### Corregido
+- La **prorrata** ya no computa las ventas de bienes de inversión (art. 104.Tres.2.º LIVA).
+- `scripts/volcar-funciones.sh` reconoce también las redefiniciones en mayúsculas (`CREATE OR REPLACE FUNCTION`).
+
 ## [0.34.0] - 2026-10-16
 ### Añadido
 - **Invariantes contables** (`erp.integrity_checks`, migración `0040_integrity_checks.sql`): asientos y sumas y

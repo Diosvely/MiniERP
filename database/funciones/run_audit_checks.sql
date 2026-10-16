@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.run_audit_checks · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0037_audit_checks 0039_review_fixes   →   la vigente es la de 0039_review_fixes
+-- Definida en: 0037_audit_checks 0039_review_fixes 0042_assets_integration   →   la vigente es la de 0042_assets_integration
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.run_audit_checks(p_company uuid, p_year integer, p_to_date date DEFAULT NULL::date)
@@ -177,6 +177,59 @@ begin
              coalesce(jsonb_agg(jsonb_build_object('entry_id', n.entry_id, 'entry_no', n.entry_no, 'posting_date', n.posting_date,
                                                    'account_no', n.hit->0->>'account_no', 'modules', n.hit->0->'modules')
                                 order by n.rn) filter (where n.rn <= 50), '[]')
+      into v_items, v_det
+      from n;
+
+    elsif r.code = 'assets_ledger' then
+      -- v0.35.0 · cada cuenta de inmovilizado (coste de los activos en uso) y de amortización acumulada (lo amortizado)
+      --   frente a su saldo contable a la fecha (sin terrenos 210 / 220, que no tienen ficha amortizable)
+      with f as (
+        select a.asset_account_id as acc, sum(a.cost) as book from erp.fixed_assets a
+        where a.company_id = p_company and (a.status = 'active' or a.disposal_date > v_to) and a.acquisition_date <= v_to
+        group by 1
+        union all
+        select a.depreciation_account_id, -sum(d.amount) from erp.fixed_assets a
+        join erp.asset_depreciations d on d.asset_id = a.id and d.period_end <= v_to
+        where a.company_id = p_company and (a.status = 'active' or a.disposal_date > v_to)
+        group by 1
+      ), l as (
+        -- saldo acumulado a la fecha: todos los ejercicios, sin los asientos de cierre ni las aperturas del propio ERP
+        -- (repetirían saldos); una apertura IMPORTADA sí cuenta
+        select g.id as acc, sum(jl.debit - jl.credit) as ledger
+        from erp.journal_lines jl join erp.journal_entries e on e.id = jl.entry_id
+        join erp.gl_accounts g on g.id = jl.gl_account_id
+        where e.company_id = p_company and e.status = 'posted' and e.posting_date <= v_to and e.entry_type <> 'closing'
+          and not exists (select 1 from erp.year_closings yc where yc.opening_entry_id = e.id)
+          and left(g.account_no, 2) in ('20', '21', '22', '28') and left(g.account_no, 3) not in ('210', '220')
+        group by 1
+      ), x as (
+        select coalesce(f.acc, l.acc) as acc, coalesce(sum(f.book), 0) as book, coalesce(max(l.ledger), 0) as ledger
+        from f full join l on l.acc = f.acc group by coalesce(f.acc, l.acc)
+      ), n as (
+        select g.account_no, g.name, x.book, x.ledger, row_number() over (order by g.account_no) as rn
+        from x join erp.gl_accounts g on g.id = x.acc where x.book <> x.ledger
+      )
+      select coalesce(sum(n.book), 0), coalesce(sum(n.ledger), 0), count(*)::int,
+             coalesce(jsonb_agg(jsonb_build_object('account_no', n.account_no, 'account_name', n.name, 'book', n.book,
+                                                   'balance', n.ledger, 'amount', n.ledger - n.book) order by n.rn)
+                      filter (where n.rn <= 50), '[]')
+      into v_book, v_ledger, v_items, v_det
+      from n;
+
+    elsif r.code = 'assets_pending' then
+      -- v0.35.0 · activos con amortización pendiente hasta el último fin de mes de la fecha de corte
+      -- (último fin de mes: la propia fecha si es fin de mes; si no, el del mes anterior)
+      with c as (select (date_trunc('month', v_to + 1) - interval '1 day')::date as cut),
+      p as (
+        select a.id, a.code, a.name, a.start_date,
+               erp.asset_accumulated_at(a.cost, a.residual_value, a.useful_life_months, a.start_date, c.cut) - erp.asset_posted(a.id) as pending,
+               (select max(d.period_end) from erp.asset_depreciations d where d.asset_id = a.id) as last_period
+        from erp.fixed_assets a cross join c
+        where a.company_id = p_company and a.status = 'active'
+      ), n as (select p.*, row_number() over (order by p.code) as rn from p where p.pending > 0)
+      select count(*)::int,
+             coalesce(jsonb_agg(jsonb_build_object('asset_id', n.id, 'code', n.code, 'name', n.name, 'amount', n.pending,
+                                                   'last_period', n.last_period) order by n.rn) filter (where n.rn <= 50), '[]')
       into v_items, v_det
       from n;
     end if;

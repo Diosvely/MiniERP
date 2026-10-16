@@ -9,7 +9,7 @@ import Loading from './Loading'
 import ErrorBox from './ErrorBox'
 import HomeKpis from './HomeKpis'
 import { workDate } from '../workDate'
-import { BookText, PenLine, Receipt, Scale, SearchCheck } from 'lucide-react'
+import { BookText, Factory, PenLine, Receipt, Scale, SearchCheck } from 'lucide-react'
 import { ICON } from '../icons'
 
 // INICIO de la empresa (como el Role Center de Business Central): qué hacer a continuación y qué ha pasado.
@@ -190,6 +190,7 @@ export default function Home({ company, readOnly, mode, onAuditor }) {
             <Link to={to('invoices')} className="acceso"><Receipt {...ICON} /> {t('homeQuickInvoice')}</Link>
             <Link to={to('entry')} className="acceso"><PenLine {...ICON} /> {t('homeQuickEntry')}</Link>
             <Link to={to('balance')} className="acceso"><Scale {...ICON} /> {t('homeQuickBalance')}</Link>
+            <Link to={to('assets')} className="acceso"><Factory {...ICON} /> {t('homeQuickAssets')}</Link>
           </section>
         )}
 

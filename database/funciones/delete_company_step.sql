@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.delete_company_step · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0029_performance 0035_payments   →   la vigente es la de 0035_payments
+-- Definida en: 0029_performance 0035_payments 0041_fixed_assets   →   la vigente es la de 0041_fixed_assets
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.delete_company_step(p_company uuid, p_batch integer DEFAULT 5000)
@@ -20,6 +20,8 @@ begin
   perform set_config('erp.deleting_company', 'on', true);   -- solo dura esta transacción
 
   -- Documentos que apuntan a asientos (en la primera tanda; en las siguientes ya no hay nada)
+  delete from erp.asset_depreciations where company_id = p_company;
+  delete from erp.fixed_assets    where company_id = p_company;
   delete from erp.payments        where company_id = p_company;   -- sus aplicaciones, en cascada
   delete from erp.year_closings   where company_id = p_company;
   delete from erp.pro_rata        where company_id = p_company;

@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.pro_rata_calc · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0020_pro_rata   →   la vigente es la de 0020_pro_rata
+-- Definida en: 0020_pro_rata 0042_assets_integration   →   la vigente es la de 0042_assets_integration
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.pro_rata_calc(p_company uuid, p_tax_type text, p_year integer)
@@ -31,6 +31,19 @@ begin
   from erp.v_invoice_register r
   where r.company_id = p_company and r.tax_type = p_tax_type and r.fiscal_year = p_year and r.invoice_type = 'sale'
     and r.rate_category <> 'retail_surcharge';
+
+  -- v0.35.0 · art. 104.Tres.2.º LIVA: las entregas de bienes de inversión no se computan en ningún término
+  -- (las ventas de inmovilizado se facturan a su cuenta 20x / 21x / 22x)
+  select v_with - coalesce(sum(l.amount * l.sign) filter (where c.rate_category <> 'exempt'), 0),
+         v_total - coalesce(sum(l.amount * l.sign), 0)
+    into v_with, v_total
+  from erp.invoice_lines l
+  join erp.invoices i on i.id = l.invoice_id
+  join erp.fiscal_years fy on fy.id = i.fiscal_year_id
+  join erp.gl_accounts g on g.id = l.gl_account_id
+  join erp.tax_codes c on c.code = l.tax_code
+  where i.company_id = p_company and i.invoice_type = 'sale' and fy.year = p_year and c.tax_type = p_tax_type
+    and left(g.account_no, 2) in ('20', '21', '22');
   v_def := case when v_total <= 0 then 100 else least(100, ceil(v_with / v_total * 100)) end;
 
   -- Cuotas soportadas del año y lo que se dedujo con la provisional

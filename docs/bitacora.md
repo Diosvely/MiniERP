@@ -956,3 +956,34 @@ backlog.
 
 **Siguiente paso:** v0.35.0 · Inmovilizado: ficha del activo, cuadro de amortización, asiento mensual (68x/28x) y
 baja con resultado (671/771), con su supuesto de referencia.
+
+## 2026-10-16 · v0.35.0 · Inmovilizado: ficha, amortización, baja y venta
+
+**Qué se hizo**
+- **Fichas de activos** dadas de alta desde la factura recibida, con su **cuadro de amortización** y el asiento
+  68x/28x hasta la fecha que se elija (migración 0041).
+- **Baja y venta:** la factura emitida va a la cuenta del activo, y la baja lleva el resultado a la 671 o la 771.
+- **Tabla fiscal** del Impuesto sobre Sociedades, con aviso.
+- **Integración** (0042): comprobaciones, aviso del cierre, prorrata sin las ventas de inmovilizado y glosario.
+- **Pantalla Inmovilizado.** 37 pruebas SQL y 104 tests de la web.
+
+**Lo que se aprende**
+- **Se amortiza desde la puesta en funcionamiento, no desde la compra** (NRV 2.ª), y sobre el coste menos el valor
+  residual.
+- **El supuesto, al céntimo:** furgoneta de 18.000, residual 2.000, 8 años, desde el 15/03.
+  - 2026: 9 meses + 17/31 = 1.591,40.
+  - Vendida el 30/06/2027 por 14.000: amortización acumulada 2.588,89, valor neto 15.411,11, pérdida 1.411,11 (671).
+- **La venta de un activo es una entrega con IVA:** por eso se factura a su cuenta (21x) y no a una 7xx. El precio no
+  es ingreso; el resultado es la diferencia con el valor neto.
+- **Amortización contable y fiscal:** la contable sigue la vida útil real; la tabla del art. 12.1.a LIS solo limita lo
+  deducible en el Impuesto sobre Sociedades. Por ejemplo, un ordenador a 2 años es un 50 % frente al máximo fiscal del
+  25 %: hay una diferencia temporaria.
+- **Prorrata:** vender un bien de inversión no altera el porcentaje (art. 104.Tres.2.º LIVA). Con esta regla un
+  servidor de 10.000 no la sube del 71 % al 87 %.
+- **La comprobación nueva encontró dos cosas** en las operaciones al azar: amortizaciones hechas a mano y
+  rectificativas de compras de activo que la ficha no recoge. Esta última pasa al backlog.
+
+**Decisiones:** ADR 0033 · Inmovilizado: ficha, amortización lineal, baja y venta con resultado.
+
+**Siguiente paso:** v0.36.0 · Fin de ejercicio I: periodificaciones (480/485), deterioro de clientes desde la
+antigüedad de saldos (490/694/794), provisiones, regularización de existencias y un asistente de cierre.

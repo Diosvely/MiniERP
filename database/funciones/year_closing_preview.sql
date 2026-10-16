@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.year_closing_preview · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0017_year_closing   →   la vigente es la de 0017_year_closing
+-- Definida en: 0017_year_closing 0042_assets_integration   →   la vigente es la de 0042_assets_integration
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.year_closing_preview(p_company uuid, p_year integer)
@@ -57,6 +57,15 @@ begin
   from erp.balance_anomalies(p_company, p_year) a where a.severity = 'error';
   if v_txt is not null then
     v_checks := v_checks || jsonb_build_object('code', 'anomalies', 'severity', 'warning', 'detail', v_txt);
+  end if;
+
+  -- v0.35.0 · Inmovilizado sin amortizar hasta el final del ejercicio (la amortización es un gasto del año: NRV 2.ª)
+  select string_agg(a.code, ', ' order by a.code) into v_txt
+  from erp.fixed_assets a
+  where a.company_id = p_company and a.status = 'active' and a.start_date <= v_fy.ending_date
+    and erp.asset_accumulated_at(a.cost, a.residual_value, a.useful_life_months, a.start_date, v_fy.ending_date) > erp.asset_posted(a.id);
+  if v_txt is not null then
+    v_checks := v_checks || jsonb_build_object('code', 'assets_not_depreciated', 'severity', 'warning', 'detail', v_txt);
   end if;
 
   if not exists (select 1 from erp.gl_accounts where company_id = p_company and account_no = v_res_no) then

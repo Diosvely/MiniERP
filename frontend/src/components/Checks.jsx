@@ -82,6 +82,12 @@ export default function Checks({ company, readOnly, onChanged }) {
     } else if (r.code === 'partners') {
       head = [t('chk.col.partner'), t('chk.col.account'), t('chk.col.pending'), t('chk.col.balance'), t('chk.col.difference')]
       body = d.map((x) => [x.partner_name, x.account_no, m(x.pending), m(x.balance), <strong key="d">{m(x.amount)}</strong>])
+    } else if (r.code === 'assets_ledger') {
+      head = [t('chk.col.account'), t('chk.col.cards'), t('chk.col.balance'), t('chk.col.difference')]
+      body = d.map((x) => [`${x.account_no} ${x.account_name}`, m(x.book), m(x.balance), <strong key="d">{m(x.amount)}</strong>])
+    } else if (r.code === 'assets_pending') {
+      head = [t('chk.col.asset'), t('chk.col.pendingDepr'), t('chk.col.lastDepr')]
+      body = d.map((x) => [`${x.code} · ${x.name}`, m(x.amount), x.last_period ? shortDate(x.last_period) : '—'])
     } else {
       head = [t('chk.col.account'), t('chk.col.balance'), t('chk.col.expected'), t('chk.col.reclass')]
       body = d.map((x) => [

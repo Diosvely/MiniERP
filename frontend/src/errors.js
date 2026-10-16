@@ -94,6 +94,22 @@ const RULES = [
   [/^This payment is already cancelled$/, 'payAlreadyCancelled', 'payments'],
   [/^No permission to register payments in this company$/, 'payNoPermission'],
 
+  // Inmovilizado (v0.35.0)
+  [/^Land is not depreciated/, 'faLand'],
+  [/^Choose the asset account/, 'faAccount', 'accounts'],
+  [/^The residual value must be between zero and the cost$/, 'faResidual'],
+  [/^The useful life must be at least one month$/, 'faLife'],
+  [/^The start date cannot be earlier than the acquisition date$/, 'faStart'],
+  [/^Nothing to depreciate up to (.+)$/, 'faNothing'],
+  [/^Only the last depreciation can be cancelled$/, 'faOnlyLast'],
+  [/^This entry belongs to the fixed assets module/, 'entryFromAssets', 'assets'],
+  [/^This depreciation belongs to a disposal/, 'faDepreciationDisposal'],
+  [/^Asset (\S+) is already disposed$/, 'faDisposed'],
+  [/^Asset (\S+) is already depreciated after (.+): cancel that depreciation first$/, 'faDepreciatedAfter'],
+  [/^Invoice (.+) has no line on the asset account$/, 'faNoAssetLine', 'invoices'],
+  [/^Invoice (.+) is already used for another disposal$/, 'faInvoiceUsed'],
+  [/^The disposal date cannot be earlier than the start date$/, 'faDisposalDate'],
+
   // Liquidación y prorrata
   [/^(\S+) quarter (\S+)T (\S+) is already settled/, 'quarterSettled', 'settlement'],
   [/^Quarter (\S+)T (\S+) \(or a later one\) is already settled$/, 'quarterSettledLater', 'settlement'],

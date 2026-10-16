@@ -711,3 +711,18 @@ td.num { white-space: nowrap; }
 .opcion-modo input { margin-top: 3px; }
 .opcion-modo span { display: flex; flex-direction: column; gap: 2px; }
 .opcion-modo small { color: var(--suave); }
+
+/* --- v0.35.0: Inmovilizado --- */
+.fila-amortizar { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 10px; }
+.fila-amortizar label { max-width: 14em; }
+.lista-activos li { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; padding: 10px 6px; }
+.lista-activos li.marcada { background: color-mix(in srgb, var(--primario) 7%, transparent); }
+.lista-activos button.enlace { padding: 0; text-align: left; color: var(--primario); }
+.importes-activo { display: flex; flex-wrap: wrap; gap: 4px 18px; font-variant-numeric: tabular-nums; }
+.importes-activo strong { color: var(--texto); }
+.ficha-activo h3, .baja-activo h3 { margin: 6px 0 2px; font-size: .95rem; }
+.ficha-activo td.num, .ficha-activo th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.baja-activo { display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--borde); padding-top: 10px; }
+.baja-activo label { max-width: 28em; }
+.alta-activo .rejilla-tres label { min-width: 0; }
+@media (max-width: 560px) { .alta-activo .rejilla-tres { grid-template-columns: 1fr 1fr; } }

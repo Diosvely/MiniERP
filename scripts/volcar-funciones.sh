@@ -30,7 +30,7 @@ q="select p.proname from pg_proc p join pg_namespace n on n.oid = p.pronamespace
 index=""
 total=0
 for name in $(psql -X -At -d "$db" -c "$q"); do
-  migs=$(grep -l -E "function erp\.${name}\(" database/migrations/*.sql | xargs -n1 basename | sed 's/\.sql$//' | tr '\n' ' ' | sed 's/ $//')
+  migs=$(grep -l -i -E "function erp\.${name}\(" database/migrations/*.sql | xargs -n1 basename | sed 's/\.sql$//' | tr '\n' ' ' | sed 's/ $//')
   n=$(echo "$migs" | wc -w)
   last=${migs##* }
   kind=$(psql -X -At -d "$db" -c "select case when bool_or(p.prorettype = 'trigger'::regtype) then 'trigger'

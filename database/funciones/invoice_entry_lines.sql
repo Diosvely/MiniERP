@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.invoice_entry_lines · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0011_invoices 0018_withholding_exempt 0019_reverse_charge_surcharge 0020_pro_rata   →   la vigente es la de 0020_pro_rata
+-- Definida en: 0011_invoices 0018_withholding_exempt 0019_reverse_charge_surcharge 0020_pro_rata 0041_fixed_assets   →   la vigente es la de 0041_fixed_assets
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.invoice_entry_lines(p jsonb)
@@ -100,8 +100,9 @@ begin
     if v_type = 'purchase' and left(a.account_no, 1) not in ('2', '6') then
       raise exception 'Line %: account % is not valid in a received invoice (use group 6 or 2)', r.n, a.account_no;
     end if;
-    if v_type = 'sale' and left(a.account_no, 1) <> '7' then
-      raise exception 'Line %: account % is not valid in an issued invoice (use group 7)', r.n, a.account_no;
+    -- v0.35.0: la venta de un inmovilizado se factura a su cuenta (20x / 21x / 22x); la baja la hace el módulo
+    if v_type = 'sale' and left(a.account_no, 1) <> '7' and left(a.account_no, 2) not in ('20', '21', '22') then
+      raise exception 'Line %: account % is not valid in an issued invoice (use group 7, or the asset account to sell a fixed asset)', r.n, a.account_no;
     end if;
     if coalesce(nullif(r.amount_txt, '')::numeric, 0) <= 0 then
       raise exception 'Line %: the amount must be greater than zero', r.n;

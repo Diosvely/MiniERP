@@ -59,6 +59,10 @@ begin
     q := extract(quarter from d)::int;
     -- Termina un trimestre: se liquida (sin aceptar diferencias: el libro y las cuentas TIENEN que cuadrar)
     if q <> q_prev then
+      begin   -- amortización del trimestre (si hay activos)
+        perform erp.post_depreciation(e, erp.quarter_end(extract(year from desde)::int, q_prev));
+      exception when others then if sqlerrm not like 'Nothing to depreciate%' then raise; end if;
+      end;
       perform erp.post_tax_settlement(e, impuesto, extract(year from desde)::int, q_prev);
       ok := public.invariantes(e, extract(year from desde)::int, format('tras liquidar el %sT', q_prev));
       q_prev := q;
@@ -92,6 +96,7 @@ begin
         join erp.gl_accounts l2 on l2.id = il.gl_account_id
         cross join lateral (select l2.account_no, il.amount, il.tax_code) l
         where i2.company_id = e and i2.document_kind = 'invoice' and i2.posting_date <= d
+          and left(l.account_no, 1) <> '2'   -- (la rectificativa de un activo aún no ajusta su ficha: backlog)
           and i2.posting_date >= make_date(extract(year from d)::int, 1, 1)
         order by random() limit 1;
         if found then
@@ -117,7 +122,7 @@ begin
           when 1 then jsonb_build_array(jsonb_build_array('66200001', x.a, 0), jsonb_build_array('57200001', 0, x.a))
           when 2 then jsonb_build_array(jsonb_build_array('64000001', x.a * 10, 0), jsonb_build_array('47510001', 0, round(x.a * 1.5, 2)),
                                         jsonb_build_array('57200001', 0, x.a * 10 - round(x.a * 1.5, 2)))
-          when 3 then jsonb_build_array(jsonb_build_array('68100001', x.a, 0), jsonb_build_array('28160001', 0, x.a))
+          when 3 then jsonb_build_array(jsonb_build_array('62200001', x.a, 0), jsonb_build_array('57200001', 0, x.a))   -- (la amortización la hace el módulo)
           else jsonb_build_array(jsonb_build_array('57200001', x.a * 10, 0), jsonb_build_array('17000001', 0, x.a * 10)) end)
         from (select public.azar(10, 900) as a) x;
       elsif r < 0.92 then
@@ -128,6 +133,32 @@ begin
           and e2.description = 'Manual al azar'
         order by random() limit 1;
         if found then perform erp.reverse_entry(m, d, 'Contraasiento al azar'); end if;
+      elsif r < 0.96 then
+        -- Inmovilizado: comprar (con su factura y su ficha) o vender uno en uso (factura a su cuenta + baja)
+        select a.* into o from erp.fixed_assets a where a.company_id = e and a.status = 'active' and a.start_date < d
+          and not exists (select 1 from erp.asset_depreciations x where x.asset_id = a.id and x.period_end > d)
+        order by random() limit 1;
+        if random() < 0.6 or not found then
+          select * into p from erp.v_partners where company_id = e and partner_type = 'vendor' and tax_territory <> 'eu'
+          order by random() limit 1;
+          f := (select invoice_id from erp.post_invoice(jsonb_build_object('company_id', e, 'invoice_type', 'purchase',
+            'document_kind', 'invoice', 'partner_id', p.id, 'external_document_no', 'A-' || i || '-' || substr(md5(random()::text), 1, 5),
+            'invoice_date', d, 'description', 'Compra de inmovilizado al azar',
+            'lines', jsonb_build_array(jsonb_build_object('account_no', public.uno(array['21600001', '21700001']),
+                       'amount', public.azar(300, 9000), 'tax_code', general)))));
+          perform erp.create_fixed_asset(jsonb_build_object('company_id', e, 'name', 'Activo ' || i,
+            'asset_account_no', (select g.account_no from erp.invoice_lines l join erp.gl_accounts g on g.id = l.gl_account_id where l.invoice_id = f),
+            'cost', (select amount from erp.invoice_lines where invoice_id = f), 'residual_value', 0, 'start_date', d,
+            'useful_life_months', (12 * (2 + floor(random() * 8)))::int, 'invoice_id', f));
+        else
+          select * into p from erp.v_partners where company_id = e and partner_type = 'customer' and name not like 'Tienda%'
+          order by random() limit 1;
+          f := (select invoice_id from erp.post_invoice(jsonb_build_object('company_id', e, 'invoice_type', 'sale',
+            'document_kind', 'invoice', 'partner_id', p.id, 'invoice_date', d, 'description', 'Venta de inmovilizado al azar',
+            'lines', jsonb_build_array(jsonb_build_object('account_no', (select account_no from erp.gl_accounts where id = o.asset_account_id),
+                       'amount', public.azar(10, o.cost), 'tax_code', general)))));
+          perform erp.dispose_asset(jsonb_build_object('asset_id', o.id, 'disposal_date', d, 'invoice_id', f));
+        end if;
       else
         -- Traspaso del banco a la caja y gasto pagado por caja (la caja nunca queda en negativo)
         perform public.manual(e, d, jsonb_build_array(jsonb_build_array('57000001', 200, 0), jsonb_build_array('57200001', 0, 200)));
@@ -167,7 +198,8 @@ begin
       ('10000001', 'Capital'), ('17000001', 'Préstamo'), ('28160001', 'A.A. mobiliario'), ('57000001', 'Caja'),
       ('57200001', 'Banco'), ('60000001', 'Compras'), ('62300001', 'Profesionales'), ('62200001', 'Reparaciones'),
       ('62600001', 'Servicios bancarios'), ('62900001', 'Otros servicios'), ('64000001', 'Sueldos'),
-      ('66200001', 'Intereses'), ('68100001', 'Amortización'), ('70000001', 'Ventas')) as s(no, name);
+      ('66200001', 'Intereses'), ('68100001', 'Amortización'), ('70000001', 'Ventas'),
+      ('21600001', 'Mobiliario'), ('21700001', 'Equipos informáticos')) as s(no, name);
     perform erp.create_partner(e, 'vendor', 'Proveedor Uno SL', 'B12345674');
     perform erp.create_partner(e, 'creditor', 'Abogada Ruiz', '12345678Z');
     perform erp.create_partner(e, 'customer', 'Cliente General SL', 'B11111119');
@@ -182,7 +214,11 @@ begin
 
     -- 1) Año 2026: ~300 operaciones al azar, con sus liquidaciones trimestrales
     hechas := public.operar(e, '2026-01-03', '2026-12-30', 300, impuesto);
+    begin perform erp.post_depreciation(e, '2026-12-31');
+    exception when others then if sqlerrm not like 'Nothing to depreciate%' then raise; end if; end;
     perform erp.post_tax_settlement(e, impuesto, 2026, 4);
+    assert (select status from erp.run_audit_checks(e, 2026) where code = 'assets_ledger') = 'ok', 'las fichas cuadran con la 21x / 281';
+    assert (select status from erp.run_audit_checks(e, 2026) where code = 'assets_pending') = 'ok', 'todo amortizado al 31/12';
     ok := public.invariantes(e, 2026, 'fin de 2026');
     raise notice 'OK  · % · 2026: % operaciones hechas, % invariantes en verde, 4 liquidaciones sin diferencias', impuesto, hechas, ok;
 
@@ -226,6 +262,8 @@ select c.name as empresa,
   (select count(*) from erp.v_invoice_register r where r.company_id = c.id and r.surcharge_amount <> 0) as recargo,
   (select count(*) from erp.payments p where p.company_id = c.id) as cobros_pagos,
   (select count(*) from erp.journal_entries j where j.company_id = c.id and j.reversal_of is not null) as contraasientos,
-  (select count(*) from erp.tax_settlements t where t.company_id = c.id) as liquidaciones
+  (select count(*) from erp.tax_settlements t where t.company_id = c.id) as liquidaciones,
+  (select count(*) from erp.fixed_assets a where a.company_id = c.id) as activos,
+  (select count(*) from erp.fixed_assets a where a.company_id = c.id and a.status = 'disposed') as vendidos
 from erp.companies c order by 1;
 \echo '✔ FASE 34 OK · invariantes contables con operaciones al azar'

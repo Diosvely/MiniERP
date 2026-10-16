@@ -128,6 +128,12 @@ export const GLOSSARY = {
   auditCheck: { bc: 'Reconciliation reports', sap: 'Reconciliation reports',
     es: { term: 'Comprobación (control posterior)', def: 'Cuadre que hace un auditor después de contabilizar: el IVA de la contabilidad frente al libro registro, cada tercero frente a sus facturas, los saldos al revés…', ex: 'La 472 dice 231 € y el libro registro 210 €: sobra un asiento manual de 21 €.' },
     en: { term: 'Check (detective control)', def: 'A reconciliation an auditor makes after posting: VAT in the books against the VAT register, each partner against its invoices, balances on the wrong side…', ex: 'Account 472 shows €231 and the VAT register €210: there is a €21 manual entry too many.' } },
+  fixedAsset: { bc: 'Fixed Asset Card', sap: 'Asset master record (AS01)', pgc: ['20', '21', '22'],
+    es: { term: 'Inmovilizado', def: 'Bienes y derechos que la empresa usa en su actividad durante más de un año (local, maquinaria, vehículos, ordenadores, programas). Se registran por su coste y pierden valor con la amortización.', ex: 'Un ordenador de 1.200 € es inmovilizado (217); el papel de la impresora es gasto (629).' },
+    en: { term: 'Fixed asset', def: 'Goods and rights the company uses in its business for more than a year (premises, machinery, vehicles, computers, software). They are recorded at cost and lose value through depreciation.', ex: 'A €1,200 computer is a fixed asset (217); printer paper is an expense (629).' } },
+  netBookValue: { bc: 'Book Value', sap: 'Net book value', pgc: ['28'],
+    es: { term: 'Valor neto contable', def: 'Coste del activo menos su amortización acumulada (y su deterioro): lo que vale en el balance. Al venderlo, la diferencia con el precio es el beneficio (77x) o la pérdida (67x).', ex: 'Furgoneta de 18.000 con 2.588,89 amortizados: valor neto 15.411,11; vendida por 14.000 → pérdida de 1.411,11 (671).' },
+    en: { term: 'Net book value', def: 'Asset cost minus accumulated depreciation (and impairment): what it is worth in the balance sheet. When sold, the difference with the price is the gain (77x) or loss (67x).', ex: 'Van of 18,000 with 2,588.89 depreciated: net value 15,411.11; sold for 14,000 → loss of 1,411.11 (671).' } },
   accrual: { bc: 'Accrual', sap: 'Accrual',
     es: { term: 'Devengo', def: 'Los ingresos y gastos se anotan cuando ocurren, no cuando se cobran o se pagan.' },
     en: { term: 'Accrual', def: 'Income and expenses are recorded when they occur, not when they are collected or paid.' } },
@@ -137,5 +143,5 @@ export const GLOSSARY = {
 export const SECTION_TERM = {
   entry: 'entry', journal: 'journal', closing: 'closing', invoices: 'invoice', settlement: 'settlement',
   withholdings: 'withholding', payments: 'openItem', prorata: 'prorata', taxes: 'vat', balance: 'balance', pyg: 'pyg',
-  cashflow: 'cashflow', ratios: 'ratio', reports: 'trialBalance', checks: 'auditCheck', assets: 'depreciation', accounts: 'subaccount', partners: 'partner',
+  cashflow: 'cashflow', ratios: 'ratio', reports: 'trialBalance', checks: 'auditCheck', assets: 'fixedAsset', accounts: 'subaccount', partners: 'partner',
 }

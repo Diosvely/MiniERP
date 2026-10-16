@@ -1,6 +1,6 @@
 # Funciones del esquema erp (versión vigente)
 
-Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0039`.
+Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0040`.
 No se edita a mano: el código fuente son las migraciones. Esto es para **estudiar** cada función en su forma
 actual sin rastrear sus redefiniciones.
 
@@ -9,7 +9,7 @@ actual sin rastrear sus redefiniciones.
 - **Tipo:** *invoker* (se ejecuta con los permisos de quien llama: manda la RLS), *security definer* (con los del
   dueño: comprueba ella misma los permisos) o *trigger*.
 
-145 funciones.
+146 funciones.
 
 | Función | Versiones | Vigente en | Tipo |
 |---|---|---|---|
@@ -74,6 +74,7 @@ actual sin rastrear sus redefiniciones.
 | [`import_prepare`](import_prepare.sql) | 1 | 0021_journal_import | security definer |
 | [`import_preview`](import_preview.sql) | 1 | 0021_journal_import | security definer |
 | [`import_start`](import_start.sql) | 1 | 0021_journal_import | invoker |
+| [`integrity_checks`](integrity_checks.sql) | 1 | 0040_integrity_checks | invoker |
 | [`invoice_entry_lines`](invoice_entry_lines.sql) | 4 | 0020_pro_rata | invoker |
 | [`invoice_pending`](invoice_pending.sql) | 1 | 0035_payments | invoker |
 | [`is_admin`](is_admin.sql) | 3 | 0015_guest_access | invoker |

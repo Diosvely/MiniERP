@@ -897,3 +897,62 @@ de auditor en una pantalla «Comprobaciones».
 
 **Siguiente paso:** v0.34.0 · catálogo de operaciones y Tutor «dónde se registra»: la IA clasifica la operación y el
 ERP dice en qué pantalla se hace y con qué asiento.
+
+## 2026-10-15 · v0.33.1 · Arreglos de una revisión externa
+
+**Qué pasó**
+Una IA externa revisó el proyecto (sobre la v0.32.0) para medir su impacto frente a otros ERP como herramienta para
+aprender contabilidad española. Su valoración: 8,5 como portafolio técnico, 7 para aprender a manejar un ERP y 4,5
+en cobertura de contabilidad española. Encontró dos fallos reales y una debilidad de fondo.
+
+**Qué se hizo**
+- **Fallo 1:** una 477 sin configurar se saltaba el cuadre del 303. Ahora la liquidación la incluye (0039).
+- **Fallo 2:** una cuota incoherente (base 100 × 21 % con cuota 500) se aceptaba sin aviso. Ahora es una comprobación
+  del auditor, y en modo estricto ese asiento ya no se contabilizaba (v0.33.0).
+- Pruebas de regresión (fase 33): fallan sin el arreglo y pasan con él. 33 pruebas SQL y 98 tests de la web.
+- ADR en UTF-8, la ADR 0010 matizada sobre contabilidades reales y el volcado de las 145 funciones en
+  `database/funciones/` para estudiarlas.
+
+**Lo que se aprende**
+- **La debilidad de fondo:** las pruebas las escribió la misma IA que escribió el código. Comprueban lo que hace el
+  código, no lo que dice la contabilidad. Por eso la próxima versión trae supuestos de referencia externos (libros de
+  FP, oposiciones) e invariantes contables.
+- **Una prueba de regresión tiene que fallar sin el arreglo.** Si no, no protege de nada.
+- **Un ADR no se reescribe:** se matiza con una actualización fechada, para que se vea cómo cambió la decisión.
+
+**Plan reordenado** (`plan-ejecucion.md`): fiabilidad contable → Inmovilizado → fin de ejercicio → nóminas → supuestos
+autocorregidos → ontología y chat. Regla nueva: no se empieza una versión hasta poder explicar la anterior.
+
+**Siguiente paso:** v0.34.0 · fiabilidad contable: invariantes con operaciones al azar y los primeros supuestos de
+referencia, escritos por mí.
+
+## 2026-10-16 · v0.34.0 · Fiabilidad contable: invariantes y supuestos de referencia
+
+**Qué se hizo**
+- **Nueve invariantes contables** como función de la base de datos (0040).
+- **Unas 300 operaciones al azar** por empresa (Madrid con IVA, Canarias con IGIC):
+  - 392 facturas, 54 rectificativas, 82 con IRPF, 47 AIB/ISP y 28 con recargo;
+  - 133 cobros y pagos, 40 contraasientos, 10 liquidaciones y el cierre.
+
+  Todo en verde, también con otras tres semillas.
+- **Cinco supuestos de referencia** calculados a mano desde la norma: el ERP coincide al céntimo.
+- 35 pruebas SQL y 98 tests de la web.
+
+**Lo que se aprende**
+- **Un invariante vale más que cien ejemplos:** «Activo = PN + Pasivo» no depende de quién programe. Si falla, el
+  error es del ERP.
+- **La prorrata se redondea al entero superior** (art. 104.Dos.2.º LIVA): 6.000 / 8.500 = 70,59 % → 71 %. La diferencia
+  con la provisional se regulariza en la última declaración del año (6341 o 6391).
+- **El IVA no deducible es mayor gasto** (NRV 12.ª): 1.000 de reparación con un 20 % no deducible → 622 = 1.042.
+- **La autorrepercusión es neutra:** en la AIB y la ISP la empresa devenga y deduce la misma cuota; solo cambia quién
+  la declara.
+- **Contar lo que hace el azar:** la primera vez el recargo salía 0 por un fallo de la propia prueba. Sin el recuento
+  no se habría visto.
+
+**Hallazgo:** el borrador del 303 no numera las casillas oficiales (10–11 AIB, 12–13 ISP, 28–29 deducible…). Pasa al
+backlog.
+
+**Decisiones:** ADR 0032 · Fiabilidad contable: invariantes y supuestos de referencia.
+
+**Siguiente paso:** v0.35.0 · Inmovilizado: ficha del activo, cuadro de amortización, asiento mensual (68x/28x) y
+baja con resultado (671/771), con su supuesto de referencia.

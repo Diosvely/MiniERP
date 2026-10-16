@@ -50,7 +50,7 @@ española y el funcionamiento real de un ERP. Los ERP comerciales son caros y di
 propia, así que decidí **construir uno**. Diseñar la tabla de asientos obliga a entender *por qué* un ERP impone
 cada regla. Además, todo el código está en inglés para practicar el vocabulario técnico de BC y SAP.
 
-## ¿Qué hace hoy? (v0.33.0)
+## ¿Qué hace hoy? (v0.34.0)
 
 **Primeros pasos y navegación**
 - **Pantalla de Inicio** en cada empresa:
@@ -114,7 +114,11 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
   manual sobre la 410, la 430 o la 472 no se contabiliza: se registra desde su pantalla) o **guiado** como los ERP
   españoles (avisa antes y lo lista después). **Comprobaciones del auditor** a una fecha: IVA/IGIC frente al libro
   registro, retenciones frente al 111/115, terceros frente a sus facturas, saldos anómalos e impuesto del otro
-  territorio, con cada caso enlazado y la pantalla donde se arregla.
+  territorio, con cada caso enlazado y la pantalla donde se arregla. También señala la cuota de IVA/IGIC que no
+  corresponde a base × tipo.
+- **Invariantes contables** (cada asiento cuadra, Activo = PN + Pasivo, la 129 recibe el resultado, la apertura es el
+  cierre, el libro registro coincide con la 472/477, la tesorería coincide con el EFE…), comprobados con cientos de
+  operaciones al azar y cinco supuestos de referencia calculados desde la norma.
 
 **Estados financieros e informes (mirada de auditor)**
 - **Balance de situación** y **cuenta de pérdidas y ganancias** (modelo PYMES del PGC), con desglose hasta la
@@ -191,7 +195,7 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
 | Web | **React + Vite** | Componentes por pantalla, i18n propio (es/en), rutas con almohadilla, iconos `lucide-react` |
 | IA | **Cloudflare Workers AI** + Pages Functions | `/api/ai` (Mistral Small 3.1) y `/api/tutor` (gpt-oss-120b); la clave nunca llega al navegador |
 | Despliegue | **Cloudflare Pages** | Despliegue automático desde `main`, dirección de prueba por rama y cabeceras de seguridad (`_headers`) |
-| Calidad | **GitHub Actions** + **Vitest** + Dependabot | 32 pruebas SQL, 98 tests de la web, lint, build y auditoría de dependencias en cada Pull Request |
+| Calidad | **GitHub Actions** + **Vitest** + Dependabot | 35 pruebas SQL, 98 tests de la web, lint, build y auditoría de dependencias en cada Pull Request |
 | Versionado | Git + GitHub | Ramas, Pull Requests, `main` protegida, versiones etiquetadas y decisiones documentadas (ADR) |
 
 **Principio clave:** la web nunca es la única barrera. Aunque alguien manipule el navegador, PostgreSQL rechaza:
@@ -238,11 +242,13 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 ├── LICENSE                    licencia MIT
 ├── SECURITY.md                cómo avisar de un fallo de seguridad
 ├── scripts/test-db.sh         ejecuta todas las pruebas SQL, cada una en una base limpia
+├── scripts/volcar-funciones.sh  genera database/funciones/ (versión vigente de cada función)
 ├── database/
-│   ├── migrations/            0001 → 0038, se ejecutan en orden en Supabase
+│   ├── migrations/            0001 → 0040, se ejecutan en orden en Supabase
+│   ├── funciones/             versión vigente de cada función, para estudiarla (generado)
 │   ├── reset/                 reset del schema antiguo (solo histórico)
 │   ├── seed/                  datos de ejemplo (opcional)
-│   └── tests/                 pruebas automáticas en SQL (fases 1 → 26) y simulador de Supabase
+│   └── tests/                 pruebas automáticas en SQL (fases 1 → 35) y simulador de Supabase
 ├── frontend/                  web React + Vite
 │   ├── .env.example           variables de entorno (sin valores reales)
 │   ├── public/_headers        cabeceras de seguridad (CSP…) que aplica Cloudflare Pages
@@ -273,14 +279,15 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
     ├── glosario.md            vocabulario contable bilingüe
     ├── seguridad-supabase.md  lista de ajustes de seguridad del panel de Supabase
     ├── capturas/              capturas de la app para el README
-    └── decisiones/            ADR 0001 → 0031
+    └── decisiones/            ADR 0001 → 0032
 ```
 
 ## Calidad
 
 - **Integración continua** (GitHub Actions) en cada Pull Request:
-  - las 32 pruebas de la base de datos sobre PostgreSQL 16, cada una en una base limpia con todas las migraciones
-    (la fase 23 vigila también que toda clave foránea tenga índice);
+  - las 35 pruebas de la base de datos sobre PostgreSQL 16, cada una en una base limpia con todas las migraciones
+    (la fase 23 vigila también que toda clave foránea tenga índice; la 34 lanza unas 300 operaciones al azar por
+    empresa y exige nueve invariantes contables; la 35 compara al céntimo cinco supuestos calculados desde la norma);
   - **98 tests de la web con Vitest**: formatos, rutas, importadores, errores, idiomas (español e inglés con las
     mismas claves), glosario, plantillas, la defensa de las funciones de IA, la lectura por páginas, el borrado por
     tandas, la fecha de trabajo, los gráficos, el análisis horizontal y la exportación a Excel;
@@ -293,7 +300,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 
 1. **Base de datos.** En un proyecto de Supabase:
    - activa **`pg_cron`** en *Database → Extensions* (para la limpieza de invitados);
-   - en el *SQL Editor*, ejecuta en orden `database/migrations/0001` … `0038`.
+   - en el *SQL Editor*, ejecuta en orden `database/migrations/0001` … `0040`.
 2. **API.** En *Project Settings → Data API → Exposed schemas*, añade `erp`.
 3. **Invitados** (opcional, **después** de la migración 0015): *Authentication → Sign In / Providers* → activa
    **Allow anonymous sign-ins**.
@@ -342,7 +349,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 Con PostgreSQL instalado (Linux, WSL o Git Bash):
 
 ```bash
-bash scripts/test-db.sh            # las 32 pruebas, cada una en una base limpia
+bash scripts/test-db.sh            # las 35 pruebas, cada una en una base limpia
 bash scripts/test-db.sh fase25     # solo las que contienen "fase25"
 ```
 
@@ -393,11 +400,14 @@ cuadrados. El ERP también lee directamente los diarios de Sage (Excel) y Busine
 - [x] **v0.31.0**: IA guiada por reglas (retenciones calculadas por el ERP desde la ficha del tercero) y panel de uso de la web
 - [x] **v0.32.0**: cobros y pagos contra la factura, vencimientos y antigüedad de saldos
 - [x] **v0.33.0**: cuentas controladas (modo estricto o guiado) y comprobaciones del auditor
+- [x] **v0.33.1**: arreglos de una revisión externa, ADR en UTF-8 y volcado de funciones para estudiarlas
+- [x] **v0.34.0**: fiabilidad contable: invariantes con operaciones al azar y supuestos de referencia calculados desde la norma
 - [ ] Inmovilizado: fichas de activos, plan de amortización y asiento mensual a contabilidad
-- [ ] Inventario y nóminas
-- [ ] IA: supuestos prácticos autocorregidos
-- [ ] Presupuesto frente a real (hojas "Ppto" de los ficheros importados)
+- [ ] Fin de ejercicio (periodificaciones, deterioro de clientes, provisiones, existencias) y nóminas
+- [ ] Catálogo de operaciones y supuestos prácticos autocorregidos
+- [ ] Ontología contable y chat con la IA (consulta, nunca calcula)
 - [ ] Puente a Power BI (vistas para conectar directamente)
+- [ ] Después: grupos 8 y 9, ECPN, modelos 390/347/349, contabilidad analítica, presupuesto frente a real
 
 *Proyecto de estudio: los tipos impositivos y las reglas fiscales se contrastan con la AEAT y la ATC; no es
 asesoramiento fiscal. Las respuestas de la IA son orientativas y siempre se revisan antes de contabilizar.*

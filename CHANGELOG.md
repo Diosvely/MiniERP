@@ -2,25 +2,35 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
-[0.31.0] - 2026-10-13
-Añadido
-Retenciones guiadas por reglas:
-ficha del tercero con forma jurídica (sale del NIF) y retención por defecto;
-reglas de retención en la base de datos (erp.withholding_rules: 623 profesionales, 621 alquiler);
-el ERP calcula en el Tutor la retención y lo que queda a pagar al tercero;
-avisos de retención que falta o que no procede;
-migración 0033_withholding_rules.sql y prueba test_fase27_withholding_rules.sql.
-La factura recibida toma la retención de la ficha del tercero.
-Panel «Uso de la web» solo para el propietario: visitantes de la demo, registros, activos, empresas, importaciones y consultas a la IA, con barras por día. Migración 0034_web_usage.sql y prueba test_fase28_web_usage.sql.
-src/partnerTax.js y barPath en src/chart.js, con sus tests (83 en total).
-Cambiado
-Tutor de asientos:
-instrucciones con las reglas de retención y un ejemplo resuelto;
-la IA indica el código de la retención;
-los avisos informativos ya no provocan una segunda vuelta.
-Corregido
-La limpieza nocturna de invitados ya no hace perder la historia de visitas a la demo (erp.guest_history).
-Dos desplegables sin etiqueta en Terceros, y el territorio, que se salía de la tarjeta en el móvil.
+## [0.34.0] - 2026-10-16
+### Añadido
+- **Invariantes contables** (`erp.integrity_checks`, migración `0040_integrity_checks.sql`): asientos y sumas y
+  saldos que cuadran, Activo = PN + Pasivo, 129 = resultado de la PyG, apertura = cierre, asiento + contraasiento = 0,
+  tercero de la factura = total − retención, 472/477 = libro registro, y variación de la 57 = EFE directo = indirecto.
+- **Prueba con operaciones al azar** (`test_fase34_invariants.sql`): dos empresas (IVA e IGIC), unas 300 operaciones de
+  todos los tipos, liquidaciones sin diferencias, cierre y año siguiente; los invariantes se exigen cada 25 operaciones.
+- **Supuestos de referencia** (`test_fase35_reference_cases.sql`): cinco casos con la solución calculada a mano desde la
+  norma y el artículo de cada cifra (IRPF y 111/115, IGIC y 420, AIB e ISP, recargo de equivalencia, prorrata con
+  redondeo al entero superior). El ERP coincide al céntimo en balance, PyG y modelos.
+- `erp.integrity_checks` en el volcado de funciones (146).
+
+## [0.33.1] - 2026-10-15
+### Corregido
+Fallos encontrados por una revisión externa del proyecto, con pruebas de regresión (`test_fase33_review_fixes.sql`,
+que falla sin el arreglo):
+- La **liquidación de IVA / IGIC** incluye también las 472/477 que no están configuradas en Impuestos, en el impuesto
+  del territorio. Antes, un apunte en una 47700001 sin configurar se saltaba el cuadre del 303/420. Migración
+  `0039_review_fixes.sql`.
+- Los **ADR 0006–0011** y la **guía de Git** pasan a UTF-8 (en GitHub se veían con «�») y recuperan las flechas «→»
+  que se habían perdido.
+### Añadido
+- Comprobación del auditor **«cuota que no corresponde a base × tipo»**: un apunte manual en la 472/477 con base 100
+  al 21 % y cuota 500 sale señalado (debería ser 21). En modo estricto, ese asiento ya no se podía contabilizar.
+- **`database/funciones/`**: la versión vigente de cada una de las 145 funciones, con su índice y las migraciones
+  donde se definió, para estudiarlas sin rastrear migraciones. Lo genera `scripts/volcar-funciones.sh`.
+### Cambiado
+- La ADR 0010 se matiza (con la 0016 y la 0021): el ERP no es el programa oficial de una empresa, pero sí se pueden
+  **estudiar** contabilidades reales, en privado y nunca en el repositorio.
 
 ## [0.33.0] - 2026-10-15
 ### Añadido

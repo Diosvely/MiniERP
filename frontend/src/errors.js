@@ -110,6 +110,23 @@ const RULES = [
   [/^Invoice (.+) is already used for another disposal$/, 'faInvoiceUsed'],
   [/^The disposal date cannot be earlier than the start date$/, 'faDisposalDate'],
 
+  // Ajustes de cierre (v0.36.0)
+  [/^Nothing to accrue at (\S+)/, 'adjNothing'],
+  [/^Choose the (?:expense|income) account \(group (\d)\)$/, 'adjPlAccount', 'accounts'],
+  [/^The balance account must be a (\S+) subaccount$/, 'adjBalanceAccount'],
+  [/^To calculate the accrual give the start date/, 'adjPeriod'],
+  [/^Accrual (\S+) is not pending reversal$/, 'adjNotPending'],
+  [/^The reversal must be after the cut-off date \((.+)\)$/, 'adjReversalDate'],
+  [/^This entry belongs to an? (?:accrual|receivable impairment)/, 'entryFromAdjustments', 'adjustments'],
+  [/^Invoice (.+) is already impaired/, 'adjImpaired'],
+  [/^Invoice (.+) has nothing pending at (.+)$/, 'adjNothingPending', 'payments'],
+  [/^Only issued invoices/, 'adjOnlySales'],
+  [/^There is already a global impairment/, 'adjGlobalExists'],
+  [/^Nothing to impair at/, 'adjNothingImpair'],
+  [/^Impairment (\S+) was applied to a write-off/, 'adjWriteoffFirst'],
+  [/^There is a newer active impairment/, 'adjNewer'],
+  [/^The (?:percentage|percentages) must be between 0 and 100$/, 'adjPct'],
+
   // Liquidación y prorrata
   [/^(\S+) quarter (\S+)T (\S+) is already settled/, 'quarterSettled', 'settlement'],
   [/^Quarter (\S+)T (\S+) \(or a later one\) is already settled$/, 'quarterSettledLater', 'settlement'],

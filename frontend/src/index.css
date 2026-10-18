@@ -726,3 +726,16 @@ td.num { white-space: nowrap; }
 .baja-activo label { max-width: 28em; }
 .alta-activo .rejilla-tres label { min-width: 0; }
 @media (max-width: 560px) { .alta-activo .rejilla-tres { grid-template-columns: 1fr 1fr; } }
+
+/* --- v0.36.0: Ajustes de cierre --- */
+.ajustes .campo-fecha { max-width: 14em; }
+.ajustes ~ .tarjeta td.num, .ajustes ~ .tarjeta th.num { text-align: right; font-variant-numeric: tabular-nums; }
+.ajustes ~ .tarjeta td small { color: var(--suave); }
+.ajustes ~ .tarjeta tr.anulada td { color: var(--suave); text-decoration: line-through; }
+.ajustes ~ .tarjeta tr.marcada td { background: color-mix(in srgb, var(--primario) 7%, transparent); }
+.ajustes ~ .tarjeta td.acciones { white-space: nowrap; }
+.ajustes ~ .tarjeta td.acciones button { padding: 6px 10px; font-size: .85rem; margin: 2px 4px 2px 0; }
+.ajustes ~ .tarjeta td input { max-width: 5em; text-align: right; }
+.accion-deterioro { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; white-space: normal; min-width: 14em; }
+.accion-deterioro label { display: flex; align-items: center; gap: 6px; }
+.ajustes ~ .tarjeta td:first-child { white-space: nowrap; }

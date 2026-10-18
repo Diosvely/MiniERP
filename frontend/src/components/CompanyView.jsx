@@ -11,6 +11,7 @@ import TaxSettlement from './TaxSettlement'
 import Reports from './Reports'
 import Checks from './Checks'
 import Assets from './Assets'
+import Adjustments from './Adjustments'
 import FinancialStatements from './FinancialStatements'
 import YearClosing from './YearClosing'
 import Withholdings from './Withholdings'
@@ -43,6 +44,7 @@ const SCREENS = [
   { id: 'journal', group: 'menuAccounting', basic: true },
   { id: 'closing', group: 'menuAccounting' },
   { id: 'assets', group: 'menuAccounting', basic: 'hidden' },
+  { id: 'adjustments', group: 'menuAccounting' },
   { id: 'invoices', group: 'menuInvoices', basic: true },
   { id: 'payments', group: 'menuInvoices', basic: true },
   { id: 'settlement', group: 'menuTaxes', basic: true },
@@ -254,6 +256,7 @@ export default function CompanyView({ company: base, readOnly, canPublish, isOwn
         {section === 'invoices' && <Invoices company={company} readOnly={readOnly} />}
         {section === 'payments' && <Payments company={company} readOnly={readOnly} />}
         {section === 'assets' && <Assets company={company} readOnly={readOnly} />}
+        {section === 'adjustments' && <Adjustments company={company} readOnly={readOnly} />}
         {section === 'settlement' && <TaxSettlement company={company} readOnly={readOnly} />}
         {section === 'prorata' && <ProRata company={company} readOnly={readOnly} />}
         {section === 'withholdings' && <Withholdings company={company} />}

@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.tg_entry_adjust_reverse · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0043_year_end_adjustments 0045_provisions 0047_inventory_closing   →   la vigente es la de 0047_inventory_closing
+-- Definida en: 0043_year_end_adjustments 0045_provisions 0047_inventory_closing 0049_payroll   →   la vigente es la de 0049_payroll
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.tg_entry_adjust_reverse()
@@ -23,6 +23,10 @@ begin
     -- v0.37.0: inventario del cierre
     if exists (select 1 from erp.inventory_counts where entry_id = new.reversal_of) then
       raise exception 'This entry belongs to an inventory count: undo it from Year-end adjustments';
+    end if;
+    -- v0.38.0: nóminas y sus pagos
+    if exists (select 1 from erp.payroll_runs where new.reversal_of in (entry_id, net_payment_entry_id, ss_payment_entry_id)) then
+      raise exception 'This entry belongs to a payroll: undo it from Payroll';
     end if;
   end if;
   return new;

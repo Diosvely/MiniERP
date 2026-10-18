@@ -1060,3 +1060,33 @@ antigüedad de saldos (490/694/794), provisiones, regularización de existencias
 **Siguiente paso:** v0.38.0 · Nóminas: empleado ficticio, devengos, cuotas de la Seguridad Social desde una tabla de
 tipos, IRPF, pagas extra periodificadas, asiento 640/642 contra 4751/476/465 y su pago; la 4751 de nómina cuadrará con
 el 111.
+
+## 2026-10-18 · v0.38.0 · Nóminas
+
+**Qué se hizo**
+- **Nóminas** con tipos de cotización del año, ficha del empleado, recibo, asiento, pagas extra y pagos (0049).
+- **Integración:** comprobación de la 465 / 476, la 4751 y el modelo 111 con las nóminas, y glosario (0050).
+- **Web:** pantalla Nóminas y la fila de nóminas en Retenciones IRPF.
+- **Pruebas:** 45 SQL y 126 tests de la web.
+
+**Lo que se aprende**
+- **La base de cotización no es el salario del mes.** Ana cobra 2.000 al mes y dos pagas de 2.000: cotiza por
+  2.000 + 2.000 × 2 / 12 = **2.333,33** todos los meses, también en junio, aunque ese mes cobre 4.000 (art. 147 LGSS).
+- **La empresa paga casi un tercio más del sueldo.** Sobre esos 2.333,33, la empresa cotiza 738,50 (23,60 + 5,50 +
+  0,20 + 0,60 + 0,75 + 1,00 de AT = 31,65 %) y la trabajadora 151,67 (6,50 %). Coste del mes: 2.333,33 + 738,50.
+- **El asiento de enero:** 640 D 2.000 · 640 D 333,33 (paga devengada) · 642 D 738,50 / 476 H 890,17 · 4751 H 240 ·
+  465 H 1.608,33 (líquido) · 465 H 333,33 (paga). En junio la 465 se carga con los 2.000 de la paga, que se cobra con
+  la nómina y paga su IRPF (480), pero no cotiza otra vez.
+- **El redondeo se cuadra en el mes de la paga:** 5 × 333,33 + 333,35 = 2.000, al céntimo.
+- **Temporal o indefinido cambia el desempleo:** Luis (temporal) paga 1,60 % y la empresa 6,70 %, frente a 1,55 % y
+  5,50 % de un indefinido.
+- **Por encima de la base máxima** (5.101,20) no se cotiza más, salvo la cotización adicional de solidaridad: una
+  remuneración de 7.000 paga 4,90 + 14,44 la empresa y 0,97 + 2,92 la trabajadora.
+- **La 476 al cierre es la Seguridad Social de diciembre**, que se paga en enero. La 465 a cero dice que se ha pagado
+  todo el líquido y todas las pagas.
+- **La 4751 junta dos orígenes** que van al mismo modelo 111: nóminas (casillas 01 a 03) y profesionales (07 a 09).
+
+**Decisiones:** ADR 0036 · Nóminas.
+
+**Siguiente paso:** v0.39.0 · Modelos anuales: 390 / 425 (resumen anual del IVA / IGIC), 347 (operaciones con terceros
+de más de 3.005,06 €), 349 (operaciones intracomunitarias, solo con IVA) y las casillas del 303 / 420.

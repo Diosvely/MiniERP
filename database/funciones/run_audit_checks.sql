@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.run_audit_checks · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0037_audit_checks 0039_review_fixes 0042_assets_integration 0044_adjustments_integration 0046_asset_impairment 0048_closing_integration   →   la vigente es la de 0048_closing_integration
+-- Definida en: 0037_audit_checks 0039_review_fixes 0042_assets_integration 0044_adjustments_integration 0046_asset_impairment 0048_closing_integration 0050_payroll_integration   →   la vigente es la de 0050_payroll_integration
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.run_audit_checks(p_company uuid, p_year integer, p_to_date date DEFAULT NULL::date)
@@ -87,6 +87,12 @@ begin
       select coalesce(sum(w.withholding_amount), 0) into v_book
       from erp.v_withholding_register w
       where w.company_id = p_company and w.fiscal_year = p_year and w.side = 'withheld' and w.posting_date <= v_to;
+      -- v0.38.0: más el IRPF de las nóminas (también va al modelo 111, casillas 01 a 03)
+      v_book := v_book + coalesce((select sum(s.irpf) from erp.payslips s
+                                   join erp.payroll_runs pr on pr.id = s.run_id
+                                   join erp.journal_entries je on je.id = pr.entry_id
+                                   join erp.fiscal_years f on f.id = je.fiscal_year_id
+                                   where pr.company_id = p_company and pr.status = 'posted' and f.year = p_year and pr.period <= v_to), 0);
       -- Contabilidad: asientos que ABONAN la 4751 (las retenciones). Los que la cargan son el ingreso en Hacienda.
       -- Un contraasiento va con su original (por eso se agrupa por k y el signo es el del original).
       with g as (
@@ -301,20 +307,22 @@ begin
       into v_items, v_det
       from n;
 
-    elsif r.code in ('provisions_ledger', 'inventory_ledger') then
+    elsif r.code in ('provisions_ledger', 'inventory_ledger', 'payroll_ledger') then
       -- v0.37.0 · las cuentas de provisiones (141 / 142 / 5292 / 5293 / 499) y de existencias (30-36 / 39) frente a lo
       --   que han contabilizado sus módulos: la diferencia es un asiento manual o un saldo importado sin su ficha
       with lm as (
         select g.id as acc, sum(jl.debit - jl.credit) as amount,
                bool_or(exists (select 1 from erp.provision_movements pm where pm.entry_id = e.id)
-                       or exists (select 1 from erp.inventory_counts ic where ic.entry_id = e.id and ic.status = 'posted')) as module
+                       or exists (select 1 from erp.inventory_counts ic where ic.entry_id = e.id and ic.status = 'posted')
+                       -- v0.38.0: la nómina y sus pagos
+                       or exists (select 1 from erp.payroll_runs pr where e.id in (pr.entry_id, pr.net_payment_entry_id, pr.ss_payment_entry_id))) as module
         from erp.journal_lines jl join erp.journal_entries e on e.id = jl.entry_id
         join erp.gl_accounts g on g.id = jl.gl_account_id
         where e.company_id = p_company and e.status = 'posted' and e.posting_date <= v_to and e.entry_type <> 'closing'
           and not exists (select 1 from erp.year_closings yc where yc.opening_entry_id = e.id)
-          and case when r.code = 'provisions_ledger'
-                   then g.account_no ~ '^(141|142|5292|5293|499)'
-                   else g.account_no ~ '^3[0-6]|^39' end
+          and case r.code when 'provisions_ledger' then g.account_no ~ '^(141|142|5292|5293|499)'
+                          when 'payroll_ledger' then g.account_no ~ '^(465|476)'   -- v0.38.0
+                          else g.account_no ~ '^3[0-6]|^39' end
           -- un movimiento anulado y su contraasiento se compensan: ninguno de los dos cuenta como del módulo
           and not (e.reversal_of is not null or e.reversed_by is not null)
         group by g.id, e.id

@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.post_depreciation · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0041_fixed_assets   →   la vigente es la de 0041_fixed_assets
+-- Definida en: 0041_fixed_assets 0046_asset_impairment   →   la vigente es la de 0046_asset_impairment
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.post_depreciation(p_company uuid, p_date date)
@@ -23,7 +23,7 @@ begin
   if v_fy is null then raise exception 'No fiscal year for date %', p_date; end if;
 
   for r in
-    select a.*, erp.asset_accumulated_at(a.cost, a.residual_value, a.useful_life_months, a.start_date, p_date) - erp.asset_posted(a.id) as due
+    select a.*, erp.asset_depr_at(a.id, p_date) - erp.asset_posted(a.id) as due
     from erp.fixed_assets a
     where a.company_id = p_company and a.status = 'active' and a.start_date <= p_date
       and not exists (select 1 from erp.asset_depreciations d where d.asset_id = a.id and d.period_end >= p_date)

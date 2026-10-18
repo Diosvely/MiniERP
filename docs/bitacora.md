@@ -987,3 +987,76 @@ baja con resultado (671/771), con su supuesto de referencia.
 
 **Siguiente paso:** v0.36.0 · Fin de ejercicio I: periodificaciones (480/485), deterioro de clientes desde la
 antigüedad de saldos (490/694/794), provisiones, regularización de existencias y un asistente de cierre.
+
+## 2026-10-18 · v0.36.0 · Ajustes de cierre I: periodificaciones y deterioro de clientes
+
+**Qué se hizo**
+- Se incorporó una segunda revisión externa («Hoja de ruta: carencias»), con sus cuentas corregidas al PGC 2007. El cierre
+  pasa a dos versiones, los modelos anuales se adelantan y la analítica y el presupuesto entran en el plan.
+- **Periodificaciones** con reversión en el ejercicio siguiente, y **deterioro de clientes** individual y global, con su
+  reversión y la insolvencia firme (migración 0043).
+- **Integración** (0044): tres comprobaciones, aviso del cierre, glosario y la prueba al azar.
+- **Pantalla Ajustes de cierre.** 39 pruebas SQL y 112 tests de la web.
+
+**Lo que se aprende**
+- **Periodificar es aplicar el devengo:** se ajusta contra la propia cuenta de gasto o ingreso, no contra una cuenta
+  puente.
+  - Seguro anual de 1.200 pagado el 01/10: al cierre, 9/12 = 900 son del año siguiente → 480 D 900 / 625 H 900.
+    El gasto de 2026 queda en 300.
+  - Alquiler de un semestre (6.000) cobrado el 01/11: 4.000 son del año siguiente → 752 D 4.000 / 485 H 4.000.
+- **La reversión no es una anulación.** El 01/01 se hace un asiento nuevo al revés. En los devengados (4009 / 4309), la
+  reversión deja el gasto en negativo y la factura que llega lo compensa: en el año nuevo solo queda lo que es suyo.
+- **El deterioro no toca la deuda:** la 430 sigue reclamando y la 490 corrige su valor en el balance.
+  - Moroso con 2.420 vencidos hace 9 meses: 694 / 490 por 2.420, deducible.
+  - Dudoso con 800 pendientes y vencidos hace 3 meses, al 50 %: 400, no deducible hasta el 01/04/2027 (art. 13.1.a LIS).
+    Es una diferencia temporaria.
+- **El global se estima de nuevo cada año** (25 % de 605 + 10 % de 1.210 = 272,25). Fiscalmente solo lo deduce una
+  empresa de reducida dimensión, y como mucho el 1 % de los deudores (art. 104 LIS).
+- **Insolvencia firme:** la pérdida va a la 650 y el deterioro dotado se aplica a la 794. La partida abierta se cierra
+  como un cobro sin banco, como compensa SAP las partidas.
+- **Una revisión externa también se revisa.** El documento usaba la 693 para clientes (es la de existencias), la 680 para
+  periodificar (es la amortización del intangible) y la 472 en la nómina (es la 4751).
+
+**Decisiones:** ADR 0034 · Ajustes de cierre I: periodificaciones y deterioro de clientes.
+
+**Siguiente paso:** v0.37.0 · Fin de ejercicio II:
+- provisiones (141 / 142 / 499 y 795);
+- deterioro del inmovilizado (691 / 291 / 791) y rectificativa de compra de activo que ajuste su ficha;
+- regularización de existencias por inventario (610 / 71x);
+- asistente de cierre.
+
+## 2026-10-18 · v0.37.0 · Ajustes de cierre II: provisiones, deterioro del inmovilizado, existencias y asistente
+
+**Qué se hizo**
+- **Provisiones** con su ficha y sus movimientos (0045).
+- **Deterioro del inmovilizado** con la amortización recalculada, y la rectificativa de compra que ajusta la ficha (0046).
+- **Inventario del cierre** y **asistente de cierre** (0047).
+- **Integración:** comprobaciones, avisos y glosario (0048).
+- **Web:** Ajustes de cierre, ficha del activo y Cierre del ejercicio.
+- **Pruebas:** 43 SQL y 118 tests de la web.
+
+**Lo que se aprende**
+- **Una provisión es una obligación de hoy con importe incierto.**
+  - Litigio: 12.000 → revisado a 15.000 → pasado a corto plazo (5293) → sentencia de 14.000. El asiento final es
+    5293 D 15.000 / 572 H 14.000 · **7953 H 1.000** de exceso.
+  - Las garantías (499) no se ajustan por la diferencia: se revierte la del año anterior (7954) y se dota la nueva (6959).
+- **El deterioro del inmovilizado cambia la amortización futura** (NRV 2.ª).
+  - Máquina de 60.000 a 10 años: en 2027 su valor neto es 48.000 y el recuperable 40.000 → deterioro de 8.000.
+  - Desde ahí se amortiza 40.000 / 96 meses = 5.000 al año.
+  - En 2029 el recuperable sube a 38.000, pero la reversión tiene un límite: el valor sin deterioro, 36.000. Se revierten
+    6.000, y la amortización vuelve a ser de 6.000 al año.
+- **La rectificativa de una compra baja el coste.** Ordenador de 1.200 con 240 de descuento: coste 960. Lo pendiente se
+  reparte en la vida que queda (2027 = 235,61) y en total se amortizan 960, al céntimo.
+- **Variación de existencias:** el gasto es lo consumido, no lo comprado. Inicial 8.000 + compras 40.000 − final 6.000 =
+  42.000 (600 + 610). El deterioro de existencias se revierte y se vuelve a dotar en cada cierre.
+- **El cierre tiene un orden:** liquidaciones, reversiones, amortización, deterioros, periodificaciones, clientes,
+  provisiones, inventario, comprobaciones y cierre. Algunos pasos solo los puede valorar la empresa: el asistente los
+  marca como «revisar».
+- **La prueba al azar volvió a encontrar un caso:** la rectificativa de la **venta** de un activo no corrige el resultado
+  de la baja. Pasa al backlog.
+
+**Decisiones:** ADR 0035 · Ajustes de cierre II.
+
+**Siguiente paso:** v0.38.0 · Nóminas: empleado ficticio, devengos, cuotas de la Seguridad Social desde una tabla de
+tipos, IRPF, pagas extra periodificadas, asiento 640/642 contra 4751/476/465 y su pago; la 4751 de nómina cuadrará con
+el 111.

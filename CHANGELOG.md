@@ -2,6 +2,62 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.37.0] - 2026-10-18
+### Añadido
+- **Provisiones** (migración `0045_provisions.sql`, prueba `test_fase40_provisions.sql`):
+  - de impuestos (141 / 5292), responsabilidades (142 / 5293) y operaciones comerciales (4999);
+  - dotación, revisión (más gasto o exceso a 795x; las comerciales revierten la anterior y dotan la nueva),
+    reclasificación a corto plazo, aplicación al pagar y deshacer;
+  - la 633 / 638 en la plantilla del PGC.
+- **Deterioro del inmovilizado** (migración `0046_asset_impairment.sql`, prueba `test_fase41_asset_impairment.sql`):
+  - deterioro (69x / 29x) y reversión con su límite (29x / 79x);
+  - amortización recalculada por tramos en la vida útil que queda;
+  - la baja cancela la 29x.
+  - La **rectificativa de una compra de inmovilizado** ajusta el coste de la ficha (hallazgo de la v0.35.0).
+- **Existencias por inventario y asistente de cierre** (migración `0047_inventory_closing.sql`, prueba
+  `test_fase42_inventory_closing.sql`):
+  - regularización 61x / 71x con el recuento del cierre;
+  - deterioro 693 / 39x y reversión 793;
+  - `erp.closing_checklist` con los diez pasos del cierre.
+- **Integración** (migración `0048_closing_integration.sql`, prueba `test_fase43_closing_integration.sql`):
+  - comprobaciones «provisiones frente a la contabilidad», «provisiones sin revisar en el cierre» y «existencias frente a
+    los inventarios»;
+  - avisos del cierre;
+  - términos «Provisión», «Deterioro del inmovilizado» y «Variación de existencias» en el glosario.
+- **Web:**
+  - Ajustes de cierre con provisiones e inventario;
+  - deterioro y sucesos en la ficha del activo;
+  - asistente en Cierre del ejercicio.
+  - 118 tests en total.
+### Cambiado
+- La 141, 142, 5292, 5293, 499, 290-292, 30-36 y 39 pasan a ser cuentas controladas.
+- La prueba de operaciones al azar (fase 34) añade provisiones, deterioro de activos, rectificativas de compras de
+  activos e inventario.
+
+## [0.36.0] - 2026-10-18
+### Añadido
+- **Periodificaciones** (migración `0043_year_end_adjustments.sql`, prueba `test_fase38_year_end_adjustments.sql`):
+  - gasto o ingreso anticipado (480 / 485) y devengado sin factura (4009 / 4309), contra la propia cuenta de gasto o
+    ingreso;
+  - importe directo o calculado por meses;
+  - reversión con un asiento nuevo en el ejercicio siguiente, una a una o todas a la vez.
+- **Deterioro de clientes** (misma migración):
+  - individual sobre lo pendiente y global por tramos de antigüedad (694 / 490);
+  - reversión (490 / 794) e insolvencia firme (650 / 430, aplicando el deterioro), que cierra la partida abierta;
+  - avisos fiscales de los arts. 13.1 y 104 LIS.
+- **Integración** (migración `0044_adjustments_integration.sql`, prueba `test_fase39_adjustments_integration.sql`):
+  - comprobaciones «periodificaciones y deterioros frente a la contabilidad», «periodificaciones del año anterior sin
+    revertir» y «deterioros de facturas ya cobradas»;
+  - aviso en el cierre del ejercicio;
+  - términos «Periodificación» y «Deterioro de clientes» en el glosario.
+- Pantalla **Ajustes de cierre** (menú Auditor › Contabilidad, y enlace desde Cierre del ejercicio). `src/adjustments.js`
+  con sus tests (112 en total).
+### Cambiado
+- La 480, la 485, la 4009, la 4309 y la 490 pasan a ser cuentas controladas.
+- La prueba de operaciones al azar (fase 34) hace los ajustes de cierre, los revierte, cobra e incluye insolvencias.
+### Corregido
+- En Comprobaciones y en el aviso de cuenta controlada faltaban los nombres del módulo Inmovilizado (v0.35.0).
+
 ## [0.35.0] - 2026-10-16
 ### Añadido
 - **Inmovilizado** (migración `0041_fixed_assets.sql`, prueba `test_fase36_fixed_assets.sql`):

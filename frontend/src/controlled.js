@@ -32,6 +32,8 @@ export function moduleScreen(modules) {
   if (m.includes('payments')) return 'payments'
   if (m.includes('invoices')) return 'invoices'
   if (m.includes('settlement')) return 'settlement'
+  if (m.includes('assets')) return 'assets'
+  if (m.includes('accruals') || m.includes('impairments')) return 'adjustments'   // v0.36.0
   return 'journal'
 }
 

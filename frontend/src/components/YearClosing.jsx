@@ -3,6 +3,8 @@ import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import { money } from '../format'
 import ErrorBox from './ErrorBox'
+import Link from './Link'
+import { companyPath } from '../router'
 
 // Cierre del ejercicio en 4 pasos, como el asistente de cierre de A3 / Sage / ContaPlus
 //   (BC: "Close Income Statement" + cerrar el año · SAP: FAGLGVTR "Balance Carryforward")
@@ -93,6 +95,8 @@ export default function YearClosing({ company, readOnly }) {
       <section className="tarjeta">
         <h2>{t('yearClosingTitle')}</h2>
         <p className="ayuda">{t('yearClosingIntro')}</p>
+        <p className="ayuda">{t('closingAdjustmentsHint')}{' '}
+          <Link to={companyPath(company.id, 'adjustments')} className="enlace">{t('nav.adjustments.label')} →</Link></p>
         <label className="ejercicio-cierre">{t('year')}
           <select value={year ?? ''} onChange={(e) => setYear(e.target.value)}>
             {years.map((y) => (

@@ -22,12 +22,12 @@ select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a1
 do $$
 declare v text;
 begin
-  assert (select count(*) from erp.concepts) = 43, 'los 43 términos del glosario (41 + 2 del inmovilizado, 0042): ' || (select count(*) from erp.concepts);
+  assert (select count(*) from erp.concepts) = 45, 'los 45 términos del glosario (41 + 2 del inmovilizado, 0042, + 2 de los ajustes de cierre, 0044): ' || (select count(*) from erp.concepts);
   assert (select term from erp.concepts where key = 'controlledAccount') = 'Cuenta controlada';
   assert (select sap from erp.concepts where key = 'controlledAccount') = 'Reconciliation account';
   assert (select pgc from erp.concepts where key = 'inputTax') = '{472}';
   assert (select example from erp.concepts where key = 'doubleEntry') is null, 'sin ejemplo: null';
-  raise notice 'OK  · 43 conceptos con su definición, BC, SAP y cuentas del PGC';
+  raise notice 'OK  · 45 conceptos con su definición, BC, SAP y cuentas del PGC';
 
   -- Conceptos de una subcuenta
   select string_agg(key, ',' order by key) into v from erp.concepts_for_account('41000001');

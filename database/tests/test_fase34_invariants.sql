@@ -217,6 +217,27 @@ begin
     begin perform erp.post_depreciation(e, '2026-12-31');
     exception when others then if sqlerrm not like 'Nothing to depreciate%' then raise; end if; end;
     perform erp.post_tax_settlement(e, impuesto, 2026, 4);
+    -- v0.36.0 · Ajustes de cierre al 31/12: las cuatro periodificaciones y deterioros (individuales y global)
+    perform erp.create_accrual(jsonb_build_object('company_id', e, 'kind', 'prepaid_expense', 'description', 'Seguro al azar',
+      'pl_account_no', '62200001', 'cutoff_date', '2026-12-31', 'total_amount', public.azar(600, 3000),
+      'coverage_start', '2026-' || lpad((7 + floor(random() * 6))::int::text, 2, '0') || '-' || lpad((1 + floor(random() * 28))::int::text, 2, '0'),
+      'coverage_months', 12));
+    perform erp.create_accrual(jsonb_build_object('company_id', e, 'kind', 'deferred_income', 'description', 'Cobro por adelantado al azar',
+      'pl_account_no', '70000001', 'cutoff_date', '2026-12-31', 'total_amount', public.azar(1000, 6000), 'coverage_start', '2026-11-01', 'coverage_months', 6));
+    perform erp.create_accrual(jsonb_build_object('company_id', e, 'kind', 'accrued_expense', 'description', 'Factura pendiente de recibir',
+      'pl_account_no', '62900001', 'cutoff_date', '2026-12-31', 'amount', public.azar(50, 900)));
+    perform erp.create_accrual(jsonb_build_object('company_id', e, 'kind', 'accrued_income', 'description', 'Pendiente de facturar',
+      'pl_account_no', '70000001', 'cutoff_date', '2026-12-31', 'amount', public.azar(50, 900)));
+    for r in select o.invoice_id from erp.open_items(e, '2026-12-31') o where o.invoice_type = 'sale' and o.pending > 0
+             order by random() limit 3 loop
+      perform erp.impair_receivable(jsonb_build_object('invoice_id', r.invoice_id, 'impair_date', '2026-12-31', 'pct', public.uno(array['50', '100'])));
+    end loop;
+    begin
+      perform erp.impair_receivables_global(jsonb_build_object('company_id', e, 'impair_date', '2026-12-31',
+        'rates', '{"d1_90":5,"d91_180":10,"d181_365":25,"d365_plus":50}'::jsonb));
+    exception when others then if sqlerrm not like 'Nothing to impair%' then raise; end if;
+    end;
+    assert (select status from erp.run_audit_checks(e, 2026) where code = 'adjustments_ledger') = 'ok', 'ajustes = 480/485/4009/4309/490';
     assert (select status from erp.run_audit_checks(e, 2026) where code = 'assets_ledger') = 'ok', 'las fichas cuadran con la 21x / 281';
     assert (select status from erp.run_audit_checks(e, 2026) where code = 'assets_pending') = 'ok', 'todo amortizado al 31/12';
     ok := public.invariantes(e, 2026, 'fin de 2026');
@@ -229,8 +250,25 @@ begin
     assert (select status from erp.integrity_checks(e, 2026) where code = 'opening_closing') = 'ok', 'la apertura se comprueba';
     raise notice 'OK  · % · cierre de 2026: 129 = resultado de la PyG y apertura de 2027 = cierre, cuenta a cuenta', impuesto;
 
-    -- 3) Año 2027: más operaciones sobre los saldos abiertos
+    -- 3) Año 2027: se revierten las periodificaciones en la apertura; más operaciones sobre los saldos abiertos
+    assert (select status from erp.run_audit_checks(e, 2027, '2027-01-01') where code = 'accruals_unreversed') = 'warning', 'sin revertir: aviso';
+    assert erp.reverse_accruals(e, '2027-01-01') = 4, 'las cuatro periodificaciones se revierten el 01/01';
     hechas := public.operar(e, '2027-01-02', '2027-06-29', 80, impuesto);
+    -- …los deterioros de lo que ya se ha cobrado se revierten; uno que siga pendiente, insolvencia firme
+    for r in select c.details from erp.run_audit_checks(e, 2027, '2027-06-30') c where c.code = 'impairments_collected' loop
+      perform erp.reverse_impairment((x->>'impairment_id')::uuid, '2027-06-30') from jsonb_array_elements(r.details) x;
+    end loop;
+    for r in select i.invoice_id from erp.receivable_impairments i join erp.open_items(e, '2027-06-30') o on o.invoice_id = i.invoice_id
+             where i.company_id = e and i.status = 'active' and o.pending > 0 limit 1 loop
+      perform erp.write_off_receivable(jsonb_build_object('invoice_id', r.invoice_id, 'writeoff_date', '2027-06-30'));
+    end loop;
+    perform erp.reverse_impairment(i.id, '2027-06-30') from erp.receivable_impairments i
+    where i.company_id = e and i.method = 'global' and i.status = 'active';
+    assert (select string_agg(c.code || '=' || c.status, ' ' order by c.sort) from erp.run_audit_checks(e, 2027, '2027-06-30') c
+            where c.code in ('adjustments_ledger', 'accruals_unreversed', 'impairments_collected'))
+           = 'adjustments_ledger=ok accruals_unreversed=ok impairments_collected=ok',
+           (select string_agg(c.code || '=' || c.status || ' ' || c.details::text, ' ') from erp.run_audit_checks(e, 2027, '2027-06-30') c
+            where c.code in ('adjustments_ledger', 'accruals_unreversed', 'impairments_collected'));
     ok := public.invariantes(e, 2027, 'en 2027');
     raise notice 'OK  · % · 2027: % operaciones más, % invariantes en verde', impuesto, hechas, ok;
   end loop;
@@ -264,6 +302,9 @@ select c.name as empresa,
   (select count(*) from erp.journal_entries j where j.company_id = c.id and j.reversal_of is not null) as contraasientos,
   (select count(*) from erp.tax_settlements t where t.company_id = c.id) as liquidaciones,
   (select count(*) from erp.fixed_assets a where a.company_id = c.id) as activos,
-  (select count(*) from erp.fixed_assets a where a.company_id = c.id and a.status = 'disposed') as vendidos
+  (select count(*) from erp.fixed_assets a where a.company_id = c.id and a.status = 'disposed') as vendidos,
+  (select count(*) from erp.accruals a where a.company_id = c.id and a.status = 'reversed') as periodificaciones,
+  (select count(*) from erp.receivable_impairments i where i.company_id = c.id) as deterioros,
+  (select count(*) from erp.receivable_writeoffs w where w.company_id = c.id) as insolvencias
 from erp.companies c order by 1;
 \echo '✔ FASE 34 OK · invariantes contables con operaciones al azar'

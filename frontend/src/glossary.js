@@ -134,6 +134,12 @@ export const GLOSSARY = {
   netBookValue: { bc: 'Book Value', sap: 'Net book value', pgc: ['28'],
     es: { term: 'Valor neto contable', def: 'Coste del activo menos su amortización acumulada (y su deterioro): lo que vale en el balance. Al venderlo, la diferencia con el precio es el beneficio (77x) o la pérdida (67x).', ex: 'Furgoneta de 18.000 con 2.588,89 amortizados: valor neto 15.411,11; vendida por 14.000 → pérdida de 1.411,11 (671).' },
     en: { term: 'Net book value', def: 'Asset cost minus accumulated depreciation (and impairment): what it is worth in the balance sheet. When sold, the difference with the price is the gain (77x) or loss (67x).', ex: 'Van of 18,000 with 2,588.89 depreciated: net value 15,411.11; sold for 14,000 → loss of 1,411.11 (671).' } },
+  deferral: { bc: 'Deferral template', sap: 'Accrual engine (ACE) / deferrals', pgc: ['480', '485', '4009', '4309'],
+    es: { term: 'Periodificación', def: 'Ajuste de cierre que lleva cada gasto e ingreso al ejercicio al que corresponde (devengo): lo pagado o cobrado por adelantado va a la 480 / 485, y lo devengado sin factura a la 4009 / 4309. Se revierte el primer día del ejercicio siguiente.', ex: 'Seguro anual de 1.200 pagado el 01/10: al 31/12, 900 son del año siguiente → 480 D 900 / 625 H 900; el 01/01, al revés.' },
+    en: { term: 'Accrual adjustment (deferral)', def: 'A year-end adjustment that moves each expense and income to the year it belongs to (accrual principle): what was paid or collected in advance goes to 480 / 485, and what accrued without an invoice to 4009 / 4309. It is reversed on the first day of the next year.', ex: 'Annual insurance of 1,200 paid on 1 October: at 31 December, 900 belongs to next year → 480 Dr 900 / 625 Cr 900; on 1 January, the other way round.' } },
+  badDebt: { bc: 'Allowance for doubtful accounts', sap: 'Individual / flat-rate value adjustment', pgc: ['490', '694', '794', '650'],
+    es: { term: 'Deterioro de clientes', def: 'Pérdida estimada por clientes que probablemente no pagarán (NRV 9.ª): 694 al Debe y 490 al Haber, sin tocar la 430. Si pagan, se revierte (794); si la insolvencia es firme, la deuda va a la 650. Fiscalmente, deducible a los 6 meses del vencimiento (art. 13.1 LIS).', ex: 'Factura de 2.420 vencida hace 9 meses: deterioro 694 D 2.420 / 490 H 2.420.' },
+    en: { term: 'Bad debt allowance', def: 'Estimated loss on customers that will probably not pay (PGC rule 9): 694 debit and 490 credit, without touching 430. If they pay, it is reversed (794); if the loss is definitive, the debt goes to 650. For tax purposes, deductible 6 months after the due date (art. 13.1 LIS).', ex: 'Invoice of 2,420 overdue for 9 months: allowance 694 Dr 2,420 / 490 Cr 2,420.' } },
   accrual: { bc: 'Accrual', sap: 'Accrual',
     es: { term: 'Devengo', def: 'Los ingresos y gastos se anotan cuando ocurren, no cuando se cobran o se pagan.' },
     en: { term: 'Accrual', def: 'Income and expenses are recorded when they occur, not when they are collected or paid.' } },
@@ -143,5 +149,5 @@ export const GLOSSARY = {
 export const SECTION_TERM = {
   entry: 'entry', journal: 'journal', closing: 'closing', invoices: 'invoice', settlement: 'settlement',
   withholdings: 'withholding', payments: 'openItem', prorata: 'prorata', taxes: 'vat', balance: 'balance', pyg: 'pyg',
-  cashflow: 'cashflow', ratios: 'ratio', reports: 'trialBalance', checks: 'auditCheck', assets: 'fixedAsset', accounts: 'subaccount', partners: 'partner',
+  cashflow: 'cashflow', ratios: 'ratio', reports: 'trialBalance', checks: 'auditCheck', assets: 'fixedAsset', adjustments: 'deferral', accounts: 'subaccount', partners: 'partner',
 }

@@ -74,13 +74,13 @@ begin
 
   -- ---------- 1. Las reglas son datos; gana el prefijo más largo ----------
   assert (erp.control_rule_for('41000001')).modules = '{invoices,payments}';
-  assert cardinality((erp.control_rule_for('40090001')).modules) = 0, '4009 es libre';
+  assert (erp.control_rule_for('40090001')).modules = '{accruals}', '4009: Periodificaciones (v0.36.0), gana a la 400';
   assert (erp.control_rule_for('57200001')).account_prefix is null, 'el banco no está controlado';
   c := erp.controlled_lines('[{"account_no":"62300001","debit":100,"credit":0},{"account_no":"41000001","debit":0,"credit":100},
                                {"account_no":"47500001","debit":50,"credit":0},{"account_no":"47500001","debit":0,"credit":50}]');
   assert jsonb_array_length(c) = 2 and c->0->>'account_no' = '41000001' and (c->1->>'line')::int = 4,
          '410 por cualquier lado; 4750 solo por el Haber: ' || c::text;
-  raise notice 'OK  · reglas por prefijo (4009 libre, 4750 solo al Haber, el banco libre)';
+  raise notice 'OK  · reglas por prefijo (la 4009 gana a la 400, 4750 solo al Haber, el banco libre)';
 
   -- ---------- 2. Modo guiado (por defecto): el asiento manual se contabiliza ----------
   assert (select control_mode from erp.v_my_companies where id = e) = 'guided', 'por defecto, guiado';
@@ -101,11 +101,12 @@ begin
 
   -- …pero lo que no está controlado, o el lado libre, sí
   perform public.contabiliza(public.borrador(e, '2026-02-02', '[["62900001",50,0],["57200001",0,50]]'));
-  perform public.contabiliza(public.borrador(e, '2026-02-03', '[["62300001",80,0],["40090001",0,80]]'));
+  assert public.falla(format('select public.contabiliza(%L)', public.borrador(e, '2026-02-03', '[["62300001",80,0],["40090001",0,80]]')),
+         'controlled by accruals'), 'la 4009, desde v0.36.0 solo con Periodificaciones';
   perform public.contabiliza(public.borrador(e, '2026-02-04', '[["47500001",300,0],["57200001",0,300]]'));
   assert public.falla(format('select public.contabiliza(%L)', public.borrador(e, '2026-02-05', '[["57200001",300,0],["47500001",0,300]]')),
          'controlled by settlement'), 'la 4750 al Haber solo la liquidación';
-  raise notice 'OK  · estricto: gastos y banco, 4009 y el pago de la 4750 a Hacienda sí';
+  raise notice 'OK  · estricto: gastos y banco y el pago de la 4750 a Hacienda sí; la 4009, solo desde Periodificaciones';
 
   -- Los módulos sí mueven las cuentas controladas
   f := public.factura(e, prov, '2026-03-01', '[{"account_no":"62300001","amount":1000,"tax_code":"VAT21"}]');

@@ -38,6 +38,9 @@ describe('cuentas controladas', () => {
     expect(moduleScreen('invoices, settlement')).toBe('invoices')
     expect(moduleScreen(['settlement'])).toBe('settlement')
     expect(moduleScreen([])).toBe('journal')
+    expect(moduleScreen(['assets'])).toBe('assets')
+    expect(moduleScreen('accruals')).toBe('adjustments')
+    expect(moduleScreen(['impairments'])).toBe('adjustments')
   })
   it('resume las comprobaciones', () => {
     expect(checksSummary([{ status: 'ok' }, { status: 'ok' }, { status: 'warning' }, { status: 'error' }]))

@@ -118,6 +118,15 @@ const RULES = [
   [/^Accrual (\S+) is not pending reversal$/, 'adjNotPending'],
   [/^The reversal must be after the cut-off date \((.+)\)$/, 'adjReversalDate'],
   [/^This entry belongs to an? (?:accrual|receivable impairment|provision|inventory count)/, 'entryFromAdjustments', 'adjustments'],
+  // Nóminas (v0.38.0)
+  [/^This entry belongs to a payroll/, 'entryFromPayroll', 'payroll'],
+  [/^The payroll of (\S+) is already posted$/, 'nomPosted', 'payroll'],
+  [/^There is a later payroll/, 'nomLater', 'payroll'],
+  [/^There are no employees in (\S+)/, 'nomNoEmployees', 'payroll'],
+  [/^There are no contribution rates for (\d{4})/, 'nomNoRates'],
+  [/^Only the last payroll can be cancelled$/, 'nomOnlyLast'],
+  [/^This payment is already posted$/, 'nomAlreadyPaid'],
+  [/^(?:The employee needs a name|The hire date is required|The monthly salary must be greater than zero)$/, 'nomEmployeeData'],
   // Provisiones, deterioro del inmovilizado y existencias (v0.37.0)
   [/^Choose the expense account by nature/, 'prvExpense', 'accounts'],
   [/^Provision (\S+) is not active$/, 'prvNotActive'],

@@ -10,6 +10,8 @@ import { ACCRUAL_KINDS, TIERS, accrualAmount, accrualLines, adjustmentTotals, de
 import Link from './Link'
 import Empty from './Empty'
 import Term from './Term'
+import ProvisionsPanel from './ProvisionsPanel'
+import InventoryPanel from './InventoryPanel'
 import ErrorBox from './ErrorBox'
 
 const KINDS = Object.keys(ACCRUAL_KINDS)
@@ -363,6 +365,8 @@ export default function Adjustments({ company, readOnly }) {
           </ul>
         </section>
       )}
+      <ProvisionsPanel company={company} readOnly={readOnly} date={date} />
+      <InventoryPanel company={company} readOnly={readOnly} date={date} />
     </>
   )
 }

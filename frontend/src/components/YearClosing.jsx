@@ -5,6 +5,10 @@ import { money } from '../format'
 import ErrorBox from './ErrorBox'
 import Link from './Link'
 import { companyPath } from '../router'
+import { checklistSummary } from '../adjustments'
+
+const WIZ_ICON = { done: '✓', pending: '✕', review: '👁', na: '–' }
+const WIZ_CLASS = { done: 'ok', pending: 'warning', review: 'info', na: 'na' }
 
 // Cierre del ejercicio en 4 pasos, como el asistente de cierre de A3 / Sage / ContaPlus
 //   (BC: "Close Income Statement" + cerrar el año · SAP: FAGLGVTR "Balance Carryforward")
@@ -14,6 +18,7 @@ export default function YearClosing({ company, readOnly }) {
   const [year, setYear] = useState(null)
   const [data, setData] = useState(null)
   const [history, setHistory] = useState([])
+  const [steps, setSteps] = useState([])            // v0.37.0 · asistente de cierre
   const [accept, setAccept] = useState(false)
   const [confirming, setConfirming] = useState(null)   // 'close' | 'reopen'
   const [busy, setBusy] = useState(false)
@@ -34,13 +39,15 @@ export default function YearClosing({ company, readOnly }) {
 
   async function load() {
     if (!year) return
-    const [p, h] = await Promise.all([
+    const [p, k, h] = await Promise.all([
       supabase.rpc('year_closing_preview', { p_company: company.id, p_year: Number(year) }),
+      supabase.rpc('closing_checklist', { p_company: company.id, p_year: Number(year) }),
       supabase.from('v_year_closings').select('*').eq('company_id', company.id)
         .order('year', { ascending: false }).order('created_at', { ascending: false }),
     ])
     if (p.error) { setData(null); setError(p.error.message) } else { setError(''); setData(p.data) }
     if (!h.error) setHistory(h.data)
+    setSteps(k.error ? [] : (k.data ?? []))
   }
 
   useEffect(() => { loadYears(false) }, [company.id])
@@ -107,6 +114,32 @@ export default function YearClosing({ company, readOnly }) {
         <ErrorBox error={error} company={company} />
         {message && <p className="exito">✓ {message}</p>}
       </section>
+
+      {steps.length > 0 && (
+        <section className="tarjeta asistente-cierre">
+          <h2>{t('wiz.title').replace('{y}', year)}</h2>
+          <p className="ayuda">{t('wiz.intro')}</p>
+          <p className="resumen-comprobaciones" role="status">
+            {['done', 'pending', 'review', 'na'].filter((st) => checklistSummary(steps)[st]).map((st) => (
+              <span key={st} className={`insignia-estado ${WIZ_CLASS[st]}`}>{WIZ_ICON[st]} {t(`wiz.count.${st}`).replace('{n}', checklistSummary(steps)[st])}</span>))}
+          </p>
+          <ol className="pasos-cierre">
+            {steps.map((x) => (
+              <li key={x.code} className={`paso-cierre ${x.status}`}>
+                <span className={`insignia-estado ${WIZ_CLASS[x.status]}`} aria-label={t(`wiz.status.${x.status}`)}>{WIZ_ICON[x.status]}</span>
+                <span className="paso-texto">
+                  <strong>{t(`wiz.step.${x.code}.title`).replace('{tax}', x.detail?.tax === 'IGIC' ? 'IGIC' : 'IVA')}</strong>
+                  <small>{t(`wiz.step.${x.code}.${x.status}`)
+                    .replace('{n}', x.detail?.pending ?? x.detail?.not_reviewed ?? x.detail?.overdue_6m ?? x.detail?.open ?? '')
+                    .replace('{s}', x.detail?.settled ?? '').replace('{tax}', x.detail?.tax === 'IGIC' ? 'IGIC' : 'IVA')
+                    .replace('{c}', x.detail?.collected ?? '')}</small>
+                </span>
+                {x.status !== 'done' && x.status !== 'na' && x.code !== 'close' && (
+                  <Link to={companyPath(company.id, x.screen)} className="enlace">{t('err.goTo')} {t(`nav.${x.screen}.label`).replace('{tax}', x.detail?.tax === 'IGIC' ? 'IGIC' : 'IVA')} →</Link>)}
+              </li>))}
+          </ol>
+        </section>
+      )}
 
       {data && (
         <section className="tarjeta cierre">

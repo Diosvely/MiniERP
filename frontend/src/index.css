@@ -739,3 +739,21 @@ td.num { white-space: nowrap; }
 .accion-deterioro { display: flex; flex-direction: column; align-items: flex-start; gap: 4px; white-space: normal; min-width: 14em; }
 .accion-deterioro label { display: flex; align-items: center; gap: 6px; }
 .ajustes ~ .tarjeta td:first-child { white-space: nowrap; }
+
+/* --- v0.37.0: provisiones, existencias, deterioro del inmovilizado y asistente de cierre --- */
+.movimientos-provision { display: flex; flex-direction: column; gap: 2px; font-size: .85rem; color: var(--suave); font-variant-numeric: tabular-nums; }
+.acciones-provision { display: flex; flex-wrap: wrap; gap: 6px; }
+.acciones-provision button { padding: 6px 10px; font-size: .85rem; }
+.sucesos-activo { margin: 4px 0 0; padding-left: 1.2em; font-size: .9rem; font-variant-numeric: tabular-nums; }
+.pasos-cierre { list-style: none; margin: 0; padding: 0; display: grid; gap: 6px; }
+.paso-cierre { display: grid; grid-template-columns: auto 1fr auto; gap: 4px 10px; align-items: start; padding: 8px 10px;
+  border: 1px solid var(--borde); border-radius: 8px; border-left: 4px solid var(--borde); }
+.paso-cierre.done { border-left-color: var(--exito, #2e7d32); }
+.paso-cierre.pending { border-left-color: var(--alerta-fondo); }
+.paso-cierre.review { border-left-color: var(--primario); }
+.paso-cierre.na { opacity: .7; }
+.paso-cierre .paso-texto { display: flex; flex-direction: column; gap: 2px; }
+.paso-cierre .paso-texto small { color: var(--suave); }
+.paso-cierre .enlace { white-space: nowrap; font-size: .9rem; }
+.insignia-estado.na { background: var(--fondo); color: var(--suave); }
+@media (max-width: 560px) { .paso-cierre { grid-template-columns: auto 1fr; } .paso-cierre .enlace { grid-column: 2; } }

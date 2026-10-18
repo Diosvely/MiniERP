@@ -32,6 +32,7 @@ export default function Assets({ company, readOnly }) {
   const [form, setForm] = useState(() => emptyForm(workDate(company)))
   const [deprDate, setDeprDate] = useState(() => endOfMonth(workDate(company)))
   const [disposal, setDisposal] = useState(null)               // { mode: sale | retire, date, invoice_id }
+  const [impair, setImpair] = useState(null)                   // v0.37.0 · { mode: impair | reverse, date, value }
   const [error, setError] = useState('')
   const [message, setMessage] = useState('')
   const [warnings, setWarnings] = useState([])
@@ -125,6 +126,16 @@ export default function Assets({ company, readOnly }) {
     return t(Number(row?.result) < 0 ? 'fa.disposedLoss' : 'fa.disposedGain').replace('{n}', row?.entry_no)
       .replace('{v}', m(row?.net_book_value)).replace('{r}', m(Math.abs(Number(row?.result))))
   })
+  // v0.37.0 · Deterioro (NRV 2.ª 2.2): valor recuperable < valor neto → 69x / 29x; reversión con límite → 29x / 79x
+  const impairNow = () => run(() => supabase.rpc(impair.mode === 'impair' ? 'impair_asset' : 'reverse_asset_impairment', { p: {
+    asset_id: selected.id, [impair.mode === 'impair' ? 'impairment_date' : 'reversal_date']: impair.date,
+    recoverable_value: String(impair.value).replace(',', '.') } }), (d) => {
+    const row = Array.isArray(d) ? d[0] : d
+    setImpair(null)
+    return t(impair.mode === 'impair' ? 'fa.impaired' : row?.capped ? 'fa.reversedCapped' : 'fa.reversed')
+      .replace('{n}', row?.entry_no).replace('{m}', m(row?.amount)).replace('{v}', m(row?.net_book_value))
+  })
+  const undoImpairment = () => run(() => supabase.rpc('cancel_asset_impairment', { p_asset: selected.id }), (n) => t('fa.impairmentUndone').replace('{n}', n))
   const undoDisposal = () => run(() => supabase.rpc('cancel_disposal', { p_asset: selected.id }), (n) => t('fa.disposalUndone').replace('{n}', n))
 
   const saleLines = selected ? invoiceAssetLines(lines, accounts, invoices, 'sale', new Set(), selected.asset_account_no) : []
@@ -166,7 +177,7 @@ export default function Assets({ company, readOnly }) {
             {assets.map((a) => (
               <li key={a.id} className={a.id === selectedId ? 'marcada' : ''}>
                 <button type="button" className="enlace" aria-expanded={a.id === selectedId}
-                        onClick={() => { setSelectedId(a.id === selectedId ? '' : a.id); setDisposal(null) }}>
+                        onClick={() => { setSelectedId(a.id === selectedId ? '' : a.id); setDisposal(null); setImpair(null) }}>
                   <strong>{a.code} · {a.name}</strong>
                 </button>
                 <span>{a.asset_account_no} · {t('fa.since')} {shortDate(a.start_date)} · {pct(annualPct(a.useful_life_months))} %
@@ -190,6 +201,7 @@ export default function Assets({ company, readOnly }) {
             <div><dt>{t('fa.lifeLabel')}</dt><dd>{t('fa.lifeValue').replace('{m}', selected.useful_life_months).replace('{p}', pct(annualPct(selected.useful_life_months)))}</dd></div>
             <div><dt>{t('fa.residual')}</dt><dd>{m(selected.residual_value)}</dd></div>
             {selected.class_code && <div><dt>{t('fa.taxClass')}</dt><dd>{en ? selected.class_name_en : selected.class_name} · {t('fa.taxMax').replace('{p}', pct(selected.max_pct))}</dd></div>}
+            {Number(selected.impairment) > 0 && <div><dt>{t('fa.impairment')}</dt><dd>{m(selected.impairment)}</dd></div>}
             {selected.invoice_no && <div><dt>{t('fa.invoice')}</dt><dd>{selected.external_document_no || selected.invoice_no} · {t('fa.entry')} {entryLink(selected.invoice_year, selected.invoice_entry_no)}</dd></div>}
           </dl>
           <h3>{t('fa.schedule')}</h3>
@@ -203,6 +215,36 @@ export default function Assets({ company, readOnly }) {
             </table>
           </div>
 
+          {(selected.events ?? []).length > 0 && (
+            <ul className="sucesos-activo">{selected.events.map((ev, i) => (
+              <li key={i}>{shortDate(ev.date)} · {t(`fa.event.${ev.kind}`)} {m(Math.abs(Number(ev.amount)))}
+                {ev.recoverable != null && <> · {t('fa.recoverable')} {m(ev.recoverable)}</>}
+                {ev.invoice_no && <> · {ev.invoice_no}</>}
+                {ev.entry_no && <> · {t('fa.entry')} {entryLink(ev.year, ev.entry_no)}</>}</li>))}</ul>
+          )}
+          {selected.status === 'active' && !readOnly && (impair ? (
+            <div className="baja-activo">
+              <h3>{t(impair.mode === 'impair' ? 'fa.impairTitle' : 'fa.reverseTitle')}</h3>
+              <p className="ayuda">{t(impair.mode === 'impair' ? 'fa.impairHelp' : 'fa.reverseHelp')}</p>
+              <div className="rejilla-tres">
+                <label>{t('fa.impairDate')}<input type="date" value={impair.date} onChange={(e) => setImpair({ ...impair, date: e.target.value })} /></label>
+                <label>{t('fa.recoverable')}<input inputMode="decimal" value={impair.value} onChange={(e) => setImpair({ ...impair, value: e.target.value })} /></label>
+              </div>
+              {impair.value !== '' && impair.mode === 'impair' && Number(selected.net_book_value) > Number(String(impair.value).replace(',', '.')) && (
+                <p className="vista-asiento" role="status"><span>{t('fa.impairPreview').replace('{v}', m(selected.net_book_value))
+                  .replace('{m}', m(Number(selected.net_book_value) - Number(String(impair.value).replace(',', '.'))))}</span></p>)}
+              <div className="fila">
+                <button type="button" className="secundario" onClick={() => setImpair(null)}>{t('cancel')}</button>
+                <button type="button" disabled={busy || !impair.date || impair.value === ''} onClick={impairNow}>{t(impair.mode === 'impair' ? 'fa.impairButton' : 'fa.reverseButton')}</button>
+              </div>
+            </div>
+          ) : (
+            <div className="fila">
+              <button type="button" className="secundario" onClick={() => setImpair({ mode: 'impair', date: endOfMonth(workDate(company)), value: '' })}>{t('fa.impairOpen')}</button>
+              {Number(selected.impairment) > 0 && <button type="button" className="secundario" onClick={() => setImpair({ mode: 'reverse', date: endOfMonth(workDate(company)), value: '' })}>{t('fa.reverseOpen')}</button>}
+              {(selected.events ?? []).some((ev) => ev.kind !== 'cost_adjustment') && <button type="button" className="secundario" disabled={busy} onClick={undoImpairment}>↶ {t('fa.undoImpairment')}</button>}
+            </div>
+          ))}
           {selected.status === 'disposed' ? (
             <>
               <p className="aviso">{t('fa.disposedOn').replace('{d}', shortDate(selected.disposal_date))

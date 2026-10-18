@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.dispose_asset · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0041_fixed_assets   →   la vigente es la de 0041_fixed_assets
+-- Definida en: 0041_fixed_assets 0046_asset_impairment   →   la vigente es la de 0046_asset_impairment
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.dispose_asset(p jsonb)
@@ -23,6 +23,7 @@ declare
   v_digits int;
   v_no     int;
   v_line   int := 0;
+  v_imp    numeric;
 begin
   select * into a from erp.fixed_assets where id = (p->>'asset_id')::uuid;
   if not found then raise exception 'Asset not found'; end if;
@@ -30,6 +31,9 @@ begin
   if a.status <> 'active' then raise exception 'Asset % is already disposed', a.code; end if;
   if v_date is null then raise exception 'The disposal date is required'; end if;
   if v_date < a.start_date then raise exception 'The disposal date cannot be earlier than the start date'; end if;
+  if exists (select 1 from erp.asset_events x where x.asset_id = a.id and x.event_date > v_date) then
+    raise exception 'Asset % has a later impairment or adjustment', a.code;
+  end if;
   if exists (select 1 from erp.asset_depreciations d where d.asset_id = a.id and d.period_end > v_date) then
     raise exception 'Asset % is already depreciated after %: cancel that depreciation first', a.code, v_date;
   end if;
@@ -48,9 +52,10 @@ begin
     end if;
   end if;
 
-  v_catch := erp.asset_accumulated_at(a.cost, a.residual_value, a.useful_life_months, a.start_date, v_date) - erp.asset_posted(a.id);
+  v_catch := erp.asset_depr_at(a.id, v_date) - erp.asset_posted(a.id);
   v_acc := erp.asset_posted(a.id) + greatest(v_catch, 0);
-  v_nbv := a.cost - v_acc;
+  v_imp := erp.asset_impairment_at(a.id, v_date);                -- v0.37.0: deterioro acumulado
+  v_nbv := a.cost - v_acc - v_imp;
   v_res := v_price - v_nbv;
   v_digits := (select posting_account_digits from erp.companies where id = a.company_id);
 
@@ -69,6 +74,13 @@ begin
   if v_acc > 0 then
     insert into erp.journal_lines (entry_id, company_id, line_no, gl_account_id, debit, credit, description)
     values (v_entry, a.company_id, v_line + 1, a.depreciation_account_id, v_acc, 0, 'Cancelación de la amortización acumulada');
+    v_line := v_line + 1;
+  end if;
+  if v_imp > 0 then   -- v0.37.0: se cancela el deterioro acumulado (29x)
+    insert into erp.journal_lines (entry_id, company_id, line_no, gl_account_id, debit, credit, description)
+    values (v_entry, a.company_id, v_line + 1,
+            erp.asset_impairment_account(a.company_id, (select account_no from erp.gl_accounts where id = a.asset_account_id), 'allowance'),
+            v_imp, 0, 'Cancelación del deterioro');
     v_line := v_line + 1;
   end if;
   if a.cost - v_price <> 0 then

@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.run_audit_checks · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0037_audit_checks 0039_review_fixes 0042_assets_integration   →   la vigente es la de 0042_assets_integration
+-- Definida en: 0037_audit_checks 0039_review_fixes 0042_assets_integration 0044_adjustments_integration 0046_asset_impairment 0048_closing_integration   →   la vigente es la de 0048_closing_integration
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.run_audit_checks(p_company uuid, p_year integer, p_to_date date DEFAULT NULL::date)
@@ -192,6 +192,15 @@ begin
         join erp.asset_depreciations d on d.asset_id = a.id and d.period_end <= v_to
         where a.company_id = p_company and (a.status = 'active' or a.disposal_date > v_to)
         group by 1
+        union all
+        -- v0.37.0 · el deterioro (29x) frente al deterioro neto de las fichas
+        select (select jl.gl_account_id from erp.journal_lines jl join erp.gl_accounts g2 on g2.id = jl.gl_account_id
+                where jl.entry_id = ev.entry_id and g2.account_no like '29%' limit 1),
+               -sum(case ev.kind when 'impairment' then ev.amount else -ev.amount end)
+        from erp.asset_events ev join erp.fixed_assets a on a.id = ev.asset_id
+        where ev.company_id = p_company and ev.kind in ('impairment', 'reversal') and ev.event_date <= v_to
+          and (a.status = 'active' or a.disposal_date > v_to)
+        group by 1
       ), l as (
         -- saldo acumulado a la fecha: todos los ejercicios, sin los asientos de cierre ni las aperturas del propio ERP
         -- (repetirían saldos); una apertura IMPORTADA sí cuenta
@@ -200,7 +209,8 @@ begin
         join erp.gl_accounts g on g.id = jl.gl_account_id
         where e.company_id = p_company and e.status = 'posted' and e.posting_date <= v_to and e.entry_type <> 'closing'
           and not exists (select 1 from erp.year_closings yc where yc.opening_entry_id = e.id)
-          and left(g.account_no, 2) in ('20', '21', '22', '28') and left(g.account_no, 3) not in ('210', '220')
+          and (left(g.account_no, 2) in ('20', '21', '22', '28') or left(g.account_no, 3) in ('290', '291', '292'))
+          and left(g.account_no, 3) not in ('210', '220')
         group by 1
       ), x as (
         select coalesce(f.acc, l.acc) as acc, coalesce(sum(f.book), 0) as book, coalesce(max(l.ledger), 0) as ledger
@@ -222,7 +232,7 @@ begin
       with c as (select (date_trunc('month', v_to + 1) - interval '1 day')::date as cut),
       p as (
         select a.id, a.code, a.name, a.start_date,
-               erp.asset_accumulated_at(a.cost, a.residual_value, a.useful_life_months, a.start_date, c.cut) - erp.asset_posted(a.id) as pending,
+               erp.asset_depr_at(a.id, c.cut) - erp.asset_posted(a.id) as pending,
                (select max(d.period_end) from erp.asset_depreciations d where d.asset_id = a.id) as last_period
         from erp.fixed_assets a cross join c
         where a.company_id = p_company and a.status = 'active'
@@ -230,6 +240,130 @@ begin
       select count(*)::int,
              coalesce(jsonb_agg(jsonb_build_object('asset_id', n.id, 'code', n.code, 'name', n.name, 'amount', n.pending,
                                                    'last_period', n.last_period) order by n.rn) filter (where n.rn <= 50), '[]')
+      into v_items, v_det
+      from n;
+
+    elsif r.code = 'adjustments_ledger' then
+      -- v0.36.0 · 480 / 485 / 4009 / 4309 frente a las periodificaciones vivas y 490 frente a los deterioros vivos, a la fecha
+      --   (viva: contabilizada hasta la fecha y aún sin revertir, aplicar ni anular a esa fecha)
+      with f as (
+        select a.balance_account_id as acc,
+               sum(case when a.kind in ('prepaid_expense', 'accrued_income') then a.amount else -a.amount end) as book
+        from erp.accruals a
+        where a.company_id = p_company and a.cutoff_date <= v_to
+          and (a.reversal_date is null or a.reversal_date > v_to)
+          and (a.cancel_entry_id is null or (select ce.posting_date from erp.journal_entries ce where ce.id = a.cancel_entry_id) > v_to)
+        group by 1
+        union all
+        select (select g.id from erp.gl_accounts g join erp.journal_lines jl on jl.gl_account_id = g.id
+                where jl.entry_id = i.entry_id and g.account_no like '490%' limit 1), -sum(i.amount)
+        from erp.receivable_impairments i
+        where i.company_id = p_company and i.impair_date <= v_to
+          and (i.end_date is null or i.end_date > v_to)
+          and (i.cancel_entry_id is null or (select ce.posting_date from erp.journal_entries ce where ce.id = i.cancel_entry_id) > v_to)
+        group by 1
+      ), l as (
+        -- saldo acumulado a la fecha (todos los ejercicios, sin cierres ni aperturas del propio ERP), como assets_ledger
+        select g.id as acc, sum(jl.debit - jl.credit) as ledger
+        from erp.journal_lines jl join erp.journal_entries e on e.id = jl.entry_id
+        join erp.gl_accounts g on g.id = jl.gl_account_id
+        where e.company_id = p_company and e.status = 'posted' and e.posting_date <= v_to and e.entry_type <> 'closing'
+          and not exists (select 1 from erp.year_closings yc where yc.opening_entry_id = e.id)
+          and (g.account_no like '480%' or g.account_no like '485%' or g.account_no like '4009%'
+               or g.account_no like '4309%' or g.account_no like '490%')
+        group by 1
+      ), x as (
+        select coalesce(f.acc, l.acc) as acc, coalesce(sum(f.book), 0) as book, coalesce(max(l.ledger), 0) as ledger
+        from f full join l on l.acc = f.acc group by coalesce(f.acc, l.acc)
+      ), n as (
+        select g.account_no, g.name, x.book, x.ledger, row_number() over (order by g.account_no) as rn
+        from x join erp.gl_accounts g on g.id = x.acc where x.book <> x.ledger
+      )
+      select coalesce(sum(n.book), 0), coalesce(sum(n.ledger), 0), count(*)::int,
+             coalesce(jsonb_agg(jsonb_build_object('account_no', n.account_no, 'account_name', n.name, 'book', n.book,
+                                                   'balance', n.ledger, 'amount', n.ledger - n.book) order by n.rn)
+                      filter (where n.rn <= 50), '[]')
+      into v_book, v_ledger, v_items, v_det
+      from n;
+
+    elsif r.code = 'accruals_unreversed' then
+      -- v0.36.0 · periodificaciones de un ejercicio anterior que siguen sin revertir en este
+      with fy as (select f.starting_date from erp.fiscal_years f where f.company_id = p_company and f.year = p_year),
+      n as (
+        select a.id, a.code, a.description, a.cutoff_date, a.amount, row_number() over (order by a.code) as rn
+        from erp.accruals a cross join fy
+        where a.company_id = p_company and a.status = 'active' and a.cutoff_date < fy.starting_date and fy.starting_date <= v_to
+      )
+      select count(*)::int,
+             coalesce(jsonb_agg(jsonb_build_object('accrual_id', n.id, 'code', n.code, 'name', n.description,
+                                                   'cutoff_date', n.cutoff_date, 'amount', n.amount) order by n.rn)
+                      filter (where n.rn <= 50), '[]')
+      into v_items, v_det
+      from n;
+
+    elsif r.code in ('provisions_ledger', 'inventory_ledger') then
+      -- v0.37.0 · las cuentas de provisiones (141 / 142 / 5292 / 5293 / 499) y de existencias (30-36 / 39) frente a lo
+      --   que han contabilizado sus módulos: la diferencia es un asiento manual o un saldo importado sin su ficha
+      with lm as (
+        select g.id as acc, sum(jl.debit - jl.credit) as amount,
+               bool_or(exists (select 1 from erp.provision_movements pm where pm.entry_id = e.id)
+                       or exists (select 1 from erp.inventory_counts ic where ic.entry_id = e.id and ic.status = 'posted')) as module
+        from erp.journal_lines jl join erp.journal_entries e on e.id = jl.entry_id
+        join erp.gl_accounts g on g.id = jl.gl_account_id
+        where e.company_id = p_company and e.status = 'posted' and e.posting_date <= v_to and e.entry_type <> 'closing'
+          and not exists (select 1 from erp.year_closings yc where yc.opening_entry_id = e.id)
+          and case when r.code = 'provisions_ledger'
+                   then g.account_no ~ '^(141|142|5292|5293|499)'
+                   else g.account_no ~ '^3[0-6]|^39' end
+          -- un movimiento anulado y su contraasiento se compensan: ninguno de los dos cuenta como del módulo
+          and not (e.reversal_of is not null or e.reversed_by is not null)
+        group by g.id, e.id
+      ), x as (
+        select acc, coalesce(sum(amount) filter (where module), 0) as book, sum(amount) as ledger from lm group by acc
+      ), n as (
+        select g.account_no, g.name, x.book, x.ledger, row_number() over (order by g.account_no) as rn
+        from x join erp.gl_accounts g on g.id = x.acc where x.book <> x.ledger
+      )
+      select coalesce(sum(n.book), 0), coalesce(sum(n.ledger), 0), count(*)::int,
+             coalesce(jsonb_agg(jsonb_build_object('account_no', n.account_no, 'account_name', n.name, 'book', n.book,
+                                                   'balance', n.ledger, 'amount', n.ledger - n.book) order by n.rn)
+                      filter (where n.rn <= 50), '[]')
+      into v_book, v_ledger, v_items, v_det
+      from n;
+
+    elsif r.code = 'provisions_review' then
+      -- v0.37.0 · al cierre, provisiones vivas sin revisar en el ejercicio (NRV 15.ª: se revisan en cada cierre)
+      with fy as (select f.starting_date, f.ending_date from erp.fiscal_years f where f.company_id = p_company and f.year = p_year),
+      n as (
+        select pv.id, pv.code, pv.description, erp.provision_balance(pv.id) as balance,
+               (select max(m.movement_date) from erp.provision_movements m where m.provision_id = pv.id) as last_date,
+               row_number() over (order by pv.code) as rn
+        from erp.provisions pv cross join fy
+        where pv.company_id = p_company and pv.status = 'active' and v_to >= fy.ending_date
+          and exists (select 1 from erp.provision_movements m where m.provision_id = pv.id and m.movement_date < fy.starting_date)
+          and not exists (select 1 from erp.provision_movements m where m.provision_id = pv.id
+                          and m.movement_date between fy.starting_date and fy.ending_date)
+      )
+      select count(*)::int,
+             coalesce(jsonb_agg(jsonb_build_object('provision_id', n.id, 'code', n.code, 'name', n.description,
+                                                   'amount', n.balance, 'last_date', n.last_date) order by n.rn)
+                      filter (where n.rn <= 50), '[]')
+      into v_items, v_det
+      from n;
+
+    elsif r.code = 'impairments_collected' then
+      -- v0.36.0 · deterioro individual vivo de una factura que ya no tiene nada pendiente (cobrada o rectificada)
+      with n as (
+        select i.id, i.code, i.amount, o.invoice_no, o.partner_name, row_number() over (order by i.code) as rn
+        from erp.receivable_impairments i
+        join erp.open_items(p_company, v_to) o on o.invoice_id = i.invoice_id
+        where i.company_id = p_company and i.method = 'individual' and i.status = 'active' and i.impair_date <= v_to
+          and o.pending <= 0
+      )
+      select count(*)::int,
+             coalesce(jsonb_agg(jsonb_build_object('impairment_id', n.id, 'code', n.code, 'invoice_no', n.invoice_no,
+                                                   'partner_name', n.partner_name, 'amount', n.amount) order by n.rn)
+                      filter (where n.rn <= 50), '[]')
       into v_items, v_det
       from n;
     end if;

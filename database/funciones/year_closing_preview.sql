@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.year_closing_preview · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0017_year_closing 0042_assets_integration   →   la vigente es la de 0042_assets_integration
+-- Definida en: 0017_year_closing 0042_assets_integration 0044_adjustments_integration 0046_asset_impairment 0048_closing_integration   →   la vigente es la de 0048_closing_integration
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.year_closing_preview(p_company uuid, p_year integer)
@@ -63,9 +63,33 @@ begin
   select string_agg(a.code, ', ' order by a.code) into v_txt
   from erp.fixed_assets a
   where a.company_id = p_company and a.status = 'active' and a.start_date <= v_fy.ending_date
-    and erp.asset_accumulated_at(a.cost, a.residual_value, a.useful_life_months, a.start_date, v_fy.ending_date) > erp.asset_posted(a.id);
+    and erp.asset_depr_at(a.id, v_fy.ending_date) > erp.asset_posted(a.id);
   if v_txt is not null then
     v_checks := v_checks || jsonb_build_object('code', 'assets_not_depreciated', 'severity', 'warning', 'detail', v_txt);
+  end if;
+
+  -- v0.36.0 · Periodificaciones de un ejercicio anterior sin revertir (el gasto o el ingreso se quedaría en el balance)
+  select string_agg(a.code, ', ' order by a.code) into v_txt
+  from erp.accruals a
+  where a.company_id = p_company and a.status = 'active' and a.cutoff_date < v_fy.starting_date;
+  if v_txt is not null then
+    v_checks := v_checks || jsonb_build_object('code', 'accruals_unreversed', 'severity', 'warning', 'detail', v_txt);
+  end if;
+
+  -- v0.37.0 · Inventario sin contabilizar (hay existencias o compras de aprovisionamientos) y provisiones sin revisar
+  if not exists (select 1 from erp.inventory_counts c where c.fiscal_year_id = v_fy.id and c.status = 'posted')
+     -- (solo si la empresa tiene cuentas de existencias: una de servicios con alguna compra suelta no tiene almacén)
+     and exists (select 1 from erp.gl_accounts g where g.company_id = p_company and g.account_type = 'posting' and g.account_no ~ '^3[0-6]') then
+    v_checks := v_checks || jsonb_build_object('code', 'inventory_not_counted', 'severity', 'warning', 'detail', p_year);
+  end if;
+  select string_agg(pv.code, ', ' order by pv.code) into v_txt
+  from erp.provisions pv
+  where pv.company_id = p_company and pv.status = 'active'
+    and exists (select 1 from erp.provision_movements m where m.provision_id = pv.id and m.movement_date < v_fy.starting_date)
+    and not exists (select 1 from erp.provision_movements m where m.provision_id = pv.id
+                    and m.movement_date between v_fy.starting_date and v_fy.ending_date);
+  if v_txt is not null then
+    v_checks := v_checks || jsonb_build_object('code', 'provisions_not_reviewed', 'severity', 'warning', 'detail', v_txt);
   end if;
 
   if not exists (select 1 from erp.gl_accounts where company_id = p_company and account_no = v_res_no) then

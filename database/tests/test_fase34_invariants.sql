@@ -249,11 +249,29 @@ begin
     end loop;
     perform erp.post_inventory(jsonb_build_object('company_id', e, 'count_date', '2026-12-31',
       'lines', jsonb_build_array(jsonb_build_object('account_no', '30000001', 'final_value', public.azar(500, 8000), 'impairment', public.azar(0, 300)))));
+    -- v0.38.0 · Nóminas: dos empleados al azar, doce meses, el líquido pagado cada mes y los seguros sociales al mes siguiente
+    --   (los de diciembre se quedan en la 476 y se pagan en enero de 2027); un mes se anula y se rehace
+    perform erp.save_employee(jsonb_build_object('company_id', e, 'name', 'Empleado ' || k, 'hire_date', '2025-06-01',
+      'contract_type', public.uno(array['indefinite', 'temporary']), 'monthly_salary', public.azar(1300, 6500),
+      'extra_payments', public.uno(array['0', '2', '2', '3']), 'extra_prorated', random() < 0.5, 'irpf_pct', public.azar(2, 25)))
+    from generate_series(1, 2) k;
+    for n in 1..12 loop
+      select pr.run_id into r from erp.run_payroll(jsonb_build_object('company_id', e, 'period', make_date(2026, n, 1))) pr;
+      if n = 5 then perform erp.cancel_payroll(r.run_id); select pr.run_id into r from erp.run_payroll(jsonb_build_object('company_id', e, 'period', '2026-05-31')) pr; end if;
+      perform erp.pay_payroll(jsonb_build_object('run_id', r.run_id, 'what', 'net', 'payment_date', (make_date(2026, n, 1) + interval '1 month - 1 day')::date, 'cash_account_no', '57200001'));
+      if n < 12 then
+        perform erp.pay_payroll(jsonb_build_object('run_id', r.run_id, 'what', 'social_security', 'payment_date', (make_date(2026, n + 1, 1) + interval '1 month - 1 day')::date, 'cash_account_no', '57200001'));
+      end if;
+    end loop;
+    assert (select coalesce(sum(debit_balance - credit_balance), 0) from erp.trial_balance(e, 2026) where account_no like '476%') = -(select sum(s.ss_employee + s.ss_employer) from erp.payslips s join erp.payroll_runs pr on pr.id = s.run_id
+                                              where pr.company_id = e and pr.status = 'posted' and pr.period = '2026-12-31'), '476 = seguros sociales de diciembre';
+    assert (select coalesce(sum(debit_balance - credit_balance), 0) from erp.trial_balance(e, 2026) where account_no like '465%') = 0,
+           '465 a cero: líquidos pagados y las pagas extra devengadas, pagadas en diciembre';
     assert (select string_agg(c.code || '=' || c.status, ' ' order by c.sort) from erp.run_audit_checks(e, 2026) c
-            where c.code in ('assets_ledger', 'provisions_ledger', 'inventory_ledger'))
-           = 'assets_ledger=ok provisions_ledger=ok inventory_ledger=ok',
+            where c.code in ('assets_ledger', 'provisions_ledger', 'inventory_ledger', 'payroll_ledger'))
+           = 'assets_ledger=ok provisions_ledger=ok inventory_ledger=ok payroll_ledger=ok',
            (select string_agg(c.code || '=' || c.status || c.details::text, ' ') from erp.run_audit_checks(e, 2026) c
-            where c.code in ('assets_ledger', 'provisions_ledger', 'inventory_ledger'));
+            where c.code in ('assets_ledger', 'provisions_ledger', 'inventory_ledger', 'payroll_ledger'));
     assert (select status from erp.run_audit_checks(e, 2026) where code = 'assets_ledger') = 'ok', 'las fichas cuadran con la 21x / 281';
     assert (select status from erp.run_audit_checks(e, 2026) where code = 'assets_pending') = 'ok', 'todo amortizado al 31/12';
     ok := public.invariantes(e, 2026, 'fin de 2026');
@@ -286,6 +304,11 @@ begin
     from erp.provisions pv where pv.company_id = e and pv.kind = 'liabilities';
     perform erp.revise_provision(jsonb_build_object('provision_id', pv.id, 'review_date', '2027-06-30', 'new_amount', public.azar(100, 900)))
     from erp.provisions pv where pv.company_id = e and pv.kind = 'commercial';
+    -- …los seguros sociales de diciembre de 2026, en enero
+    perform erp.pay_payroll(jsonb_build_object('run_id', pr.id, 'what', 'social_security', 'payment_date', '2027-01-31', 'cash_account_no', '57200001'))
+    from erp.payroll_runs pr where pr.company_id = e and pr.period = '2026-12-31' and pr.status = 'posted';
+    assert (select coalesce(sum(debit_balance - credit_balance), 0) from erp.trial_balance(e, 2027) where account_no like '476%') = 0, 'la 476 queda a cero en 2027';
+    assert (select status from erp.run_audit_checks(e, 2027, '2027-06-30') where code = 'payroll_ledger') = 'ok', 'nóminas = 465 / 476 en 2027';
     assert (select string_agg(c.code || '=' || c.status, ' ' order by c.sort) from erp.run_audit_checks(e, 2027, '2027-06-30') c
             where c.code in ('assets_ledger', 'provisions_ledger', 'inventory_ledger'))
            = 'assets_ledger=ok provisions_ledger=ok inventory_ledger=ok',
@@ -334,6 +357,7 @@ select c.name as empresa,
   (select count(*) from erp.receivable_impairments i where i.company_id = c.id) as deterioros,
   (select count(*) from erp.receivable_writeoffs w where w.company_id = c.id) as insolvencias,
   (select count(*) from erp.asset_events v where v.company_id = c.id) as sucesos_activos,
-  (select count(*) from erp.provision_movements v where v.company_id = c.id) as mov_provisiones
+  (select count(*) from erp.provision_movements v where v.company_id = c.id) as mov_provisiones,
+  (select count(*) from erp.payroll_runs v where v.company_id = c.id and v.status = 'posted') as nominas
 from erp.companies c order by 1;
 \echo '✔ FASE 34 OK · invariantes contables con operaciones al azar'

@@ -127,7 +127,7 @@ export default function Payroll({ company, readOnly }) {
   return (
     <>
       <section className="tarjeta nominas">
-        <h2>{t('nom.title')}</h2>
+        <h2><Term id="payroll">{t('nom.title')}</Term></h2>
         <p className="ayuda">{t('nom.intro')}</p>
         <ErrorBox error={error} company={company} />
         {message && <p className="exito" role="status">✓ {message}</p>}
@@ -144,7 +144,7 @@ export default function Payroll({ company, readOnly }) {
                   <th scope="col">{t('nom.col.employee')}</th><th scope="col" className="num">{t('nom.col.earnings')}</th>
                   <th scope="col" className="num">{t('nom.col.base')}</th><th scope="col" className="num">{t('nom.col.ssEmployee')}</th>
                   <th scope="col" className="num">{t('nom.col.irpf')}</th><th scope="col" className="num">{t('nom.col.net')}</th>
-                  <th scope="col" className="num">{t('nom.col.ssEmployer')}</th><th scope="col" className="num">{t('nom.col.accrual')}</th>
+                  <th scope="col" className="num"><Term id="socialSecurity">{t('nom.col.ssEmployer')}</Term></th><th scope="col" className="num">{t('nom.col.accrual')}</th>
                 </tr></thead>
                 <tbody>
                   {preview.map(({ employee: e, calc: c }) => (

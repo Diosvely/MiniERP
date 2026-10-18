@@ -9,6 +9,7 @@ import { ACCRUAL_KINDS, TIERS, accrualAmount, accrualLines, adjustmentTotals, de
          impairmentAmount, isDeductible, nextDay } from '../adjustments'
 import Link from './Link'
 import Empty from './Empty'
+import Term from './Term'
 import ErrorBox from './ErrorBox'
 
 const KINDS = Object.keys(ACCRUAL_KINDS)
@@ -149,8 +150,8 @@ export default function Adjustments({ company, readOnly }) {
           <input type="date" value={date} onChange={(e) => { setDate(e.target.value); setRevDate(null) }} />
         </label>
         <dl className="cifras-comprobacion">
-          <div><dt>{t('adj.pendingAccruals')}</dt><dd>{tot.accruals} · {m(tot.accrualAmount)}</dd></div>
-          <div><dt>{t('adj.liveImpairment')}</dt><dd>{m(tot.impairmentAmount)}</dd></div>
+          <div><dt><Term id="deferral">{t('adj.pendingAccruals')}</Term></dt><dd>{tot.accruals} · {m(tot.accrualAmount)}</dd></div>
+          <div><dt><Term id="badDebt">{t('adj.liveImpairment')}</Term></dt><dd>{m(tot.impairmentAmount)}</dd></div>
         </dl>
         <ErrorBox error={error} company={company} />
         {message && <p className="exito" role="status">✓ {message}</p>}

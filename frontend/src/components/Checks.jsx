@@ -82,7 +82,7 @@ export default function Checks({ company, readOnly, onChanged }) {
     } else if (r.code === 'partners') {
       head = [t('chk.col.partner'), t('chk.col.account'), t('chk.col.pending'), t('chk.col.balance'), t('chk.col.difference')]
       body = d.map((x) => [x.partner_name, x.account_no, m(x.pending), m(x.balance), <strong key="d">{m(x.amount)}</strong>])
-    } else if (['assets_ledger', 'adjustments_ledger', 'provisions_ledger', 'inventory_ledger'].includes(r.code)) {
+    } else if (['assets_ledger', 'adjustments_ledger', 'provisions_ledger', 'inventory_ledger', 'payroll_ledger'].includes(r.code)) {
       head = [t('chk.col.account'), t('chk.col.cards'), t('chk.col.balance'), t('chk.col.difference')]
       body = d.map((x) => [`${x.account_no} ${x.account_name}`, m(x.book), m(x.balance), <strong key="d">{m(x.amount)}</strong>])
     } else if (r.code === 'provisions_review') {

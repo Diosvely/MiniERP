@@ -79,7 +79,8 @@ export default function Withholdings({ company }) {
           return (
             <div key={form} className="modelo-retenciones">
               <h3>{t('form')} {form} · {t(`withholdingForm.${form}`)}</h3>
-              <p className="ayuda">{t('formBoxes').replace('{a}', b1).replace('{b}', b2).replace('{c}', b3)}</p>
+              <p className="ayuda">{form === '111' && rows.some((r) => r.withholding_code === 'payroll') ? t('formBoxes111')
+                : t('formBoxes').replace('{a}', b1).replace('{b}', b2).replace('{c}', b3)}</p>
               <div className="tabla-ancha">
               <table>
                 <thead>
@@ -91,13 +92,14 @@ export default function Withholdings({ company }) {
                 <tbody>
                   {rows.map((r) => (
                     <tr key={r.withholding_code}>
-                      <td>{pct(r.rate_pct)}</td><td className="num">{r.recipients}</td>
+                      <td>{r.withholding_code === 'payroll' ? t('payrollRow') : pct(r.rate_pct)}</td><td className="num">{r.recipients}</td>
                       <td className="num">{m(r.base)}</td><td className="num">{m(r.amount)}</td>
                     </tr>
                   ))}
                   <tr className="total">
                     <td>{t('total')}</td>
-                    <td className="num">{new Set(detail.filter((d) => d.side === 'withheld' && d.form === form).map((d) => d.partner_id)).size}</td>
+                    <td className="num">{new Set(detail.filter((d) => d.side === 'withheld' && d.form === form).map((d) => d.partner_id)).size
+                      + rows.filter((r) => r.withholding_code === 'payroll').reduce((s, r) => s + Number(r.recipients), 0)}</td>
                     <td className="num">{m(total(rows, 'base'))}</td><td className="num">{m(total(rows, 'amount'))}</td>
                   </tr>
                 </tbody>

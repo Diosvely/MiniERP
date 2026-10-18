@@ -2,6 +2,32 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.38.0] - 2026-10-18
+### Añadido
+- **Nóminas** (migración `0049_payroll.sql`, prueba `test_fase44_payroll.sql`):
+  - tipos de cotización por año, los de 2026 según la Orden PJC/297/2026, con la base máxima y la cotización adicional de
+    solidaridad;
+  - ficha del empleado (ficticio, sin datos personales): contrato, salario, pagas extra prorrateadas o no, % de IRPF y
+    % de AT / EP;
+  - cálculo del recibo (`erp.payslip_calc`): base de cotización con la prorrata de las pagas (art. 147 LGSS), cuotas de la
+    empresa y del trabajador, IRPF y líquido;
+  - asiento de la nómina del mes: 640 / 642 contra 476, 4751 y 465, con la paga extra devengada cada mes y pagada en su
+    mes;
+  - pago del líquido (465 / 57x) y de los seguros sociales (476 / 57x), y deshacer.
+- **Integración** (migración `0050_payroll_integration.sql`, prueba `test_fase45_payroll_integration.sql`):
+  - comprobación «Nóminas frente a la contabilidad (465 / 476)»;
+  - el modelo 111 incluye las nóminas en las casillas 01 a 03;
+  - términos «Nómina» y «Seguridad Social a cargo de la empresa» en el glosario.
+- **Web:**
+  - pantalla **Nóminas**: nómina del mes con su vista previa, nóminas contabilizadas con sus pagos, recibos de salarios y
+    ficha del empleado;
+  - en Retenciones IRPF, la fila de nóminas del modelo 111;
+  - 126 tests en total.
+### Cambiado
+- La 465 y la 476 pasan a ser cuentas controladas (por Nóminas).
+- La comprobación de retenciones (4751) suma el IRPF de las nóminas.
+- La prueba de operaciones al azar (fase 34) añade doce meses de nóminas con sus pagos.
+
 ## [0.37.0] - 2026-10-18
 ### Añadido
 - **Provisiones** (migración `0045_provisions.sql`, prueba `test_fase40_provisions.sql`):

@@ -33,6 +33,7 @@ export function moduleScreen(modules) {
   if (m.includes('invoices')) return 'invoices'
   if (m.includes('settlement')) return 'settlement'
   if (m.includes('assets')) return 'assets'
+  if (m.includes('payroll')) return 'payroll'   // v0.38.0
   if (m.includes('accruals') || m.includes('impairments') || m.includes('provisions') || m.includes('inventory')) return 'adjustments'   // v0.36.0 / v0.37.0
   return 'journal'
 }

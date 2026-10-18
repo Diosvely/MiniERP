@@ -13,7 +13,7 @@ function lastRows() {
   for (const f of fs.readdirSync(dir).filter((x) => x.endsWith('.sql')).sort()) {
     const sql = fs.readFileSync(`${dir}/${f}`, 'utf8')
     if (!sql.includes('erp.concepts')) continue
-    for (const line of sql.split('\n')) {
+    for (const line of sql.split(/\r?\n/)) {   // Windows: las migraciones pueden tener CRLF
       const m = line.match(/^\('([A-Za-z]+)', \d+, /)
       if (m) rows[m[1]] = line.replace(/,$/, '')
     }

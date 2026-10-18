@@ -152,11 +152,18 @@ export const GLOSSARY = {
   accrual: { bc: 'Accrual', sap: 'Accrual',
     es: { term: 'Devengo', def: 'Los ingresos y gastos se anotan cuando ocurren, no cuando se cobran o se pagan.' },
     en: { term: 'Accrual', def: 'Income and expenses are recorded when they occur, not when they are collected or paid.' } },
+  // v0.38.0 · Nóminas
+  payroll: { bc: 'Payroll (G/L integration)', sap: 'Payroll posting (HCM)', pgc: ['640', '642', '465', '476', '4751'],
+    es: { term: 'Nómina', def: 'Recibo mensual del salario. Su asiento lleva el sueldo bruto al gasto (640) y reparte lo que no cobra el trabajador: su cuota de la Seguridad Social (476), la retención de IRPF (4751) y el líquido que se le debe (465), que se paga después.', ex: 'Salario de 2.000 con cuota del trabajador de 151,67 e IRPF del 12 %: 640 D 2.000 / 476 H 151,67 · 4751 H 240 · 465 H 1.608,33.' },
+    en: { term: 'Payslip (payroll)', def: 'The monthly salary statement. Its entry takes the gross salary to expense (640) and splits what the employee does not receive: their Social Security contribution (476), the IRPF withholding (4751) and the net pay owed (465), paid afterwards.', ex: 'Salary of 2,000 with an employee contribution of 151.67 and 12 % IRPF: 640 Dr 2,000 / 476 Cr 151.67 · 4751 Cr 240 · 465 Cr 1,608.33.' } },
+  socialSecurity: { bc: 'Social security (employer contribution)', sap: 'Employer social insurance contribution', pgc: ['642', '476'],
+    es: { term: 'Seguridad Social a cargo de la empresa', def: 'Lo que la empresa cotiza por cada trabajador además de su sueldo: un % de la base de cotización (salario + prorrata de las pagas extra, con un tope) por contingencias comunes, desempleo, FOGASA, formación, MEI y accidentes de trabajo. Es gasto (642) y se debe a la Seguridad Social (476) hasta que se paga, el mes siguiente.', ex: 'Base 2.333,33 × 31,65 % ≈ 738,50: 642 D 738,50 / 476 H 738,50 (junto con la cuota del trabajador).' },
+    en: { term: 'Employer Social Security', def: 'What the company contributes for each employee on top of the salary: a % of the contribution base (salary + prorated extra payments, capped) for common contingencies, unemployment, FOGASA, training, MEI and work accidents. It is an expense (642) owed to Social Security (476) until paid, the following month.', ex: 'Base 2,333.33 × 31.65 % ≈ 738.50: 642 Dr 738.50 / 476 Cr 738.50 (together with the employee contribution).' } },
 }
 
 // Pantalla de la empresa → término que la explica (el ⓘ junto a la ruta "Informes › Balance")
 export const SECTION_TERM = {
   entry: 'entry', journal: 'journal', closing: 'closing', invoices: 'invoice', settlement: 'settlement',
   withholdings: 'withholding', payments: 'openItem', prorata: 'prorata', taxes: 'vat', balance: 'balance', pyg: 'pyg',
-  cashflow: 'cashflow', ratios: 'ratio', reports: 'trialBalance', checks: 'auditCheck', assets: 'fixedAsset', adjustments: 'deferral', accounts: 'subaccount', partners: 'partner',
+  cashflow: 'cashflow', ratios: 'ratio', reports: 'trialBalance', checks: 'auditCheck', assets: 'fixedAsset', adjustments: 'deferral', payroll: 'payroll', accounts: 'subaccount', partners: 'partner',
 }

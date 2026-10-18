@@ -57,4 +57,12 @@ describe('friendlyError · errores de la base de datos en lenguaje claro', () =>
     expect(friendlyError('', tEs)).toBeNull()
     expect(friendlyError(null, tEs)).toBeNull()
   })
+  it('nóminas (v0.38.0): llevan a la pantalla Nóminas', () => {
+    expect(friendlyError('This entry belongs to a payroll: undo it from Payroll', tEs, 'es').to).toBe('payroll')
+    expect(friendlyError('The payroll of 01/2026 is already posted', tEs, 'es').title).toBe('La nómina de 01/2026 ya está contabilizada')
+    expect(friendlyError('There are no contribution rates for 2027: they are published each year (Orden de cotización)', tEn, 'en').title)
+      .toBe('There are no contribution rates for 2027')
+    const msg = 'Account 46500001 is controlled by payroll: register it from that screen (or switch the company to guided mode)'
+    expect(friendlyError(msg, tEs, 'es').to).toBe('payroll')
+  })
 })

@@ -757,3 +757,25 @@ td.num { white-space: nowrap; }
 .paso-cierre .enlace { white-space: nowrap; font-size: .9rem; }
 .insignia-estado.na { background: var(--fondo); color: var(--suave); }
 @media (max-width: 560px) { .paso-cierre { grid-template-columns: auto 1fr; } .paso-cierre .enlace { grid-column: 2; } }
+
+/* --- v0.38.0: Nóminas --- */
+.nominas .campo-fecha { max-width: 14em; }
+:is(.nominas, .nominas ~ .tarjeta) :is(td.num, th.num) { text-align: right; font-variant-numeric: tabular-nums; }
+:is(.nominas, .nominas ~ .tarjeta) td small { color: var(--suave); }
+:is(.nominas, .nominas ~ .tarjeta) td:first-child { white-space: nowrap; }
+.nominas ~ .tarjeta tr.anulada td { color: var(--suave); text-decoration: line-through; }
+.nominas ~ .tarjeta tr.marcada td { background: color-mix(in srgb, var(--primario) 7%, transparent); }
+.nominas ~ .tarjeta td.acciones { white-space: nowrap; }
+.nominas ~ .tarjeta td.acciones button { padding: 6px 10px; font-size: .85rem; margin: 2px 4px 2px 0; }
+.nominas ~ .tarjeta td .enlace { padding: 0; font-weight: 600; color: var(--primario); }
+.recibos { display: grid; grid-template-columns: repeat(auto-fill, minmax(17em, 1fr)); gap: 10px; white-space: normal; }
+.recibo { border: 1px solid var(--borde); border-radius: 8px; padding: 10px 12px; display: flex; flex-direction: column; gap: 6px; }
+.recibo h4 { margin: 0; font-size: .95rem; }
+.recibo dl { margin: 0; display: grid; gap: 2px; font-variant-numeric: tabular-nums; }
+.recibo dl div { display: flex; justify-content: space-between; gap: 10px; }
+.recibo dt { font-weight: 400; }
+.recibo dt small { color: var(--suave); }
+.recibo dd { margin: 0; text-align: right; white-space: nowrap; }
+.recibo dl div.total { border-top: 1px solid var(--borde); padding-top: 4px; }
+.recibo details summary { cursor: pointer; font-size: .9rem; }
+.recibo > small { color: var(--suave); }

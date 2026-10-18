@@ -6,6 +6,7 @@ import { companyPath } from '../router'
 import { inventoryLines } from '../adjustments'
 import Link from './Link'
 import Empty from './Empty'
+import Term from './Term'
 import ErrorBox from './ErrorBox'
 
 // INVENTARIO DEL CIERRE (v0.37.0, NRV 10.ª): método administrativo. Por cada cuenta de existencias (30-36) se da de
@@ -61,7 +62,7 @@ export default function InventoryPanel({ company, readOnly, date }) {
 
   return (
     <section className="tarjeta">
-      <h2>{t('inv.title')}</h2>
+      <h2><Term id="inventoryChange">{t('inv.title')}</Term></h2>
       <p className="ayuda">{t('inv.intro')}</p>
       <ErrorBox error={error} company={company} />
       {message && <p className="exito" role="status">✓ {message}</p>}

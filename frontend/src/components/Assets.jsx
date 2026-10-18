@@ -201,7 +201,7 @@ export default function Assets({ company, readOnly }) {
             <div><dt>{t('fa.lifeLabel')}</dt><dd>{t('fa.lifeValue').replace('{m}', selected.useful_life_months).replace('{p}', pct(annualPct(selected.useful_life_months)))}</dd></div>
             <div><dt>{t('fa.residual')}</dt><dd>{m(selected.residual_value)}</dd></div>
             {selected.class_code && <div><dt>{t('fa.taxClass')}</dt><dd>{en ? selected.class_name_en : selected.class_name} · {t('fa.taxMax').replace('{p}', pct(selected.max_pct))}</dd></div>}
-            {Number(selected.impairment) > 0 && <div><dt>{t('fa.impairment')}</dt><dd>{m(selected.impairment)}</dd></div>}
+            {Number(selected.impairment) > 0 && <div><dt><Term id="assetImpairment">{t('fa.impairment')}</Term></dt><dd>{m(selected.impairment)}</dd></div>}
             {selected.invoice_no && <div><dt>{t('fa.invoice')}</dt><dd>{selected.external_document_no || selected.invoice_no} · {t('fa.entry')} {entryLink(selected.invoice_year, selected.invoice_entry_no)}</dd></div>}
           </dl>
           <h3>{t('fa.schedule')}</h3>
@@ -224,7 +224,7 @@ export default function Assets({ company, readOnly }) {
           )}
           {selected.status === 'active' && !readOnly && (impair ? (
             <div className="baja-activo">
-              <h3>{t(impair.mode === 'impair' ? 'fa.impairTitle' : 'fa.reverseTitle')}</h3>
+              <h3><Term id="assetImpairment">{t(impair.mode === 'impair' ? 'fa.impairTitle' : 'fa.reverseTitle')}</Term></h3>
               <p className="ayuda">{t(impair.mode === 'impair' ? 'fa.impairHelp' : 'fa.reverseHelp')}</p>
               <div className="rejilla-tres">
                 <label>{t('fa.impairDate')}<input type="date" value={impair.date} onChange={(e) => setImpair({ ...impair, date: e.target.value })} /></label>

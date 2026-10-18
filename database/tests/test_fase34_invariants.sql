@@ -96,8 +96,8 @@ begin
         join erp.gl_accounts l2 on l2.id = il.gl_account_id
         cross join lateral (select l2.account_no, il.amount, il.tax_code) l
         where i2.company_id = e and i2.document_kind = 'invoice' and i2.posting_date <= d
-          and left(l.account_no, 1) <> '2'   -- (la rectificativa de un activo aún no ajusta su ficha: backlog)
           and i2.posting_date >= make_date(extract(year from d)::int, 1, 1)
+          and not (i2.invoice_type = 'sale' and left(l.account_no, 1) = '2')   -- (la rectificativa de la VENTA de un activo: backlog)
         order by random() limit 1;
         if found then
           perform erp.post_invoice(jsonb_build_object('company_id', e, 'invoice_type', o.invoice_type, 'document_kind', 'credit_memo',
@@ -199,7 +199,7 @@ begin
       ('57200001', 'Banco'), ('60000001', 'Compras'), ('62300001', 'Profesionales'), ('62200001', 'Reparaciones'),
       ('62600001', 'Servicios bancarios'), ('62900001', 'Otros servicios'), ('64000001', 'Sueldos'),
       ('66200001', 'Intereses'), ('68100001', 'Amortización'), ('70000001', 'Ventas'),
-      ('21600001', 'Mobiliario'), ('21700001', 'Equipos informáticos')) as s(no, name);
+      ('21600001', 'Mobiliario'), ('21700001', 'Equipos informáticos'), ('30000001', 'Mercaderías'), ('67800001', 'Gastos excepcionales')) as s(no, name);
     perform erp.create_partner(e, 'vendor', 'Proveedor Uno SL', 'B12345674');
     perform erp.create_partner(e, 'creditor', 'Abogada Ruiz', '12345678Z');
     perform erp.create_partner(e, 'customer', 'Cliente General SL', 'B11111119');
@@ -238,6 +238,22 @@ begin
     exception when others then if sqlerrm not like 'Nothing to impair%' then raise; end if;
     end;
     assert (select status from erp.run_audit_checks(e, 2026) where code = 'adjustments_ledger') = 'ok', 'ajustes = 480/485/4009/4309/490';
+    -- v0.37.0 · Provisiones, deterioro de un activo e inventario al 31/12
+    perform erp.create_provision(jsonb_build_object('company_id', e, 'kind', 'liabilities', 'description', 'Litigio al azar',
+      'amount', public.azar(1000, 9000), 'provision_date', '2026-12-31', 'expense_account_no', '67800001'));
+    perform erp.create_provision(jsonb_build_object('company_id', e, 'kind', 'commercial', 'description', 'Garantías al azar',
+      'amount', public.azar(100, 900), 'provision_date', '2026-12-31'));
+    for r in select a.id, erp.asset_net_value_at(a.id, '2026-12-31') as nbv from erp.fixed_assets a
+             where a.company_id = e and a.status = 'active' and erp.asset_net_value_at(a.id, '2026-12-31') > 100 order by random() limit 1 loop
+      perform erp.impair_asset(jsonb_build_object('asset_id', r.id, 'impairment_date', '2026-12-31', 'recoverable_value', round(r.nbv * 0.7, 2)));
+    end loop;
+    perform erp.post_inventory(jsonb_build_object('company_id', e, 'count_date', '2026-12-31',
+      'lines', jsonb_build_array(jsonb_build_object('account_no', '30000001', 'final_value', public.azar(500, 8000), 'impairment', public.azar(0, 300)))));
+    assert (select string_agg(c.code || '=' || c.status, ' ' order by c.sort) from erp.run_audit_checks(e, 2026) c
+            where c.code in ('assets_ledger', 'provisions_ledger', 'inventory_ledger'))
+           = 'assets_ledger=ok provisions_ledger=ok inventory_ledger=ok',
+           (select string_agg(c.code || '=' || c.status || c.details::text, ' ') from erp.run_audit_checks(e, 2026) c
+            where c.code in ('assets_ledger', 'provisions_ledger', 'inventory_ledger'));
     assert (select status from erp.run_audit_checks(e, 2026) where code = 'assets_ledger') = 'ok', 'las fichas cuadran con la 21x / 281';
     assert (select status from erp.run_audit_checks(e, 2026) where code = 'assets_pending') = 'ok', 'todo amortizado al 31/12';
     ok := public.invariantes(e, 2026, 'fin de 2026');
@@ -264,6 +280,17 @@ begin
     end loop;
     perform erp.reverse_impairment(i.id, '2027-06-30') from erp.receivable_impairments i
     where i.company_id = e and i.method = 'global' and i.status = 'active';
+    -- …la provisión del litigio se aplica (sentencia) y la de garantías se revisa
+    perform erp.apply_provision(jsonb_build_object('provision_id', pv.id, 'application_date', '2027-06-30',
+      'paid', round(erp.provision_balance(pv.id) * (0.8 + random() * 0.4)::numeric, 2), 'cash_account_no', '57200001'))
+    from erp.provisions pv where pv.company_id = e and pv.kind = 'liabilities';
+    perform erp.revise_provision(jsonb_build_object('provision_id', pv.id, 'review_date', '2027-06-30', 'new_amount', public.azar(100, 900)))
+    from erp.provisions pv where pv.company_id = e and pv.kind = 'commercial';
+    assert (select string_agg(c.code || '=' || c.status, ' ' order by c.sort) from erp.run_audit_checks(e, 2027, '2027-06-30') c
+            where c.code in ('assets_ledger', 'provisions_ledger', 'inventory_ledger'))
+           = 'assets_ledger=ok provisions_ledger=ok inventory_ledger=ok',
+           (select string_agg(c.code || '=' || c.status || c.details::text, ' ') from erp.run_audit_checks(e, 2027, '2027-06-30') c
+            where c.code in ('assets_ledger', 'provisions_ledger', 'inventory_ledger'));
     assert (select string_agg(c.code || '=' || c.status, ' ' order by c.sort) from erp.run_audit_checks(e, 2027, '2027-06-30') c
             where c.code in ('adjustments_ledger', 'accruals_unreversed', 'impairments_collected'))
            = 'adjustments_ledger=ok accruals_unreversed=ok impairments_collected=ok',
@@ -305,6 +332,8 @@ select c.name as empresa,
   (select count(*) from erp.fixed_assets a where a.company_id = c.id and a.status = 'disposed') as vendidos,
   (select count(*) from erp.accruals a where a.company_id = c.id and a.status = 'reversed') as periodificaciones,
   (select count(*) from erp.receivable_impairments i where i.company_id = c.id) as deterioros,
-  (select count(*) from erp.receivable_writeoffs w where w.company_id = c.id) as insolvencias
+  (select count(*) from erp.receivable_writeoffs w where w.company_id = c.id) as insolvencias,
+  (select count(*) from erp.asset_events v where v.company_id = c.id) as sucesos_activos,
+  (select count(*) from erp.provision_movements v where v.company_id = c.id) as mov_provisiones
 from erp.companies c order by 1;
 \echo '✔ FASE 34 OK · invariantes contables con operaciones al azar'

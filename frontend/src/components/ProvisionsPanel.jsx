@@ -7,6 +7,7 @@ import { companyPath } from '../router'
 import { PROVISION_KINDS, defaultSubaccount, excessPrefix, provisionApplicationLines, provisionPrefix, provisionRevisionLines } from '../adjustments'
 import Link from './Link'
 import Empty from './Empty'
+import Term from './Term'
 import ErrorBox from './ErrorBox'
 
 const emptyForm = () => ({ kind: 'liabilities', term: 'long', description: '', expense_account_no: '', amount: '' })
@@ -81,7 +82,7 @@ export default function ProvisionsPanel({ company, readOnly, date }) {
   return (
     <>
       <section className="tarjeta">
-        <h2>{t('prv.title')}</h2>
+        <h2><Term id="provision">{t('prv.title')}</Term></h2>
         <p className="ayuda">{t('prv.intro')}</p>
         <ErrorBox error={error} company={company} />
         {message && <p className="exito" role="status">✓ {message}</p>}

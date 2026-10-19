@@ -159,11 +159,18 @@ export const GLOSSARY = {
   socialSecurity: { bc: 'Social security (employer contribution)', sap: 'Employer social insurance contribution', pgc: ['642', '476'],
     es: { term: 'Seguridad Social a cargo de la empresa', def: 'Lo que la empresa cotiza por cada trabajador además de su sueldo: un % de la base de cotización (salario + prorrata de las pagas extra, con un tope) por contingencias comunes, desempleo, FOGASA, formación, MEI y accidentes de trabajo. Es gasto (642) y se debe a la Seguridad Social (476) hasta que se paga, el mes siguiente.', ex: 'Base 2.333,33 × 31,65 % ≈ 738,50: 642 D 738,50 / 476 H 738,50 (junto con la cuota del trabajador).' },
     en: { term: 'Employer Social Security', def: 'What the company contributes for each employee on top of the salary: a % of the contribution base (salary + prorated extra payments, capped) for common contingencies, unemployment, FOGASA, training, MEI and work accidents. It is an expense (642) owed to Social Security (476) until paid, the following month.', ex: 'Base 2,333.33 × 31.65 % ≈ 738.50: 642 Dr 738.50 / 476 Cr 738.50 (together with the employee contribution).' } },
+  // v0.39.0 · Modelos
+  taxForm: { bc: 'VAT statement', sap: 'Advance return for tax on sales/purchases', pgc: ['472', '477', '4700', '4750'],
+    es: { term: 'Modelo tributario (casillas)', def: 'Impreso oficial con el que se declara un impuesto. Cada importe va en una casilla numerada: en el 303 del IVA, el devengado (01-27), el deducible (28-45) y el resultado (46-71). El ERP lo calcula desde el libro registro y debe coincidir con la liquidación contabilizada.', ex: 'Ventas al 21 % de 11.000: casilla 07 base 11.000, 08 tipo 21, 09 cuota 2.310.' },
+    en: { term: 'Tax form (boxes)', def: 'The official form used to declare a tax. Each amount goes in a numbered box: in VAT form 303, output tax (01-27), deductible tax (28-45) and the result (46-71). The ERP calculates it from the invoice register and it must match the posted settlement.', ex: 'Sales at 21 % of 11,000: box 07 base 11,000, 08 rate 21, 09 tax 2,310.' } },
+  thirdPartyReturn: { bc: 'Third-party annual return (form 347)', sap: 'Annual return of transactions with third parties', pgc: ['400', '410', '430', '440'],
+    es: { term: 'Modelo 347 (operaciones con terceros)', def: 'Declaración anual de los clientes y proveedores con los que se han superado 3.005,06 € en el año, IVA incluido, por trimestres. Hacienda la cruza con el 347 del otro: si no coinciden, pide explicaciones. No incluye lo que ya va en otros modelos (349, retenciones).', ex: 'Cliente con 2.420 en el 1T y 1.210 en el 3T: total 3.630 > 3.005,06 → se declara con la clave B.' },
+    en: { term: 'Form 347 (third-party operations)', def: 'Annual return listing customers and suppliers with more than €3,005.06 in the year, VAT included, by quarter. The tax agency cross-checks it with the other party\'s 347. It excludes what other returns already cover (349, withholdings).', ex: 'Customer with 2,420 in Q1 and 1,210 in Q3: total 3,630 > 3,005.06 → declared with key B.' } },
 }
 
 // Pantalla de la empresa → término que la explica (el ⓘ junto a la ruta "Informes › Balance")
 export const SECTION_TERM = {
   entry: 'entry', journal: 'journal', closing: 'closing', invoices: 'invoice', settlement: 'settlement',
   withholdings: 'withholding', payments: 'openItem', prorata: 'prorata', taxes: 'vat', balance: 'balance', pyg: 'pyg',
-  cashflow: 'cashflow', ratios: 'ratio', reports: 'trialBalance', checks: 'auditCheck', assets: 'fixedAsset', adjustments: 'deferral', payroll: 'payroll', accounts: 'subaccount', partners: 'partner',
+  cashflow: 'cashflow', ratios: 'ratio', reports: 'trialBalance', checks: 'auditCheck', forms: 'taxForm', assets: 'fixedAsset', adjustments: 'deferral', payroll: 'payroll', accounts: 'subaccount', partners: 'partner',
 }

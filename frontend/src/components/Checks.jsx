@@ -7,6 +7,7 @@ import { companyPath } from '../router'
 import { checksSummary } from '../controlled'
 import Link from './Link'
 import Term from './Term'
+import Sources from './Sources'
 import ErrorBox from './ErrorBox'
 
 const ICONS = { ok: '✓', info: 'ℹ', warning: '⚠', error: '✕' }
@@ -22,14 +23,18 @@ export default function Checks({ company, readOnly, onChanged }) {
   const [years, setYears] = useState([])
   const [rows, setRows] = useState(null)
   const [concepts, setConcepts] = useState({})
+  const [sources, setSources] = useState({})
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
     supabase.from('fiscal_years').select('year, starting_date, ending_date').eq('company_id', company.id)
       .then(({ data }) => setYears(data ?? []))
-    supabase.from('audit_checks').select('code, concept')
-      .then(({ data }) => setConcepts(Object.fromEntries((data ?? []).map((r) => [r.code, r.concept]))))
+    supabase.from('audit_checks').select('code, concept, sources')
+      .then(({ data }) => {
+        setConcepts(Object.fromEntries((data ?? []).map((r) => [r.code, r.concept])))
+        setSources(Object.fromEntries((data ?? []).map((r) => [r.code, r.sources ?? []])))   // v0.39.0: base documental
+      })
   }, [company.id])
 
   // El ejercicio es el que contiene la fecha (si no hay, el año natural)
@@ -94,6 +99,15 @@ export default function Checks({ company, readOnly, onChanged }) {
     } else if (r.code === 'impairments_collected') {
       head = [t('chk.col.impairment'), t('chk.col.invoice'), t('chk.col.partner'), t('chk.col.amount')]
       body = d.map((x) => [x.code, x.invoice_no, x.partner_name, m(x.amount)])
+    } else if (r.code === 'tax_forms_settlements') {   // v0.39.0
+      head = [t('chk.col.quarter'), t('chk.col.formResult'), t('chk.col.settled'), t('chk.col.difference')]
+      body = d.map((x) => [`${x.quarter}T · ${x.form}`, m(x.form_result), m(x.settled), <strong key="d">{m(x.amount)}</strong>])
+    } else if (r.code === 'form347_missing_vat') {
+      head = [t('chk.col.partner'), t('chk.col.key347'), t('chk.col.amount')]
+      body = d.map((x) => [x.partner_name, x.op_key, m(x.amount)])
+    } else if (r.code === 'sources_review') {
+      head = [t('chk.col.srcName'), t('chk.col.issuer'), t('chk.col.checked')]
+      body = d.map((x) => [x.name, x.issuer, shortDate(x.checked)])
     } else if (r.code === 'assets_pending') {
       head = [t('chk.col.asset'), t('chk.col.pendingDepr'), t('chk.col.lastDepr')]
       body = d.map((x) => [`${x.code} · ${x.name}`, m(x.amount), x.last_period ? shortDate(x.last_period) : '—'])
@@ -144,6 +158,7 @@ export default function Checks({ company, readOnly, onChanged }) {
                 <span className={`insignia-estado ${r.status}`} aria-label={t(`chk.status.${r.status}`)}>{ICONS[r.status]}</span>
                 <strong>{en ? r.title_en : r.title}</strong>
                 {concepts[r.code] && <Term id={concepts[r.code]}>{t('ctl.what')}</Term>}
+                {sources[r.code]?.length > 0 && <Sources ids={sources[r.code]} />}
               </div>
               {r.status === 'ok' ? <p className="ayuda">{t(`chk.ok.${r.code}`)}</p> : (<>
                 <p>{en ? r.why_en : r.why}</p>

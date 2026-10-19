@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.run_audit_checks · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0037_audit_checks 0039_review_fixes 0042_assets_integration 0044_adjustments_integration 0046_asset_impairment 0048_closing_integration 0050_payroll_integration   →   la vigente es la de 0050_payroll_integration
+-- Definida en: 0037_audit_checks 0039_review_fixes 0042_assets_integration 0044_adjustments_integration 0046_asset_impairment 0048_closing_integration 0050_payroll_integration 0053_forms_integration   →   la vigente es la de 0053_forms_integration
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.run_audit_checks(p_company uuid, p_year integer, p_to_date date DEFAULT NULL::date)
@@ -114,6 +114,44 @@ begin
                                                    'source', n.source, 'account_no', n.account_no, 'amount', n.amount)
                                 order by n.rn) filter (where n.source in ('manual', 'import') and n.amount <> 0), '[]')
       into v_ledger, v_items, v_det
+      from n;
+
+    elsif r.code = 'tax_forms_settlements' then
+      -- v0.39.0 · el resultado de cada modelo trimestral (303 / 420, desde el libro registro) frente a su liquidación
+      --   contabilizada (desde la contabilidad): un trimestre liquidado aceptando una diferencia
+      with q as (
+        select g.q, erp.quarter_end(p_year, g.q) as q_end,
+               (select b.amount from erp.tax_form_boxes(p_company, p_year, g.q) b where b.box = case v_type when 'VAT' then '46' else '41' end) as form_result,
+               (select s.output_tax - s.input_tax from erp.tax_settlements s where s.company_id = p_company and s.tax_type = v_type
+                  and s.year = p_year and s.quarter = g.q and s.status = 'posted') as settled
+        from generate_series(1, 4) g(q)
+        where erp.quarter_end(p_year, g.q) <= v_to
+      ), n as (   -- solo los trimestres liquidados (los que faltan por liquidar los avisa el asistente de cierre)
+        select q.*, row_number() over (order by q.q) as rn from q
+        where q.settled is not null and q.settled <> q.form_result
+      )
+      select (select coalesce(sum(form_result), 0) from q where settled is not null), (select coalesce(sum(settled), 0) from q), count(*)::int,
+             coalesce(jsonb_agg(jsonb_build_object('quarter', n.q, 'form', case v_type when 'VAT' then '303' else '420' end,
+                                                   'form_result', n.form_result, 'settled', n.settled, 'amount', coalesce(n.settled, 0) - n.form_result)
+                                order by n.rn), '[]')
+      into v_book, v_ledger, v_items, v_det
+      from n;
+
+    elsif r.code = 'form347_missing_vat' then
+      -- v0.39.0 · terceros que hay que declarar en el 347 (más de 3.005,06 € en el año) y no tienen NIF
+      with n as (select f.*, row_number() over (order by f.partner_name) as rn from erp.form_347(p_company, p_year) f where f.missing_vat_no)
+      select count(*)::int,
+             coalesce(jsonb_agg(jsonb_build_object('partner_id', n.partner_id, 'partner_name', n.partner_name, 'op_key', n.op_key,
+                                                   'amount', n.total) order by n.rn) filter (where n.rn <= 50), '[]')
+      into v_items, v_det
+      from n;
+
+    elsif r.code = 'sources_review' then
+      -- v0.39.0 · fuentes oficiales sin revisar en más de un año (las normas y las instrucciones cambian)
+      with n as (select s.*, row_number() over (order by s.checked, s.key) as rn from erp.sources s where s.checked < current_date - interval '1 year')
+      select count(*)::int,
+             coalesce(jsonb_agg(jsonb_build_object('key', n.key, 'name', n.title, 'issuer', n.issuer, 'checked', n.checked) order by n.rn), '[]')
+      into v_items, v_det
       from n;
 
     elsif r.code = 'partners' then

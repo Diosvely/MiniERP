@@ -13,6 +13,7 @@ import Checks from './Checks'
 import Assets from './Assets'
 import Adjustments from './Adjustments'
 import Payroll from './Payroll'
+import TaxForms from './TaxForms'
 import FinancialStatements from './FinancialStatements'
 import YearClosing from './YearClosing'
 import Withholdings from './Withholdings'
@@ -50,6 +51,7 @@ const SCREENS = [
   { id: 'invoices', group: 'menuInvoices', basic: true },
   { id: 'payments', group: 'menuInvoices', basic: true },
   { id: 'settlement', group: 'menuTaxes', basic: true },
+  { id: 'forms', group: 'menuTaxes' },   // v0.39.0
   { id: 'withholdings', group: 'menuTaxes' },
   { id: 'prorata', group: 'menuTaxes' },
   { id: 'taxes', group: 'menuTaxes', basic: 'hidden' },
@@ -261,6 +263,7 @@ export default function CompanyView({ company: base, readOnly, canPublish, isOwn
         {section === 'adjustments' && <Adjustments company={company} readOnly={readOnly} />}
         {section === 'payroll' && <Payroll company={company} readOnly={readOnly} />}
         {section === 'settlement' && <TaxSettlement company={company} readOnly={readOnly} />}
+        {section === 'forms' && <TaxForms company={company} />}
         {section === 'prorata' && <ProRata company={company} readOnly={readOnly} />}
         {section === 'withholdings' && <Withholdings company={company} />}
         {section === 'taxes' && <Taxes company={company} readOnly={readOnly} onChanged={onChanged} />}

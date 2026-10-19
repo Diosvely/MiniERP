@@ -779,3 +779,28 @@ td.num { white-space: nowrap; }
 .recibo dl div.total { border-top: 1px solid var(--borde); padding-top: 4px; }
 .recibo details summary { cursor: pointer; font-size: .9rem; }
 .recibo > small { color: var(--suave); }
+
+/* --- v0.39.0: Modelos y fuentes oficiales --- */
+.pestanas { display: flex; flex-wrap: wrap; gap: 6px; margin: 4px 0 12px; }
+.pestanas button { display: flex; flex-direction: column; align-items: flex-start; gap: 2px; padding: 8px 14px; font-weight: 700;
+  background: var(--fondo); color: var(--texto); border: 1px solid var(--borde); border-radius: 8px; }
+.pestanas button small { font-weight: 400; color: var(--suave); }
+.pestanas button.activa { background: var(--tarjeta); color: var(--texto); border-color: var(--primario); box-shadow: inset 0 -3px 0 var(--primario); }
+.titulo-modelo { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
+.titulo-modelo h2 { margin: 0; }
+table.casillas caption { text-align: left; font-weight: 700; padding: 10px 0 4px; }
+table.casillas td.casilla { font-variant-numeric: tabular-nums; font-weight: 700; white-space: nowrap; width: 4.5em; }
+table.casillas :is(td.num, th.num) { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+table.casillas tr.total td { font-weight: 700; border-top: 1px solid var(--borde); }
+.resultado-modelo { font-weight: 700; padding: 8px 12px; border-radius: 8px; border-left: 4px solid var(--borde); }
+.resultado-modelo.pay { border-left-color: var(--alerta-fondo); }
+.resultado-modelo.credit { border-left-color: var(--primario); }
+.aviso-periodo.monthly { font-weight: 700; }
+.fuentes { position: relative; display: inline-block; font-size: .9rem; font-weight: 400; }
+.fuentes-boton { padding: 4px 10px; font-size: .85rem; background: var(--fondo); color: var(--primario); border: 1px solid var(--borde); border-radius: 999px; }
+.fuentes-panel { position: absolute; z-index: 30; top: calc(100% + 6px); left: 0; width: min(26rem, 86vw); display: flex; flex-direction: column; gap: 6px;
+  padding: 12px; background: var(--tarjeta, #fff); color: var(--texto); border: 1px solid var(--borde); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.18); }
+.fuentes-panel ul { margin: 0; padding-left: 1.1em; display: flex; flex-direction: column; gap: 8px; }
+.fuentes-panel li { display: flex; flex-direction: column; gap: 2px; }
+.fuentes-panel small { color: var(--suave); }
+.fuentes-panel .fuente-revisar { color: var(--alerta); font-weight: 600; }

@@ -61,10 +61,10 @@ begin
 
   -- ---------- 1. Catálogo y empresa vacía: todo en verde ----------
   -- (la 0039 añade «tax_quota», la 0042 las dos del inmovilizado la 0044 las tres de los ajustes de cierre y la 0048 tres más: 16)
-  assert (select count(*) from erp.audit_checks) = 17, 'diecisiete comprobaciones';
+  assert (select count(*) from erp.audit_checks) = 20, 'veinte comprobaciones';
   assert (select count(*) from erp.run_audit_checks(e, 2026) where status <> 'ok') = 0, 'empresa vacía: todo ok';
   assert (select string_agg(code, ',' order by sort) from erp.run_audit_checks(e, 2026))
-         = 'vat_input,vat_output,tax_quota,withholdings,partners,anomalies,assets_ledger,assets_pending,adjustments_ledger,accruals_unreversed,impairments_collected,provisions_ledger,provisions_review,inventory_ledger,payroll_ledger,tax_territory,controlled';
+         = 'vat_input,vat_output,tax_forms_settlements,tax_quota,withholdings,partners,form347_missing_vat,anomalies,assets_ledger,assets_pending,adjustments_ledger,accruals_unreversed,impairments_collected,provisions_ledger,provisions_review,inventory_ledger,payroll_ledger,tax_territory,controlled,sources_review';
   perform public.manual(e, '2026-01-02', '[["57200001",10000,0],["10000001",0,10000]]');
   raise notice 'OK  · diez comprobaciones; empresa vacía, todo ok';
 
@@ -145,7 +145,7 @@ select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000b2
 do $$
 declare e uuid := (select v from public.ctx where k = 'empresa');
 begin
-  assert (select count(*) from erp.run_audit_checks(e, 2026)) = 17, 'el lector las ve';
+  assert (select count(*) from erp.run_audit_checks(e, 2026)) = 20, 'el lector las ve';
   assert public.chk(e, 'partners') = 'ok · 0 · 0 · 0', public.chk(e, 'partners');
 end $$;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000c3', false) \gset

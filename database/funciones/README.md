@@ -1,6 +1,6 @@
 # Funciones del esquema erp (versión vigente)
 
-Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0050`.
+Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0053`.
 No se edita a mano: el código fuente son las migraciones. Esto es para **estudiar** cada función en su forma
 actual sin rastrear sus redefiniciones.
 
@@ -9,7 +9,7 @@ actual sin rastrear sus redefiniciones.
 - **Tipo:** *invoker* (se ejecuta con los permisos de quien llama: manda la RLS), *security definer* (con los del
   dueño: comprueba ella misma los permisos) o *trigger*.
 
-208 funciones.
+216 funciones.
 
 | Función | Versiones | Vigente en | Tipo |
 |---|---|---|---|
@@ -93,6 +93,9 @@ actual sin rastrear sus redefiniciones.
 | [`financial_ratios`](financial_ratios.sql) | 1 | 0023_financial_ratios | security definer |
 | [`financial_statement`](financial_statement.sql) | 2 | 0032_comparative_statements | invoker |
 | [`fiscal_year_company`](fiscal_year_company.sql) | 1 | 0006_security_rls | security definer |
+| [`form_347`](form_347.sql) | 1 | 0052_forms_347_349 | invoker |
+| [`form_349`](form_349.sql) | 1 | 0052_forms_347_349 | invoker |
+| [`form_349_period`](form_349_period.sql) | 1 | 0052_forms_347_349 | invoker |
 | [`fs_amounts`](fs_amounts.sql) | 1 | 0016_financial_statements | invoker |
 | [`fs_classified_accounts`](fs_classified_accounts.sql) | 2 | 0017_year_closing | invoker |
 | [`fs_line_accounts`](fs_line_accounts.sql) | 1 | 0016_financial_statements | invoker |
@@ -114,6 +117,7 @@ actual sin rastrear sus redefiniciones.
 | [`import_preview`](import_preview.sql) | 1 | 0021_journal_import | security definer |
 | [`import_start`](import_start.sql) | 1 | 0021_journal_import | invoker |
 | [`integrity_checks`](integrity_checks.sql) | 1 | 0040_integrity_checks | invoker |
+| [`intra_eu_lines`](intra_eu_lines.sql) | 1 | 0052_forms_347_349 | invoker |
 | [`inventory_account`](inventory_account.sql) | 1 | 0047_inventory_closing | security definer |
 | [`inventory_preview`](inventory_preview.sql) | 1 | 0047_inventory_closing | invoker |
 | [`invoice_entry_lines`](invoice_entry_lines.sql) | 5 | 0041_fixed_assets | invoker |
@@ -134,6 +138,7 @@ actual sin rastrear sus redefiniciones.
 | [`partner_control_account`](partner_control_account.sql) | 1 | 0009_partners | invoker |
 | [`pay_payroll`](pay_payroll.sql) | 1 | 0049_payroll | security definer |
 | [`payslip_calc`](payslip_calc.sql) | 1 | 0049_payroll | invoker |
+| [`pct_text`](pct_text.sql) | 1 | 0051_tax_forms | invoker |
 | [`post_closing_entry`](post_closing_entry.sql) | 1 | 0017_year_closing | invoker |
 | [`post_depreciation`](post_depreciation.sql) | 2 | 0046_asset_impairment | security definer |
 | [`post_entry`](post_entry.sql) | 1 | 0004_journal_entries | invoker |
@@ -162,7 +167,7 @@ actual sin rastrear sus redefiniciones.
 | [`reverse_impairment`](reverse_impairment.sql) | 1 | 0043_year_end_adjustments | security definer |
 | [`revise_provision`](revise_provision.sql) | 1 | 0045_provisions | security definer |
 | [`revoke_company_access`](revoke_company_access.sql) | 1 | 0027_members | security definer |
-| [`run_audit_checks`](run_audit_checks.sql) | 7 | 0050_payroll_integration | invoker |
+| [`run_audit_checks`](run_audit_checks.sql) | 8 | 0053_forms_integration | invoker |
 | [`run_payroll`](run_payroll.sql) | 1 | 0049_payroll | security definer |
 | [`save_employee`](save_employee.sql) | 1 | 0049_payroll | security definer |
 | [`set_company_demo`](set_company_demo.sql) | 1 | 0027_members | security definer |
@@ -172,9 +177,12 @@ actual sin rastrear sus redefiniciones.
 | [`setup_taxes`](setup_taxes.sql) | 1 | 0010_tax_setup | invoker |
 | [`setup_withholdings`](setup_withholdings.sql) | 1 | 0018_withholding_exempt | invoker |
 | [`special_tax_account`](special_tax_account.sql) | 1 | 0019_reverse_charge_surcharge | invoker |
+| [`tax_form_boxes`](tax_form_boxes.sql) | 1 | 0051_tax_forms | invoker |
+| [`tax_form_lines`](tax_form_lines.sql) | 1 | 0051_tax_forms | invoker |
 | [`tax_rate_text`](tax_rate_text.sql) | 1 | 0010_tax_setup | invoker |
 | [`tax_settlement_calc`](tax_settlement_calc.sql) | 4 | 0039_review_fixes | invoker |
 | [`template_parent`](template_parent.sql) | 1 | 0008_import_accounts | invoker |
+| [`tf_row`](tf_row.sql) | 1 | 0051_tax_forms | invoker |
 | [`tg_company_add_admin`](tg_company_add_admin.sql) | 1 | 0001_core | trigger |
 | [`tg_company_copy_coa`](tg_company_copy_coa.sql) | 1 | 0002_chart_of_accounts | trigger |
 | [`tg_company_rules`](tg_company_rules.sql) | 3 | 0027_members | trigger |

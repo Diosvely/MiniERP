@@ -2,6 +2,31 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.39.0] - 2026-10-19
+### Añadido
+- **Casillas de los modelos** (migración `0051_tax_forms.sql`, prueba `test_fase46_tax_forms.sql`):
+  - 303 y 420 trimestrales y resúmenes anuales 390 y 425, desde el libro registro de facturas;
+  - rectificativas en «modificación de bases» y «rectificación de deducciones»;
+  - bienes de inversión desde 3.005,06 € (art. 108 LIVA; art. 40 Ley 20/1991);
+  - compensación de periodos anteriores y volumen de operaciones.
+- **Modelos 347 y 349** (migración `0052_forms_347_349.sql`, prueba `test_fase47_forms_347_349.sql`):
+  - 347: terceros de más de 3.005,06 € por trimestres, claves A y B, sin operaciones intracomunitarias, exportaciones
+    ni facturas con retención;
+  - 349: claves E, S, A e I por NIF-IVA, rectificaciones de periodos anteriores y aviso de presentación mensual.
+- **Base documental e integración** (migración `0053_forms_integration.sql`, prueba `test_fase48_forms_integration.sql`):
+  - `erp.sources`: fuentes oficiales con su enlace, el artículo y la fecha de comprobación (copia de `src/sources.js`);
+  - comprobaciones «modelos trimestrales frente a las liquidaciones», «terceros del 347 sin NIF» y «fuentes sin revisar
+    en más de un año»;
+  - las comprobaciones citan sus fuentes;
+  - términos «Modelo tributario (casillas)» y «Modelo 347» en el glosario.
+- **Web:**
+  - pantalla **Modelos** (303/420, 390/425, 347, 349) con Excel e Imprimir;
+  - botón **📘 Fuentes** en cada modelo y en Comprobaciones;
+  - 134 tests en total.
+### Cambiado
+- El test del glosario y el nuevo de las fuentes admiten finales de línea de Windows (CRLF).
+- La prueba de operaciones al azar (fase 34) comprueba que el resumen anual es la suma de los trimestres.
+
 ## [0.38.0] - 2026-10-18
 ### Añadido
 - **Nóminas** (migración `0049_payroll.sql`, prueba `test_fase44_payroll.sql`):

@@ -1090,3 +1090,33 @@ el 111.
 
 **Siguiente paso:** v0.39.0 · Modelos anuales: 390 / 425 (resumen anual del IVA / IGIC), 347 (operaciones con terceros
 de más de 3.005,06 €), 349 (operaciones intracomunitarias, solo con IVA) y las casillas del 303 / 420.
+
+## 2026-10-19 · v0.39.0 · Modelos tributarios y base documental
+
+**Qué se hizo**
+- **Casillas** del 303 / 420 y de los resúmenes anuales 390 / 425 (0051).
+- **Modelos 347 y 349** (0052).
+- **Base documental**, comprobaciones de los modelos y glosario (0053).
+- **Web:** pantalla Modelos y el botón 📘 Fuentes.
+- **Pruebas:** 48 SQL y 134 tests de la web.
+
+**Lo que se aprende**
+- **El modelo sale del libro registro; la liquidación, de la contabilidad.** Si coinciden, el asiento manual no ha
+  tocado la 472 / 477. En el supuesto, un asiento de 50 en la 477 deja el 303 en 210 y la liquidación en 260.
+- **Una rectificativa no va en su tipo:** −1.000 al 21 % van a las casillas 14 / 15, no restados de la 07 / 09.
+- **Bien de inversión no es lo mismo que inmovilizado.** La máquina de 6.000 va a la 30 / 31; el ordenador de 800, a
+  la 28 / 29, porque no llega a 3.005,06 € (art. 108 LIVA). Para el IGIC, el mismo límite en pesetas: 500.000.
+- **El 420 no tiene casillas por tipo:** cada grupo de tres (base, tipo, cuota) lleva el tipo que toque, del más bajo
+  al más alto (0, 3, 7 y 15 % en el supuesto).
+- **El resumen anual es la suma de los trimestres:** 189 − 1.680 + 0 + 4.200 = 2.709 en la casilla 65 del 390, igual
+  que lo ingresado en el año (95), porque los 1.680 del 2T se compensaron en el 4T.
+- **En el 347 el IVA va incluido, salvo en la inversión del sujeto pasivo.** Un cliente con 2.420 + 1.210 = 3.630 se
+  declara; otro con 3.300 − 550 de rectificativa = 2.750, no. La abogada con retención tampoco: ya está en el 190.
+- **En el 349, el límite de 50.000 € decide si es mensual,** y una rectificativa de otro trimestre se declara como
+  rectificación de aquel trimestre (28.000 frente a 30.000).
+- **Cada regla tiene su fuente, y las fuentes caducan:** por eso cada una guarda la fecha en que se comprobó.
+
+**Decisiones:** ADR 0037 · Modelos tributarios y base documental.
+
+**Siguiente paso:** v0.40.0 · Catálogo de operaciones y supuestos autocorregidos: dónde se registra cada operación y su
+asiento modelo; el alumno hace el asiento y el ERP lo corrige, con la norma citada en la base documental.

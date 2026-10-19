@@ -22,7 +22,7 @@ select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a1
 do $$
 declare v text;
 begin
-  assert (select count(*) from erp.concepts) = 50, 'los 50 términos del glosario (41 + 2 del inmovilizado, 0042, + 2 de los ajustes de cierre, 0044, + 3 del cierre II, 0048, + 2 de nóminas, 0050): ' || (select count(*) from erp.concepts);
+  assert (select count(*) from erp.concepts) = 52, 'los 52 términos del glosario (41 + 2 del inmovilizado, 0042, + 2 de los ajustes de cierre, 0044, + 3 del cierre II, 0048, + 2 de nóminas, 0050, + 2 de modelos, 0053): ' || (select count(*) from erp.concepts);
   assert (select term from erp.concepts where key = 'controlledAccount') = 'Cuenta controlada';
   assert (select sap from erp.concepts where key = 'controlledAccount') = 'Reconciliation account';
   assert (select pgc from erp.concepts where key = 'inputTax') = '{472}';
@@ -31,7 +31,7 @@ begin
 
   -- Conceptos de una subcuenta
   select string_agg(key, ',' order by key) into v from erp.concepts_for_account('41000001');
-  assert v = 'aging,controlledAccount,openItem,partner', v;
+  assert v = 'aging,controlledAccount,openItem,partner,thirdPartyReturn', v;
   assert (select key from erp.concepts_for_account('47500001') limit 1) = 'settlement', 'la 4750 gana a la 47x';
   assert (select count(*) from erp.concepts_for_account('62300001')) = 0, 'la 623 no tiene concepto (todavía)';
   raise notice 'OK  · la 41000001 → tercero, partida abierta, antigüedad y cuenta controlada';

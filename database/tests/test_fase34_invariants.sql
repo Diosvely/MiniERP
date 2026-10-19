@@ -217,6 +217,14 @@ begin
     begin perform erp.post_depreciation(e, '2026-12-31');
     exception when others then if sqlerrm not like 'Nothing to depreciate%' then raise; end if; end;
     perform erp.post_tax_settlement(e, impuesto, 2026, 4);
+    -- v0.39.0 · los modelos: el anual es la suma de los cuatro trimestres y cada trimestre coincide con su liquidación
+    assert (select amount from erp.tax_form_boxes(e, 2026) where box = case impuesto when 'VAT' then '65' else '95' end)
+         = (select sum(b.amount) from generate_series(1, 4) q, erp.tax_form_boxes(e, 2026, q) b where b.box = case impuesto when 'VAT' then '46' else '41' end),
+           'resumen anual = suma de los trimestres';
+    assert (select status from erp.run_audit_checks(e, 2026) where code = 'tax_forms_settlements') = 'ok',
+           (select details::text from erp.run_audit_checks(e, 2026) where code = 'tax_forms_settlements');
+    perform count(*) from erp.form_347(e, 2026);
+    perform count(*) from generate_series(1, 4) q, erp.form_349(e, 2026, q);
     -- v0.36.0 · Ajustes de cierre al 31/12: las cuatro periodificaciones y deterioros (individuales y global)
     perform erp.create_accrual(jsonb_build_object('company_id', e, 'kind', 'prepaid_expense', 'description', 'Seguro al azar',
       'pl_account_no', '62200001', 'cutoff_date', '2026-12-31', 'total_amount', public.azar(600, 3000),

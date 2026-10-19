@@ -63,6 +63,43 @@ export const SOURCES = {
     es: { title: 'Real Decreto 1624/1992, Reglamento del IVA', ref: 'Arts. 78 a 81: declaración recapitulativa de operaciones intracomunitarias (modelo 349)' },
     en: { title: 'Royal Decree 1624/1992, VAT Regulation', ref: 'Arts. 78 to 81: EC sales list (form 349)' },
   },
+  // v0.40.0 · las de los supuestos prácticos
+  pgc: {
+    issuer: 'BOE', checked: '2026-10-19',
+    url: 'https://www.boe.es/eli/es/rd/2007/11/16/1514/con',
+    es: { title: 'Real Decreto 1514/2007, Plan General de Contabilidad', ref: 'Marco conceptual (devengo), normas de registro y valoración y cuadro de cuentas' },
+    en: { title: 'Royal Decree 1514/2007, Spanish chart of accounts (PGC)', ref: 'Conceptual framework (accrual), recognition and measurement rules and chart of accounts' },
+  },
+  lis: {
+    issuer: 'BOE', checked: '2026-10-19',
+    url: 'https://www.boe.es/eli/es/l/2014/11/27/27/con',
+    es: { title: 'Ley 27/2014, del Impuesto sobre Sociedades', ref: 'Arts. 12 (amortizaciones) y 13 (deterioros y provisiones)' },
+    en: { title: 'Law 27/2014 on Corporate Income Tax', ref: 'Arts. 12 (depreciation) and 13 (impairments and provisions)' },
+  },
+  lirpf: {
+    issuer: 'BOE', checked: '2026-10-19',
+    url: 'https://www.boe.es/eli/es/l/2006/11/28/35/con',
+    es: { title: 'Ley 35/2006, del Impuesto sobre la Renta de las Personas Físicas', ref: 'Arts. 99 a 101: retenciones e ingresos a cuenta' },
+    en: { title: 'Law 35/2006 on Personal Income Tax', ref: 'Arts. 99 to 101: withholdings and payments on account' },
+  },
+  rirpf: {
+    issuer: 'BOE', checked: '2026-10-19',
+    url: 'https://www.boe.es/eli/es/rd/2007/03/30/439/con',
+    es: { title: 'Real Decreto 439/2007, Reglamento del IRPF', ref: 'Arts. 80 a 101: retenciones del trabajo (art. 82) y de profesionales (art. 95, 15 %)' },
+    en: { title: 'Royal Decree 439/2007, Personal Income Tax Regulation', ref: 'Arts. 80 to 101: payroll (art. 82) and professional (art. 95, 15 %) withholdings' },
+  },
+  lgss: {
+    issuer: 'BOE', checked: '2026-10-19',
+    url: 'https://www.boe.es/eli/es/rdlg/2015/10/30/8/con',
+    es: { title: 'Real Decreto Legislativo 8/2015, Ley General de la Seguridad Social', ref: 'Art. 147: base de cotización (con la prorrata de las pagas extra)' },
+    en: { title: 'Royal Legislative Decree 8/2015, General Social Security Law', ref: 'Art. 147: contribution base (with prorated extra payments)' },
+  },
+  cotizacion2026: {
+    issuer: 'BOE', checked: '2026-10-18',
+    url: 'https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-7296',
+    es: { title: 'Orden PJC/297/2026, de cotización a la Seguridad Social para 2026', ref: 'Tipos de cotización, base máxima (5.101,20 €) y cotización de solidaridad' },
+    en: { title: 'Order PJC/297/2026 on Social Security contributions for 2026', ref: 'Contribution rates, maximum base (€5,101.20) and solidarity contribution' },
+  },
 }
 
 // Fuentes de cada modelo (las que salen en su botón 📘)

@@ -1,6 +1,6 @@
 # Funciones del esquema erp (versión vigente)
 
-Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0053`.
+Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0055`.
 No se edita a mano: el código fuente son las migraciones. Esto es para **estudiar** cada función en su forma
 actual sin rastrear sus redefiniciones.
 
@@ -9,7 +9,7 @@ actual sin rastrear sus redefiniciones.
 - **Tipo:** *invoker* (se ejecuta con los permisos de quien llama: manda la RLS), *security definer* (con los del
   dueño: comprueba ella misma los permisos) o *trigger*.
 
-216 funciones.
+219 funciones.
 
 | Función | Versiones | Vigente en | Tipo |
 |---|---|---|---|
@@ -101,6 +101,7 @@ actual sin rastrear sus redefiniciones.
 | [`fs_line_accounts`](fs_line_accounts.sql) | 1 | 0016_financial_statements | invoker |
 | [`general_ledger`](general_ledger.sql) | 1 | 0029_performance | invoker |
 | [`global_impairment_calc`](global_impairment_calc.sql) | 1 | 0043_year_end_adjustments | invoker |
+| [`grade_exercise`](grade_exercise.sql) | 1 | 0054_operations_exercises | invoker |
 | [`grant_company_access`](grant_company_access.sql) | 1 | 0027_members | security definer |
 | [`home_kpis`](home_kpis.sql) | 1 | 0031_home_kpis | security definer |
 | [`impair_asset`](impair_asset.sql) | 1 | 0046_asset_impairment | security definer |
@@ -135,6 +136,7 @@ actual sin rastrear sus redefiniciones.
 | [`next_subaccount_no`](next_subaccount_no.sql) | 1 | 0025_entry_tutor | invoker |
 | [`normalize_tax_id`](normalize_tax_id.sql) | 1 | 0009_partners | invoker |
 | [`open_items`](open_items.sql) | 1 | 0035_payments | invoker |
+| [`operation_for_lines`](operation_for_lines.sql) | 1 | 0054_operations_exercises | invoker |
 | [`partner_control_account`](partner_control_account.sql) | 1 | 0009_partners | invoker |
 | [`pay_payroll`](pay_payroll.sql) | 1 | 0049_payroll | security definer |
 | [`payslip_calc`](payslip_calc.sql) | 1 | 0049_payroll | invoker |
@@ -177,6 +179,7 @@ actual sin rastrear sus redefiniciones.
 | [`setup_taxes`](setup_taxes.sql) | 1 | 0010_tax_setup | invoker |
 | [`setup_withholdings`](setup_withholdings.sql) | 1 | 0018_withholding_exempt | invoker |
 | [`special_tax_account`](special_tax_account.sql) | 1 | 0019_reverse_charge_surcharge | invoker |
+| [`submit_exercise`](submit_exercise.sql) | 2 | 0055_practice_integration | security definer |
 | [`tax_form_boxes`](tax_form_boxes.sql) | 1 | 0051_tax_forms | invoker |
 | [`tax_form_lines`](tax_form_lines.sql) | 1 | 0051_tax_forms | invoker |
 | [`tax_rate_text`](tax_rate_text.sql) | 1 | 0010_tax_setup | invoker |

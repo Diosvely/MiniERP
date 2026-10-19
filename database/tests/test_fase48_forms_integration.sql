@@ -75,7 +75,7 @@ begin
   raise notice 'OK  · 347: el cliente sin NIF (4.840) se avisa';
 
   -- ---------- 3. Base documental ----------
-  assert (select count(*) from erp.sources) = 10, 'diez fuentes';
+  assert (select count(*) from erp.sources) >= 10, 'las diez fuentes de la v0.39.0 (la base documental crece versión a versión)';
   assert not exists (select 1 from erp.audit_checks c, unnest(c.sources) k where not exists (select 1 from erp.sources s where s.key = k)),
          'las comprobaciones citan fuentes que existen';
   assert (select sources from erp.audit_checks where code = 'tax_forms_settlements') = '{aeat303,atc420}';

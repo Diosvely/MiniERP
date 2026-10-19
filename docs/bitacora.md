@@ -1120,3 +1120,36 @@ de más de 3.005,06 €), 349 (operaciones intracomunitarias, solo con IVA) y la
 
 **Siguiente paso:** v0.40.0 · Catálogo de operaciones y supuestos autocorregidos: dónde se registra cada operación y su
 asiento modelo; el alumno hace el asiento y el ERP lo corrige, con la norma citada en la base documental.
+
+## 2026-10-19 · v0.40.0 · Catálogo de operaciones, supuestos autocorregidos y evaluación de la IA
+
+**Qué se hizo**
+- **Catálogo de operaciones y 14 supuestos** con su corrección en la base de datos (0054).
+- **Evaluar la IA** y glosario (0055).
+- **Web:** pantalla Practicar, «Dónde se registra» en el Tutor y «Evaluar la IA».
+- **Diagnóstico de Supabase:** una consulta que dice qué le falta a la base de datos real.
+- **Pruebas:** 50 SQL y 148 tests de la web.
+
+**Lo que se aprende**
+- **En un ERP casi nada se registra con un asiento manual.** La factura de un proveedor va en Facturas y el ERP elige
+  las cuentas: 600 / 472 a 400. En Business Central lo deciden los *posting groups*; en SAP, la determinación de
+  cuentas (OBYC). El asiento manual queda para lo que no tiene módulo, como un gasto bancario.
+- **Lo que se aprende es la cuenta del PGC, no la subcuenta.** `600` y `60000001` son la misma respuesta.
+- **Los errores frecuentes tienen nombre:**
+  - el IVA soportado al Haber (es un derecho, va al Debe);
+  - la 410 para un proveedor de mercaderías (es la 400);
+  - la 485 para un gasto pagado por adelantado (es la 480);
+  - la 5293 para un litigio que durará dos años (es la 142, a largo plazo);
+  - un cobro que se registra como venta (la venta ya entró con la factura).
+- **La variación de existencias no se hace por el neto.** Se da de baja la inicial (610 / 300 por 8.000) y de alta la
+  final (300 / 610 por 6.000). Un único 610 / 300 por 2.000 deja la cifra bien, pero el asiento mal: nota 0.
+- **Para medir una IA hacen falta casos con solución conocida y la misma regla que para una persona.** Un supuesto de
+  IGIC en una empresa de la Península saldría mal por el territorio, no por la contabilidad, así que no se evalúa.
+- **Una base de datos de verdad puede no coincidir con el repositorio.** En Supabase faltaban la 0039, la 0040 y la
+  0042. Repetirlas habría estropeado funciones que se cambiaron después. Lo correcto es diagnosticar, poner solo lo
+  que falta en su versión vigente, y que cada migración nueva se proteja de lo que puede faltar.
+
+**Decisiones:** ADR 0038 · Catálogo de operaciones, supuestos autocorregidos y evaluación de la IA.
+
+**Siguiente paso:** v0.41.0 · Contabilidad analítica: dimensiones por línea de asiento (centro de coste, proyecto,
+línea de negocio), reparto de indirectos y la comprobación analítico = contable.

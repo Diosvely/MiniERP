@@ -74,3 +74,39 @@ export function extraLines(result) {
 
 // Las 4 situaciones de una línea esperada tras corregir (las calcula erp.grade_exercise)
 export const LINE_STATUS = { ok: '✓', amount: '≈', side: '⇄', missing: '✕' }
+
+// EVALUAR LA IA (v0.40.0 · 0055) ----------------------------------------------------------------------------------
+// ¿Se puede resolver este supuesto en esa empresa? El Tutor pone el impuesto de la empresa (IVA en la Península,
+// IGIC en Canarias): un supuesto de IGIC en una empresa con IVA saldría mal por culpa del territorio, no de la IA.
+export function fitsCompany(exercise, company) {
+  if (!exercise.tax_type || !company) return true
+  return (exercise.tax_type === 'IGIC') === (company.tax_territory === 'canary_islands')
+}
+
+// Las líneas del asiento que propuso el Tutor (validation.lines), como respuesta de un supuesto
+export const tutorAnswer = (validation) => (validation?.lines ?? [])
+  .map((l) => ({ account_no: String(l.account_no ?? ''), debit: Number(l.debit) || 0, credit: Number(l.credit) || 0 }))
+
+// Errores del Tutor que paran la evaluación (no tiene sentido seguir: no quedan consultas o no hay permiso)
+export const STOP_ERRORS = ['ai_user_limit', 'ai_quota', 'context_denied', 'not_signed_in', 'ai_not_configured', 'supabase_not_configured', 'db_not_updated']
+
+// Resumen: supuestos evaluados, los que resolvió la IA y, de esos mismos, los que resolviste tú; modelos usados
+export function aiSummary(progress = []) {
+  const done = progress.filter((r) => r.ai_score != null)
+  return {
+    evaluated: done.length,
+    aiSolved: done.filter((r) => r.ai_ok).length,
+    userSolved: done.filter((r) => r.solved).length,
+    aiAvg: done.length ? Math.round(done.reduce((s, r) => s + Number(r.ai_score), 0) / done.length) : 0,
+    models: [...new Set(done.map((r) => r.ai_model).filter(Boolean))],
+  }
+}
+
+// Cola de la evaluación: los de esta empresa, primero los que la IA aún no ha hecho (así, con poca cuota diaria,
+// se completa en varios días) y, si hay límite, solo los que alcanzan
+export function aiQueue(exercises, progress = [], company, remaining = null) {
+  const done = new Set(progress.filter((r) => r.ai_score != null).map((r) => r.key))
+  const fit = exercises.filter((x) => fitsCompany(x, company)).sort((a, b) => a.sort - b.sort)
+  const queue = [...fit.filter((x) => !done.has(x.key)), ...fit.filter((x) => done.has(x.key))]
+  return { fit: fit.length, queue: remaining == null ? queue : queue.slice(0, remaining) }
+}

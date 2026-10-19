@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import fs from 'node:fs'
 import { fileURLToPath } from 'node:url'
-import { answerLines, answerTotals, exerciseState, extraLines, groupByLevel, nextExercise, parseAmount, progressSummary } from '../src/practice'
+import { STOP_ERRORS, aiQueue, aiSummary, answerLines, answerTotals, exerciseState, extraLines, fitsCompany, groupByLevel, nextExercise, parseAmount, progressSummary, tutorAnswer } from '../src/practice'
 import { SOURCES } from '../src/sources'
 import { GLOSSARY } from '../src/glossary'
 import es from '../src/i18n/es.js'
@@ -87,5 +87,37 @@ describe('practicar · datos de la migración 0054', () => {
     const exConcepts = [...exercisesSql.matchAll(/, '([A-Za-z]+)'\)[,\r\n]/g)].map((m) => m[1])
     expect(exConcepts.length).toBe(14)
     for (const c of [...concepts, ...exConcepts]) expect(GLOSSARY[c], c).toBeDefined()
+  })
+})
+
+describe('evaluar la IA', () => {
+  it('un supuesto de IGIC solo en una empresa de Canarias, uno de IVA fuera; los demás en cualquiera', () => {
+    const canarias = { tax_territory: 'canary_islands' }, peninsula = { tax_territory: 'mainland' }
+    expect([fitsCompany({ tax_type: 'IGIC' }, canarias), fitsCompany({ tax_type: 'IGIC' }, peninsula)]).toEqual([true, false])
+    expect([fitsCompany({ tax_type: 'VAT' }, canarias), fitsCompany({ tax_type: 'VAT' }, peninsula)]).toEqual([false, true])
+    expect([fitsCompany({ tax_type: null }, canarias), fitsCompany({ tax_type: null }, undefined)]).toEqual([true, true])
+  })
+  it('el asiento del Tutor como respuesta', () => {
+    expect(tutorAnswer({ lines: [{ line_no: 1, account_no: '60000001', account_name: 'Compras', debit: 2000, credit: 0, description: 'x' },
+      { line_no: 2, account_no: '40000001', debit: '0', credit: '2000' }] }))
+      .toEqual([{ account_no: '60000001', debit: 2000, credit: 0 }, { account_no: '40000001', debit: 0, credit: 2000 }])
+    expect(tutorAnswer(undefined)).toEqual([])
+  })
+  it('resumen: evaluados, resueltos por la IA y por ti, nota media y modelos', () => {
+    const p = [{ ai_score: 100, ai_ok: true, solved: true, ai_model: '@cf/a' }, { ai_score: 50, ai_ok: false, solved: false, ai_model: '@cf/a' },
+      { ai_score: 0, ai_ok: false, solved: true, ai_model: '@cf/b' }, { ai_score: null, solved: true }]
+    expect(aiSummary(p)).toEqual({ evaluated: 3, aiSolved: 1, userSolved: 2, aiAvg: 50, models: ['@cf/a', '@cf/b'] })
+    expect(aiSummary([])).toEqual({ evaluated: 0, aiSolved: 0, userSolved: 0, aiAvg: 0, models: [] })
+  })
+  it('cola: los de esta empresa, primero los que la IA no ha hecho y solo los que alcanzan con la cuota', () => {
+    const ex = [{ key: 'a', sort: 1, tax_type: 'VAT' }, { key: 'b', sort: 2, tax_type: 'IGIC' }, { key: 'c', sort: 3 }, { key: 'd', sort: 4 }]
+    const pr = [{ key: 'a', ai_score: 100 }, { key: 'c', ai_score: null }]
+    const k = (r) => `${r.fit}:${r.queue.map((x) => x.key).join(',')}`
+    expect(k(aiQueue(ex, pr, { tax_territory: 'mainland' }))).toBe('3:c,d,a')
+    expect(k(aiQueue(ex, pr, { tax_territory: 'mainland' }, 2))).toBe('3:c,d')
+    expect(k(aiQueue(ex, pr, { tax_territory: 'canary_islands' }, 0))).toBe('3:')
+  })
+  it('los errores que paran la evaluación tienen su texto', () => {
+    for (const k of STOP_ERRORS) expect(es.aiError[k], k).toBeTruthy()
   })
 })

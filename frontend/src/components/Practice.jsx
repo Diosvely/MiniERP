@@ -11,6 +11,7 @@ import Term from './Term'
 import Sources from './Sources'
 import ErrorBox from './ErrorBox'
 import Loading from './Loading'
+import AiEvaluation from './AiEvaluation'
 
 // PRACTICAR (#/practicar · v0.40.0): supuestos prácticos autocorregidos, como los de un manual de contabilidad.
 //   · #/practicar          → la lista, por nivel, con tu progreso (resueltos, intentos, mejor nota)
@@ -46,17 +47,17 @@ export default function Practice({ exerciseKey }) {
         <button type="button" className="secundario" onClick={() => (exerciseKey ? navigate('/practicar') : window.history.back())}>
           ← {exerciseKey ? t('pr.backList') : t('glossaryBack')}
         </button>
-        <h2><GraduationCap {...ICON} /> {t('practice')}</h2>
+        <h2><GraduationCap {...ICON} /> <Term id="exercise">{t('practice')}</Term></h2>
       </div>
       <ErrorBox error={error} />
       {data === null ? <Loading /> : exercise
         ? <Exercise key={exercise.key} exercise={exercise} data={data} onSubmitted={() => setReload((r) => r + 1)} />
-        : <ExerciseList data={data} missing={Boolean(exerciseKey)} />}
+        : <ExerciseList data={data} missing={Boolean(exerciseKey)} onReload={() => setReload((r) => r + 1)} />}
     </section>
   )
 }
 
-function ExerciseList({ data, missing }) {
+function ExerciseList({ data, missing, onReload }) {
   const { t, language } = useI18n()
   const s = progressSummary(data.progress)
   const tr = (x, f) => (language === 'en' ? x[`${f}_en`] || x[f] : x[f])
@@ -93,6 +94,7 @@ function ExerciseList({ data, missing }) {
           </ul>
         </div>
       ))}
+      {data.exercises.length > 0 && <AiEvaluation exercises={data.exercises} progress={data.progress} onDone={onReload} />}
     </>
   )
 }
@@ -140,6 +142,10 @@ function Exercise({ exercise: x, data, onSubmitted }) {
         {x.concept && <>{t('pr.concept')}: <Term id={x.concept} /> · </>}
         {t('pr.howTo')}
       </p>
+      {progress?.ai_score != null && (
+        <p className="ayuda">🤖 {t('pr.ai.oneCase').replace('{p}', progress.ai_score).replace('{r}', t(progress.ai_ok ? 'pr.ai.right' : 'pr.ai.wrong'))
+          .replace('{m}', String(progress.ai_model ?? '').replace(/^@cf\//, ''))}</p>
+      )}
       {progress && Number(progress.attempts) > 0 && (
         <p className="ayuda">{t(progress.solved ? 'pr.alreadySolved' : 'pr.triedBefore').replace('{n}', progress.attempts).replace('{p}', progress.best_score)}</p>
       )}
@@ -205,7 +211,7 @@ function Exercise({ exercise: x, data, onSubmitted }) {
           <p>{tr(x, 'explanation')}</p>
           {op && (
             <p className="donde-registra">
-              📍 {t('pr.where')}: <strong>{tr(op, 'title')}</strong> → {t('pr.screen')} «{screen}»
+              📍 <Term id="operationCatalog">{t('pr.where')}</Term>: <strong>{tr(op, 'title')}</strong> → {t('pr.screen')} «{screen}»
               <small>{tr(op, 'entry')}</small>
             </p>
           )}

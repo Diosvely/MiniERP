@@ -840,3 +840,9 @@ table.casillas tr.total td { font-weight: 700; border-top: 1px solid var(--borde
 .practicar .etiqueta { color: var(--texto); background: color-mix(in srgb, var(--primario) 12%, transparent); }
 .lista-supuestos li { border: 0; padding: 0; margin: 0; }
 .lista-supuestos .titulo-supuesto { color: var(--texto); font-size: 1rem; }
+.evaluar-ia { margin-top: 20px; padding-top: 12px; border-top: 1px solid var(--borde); }
+.evaluar-ia h3 { margin: 0 0 4px; font-size: 1rem; }
+.fila-evaluar { flex-wrap: wrap; align-items: flex-end; }
+.fila-evaluar label { flex: 1 1 16rem; }
+.resumen-ia-evaluacion { font-weight: 600; }
+.evaluar-ia td.num { white-space: nowrap; }

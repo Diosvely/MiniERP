@@ -171,8 +171,11 @@ function Exercise({ exercise: x, data, onSubmitted }) {
             <strong>{t('total')}</strong>
             <span className="num">{m(totals.debit)}</span>
             <span className="num">{m(totals.credit)}</span>
-            <span aria-live="polite">{totals.debit || totals.credit ? (totals.balanced ? '✓' : `≠ ${m(Math.abs(totals.debit - totals.credit))}`) : ''}</span>
+            <span aria-hidden="true">{totals.debit || totals.credit ? (totals.balanced ? '✓' : '≠') : ''}</span>
           </div>
+          <p className="ayuda cuadre-respuesta" aria-live="polite">
+            {(totals.debit || totals.credit) && !totals.balanced ? `≠ ${t('pr.difference').replace('{m}', m(Math.abs(totals.debit - totals.credit)))}` : ''}
+          </p>
         </div>
         <div className="fila">
           <button type="button" className="secundario" onClick={() => setLines([...lines, emptyLine()])}>+ {t('pr.addLine')}</button>

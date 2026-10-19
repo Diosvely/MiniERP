@@ -1163,6 +1163,7 @@ export default {
     alreadySolved: 'Ya lo resolviste (intentos: {n}). Puedes repetirlo.',
     answer: 'Tu asiento',
     addLine: 'Añadir línea',
+    difference: 'No cuadra: faltan {m} en un lado',
     grade: 'Corregir', grading: 'Corrigiendo',
     correct: '¡Correcto!', notYet: 'Todavía no',
     score: 'nota {p} %',

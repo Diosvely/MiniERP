@@ -2,6 +2,37 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.40.0] - 2026-10-19
+### Añadido
+- **Catálogo de operaciones y supuestos autocorregidos** (migración `0054_operations_exercises.sql`, prueba
+  `test_fase49_operations_exercises.sql`):
+  - `erp.operations`: 17 operaciones con su pantalla y su asiento modelo; `erp.operation_for_lines` dice a qué
+    operación se parece un asiento;
+  - `erp.exercises`: 14 supuestos (5 básicos, 6 intermedios, 3 avanzados) con el asiento esperado, la explicación,
+    los errores frecuentes, el concepto del glosario y sus fuentes;
+  - `erp.grade_exercise`: corrige línea a línea por grupo o subgrupo del PGC, lado e importe, con alternativas y
+    errores frecuentes;
+  - `erp.submit_exercise` y `erp.v_exercise_progress`: intentos y progreso de cada usuario;
+  - seis fuentes nuevas en la base documental: PGC, LIS, LIRPF, RIRPF, LGSS y la Orden de cotización 2026.
+- **Evaluar la IA** (migración `0055_practice_integration.sql`, prueba `test_fase50_practice_integration.sql`):
+  - los intentos de la IA guardan el modelo que contestó;
+  - el progreso enseña su último intento;
+  - glosario: «Supuesto práctico» y «Catálogo de operaciones».
+- **Web:**
+  - pantalla **Practicar** (🎓): supuestos por nivel, corrección línea a línea, solución, 📘 y «dónde se registra»;
+  - «Evaluar la IA»;
+  - «📍 Dónde se registra» en el Tutor de asientos;
+  - 148 tests en total.
+- **Diagnóstico de Supabase:** `scripts/generar-diagnostico.sh` genera `database/diagnostico-supabase.sql`, una
+  consulta de solo lectura que dice qué le falta o sobra a una base de datos frente al repositorio.
+### Cambiado
+- La 0054 repone el glosario completo antes de usarlo: una base de datos a la que le faltaban conceptos de migraciones
+  antiguas ya no falla.
+- El test del glosario solo lee las filas de `insert into erp.concepts`.
+- La prueba de conceptos (fase 32) cuenta 54 términos.
+### Corregido
+- Practicar: el aviso «No cuadra» va debajo del total y ya no se sale de la línea.
+
 ## [0.39.0] - 2026-10-19
 ### Añadido
 - **Casillas de los modelos** (migración `0051_tax_forms.sql`, prueba `test_fase46_tax_forms.sql`):

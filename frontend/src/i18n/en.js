@@ -1164,6 +1164,7 @@ export default {
     alreadySolved: 'You already solved it (attempts: {n}). You can do it again.',
     answer: 'Your entry',
     addLine: 'Add line',
+    difference: 'It does not balance: {m} missing on one side',
     grade: 'Grade', grading: 'Grading',
     correct: 'Correct!', notYet: 'Not yet',
     score: 'score {p} %',

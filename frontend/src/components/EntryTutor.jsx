@@ -3,6 +3,8 @@ import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import AiFeedback from './AiFeedback'
 import { money } from '../format'
+import { companyPath } from '../router'
+import Link from './Link'
 import ErrorBox from './ErrorBox'
 
 // Tutor de asientos con IA: describes la operación, la IA propone el asiento, el ERP lo comprueba y tú decides.
@@ -16,6 +18,7 @@ export default function EntryTutor({ company, onLoad }) {
   const [busy, setBusy] = useState(false)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [where, setWhere] = useState(null)   // v0.40.0: la operación del catálogo (erp.operations) a la que se parece el asiento
 
   const [status, setStatus] = useState(null)   // { allowed, used, limit } · limit null = sin límite (el owner)
   // ¿Puede usar la IA en ESTA empresa? El owner, o el titular de los datos (Miembro) con su cuota diaria
@@ -28,7 +31,7 @@ export default function EntryTutor({ company, onLoad }) {
   const m = (v) => money(v, language)
 
   async function propose() {
-    setBusy(true); setError(''); setResult(null)
+    setBusy(true); setError(''); setResult(null); setWhere(null)
     try {
       const { data: { session } } = await supabase.auth.getSession()
       const res = await fetch('/api/tutor', {
@@ -42,6 +45,10 @@ export default function EntryTutor({ company, onLoad }) {
       const body = await res.json()
       if (!res.ok) throw new Error(t(`aiError.${body.error}`) + (body.detail ? ` (${body.detail})` : ''))
       setResult(body)
+      // ¿Dónde se registra en el ERP? (si la base de datos aún no tiene el catálogo, no se enseña)
+      const lines = body.validation?.lines ?? []
+      supabase.rpc('operation_for_lines', { p_lines: lines.map((l) => ({ account_no: l.account_no, debit: l.debit, credit: l.credit })) })
+        .then(({ data }) => setWhere(Array.isArray(data) ? data[0] ?? null : null))
     } catch (e) {
       setError(e.message)
     } finally {
@@ -140,6 +147,14 @@ export default function EntryTutor({ company, onLoad }) {
                 ))}
               </ul>
             </>
+          )}
+          {where && (
+            <p className="donde-registra">
+              📍 {t('tutorWhere')}: <strong>{language === 'en' ? where.title_en || where.title : where.title}</strong>
+              {where.screen !== 'entry' && (<> → <Link to={companyPath(company.id, where.screen)} className="enlace">
+                {t(`nav.${where.screen}.label`).replace('{tax}', company.tax_territory === 'canary_islands' ? 'IGIC' : 'IVA').replace('{form}', company.tax_territory === 'canary_islands' ? '420' : '303')}</Link></>)}
+              <small>{t(where.screen === 'entry' ? 'tutorWhereHere' : 'tutorWhereScreen')}</small>
+            </p>
           )}
           {result.rounds === 2 && <p className="ayuda">↻ {t('tutorSecondRound')}</p>}
 

@@ -97,6 +97,12 @@ language sql stable as $$
   where pr.company_id = p_company and pr.tax_type = p_tax_type and je.posting_date between p_from and p_to;
 $$;
 
+-- Tipo en texto: 5,2 (español) · 5.2 (inglés), sin ceros sobrantes (7.00 → 7)
+create or replace function erp.pct_text(p numeric, p_lang text default 'es')
+returns text language sql immutable as $$
+  select case p_lang when 'en' then trim_scale(p)::text else replace(trim_scale(p)::text, '.', ',') end;
+$$;
+
 -- fila de una casilla (la función de abajo las va juntando)
 create or replace function erp.tf_row(p_sort int, p_section text, p_box text, p_concept text, p_concept_en text, p_kind text, p_amount numeric)
 returns jsonb language sql immutable as $$
@@ -140,9 +146,9 @@ begin
       if r.rate = 0 and v_x = 0 then continue; end if;
       v_n := v_n + 1;
       if v_form = '303' then
-        v_out := v_out || jsonb_build_array(erp.tf_row(v_n * 10, 'devengado', r.b303, 'Régimen general al ' || r.rate || ' %: base imponible', 'General regime at ' || r.rate || ' %: tax base', 'base', v_x), erp.tf_row(v_n * 10 + 1, 'devengado', r.t303, 'Tipo', 'Rate', 'rate', r.rate), erp.tf_row(v_n * 10 + 2, 'devengado', r.q303, 'Cuota', 'Tax', 'quota', v_y));
+        v_out := v_out || jsonb_build_array(erp.tf_row(v_n * 10, 'devengado', r.b303, 'Régimen general al ' || erp.pct_text(r.rate, 'es') || ' %: base imponible', 'General regime at ' || erp.pct_text(r.rate, 'en') || ' %: tax base', 'base', v_x), erp.tf_row(v_n * 10 + 1, 'devengado', r.t303, 'Tipo', 'Rate', 'rate', r.rate), erp.tf_row(v_n * 10 + 2, 'devengado', r.q303, 'Cuota', 'Tax', 'quota', v_y));
       else
-        v_out := v_out || jsonb_build_array(erp.tf_row(v_n * 10, 'devengado', r.b390, 'Régimen ordinario al ' || r.rate || ' %: base imponible', 'Ordinary regime at ' || r.rate || ' %: tax base', 'base', v_x), erp.tf_row(v_n * 10 + 2, 'devengado', r.q390, 'Cuota', 'Tax', 'quota', v_y));
+        v_out := v_out || jsonb_build_array(erp.tf_row(v_n * 10, 'devengado', r.b390, 'Régimen ordinario al ' || erp.pct_text(r.rate, 'es') || ' %: base imponible', 'Ordinary regime at ' || erp.pct_text(r.rate, 'en') || ' %: tax base', 'base', v_x), erp.tf_row(v_n * 10 + 2, 'devengado', r.q390, 'Cuota', 'Tax', 'quota', v_y));
       end if;
     end loop;
     -- adquisiciones intracomunitarias e inversión del sujeto pasivo
@@ -159,12 +165,12 @@ begin
         select coalesce(sum(base) filter (where kind = 'out_aib_goods'), 0), coalesce(sum(quota) filter (where kind = 'out_aib_goods'), 0)
           into v_x, v_y from jsonb_to_recordset(v_l) as tf_lines(kind text, rate numeric, base numeric, quota numeric) where rate = r.rate;
         if v_x <> 0 or v_y <> 0 then
-          v_out := v_out || jsonb_build_array(erp.tf_row(110 + r.rate::int, 'devengado', r.bg, 'Adquisiciones intracomunitarias de bienes al ' || r.rate || ' %: base', 'Intra-EU acquisitions of goods at ' || r.rate || ' %: base', 'base', v_x), erp.tf_row(110 + r.rate::int, 'devengado', r.qg, 'Cuota', 'Tax', 'quota', v_y));
+          v_out := v_out || jsonb_build_array(erp.tf_row(110 + r.rate::int, 'devengado', r.bg, 'Adquisiciones intracomunitarias de bienes al ' || erp.pct_text(r.rate, 'es') || ' %: base', 'Intra-EU acquisitions of goods at ' || erp.pct_text(r.rate, 'en') || ' %: base', 'base', v_x), erp.tf_row(110 + r.rate::int, 'devengado', r.qg, 'Cuota', 'Tax', 'quota', v_y));
         end if;
         select coalesce(sum(base) filter (where kind = 'out_aib_serv'), 0), coalesce(sum(quota) filter (where kind = 'out_aib_serv'), 0)
           into v_x, v_y from jsonb_to_recordset(v_l) as tf_lines(kind text, rate numeric, base numeric, quota numeric) where rate = r.rate;
         if v_x <> 0 or v_y <> 0 then
-          v_out := v_out || jsonb_build_array(erp.tf_row(140 + r.rate::int, 'devengado', r.bs, 'Adquisiciones intracomunitarias de servicios al ' || r.rate || ' %: base', 'Intra-EU acquisitions of services at ' || r.rate || ' %: base', 'base', v_x), erp.tf_row(140 + r.rate::int, 'devengado', r.qs, 'Cuota', 'Tax', 'quota', v_y));
+          v_out := v_out || jsonb_build_array(erp.tf_row(140 + r.rate::int, 'devengado', r.bs, 'Adquisiciones intracomunitarias de servicios al ' || erp.pct_text(r.rate, 'es') || ' %: base', 'Intra-EU acquisitions of services at ' || erp.pct_text(r.rate, 'en') || ' %: base', 'base', v_x), erp.tf_row(140 + r.rate::int, 'devengado', r.qs, 'Cuota', 'Tax', 'quota', v_y));
         end if;
       end loop;
       select coalesce(sum(base), 0), coalesce(sum(quota), 0) into v_x, v_y from jsonb_to_recordset(v_l) as tf_lines(kind text, rate numeric, base numeric, quota numeric) where kind = 'out_isp';
@@ -178,7 +184,7 @@ begin
       select coalesce(sum(base), 0), coalesce(sum(quota), 0) into v_x, v_y from jsonb_to_recordset(v_l) as tf_lines(kind text, rate numeric, base numeric, quota numeric) where kind = 'out_re' and rate = r.rate;
       if v_x = 0 and v_y = 0 then continue; end if;
       v_out := v_out || jsonb_build_array(erp.tf_row(200 + (r.rate * 10)::int, 'devengado', case v_form when '303' then r.b303 else r.b390 end,
-                                 'Recargo de equivalencia al ' || r.rate || ' %: base', 'Equivalence surcharge at ' || r.rate || ' %: base', 'base', v_x), erp.tf_row(201 + (r.rate * 10)::int, 'devengado', case v_form when '303' then r.q303 else r.q390 end, 'Cuota', 'Tax', 'quota', v_y));
+                                 'Recargo de equivalencia al ' || erp.pct_text(r.rate, 'es') || ' %: base', 'Equivalence surcharge at ' || erp.pct_text(r.rate, 'en') || ' %: base', 'base', v_x), erp.tf_row(201 + (r.rate * 10)::int, 'devengado', case v_form when '303' then r.q303 else r.q390 end, 'Cuota', 'Tax', 'quota', v_y));
     end loop;
     select coalesce(sum(base), 0), coalesce(sum(quota), 0) into v_x, v_y from jsonb_to_recordset(v_l) as tf_lines(kind text, rate numeric, base numeric, quota numeric) where kind = 'out_re_mod';
     if v_x <> 0 or v_y <> 0 then
@@ -214,9 +220,9 @@ begin
         if v_x = 0 and v_y = 0 then continue; end if;
         v_out := v_out || jsonb_build_array(erp.tf_row(300 + v_n, 'deducible', r.b, (select case r.k when 'in_cur' then 'Interiores corrientes' when 'in_inv' then 'Interiores, bienes de inversión'
             when 'in_aib_cur' then 'Adquisiciones intracomunitarias de bienes corrientes' when 'in_aib_inv' then 'Adquisiciones intracomunitarias de bienes de inversión'
-            else 'Adquisiciones intracomunitarias de servicios' end) || ' al ' || r.rate || ' %: base',
+            else 'Adquisiciones intracomunitarias de servicios' end) || ' al ' || erp.pct_text(r.rate, 'es') || ' %: base',
             (select case r.k when 'in_cur' then 'Domestic current' when 'in_inv' then 'Domestic capital goods' when 'in_aib_cur' then 'Intra-EU current goods'
-            when 'in_aib_inv' then 'Intra-EU capital goods' else 'Intra-EU services' end) || ' at ' || r.rate || ' %: base', 'base', v_x), erp.tf_row(301 + v_n, 'deducible', r.q, 'Cuota deducible', 'Deductible tax', 'quota', v_y));
+            when 'in_aib_inv' then 'Intra-EU capital goods' else 'Intra-EU services' end) || ' at ' || erp.pct_text(r.rate, 'en') || ' %: base', 'base', v_x), erp.tf_row(301 + v_n, 'deducible', r.q, 'Cuota deducible', 'Deductible tax', 'quota', v_y));
         v_n := v_n + 2;
       end loop;
       for r in select * from (values (360, 'in_cur', '48', '49', 'Total operaciones interiores corrientes', 'Total domestic current purchases'),
@@ -239,7 +245,7 @@ begin
     v_slot := 0;
     for r in select l.rate, sum(l.base) as b, sum(l.quota) as q from jsonb_to_recordset(v_l) as l(kind text, rate numeric, base numeric, quota numeric) where l.kind = 'out_rate' group by l.rate order by l.rate loop
       v_slot := v_slot + 1;
-      v_out := v_out || jsonb_build_array(erp.tf_row(v_slot * 10, 'devengado', case when v_slot <= 6 then lpad((v_slot * 3 - 2)::text, 2, '0') else '—' end, 'Régimen general al ' || r.rate || ' %: base imponible', 'General regime at ' || r.rate || ' %: tax base', 'base', r.b), erp.tf_row(v_slot * 10 + 1, 'devengado', case when v_slot <= 6 then lpad((v_slot * 3 - 1)::text, 2, '0') else '—' end, 'Tipo', 'Rate', 'rate', r.rate), erp.tf_row(v_slot * 10 + 2, 'devengado', case when v_slot <= 6 then lpad((v_slot * 3)::text, 2, '0') else '—' end, 'Cuota', 'Tax', 'quota', r.q));
+      v_out := v_out || jsonb_build_array(erp.tf_row(v_slot * 10, 'devengado', case when v_slot <= 6 then lpad((v_slot * 3 - 2)::text, 2, '0') else '—' end, 'Régimen general al ' || erp.pct_text(r.rate, 'es') || ' %: base imponible', 'General regime at ' || erp.pct_text(r.rate, 'en') || ' %: tax base', 'base', r.b), erp.tf_row(v_slot * 10 + 1, 'devengado', case when v_slot <= 6 then lpad((v_slot * 3 - 1)::text, 2, '0') else '—' end, 'Tipo', 'Rate', 'rate', r.rate), erp.tf_row(v_slot * 10 + 2, 'devengado', case when v_slot <= 6 then lpad((v_slot * 3)::text, 2, '0') else '—' end, 'Cuota', 'Tax', 'quota', r.q));
     end loop;
     if v_annual then
       select coalesce(sum(base), 0) into v_x from jsonb_to_recordset(v_l) as tf_lines(kind text, rate numeric, base numeric, quota numeric) where kind = 'out_rate';
@@ -321,5 +327,5 @@ begin
   order by o.sort, o.box;
 end $$;
 
-revoke execute on function erp.tax_form_lines(uuid, text, date, date), erp.tax_form_boxes(uuid, int, int), erp.tf_row(int, text, text, text, text, text, numeric) from anon, public;
-grant execute on function erp.tax_form_lines(uuid, text, date, date), erp.tax_form_boxes(uuid, int, int), erp.tf_row(int, text, text, text, text, text, numeric) to authenticated;
+revoke execute on function erp.tax_form_lines(uuid, text, date, date), erp.tax_form_boxes(uuid, int, int), erp.tf_row(int, text, text, text, text, text, numeric), erp.pct_text(numeric, text) from anon, public;
+grant execute on function erp.tax_form_lines(uuid, text, date, date), erp.tax_form_boxes(uuid, int, int), erp.tf_row(int, text, text, text, text, text, numeric), erp.pct_text(numeric, text) to authenticated;

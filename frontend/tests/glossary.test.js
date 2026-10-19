@@ -13,9 +13,15 @@ function lastRows() {
   for (const f of fs.readdirSync(dir).filter((x) => x.endsWith('.sql')).sort()) {
     const sql = fs.readFileSync(`${dir}/${f}`, 'utf8')
     if (!sql.includes('erp.concepts')) continue
-    for (const line of sql.split(/\r?\n/)) {   // Windows: las migraciones pueden tener CRLF
+    // Solo las filas de «insert into erp.concepts … values» (otras tablas, como erp.operations, también tienen claves
+    // con el mismo aspecto). Windows: las migraciones pueden tener CRLF
+    let inConcepts = false
+    for (const line of sql.split(/\r?\n/)) {
+      if (/^insert into erp\.concepts\b/i.test(line)) { inConcepts = true; continue }
+      if (!inConcepts) continue
       const m = line.match(/^\('([A-Za-z]+)', \d+, /)
       if (m) rows[m[1]] = line.replace(/,$/, '')
+      else inConcepts = false
     }
   }
   return rows

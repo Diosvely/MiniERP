@@ -28,6 +28,12 @@ const RULES = [
   [/^Only posted entries can be reversed/, 'draftReverse'],
   [/^The reversal date cannot be earlier than the original entry \((.+)\)$/, 'reversalDate'],
   [/^This entry belongs to an invoice/, 'entryFromInvoice', 'invoices'],
+  // v0.41.0 · Impuesto sobre Sociedades
+  [/^This entry belongs to the corporate income tax/, 'entryFromCorporateTax', 'corporate_tax'],
+  [/^The corporate tax of (.+) is already posted/, 'ctPosted', 'corporate_tax'],
+  [/^A later corporate tax is posted/, 'ctLater', 'corporate_tax'],
+  [/^The year (.+) is already closed \(regularization posted\)/, 'ctAfterClosing', 'closing'],
+  [/^No corporate tax rates for (\S+) \((.+)\)/, 'ctNoRates'],
   [/^This entry belongs to a tax settlement/, 'entryFromSettlement', 'settlement'],
   [/^This entry belongs to a year-end closing/, 'entryFromClosing', 'closing'],
   [/^This entry is a pro rata regularization/, 'entryFromProRata', 'prorata'],

@@ -37,6 +37,9 @@ describe('practicar · corrección (la de erp.grade_exercise para la compra con 
   it('lo que sobra no repite la cuenta puesta en el lado contrario', () => {
     expect(extraLines(r)).toEqual([{ account: '629', side: 'debit', amount: 420 }])
     expect(extraLines({ lines: [], extra: [] })).toEqual([])
+    // v0.40.1: una cuenta no válida se enseña siempre, con su motivo
+    const bad = { account: '472x', side: 'credit', amount: 420, reason: 'invalid' }
+    expect(extraLines({ ...r, extra: [...r.extra, bad] })).toEqual([{ account: '629', side: 'debit', amount: 420 }, bad])
     expect(extraLines(null)).toEqual([])
   })
 })
@@ -119,5 +122,8 @@ describe('evaluar la IA', () => {
   })
   it('los errores que paran la evaluación tienen su texto', () => {
     for (const k of STOP_ERRORS) expect(es.aiError[k], k).toBeTruthy()
+  })
+  it('cada motivo de cuenta rechazada que da la base de datos (0056) tiene su texto', () => {
+    for (const k of ['invalid', 'not_in_pgc']) expect(es.pr.reason[k], k).toBeTruthy()
   })
 })

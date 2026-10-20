@@ -2,6 +2,23 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.40.1] - 2026-10-20
+### Corregido
+- **Corrector de supuestos** (migración `0056_grader_fixes.sql`, prueba `test_fase51_grader_fixes.sql`):
+  - una cuenta de la respuesta solo vale si son dígitos y existe en el PGC (o, si es una subcuenta, su cuenta de 3
+    dígitos);
+  - las cuentas de 4 dígitos con otro significado (4009, 4109, 4309, 4409) ya no casan con su cuenta madre, y se
+    explica la diferencia en las pistas;
+  - se aplica igual a la persona y a la IA.
+- **Practicar:** cada cuenta rechazada enseña su motivo («no es una cuenta» o «no existe en el PGC»).
+- **ADR 0023:** se había guardado con el texto del Pull Request; ahora tiene su formato. Los ADR 0017 a 0021 llevan
+  su número en el título.
+### Añadido
+- `erp.pgc_distinct_accounts`, `erp.pgc_account_problem` y `erp.account_matches`.
+- Regla de trabajo: cada arreglo lleva una prueba que falla sin él. Cada ADR, desde el 0039, tiene una sección
+  «Cómo explicarlo».
+- 149 tests en la web.
+
 ## [0.40.0] - 2026-10-19
 ### Añadido
 - **Catálogo de operaciones y supuestos autocorregidos** (migración `0054_operations_exercises.sql`, prueba

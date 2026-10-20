@@ -1175,6 +1175,7 @@ export default {
     },
     altUsed: 'con una cuenta que también vale',
     extra: 'Sobra: {a} en el {s} por {m}',
+    reason: { invalid: 'no es una cuenta: solo lleva números', not_in_pgc: 'esa cuenta no existe en el PGC' },
     unbalanced: 'No cuadra: Debe {d} y Haber {c}',
     tips: 'Errores frecuentes',
     retry: 'Empezar de nuevo',

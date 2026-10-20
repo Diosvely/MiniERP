@@ -1,4 +1,4 @@
-# ADR · Accesos y titulares de los datos (rol Miembro)
+# ADR 0021 · Accesos y titulares de los datos (rol Miembro)
 
 - **Fecha:** 2026-10-10
 - **Versión:** v0.24.0

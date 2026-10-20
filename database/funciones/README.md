@@ -1,6 +1,6 @@
 # Funciones del esquema erp (versión vigente)
 
-Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0055`.
+Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0056`.
 No se edita a mano: el código fuente son las migraciones. Esto es para **estudiar** cada función en su forma
 actual sin rastrear sus redefiniciones.
 
@@ -9,11 +9,12 @@ actual sin rastrear sus redefiniciones.
 - **Tipo:** *invoker* (se ejecuta con los permisos de quien llama: manda la RLS), *security definer* (con los del
   dueño: comprueba ella misma los permisos) o *trigger*.
 
-219 funciones.
+221 funciones.
 
 | Función | Versiones | Vigente en | Tipo |
 |---|---|---|---|
 | [`account_balance_in_year`](account_balance_in_year.sql) | 1 | 0047_inventory_closing | invoker |
+| [`account_matches`](account_matches.sql) | 1 | 0056_grader_fixes | invoker |
 | [`accrual_elapsed`](accrual_elapsed.sql) | 1 | 0043_year_end_adjustments | invoker |
 | [`adjust_account`](adjust_account.sql) | 1 | 0043_year_end_adjustments | security definer |
 | [`adjust_finish`](adjust_finish.sql) | 1 | 0043_year_end_adjustments | security definer |
@@ -101,7 +102,7 @@ actual sin rastrear sus redefiniciones.
 | [`fs_line_accounts`](fs_line_accounts.sql) | 1 | 0016_financial_statements | invoker |
 | [`general_ledger`](general_ledger.sql) | 1 | 0029_performance | invoker |
 | [`global_impairment_calc`](global_impairment_calc.sql) | 1 | 0043_year_end_adjustments | invoker |
-| [`grade_exercise`](grade_exercise.sql) | 1 | 0054_operations_exercises | invoker |
+| [`grade_exercise`](grade_exercise.sql) | 2 | 0056_grader_fixes | invoker |
 | [`grant_company_access`](grant_company_access.sql) | 1 | 0027_members | security definer |
 | [`home_kpis`](home_kpis.sql) | 1 | 0031_home_kpis | security definer |
 | [`impair_asset`](impair_asset.sql) | 1 | 0046_asset_impairment | security definer |
@@ -141,6 +142,7 @@ actual sin rastrear sus redefiniciones.
 | [`pay_payroll`](pay_payroll.sql) | 1 | 0049_payroll | security definer |
 | [`payslip_calc`](payslip_calc.sql) | 1 | 0049_payroll | invoker |
 | [`pct_text`](pct_text.sql) | 1 | 0051_tax_forms | invoker |
+| [`pgc_account_problem`](pgc_account_problem.sql) | 1 | 0056_grader_fixes | invoker |
 | [`post_closing_entry`](post_closing_entry.sql) | 1 | 0017_year_closing | invoker |
 | [`post_depreciation`](post_depreciation.sql) | 2 | 0046_asset_impairment | security definer |
 | [`post_entry`](post_entry.sql) | 1 | 0004_journal_entries | invoker |

@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.year_closing_preview · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0017_year_closing 0042_assets_integration 0044_adjustments_integration 0046_asset_impairment 0048_closing_integration   →   la vigente es la de 0048_closing_integration
+-- Definida en: 0017_year_closing 0042_assets_integration 0044_adjustments_integration 0046_asset_impairment 0048_closing_integration 0059_corporate_tax_integration   →   la vigente es la de 0059_corporate_tax_integration
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.year_closing_preview(p_company uuid, p_year integer)
@@ -90,6 +90,24 @@ begin
                     and m.movement_date between v_fy.starting_date and v_fy.ending_date);
   if v_txt is not null then
     v_checks := v_checks || jsonb_build_object('code', 'provisions_not_reviewed', 'severity', 'warning', 'detail', v_txt);
+  end if;
+
+  -- v0.41.0 · Impuesto sobre Sociedades: va antes de la regularización (en modo estricto, sin él no se cierra)
+  if v_fy.status = 'open' and erp.pre_tax_result(p_company, v_fy.id) <> 0
+     and not exists (select 1 from erp.corporate_tax_returns r where r.fiscal_year_id = v_fy.id and r.status = 'posted') then
+    v_checks := v_checks || jsonb_build_object('code', 'corporate_tax_missing',
+      'severity', case when (select control_mode from erp.companies where id = p_company) = 'strict' then 'error' else 'warning' end,
+      'detail', p_year);
+  end if;
+  -- …y después de contabilizarlo, la 473 (retenciones y pagos a cuenta) tiene que quedar a cero
+  if v_fy.status = 'open' and exists (select 1 from erp.corporate_tax_returns r where r.fiscal_year_id = v_fy.id and r.status = 'posted') then
+    select string_agg(g.account_no, ', ') into v_txt from (
+      select g.account_no from erp.journal_lines l join erp.journal_entries e on e.id = l.entry_id join erp.gl_accounts g on g.id = l.gl_account_id
+      where e.company_id = p_company and e.fiscal_year_id = v_fy.id and e.status = 'posted' and e.entry_type not in ('closing_pl', 'closing')
+        and g.account_no like '473%' group by g.account_no having sum(l.debit - l.credit) <> 0) g;
+    if v_txt is not null then
+      v_checks := v_checks || jsonb_build_object('code', 'withholdings_left', 'severity', 'warning', 'detail', v_txt);
+    end if;
   end if;
 
   if not exists (select 1 from erp.gl_accounts where company_id = p_company and account_no = v_res_no) then

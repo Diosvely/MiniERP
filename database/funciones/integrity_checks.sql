@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.integrity_checks · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0040_integrity_checks   →   la vigente es la de 0040_integrity_checks
+-- Definida en: 0040_integrity_checks 0059_corporate_tax_integration   →   la vigente es la de 0059_corporate_tax_integration
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.integrity_checks(p_company uuid, p_year integer)
@@ -142,6 +142,25 @@ begin
   expected := v_a; actual := v_b; detail := jsonb_build_object('cash_change', v_a, 'indirect', v_b, 'direct', v_c);
   title := 'Variación de la tesorería (57) = EFE directo = EFE indirecto';
   title_en := 'Change in cash (57) = direct cash flow = indirect cash flow';
+  return next;
+
+  -- 10) v0.41.0 · Gasto por impuesto en la contabilidad (630) = el de la declaración contabilizada (corriente + diferido)
+  --     Con la regularización, la 129 recibe el resultado antes de impuestos menos ese gasto (invariante 4).
+  select (r.result->>'tax_expense')::numeric into v_c from erp.corporate_tax_returns r
+  where r.fiscal_year_id = v_fy.id and r.status = 'posted';
+  code := 'corporate_tax'; sort := 100;
+  if v_c is null then
+    status := 'n/a'; expected := null; actual := null; detail := null;
+  else
+    select coalesce(sum(l.debit - l.credit), 0) into v_a
+    from erp.journal_lines l join erp.journal_entries e on e.id = l.entry_id join erp.gl_accounts g on g.id = l.gl_account_id
+    where e.company_id = p_company and e.fiscal_year_id = v_fy.id and e.status = 'posted'
+      and e.entry_type not in ('closing_pl', 'closing') and g.account_no like '630%';
+    status := case when v_a = v_c then 'ok' else 'fail' end; expected := v_c; actual := v_a;
+    detail := jsonb_build_object('ledger_630', v_a, 'return_tax_expense', v_c);
+  end if;
+  title := 'Gasto por impuesto (630) = el de la declaración del Impuesto sobre Sociedades';
+  title_en := 'Income tax expense (630) = the corporate income tax return';
   return next;
 end $function$
 ;

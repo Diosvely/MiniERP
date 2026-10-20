@@ -2,6 +2,30 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.41.0] - 2026-10-20
+### Añadido
+- **Impuesto sobre Sociedades** (pantalla en Contabilidad; migraciones `0057_corporate_tax.sql`,
+  `0058_corporate_tax_posting.sql` y `0059_corporate_tax_integration.sql`):
+  - del resultado contable a la cuota diferencial, en el orden del modelo 200;
+  - régimen sugerido por la cifra de negocios del año anterior (general, reducida dimensión, microempresa, nueva
+    creación), con los tipos y tramos por año;
+  - ajustes propuestos con su artículo de la LIS (amortización, deterioros, provisiones) y ajustes manuales;
+  - bases negativas: las más antiguas primero, con el límite del 70 % y el millón (art. 26);
+  - crédito fiscal (4745) opcional, desmarcado por defecto (NRV 13.ª);
+  - dos asientos del módulo, el corriente (6300 / 473 / 4752 o 4709) y el diferido (4740 / 4745 / 6301), que se
+    deshacen desde la pantalla;
+  - vista previa de los asientos, Excel e Imprimir.
+- **Cierre:** el paso 10 del asistente, «Impuesto sobre Sociedades». La vista previa avisa si falta (modo guiado) o no
+  deja cerrar (modo estricto), y avisa si la 473 no queda a cero.
+- **Invariante 10:** gasto por impuesto (630) = el de la declaración.
+- **Cuentas controladas:** la 630 y la 474.
+- **Glosario:** base imponible, diferencia temporaria, impuesto corriente e impuesto diferido.
+- **Fuentes:** la Ley 27/2014 con todos los artículos que se usan.
+- **Practicar:** 16 supuestos (+ impuesto corriente y diferido). Catálogo de operaciones: 18.
+- Pruebas: fases 52, 53 y 54 (54 pruebas SQL) y 159 tests en la web.
+### Corregido
+- El aviso de cuenta controlada de Nóminas mostraba la clave «ctl.module.payroll» en lugar del nombre del módulo.
+
 ## [0.40.1] - 2026-10-20
 ### Corregido
 - **Corrector de supuestos** (migración `0056_grader_fixes.sql`, prueba `test_fase51_grader_fixes.sql`):

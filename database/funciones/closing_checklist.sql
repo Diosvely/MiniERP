@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.closing_checklist · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0047_inventory_closing 0048_closing_integration   →   la vigente es la de 0048_closing_integration
+-- Definida en: 0047_inventory_closing 0048_closing_integration 0059_corporate_tax_integration   →   la vigente es la de 0059_corporate_tax_integration
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.closing_checklist(p_company uuid, p_year integer)
@@ -87,8 +87,14 @@ begin
   step := 9; code := 'audit_checks'; screen := 'checks';
   status := case when v_n = 0 then 'done' else 'pending' end; detail := jsonb_build_object('open', v_n, 'codes', v_txt); return next;
 
-  -- 10) Cierre del ejercicio (regularización, cierre y apertura)
-  step := 10; code := 'close'; screen := 'closing';
+  -- 10) v0.41.0 · Impuesto sobre Sociedades (antes de la regularización)
+  step := 10; code := 'corporate_tax'; screen := 'corporate_tax';
+  status := case when exists (select 1 from erp.corporate_tax_returns r where r.fiscal_year_id = v_fy.id and r.status = 'posted') then 'done'
+                 when erp.pre_tax_result(p_company, v_fy.id) = 0 then 'na' else 'pending' end;
+  detail := jsonb_build_object('pre_tax_result', erp.pre_tax_result(p_company, v_fy.id)); return next;
+
+  -- 11) Cierre del ejercicio (regularización, cierre y apertura)
+  step := 11; code := 'close'; screen := 'closing';
   status := case when v_fy.status = 'closed' then 'done' else 'pending' end;
   detail := jsonb_build_object('fiscal_year_status', v_fy.status); return next;
 end $function$

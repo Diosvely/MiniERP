@@ -203,7 +203,9 @@ begin
   raise notice 'OK  · global: 25 %% de 605 + 10 %% de 1.210 = 272,25 (sin Moroso ni Dudoso); no deducible, tope ERD 54,45 (art. 104 LIS)';
 
   -- ---------- 4. Cierre de 2026 y reversión en la apertura de 2027 ----------
+  perform erp.set_control_mode(e, 'guided');   -- v0.41.0: en estricto no se cierra sin el Impuesto sobre Sociedades (aquí no se calcula)
   perform erp.close_fiscal_year(e, 2026, true);
+  perform erp.set_control_mode(e, 'strict');
   assert erp.reverse_accruals(e, '2027-01-01') = 4, 'las cuatro';
   assert public.saldo(e, 2027, '480') = 0 and public.saldo(e, 2027, '485') = 0
      and public.saldo(e, 2027, '4009') = 0 and public.saldo(e, 2027, '4309') = 0, 'cuentas de periodificación a cero en 2027';

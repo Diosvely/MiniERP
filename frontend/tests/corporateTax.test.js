@@ -2,6 +2,9 @@ import { describe, expect, it } from 'vitest'
 import { balanced, breakdown, entriesPreview, expense, sign } from '../src/corporateTax'
 import { friendlyError } from '../src/errors'
 import es from '../src/i18n/es.js'
+import en from '../src/i18n/en.js'
+import fs from 'node:fs'
+import { fileURLToPath } from 'node:url'
 
 // Las cifras son las de los supuestos de referencia de la base de datos (fases 52 y 53), calculadas a mano
 const s1 = { pre_tax_result: 182000, permanent: 1000, temporary_increase: 2600, temporary_decrease: 0, base_before_losses: 185600,
@@ -50,5 +53,33 @@ describe('Impuesto sobre Sociedades · cómo se enseña el cálculo', () => {
     expect(friendlyError('This entry belongs to the corporate income tax: undo it from Corporate tax', t, 'es').title).toMatch(/Impuesto sobre Sociedades/)
     expect(friendlyError('The year 2026 is already closed (regularization posted): the corporate tax goes before it', t, 'es').title).toMatch(/2026/)
     expect(friendlyError('No corporate tax rates for 2031 (micro): add them to erp.corporate_tax_rates', t, 'es').title).toMatch(/2031/)
+  })
+})
+
+// v0.41.0 · Integración: cada módulo que controla cuentas (erp.control_rules) tiene su nombre en los avisos
+// («La 630 la registra …»). Antes faltaba el de Nóminas y el aviso enseñaba la clave «ctl.module.payroll».
+describe('cuentas controladas: nombre de cada módulo', () => {
+  const dir = fileURLToPath(new URL('../../database/migrations', import.meta.url))
+  const modules = new Set()
+  if (fs.existsSync(dir)) {
+    for (const f of fs.readdirSync(dir).filter((x) => x.endsWith('.sql'))) {
+      for (const m of fs.readFileSync(`${dir}/${f}`, 'utf8').matchAll(/'\{([a-z_,]+)\}', '(?:both|debit|credit)'/g)) {
+        m[1].split(',').forEach((x) => modules.add(x))
+      }
+    }
+  }
+  it.skipIf(!modules.size)('es y en tienen todos (también corporate_tax y payroll)', () => {
+    expect(modules.has('corporate_tax')).toBe(true)
+    for (const m of modules) {
+      expect(es.ctl.module[m], `es: ${m}`).toBeTruthy()
+      expect(en.ctl.module[m], `en: ${m}`).toBeTruthy()
+    }
+  })
+  it('el paso del asistente y los avisos del cierre tienen texto', () => {
+    for (const d of [es, en]) {
+      expect(d.wiz.step.corporate_tax.pending).toBeTruthy()
+      expect(d.check.corporate_tax_missing).toContain('{d}')
+      expect(d.check.withholdings_left).toContain('{d}')
+    }
   })
 })

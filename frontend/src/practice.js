@@ -66,10 +66,11 @@ export function nextExercise(exercises, key, progress = []) {
   return after ?? list[i + 1] ?? null
 }
 
-// Lo que sobra en la respuesta, sin repetir lo ya explicado: una cuenta puesta en el lado contrario ya sale como «⇄»
+// Lo que sobra en la respuesta, sin repetir lo ya explicado: una cuenta puesta en el lado contrario ya sale como «⇄».
+// v0.40.1: las que no son cuentas del PGC traen su motivo (reason: 'invalid' · 'not_in_pgc') y siempre se enseñan
 export function extraLines(result) {
   const flipped = (result?.lines ?? []).filter((l) => l.status === 'side')
-  return (result?.extra ?? []).filter((x) => !flipped.some((l) => x.side !== l.side && String(x.account).startsWith(l.account)))
+  return (result?.extra ?? []).filter((x) => x.reason || !flipped.some((l) => x.side !== l.side && String(x.account).startsWith(l.account)))
 }
 
 // Las 4 situaciones de una línea esperada tras corregir (las calcula erp.grade_exercise)

@@ -1176,6 +1176,7 @@ export default {
     },
     altUsed: 'with an account that is also accepted',
     extra: 'Not needed: {a} on the {s} side for {m}',
+    reason: { invalid: 'not an account: digits only', not_in_pgc: 'that account does not exist in the PGC' },
     unbalanced: 'It does not balance: debit {d} and credit {c}',
     tips: 'Frequent mistakes',
     retry: 'Start again',

@@ -1,4 +1,4 @@
-# ADR · Tutor de asientos con IA
+# ADR 0020 · Tutor de asientos con IA
 
 - **Fecha:** 2026-10-09
 - **Versión:** v0.23.0

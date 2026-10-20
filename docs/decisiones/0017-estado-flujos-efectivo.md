@@ -1,4 +1,4 @@
-# ADR · Estado de flujos de efectivo por los dos métodos
+# ADR 0017 · Estado de flujos de efectivo por los dos métodos
 
 - **Fecha:** 2026-10-08
 - **Versión:** v0.20.0

@@ -1153,3 +1153,27 @@ asiento modelo; el alumno hace el asiento y el ERP lo corrige, con la norma cita
 
 **Siguiente paso:** v0.41.0 · Contabilidad analítica: dimensiones por línea de asiento (centro de coste, proyecto,
 línea de negocio), reparto de indirectos y la comprobación analítico = contable.
+
+## 2026-10-20 · v0.40.1 · Corrector de supuestos: solo cuentas válidas del PGC
+
+**Qué se hizo**
+- **Arreglo del corrector** (0056), con su prueba de regresión (fase 51), que falló antes del arreglo.
+- **Web:** cada cuenta rechazada enseña su motivo.
+- **Pruebas:** 51 SQL y 149 tests de la web.
+- **Orden de la documentación:** ADR 0023 rehecho y número en los títulos de los ADR 0017 a 0021.
+
+**Lo que se aprende**
+- **La 4009 no es una 400 más larga.** Es la compra devengada cuya factura no ha llegado al cierre. Cuando llega la
+  factura, la deuda pasa a la 400. Lo mismo pasa con la 4309 y la 430 en las ventas.
+- **Un corrector que aprueba un error enseña ese error.** Por eso la regla mira el significado de la cuenta, no solo
+  sus primeros dígitos.
+- **Una revisión externa también se revisa.** Pedía rechazar toda cuenta de 4 dígitos distinta de su madre, lo que
+  habría rechazado la 4000 («Proveedores, euros»), y citaba cuentas (4069, 4319, 4759) que no están en el cuadro de
+  cuentas del PGC 2007.
+- **Una prueba que no ha fallado nunca no demuestra nada.** Desde esta versión, la prueba de cada arreglo se ejecuta
+  primero sin el arreglo.
+
+**Decisiones:** ADR 0039 · Corrector de supuestos: solo cuentas válidas del PGC.
+
+**Siguiente paso:** fichas de estudio por pantalla (qué problema resuelve, norma, criterio, BC / SAP, guion de vídeo)
+y, después, la v0.41.0 · Impuesto sobre Sociedades en el cierre.

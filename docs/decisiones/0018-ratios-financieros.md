@@ -1,4 +1,4 @@
-# ADR · Ratios financieros del Modo auditor
+# ADR 0018 · Ratios financieros del Modo auditor
 
 - **Fecha:** 2026-10-08
 - **Versión:** v0.21.0

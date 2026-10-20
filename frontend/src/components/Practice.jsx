@@ -245,6 +245,7 @@ function Correction({ result: r, m, side, onRetry }) {
         {extraLines(r).map((l, i) => (
           <li key={`x${i}`} className="error">
             <span className="icono" aria-hidden="true">+</span> {t('pr.extra').replace('{a}', l.account).replace('{s}', side(l.side)).replace('{m}', m(l.amount))}
+            {l.reason && <strong> · {t(`pr.reason.${l.reason}`)}</strong>}
           </li>
         ))}
         {!r.balanced && (

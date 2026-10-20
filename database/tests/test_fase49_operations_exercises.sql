@@ -1,7 +1,7 @@
 -- =====================================================================
 -- PRUEBAS FASE 49 · Catálogo de operaciones y supuestos autocorregidos (migración 0054)
 -- ---------------------------------------------------------------------
---  · Catálogo: 17 operaciones con su pantalla, su asiento modelo y sus fuentes; un asiento dice a qué operación se parece.
+--  · Catálogo: 18 operaciones (17 + el Impuesto sobre Sociedades, 0059) con su pantalla, su asiento modelo y sus fuentes; un asiento dice a qué operación se parece.
 --  · Supuestos: 14, todos con el asiento esperado cuadrado, su explicación, sus fuentes y su concepto del glosario.
 --    Cada uno, contestado bien con subcuentas de 8 dígitos, saca un 100.
 --  · Corrección: lado cambiado, cuenta equivocada (410 en vez de 400), importe mal, asiento descuadrado, cuenta
@@ -39,7 +39,7 @@ do $$
 declare g jsonb; x record; ans jsonb;
 begin
   -- ---------- 1. Catálogo ----------
-  assert (select count(*) from erp.operations) = 17 and (select count(*) from erp.exercises) = 14;
+  assert (select count(*) from erp.operations) = 18 and (select count(*) from erp.exercises) = 16;
   assert not exists (select 1 from erp.operations o, unnest(o.sources) k where not exists (select 1 from erp.sources s where s.key = k))
      and not exists (select 1 from erp.exercises o, unnest(o.sources) k where not exists (select 1 from erp.sources s where s.key = k)),
          'todas las fuentes citadas existen en la base documental';
@@ -48,7 +48,7 @@ begin
   assert not exists (select 1 from erp.exercises xx where (select sum((e->>'amount')::numeric) filter (where e->>'side' = 'debit') from jsonb_array_elements(xx.expected) e)
                                                     <> (select sum((e->>'amount')::numeric) filter (where e->>'side' = 'credit') from jsonb_array_elements(xx.expected) e)),
          'todos los asientos esperados cuadran';
-  raise notice 'OK  · 17 operaciones y 14 supuestos, con fuentes y concepto; los asientos esperados cuadran';
+  raise notice 'OK  · 18 operaciones y 16 supuestos, con fuentes y concepto; los asientos esperados cuadran';
 
   -- ---------- 2. ¿Dónde se registra? ----------
   assert (select key from erp.operation_for_lines(public.resp('60000001 D 100 | 47200021 D 21 | 40000001 H 121'))) = 'purchase_invoice';
@@ -69,7 +69,7 @@ begin
     g := erp.grade_exercise(x.key, ans);
     assert (g->>'ok')::boolean and (g->>'score')::int = 100, x.key || ': ' || g::text;
   end loop;
-  raise notice 'OK  · los 14 supuestos, contestados bien con subcuentas de 8 dígitos, sacan un 100';
+  raise notice 'OK  · los 16 supuestos, contestados bien con subcuentas de 8 dígitos, sacan un 100';
 
   -- ---------- 4. Corrección ----------
   g := erp.grade_exercise('purchase_vat', public.resp('600 D 2000 | 472 H 420 | 400 H 2420'));
@@ -102,7 +102,7 @@ begin
   assert (select attempts || ' ' || best_score || ' ' || solved from erp.v_exercise_progress where key = 'purchase_vat') = '2 100 true';
   assert (select attempts || ' ' || coalesce(ai_score, -1) || ' ' || coalesce(ai_ok::text, '-') from erp.v_exercise_progress where key = 'sale_igic') = '0 33 false',
          (select attempts || ' ' || coalesce(ai_score, -1) || ' ' || coalesce(ai_ok::text, '-') from erp.v_exercise_progress where key = 'sale_igic');
-  assert (select count(*) from erp.v_exercise_progress) = 14;
+  assert (select count(*) from erp.v_exercise_progress) = 16;
   assert public.falla($q$select erp.submit_exercise('purchase_vat', '[]', 'otro')$q$, 'Invalid attempt');
   raise notice 'OK  · intentos guardados: dos del alumno (mejor nota 100, resuelto) y uno de la IA (33), aparte';
 end $$;
@@ -112,7 +112,7 @@ do $$
 begin
   assert (select count(*) from erp.exercise_attempts) = 0, 'otro usuario no ve los intentos ajenos';
   assert (select sum(attempts) from erp.v_exercise_progress) = 0;
-  assert (select count(*) from erp.exercises) = 14, 'pero sí los supuestos';
+  assert (select count(*) from erp.exercises) = 16, 'pero sí los supuestos';
   raise notice 'OK  · cada usuario ve solo sus intentos';
 end $$;
 select set_config('request.jwt.claim.sub', '', false) \gset

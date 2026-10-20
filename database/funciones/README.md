@@ -1,6 +1,6 @@
 # Funciones del esquema erp (versión vigente)
 
-Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0056`.
+Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0059`.
 No se edita a mano: el código fuente son las migraciones. Esto es para **estudiar** cada función en su forma
 actual sin rastrear sus redefiniciones.
 
@@ -9,7 +9,7 @@ actual sin rastrear sus redefiniciones.
 - **Tipo:** *invoker* (se ejecuta con los permisos de quien llama: manda la RLS), *security definer* (con los del
   dueño: comprueba ella misma los permisos) o *trigger*.
 
-221 funciones.
+237 funciones.
 
 | Función | Versiones | Vigente en | Tipo |
 |---|---|---|---|
@@ -40,7 +40,7 @@ actual sin rastrear sus redefiniciones.
 | [`asset_posted`](asset_posted.sql) | 1 | 0041_fixed_assets | invoker |
 | [`asset_result_account`](asset_result_account.sql) | 1 | 0041_fixed_assets | security definer |
 | [`asset_tranche_at`](asset_tranche_at.sql) | 1 | 0046_asset_impairment | invoker |
-| [`audit_lines`](audit_lines.sql) | 7 | 0049_payroll | invoker |
+| [`audit_lines`](audit_lines.sql) | 8 | 0058_corporate_tax_posting | invoker |
 | [`balance_anomalies`](balance_anomalies.sql) | 1 | 0013_balance_rules | invoker |
 | [`balance_nature`](balance_nature.sql) | 1 | 0013_balance_rules | invoker |
 | [`can_read`](can_read.sql) | 2 | 0007_demo_and_limits | security definer |
@@ -72,11 +72,25 @@ actual sin rastrear sus redefiniciones.
 | [`check_tax_account`](check_tax_account.sql) | 1 | 0010_tax_setup | invoker |
 | [`cleanup_guests`](cleanup_guests.sql) | 2 | 0034_web_usage | security definer |
 | [`close_fiscal_year`](close_fiscal_year.sql) | 1 | 0017_year_closing | invoker |
-| [`closing_checklist`](closing_checklist.sql) | 2 | 0048_closing_integration | invoker |
+| [`closing_checklist`](closing_checklist.sql) | 3 | 0059_corporate_tax_integration | invoker |
 | [`company_access`](company_access.sql) | 1 | 0027_members | security definer |
 | [`concepts_for_account`](concepts_for_account.sql) | 1 | 0038_concepts | invoker |
 | [`control_rule_for`](control_rule_for.sql) | 1 | 0036_controlled_accounts | invoker |
 | [`controlled_lines`](controlled_lines.sql) | 1 | 0036_controlled_accounts | invoker |
+| [`corporate_tax_calc`](corporate_tax_calc.sql) | 1 | 0057_corporate_tax | invoker |
+| [`corporate_tax_cancel`](corporate_tax_cancel.sql) | 1 | 0058_corporate_tax_posting | security definer |
+| [`corporate_tax_draft`](corporate_tax_draft.sql) | 1 | 0057_corporate_tax | security definer |
+| [`corporate_tax_entry`](corporate_tax_entry.sql) | 1 | 0058_corporate_tax_posting | security definer |
+| [`corporate_tax_include`](corporate_tax_include.sql) | 1 | 0057_corporate_tax | security definer |
+| [`corporate_tax_loss_carryforwards`](corporate_tax_loss_carryforwards.sql) | 1 | 0057_corporate_tax | invoker |
+| [`corporate_tax_manual`](corporate_tax_manual.sql) | 1 | 0057_corporate_tax | security definer |
+| [`corporate_tax_pending`](corporate_tax_pending.sql) | 1 | 0057_corporate_tax | invoker |
+| [`corporate_tax_post`](corporate_tax_post.sql) | 1 | 0058_corporate_tax_posting | security definer |
+| [`corporate_tax_prepare`](corporate_tax_prepare.sql) | 1 | 0057_corporate_tax | security definer |
+| [`corporate_tax_proposals`](corporate_tax_proposals.sql) | 2 | 0059_corporate_tax_integration | invoker |
+| [`corporate_tax_quota`](corporate_tax_quota.sql) | 1 | 0057_corporate_tax | invoker |
+| [`corporate_tax_regime_hint`](corporate_tax_regime_hint.sql) | 1 | 0057_corporate_tax | invoker |
+| [`corporate_tax_settings`](corporate_tax_settings.sql) | 1 | 0057_corporate_tax | security definer |
 | [`create_accrual`](create_accrual.sql) | 1 | 0043_year_end_adjustments | security definer |
 | [`create_fiscal_year`](create_fiscal_year.sql) | 1 | 0001_core | invoker |
 | [`create_fixed_asset`](create_fixed_asset.sql) | 1 | 0041_fixed_assets | security definer |
@@ -84,12 +98,12 @@ actual sin rastrear sus redefiniciones.
 | [`create_posting_account`](create_posting_account.sql) | 1 | 0002_chart_of_accounts | invoker |
 | [`create_provision`](create_provision.sql) | 1 | 0045_provisions | security definer |
 | [`delete_company`](delete_company.sql) | 1 | 0004_journal_entries | security definer |
-| [`delete_company_step`](delete_company_step.sql) | 7 | 0049_payroll | security definer |
+| [`delete_company_step`](delete_company_step.sql) | 8 | 0058_corporate_tax_posting | security definer |
 | [`depreciation_schedule`](depreciation_schedule.sql) | 2 | 0046_asset_impairment | invoker |
 | [`dispose_asset`](dispose_asset.sql) | 2 | 0046_asset_impairment | security definer |
 | [`ensure_tax_account`](ensure_tax_account.sql) | 1 | 0010_tax_setup | invoker |
 | [`entry_controlled_lines`](entry_controlled_lines.sql) | 1 | 0036_controlled_accounts | invoker |
-| [`entry_is_manual`](entry_is_manual.sql) | 7 | 0049_payroll | security definer |
+| [`entry_is_manual`](entry_is_manual.sql) | 8 | 0058_corporate_tax_posting | security definer |
 | [`entry_tutor_context`](entry_tutor_context.sql) | 3 | 0033_withholding_rules | security definer |
 | [`financial_ratios`](financial_ratios.sql) | 1 | 0023_financial_ratios | security definer |
 | [`financial_statement`](financial_statement.sql) | 2 | 0032_comparative_statements | invoker |
@@ -118,7 +132,7 @@ actual sin rastrear sus redefiniciones.
 | [`import_prepare`](import_prepare.sql) | 1 | 0021_journal_import | security definer |
 | [`import_preview`](import_preview.sql) | 1 | 0021_journal_import | security definer |
 | [`import_start`](import_start.sql) | 1 | 0021_journal_import | invoker |
-| [`integrity_checks`](integrity_checks.sql) | 1 | 0040_integrity_checks | invoker |
+| [`integrity_checks`](integrity_checks.sql) | 2 | 0059_corporate_tax_integration | invoker |
 | [`intra_eu_lines`](intra_eu_lines.sql) | 1 | 0052_forms_347_349 | invoker |
 | [`inventory_account`](inventory_account.sql) | 1 | 0047_inventory_closing | security definer |
 | [`inventory_preview`](inventory_preview.sql) | 1 | 0047_inventory_closing | invoker |
@@ -134,6 +148,7 @@ actual sin rastrear sus redefiniciones.
 | [`link_payment`](link_payment.sql) | 1 | 0035_payments | security definer |
 | [`my_profile`](my_profile.sql) | 2 | 0015_guest_access | security definer |
 | [`my_role`](my_role.sql) | 1 | 0006_security_rls | security definer |
+| [`net_turnover`](net_turnover.sql) | 1 | 0057_corporate_tax | invoker |
 | [`next_subaccount_no`](next_subaccount_no.sql) | 1 | 0025_entry_tutor | invoker |
 | [`normalize_tax_id`](normalize_tax_id.sql) | 1 | 0009_partners | invoker |
 | [`open_items`](open_items.sql) | 1 | 0035_payments | invoker |
@@ -151,6 +166,7 @@ actual sin rastrear sus redefiniciones.
 | [`post_payment`](post_payment.sql) | 1 | 0035_payments | security definer |
 | [`post_pro_rata_regularization`](post_pro_rata_regularization.sql) | 1 | 0020_pro_rata | invoker |
 | [`post_tax_settlement`](post_tax_settlement.sql) | 1 | 0012_tax_settlement | invoker |
+| [`pre_tax_result`](pre_tax_result.sql) | 1 | 0057_corporate_tax | invoker |
 | [`preview_invoice`](preview_invoice.sql) | 1 | 0011_invoices | invoker |
 | [`pro_rata_calc`](pro_rata_calc.sql) | 2 | 0042_assets_integration | invoker |
 | [`provision_account`](provision_account.sql) | 1 | 0045_provisions | security definer |
@@ -192,7 +208,7 @@ actual sin rastrear sus redefiniciones.
 | [`tg_company_copy_coa`](tg_company_copy_coa.sql) | 1 | 0002_chart_of_accounts | trigger |
 | [`tg_company_rules`](tg_company_rules.sql) | 3 | 0027_members | trigger |
 | [`tg_company_vat_regime`](tg_company_vat_regime.sql) | 1 | 0019_reverse_charge_surcharge | trigger |
-| [`tg_entry_adjust_reverse`](tg_entry_adjust_reverse.sql) | 4 | 0049_payroll | trigger |
+| [`tg_entry_adjust_reverse`](tg_entry_adjust_reverse.sql) | 5 | 0058_corporate_tax_posting | trigger |
 | [`tg_entry_asset_reverse`](tg_entry_asset_reverse.sql) | 2 | 0046_asset_impairment | trigger |
 | [`tg_entry_check_inverse`](tg_entry_check_inverse.sql) | 2 | 0021_journal_import | trigger |
 | [`tg_entry_controlled_accounts`](tg_entry_controlled_accounts.sql) | 1 | 0036_controlled_accounts | trigger |
@@ -233,4 +249,4 @@ actual sin rastrear sus redefiniciones.
 | [`withholding_summary`](withholding_summary.sql) | 2 | 0050_payroll_integration | invoker |
 | [`write_off_receivable`](write_off_receivable.sql) | 1 | 0043_year_end_adjustments | security definer |
 | [`year_account_balances`](year_account_balances.sql) | 1 | 0017_year_closing | invoker |
-| [`year_closing_preview`](year_closing_preview.sql) | 5 | 0048_closing_integration | invoker |
+| [`year_closing_preview`](year_closing_preview.sql) | 6 | 0059_corporate_tax_integration | invoker |

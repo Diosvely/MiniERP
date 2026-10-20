@@ -1177,3 +1177,34 @@ línea de negocio), reparto de indirectos y la comprobación analítico = contab
 
 **Siguiente paso:** fichas de estudio por pantalla (qué problema resuelve, norma, criterio, BC / SAP, guion de vídeo)
 y, después, la v0.41.0 · Impuesto sobre Sociedades en el cierre.
+
+## 2026-10-20 · v0.41.0 · Impuesto sobre Sociedades en el cierre
+
+**Qué se hizo**
+- **Cálculo** (0057): del resultado contable a la cuota diferencial, con el régimen sugerido, los ajustes propuestos
+  con su artículo y las bases negativas.
+- **Asientos** (0058): el corriente y el diferido, como módulo propio, que se deshacen desde su pantalla.
+- **Integración** (0059): paso 10 del asistente de cierre, el aviso o error del cierre, el invariante 10, las cuentas
+  controladas 630 y 474, el glosario, las fuentes y dos supuestos en Practicar.
+- **Web:** la pantalla «Impuesto sobre Sociedades».
+- **Pruebas:** 54 SQL y 159 tests de la web. Los cuatro supuestos de referencia se calcularon a mano y coincidieron
+  a la primera.
+
+**Lo que se aprende**
+- **El resultado del ejercicio es después de impuestos.** El impuesto se contabiliza antes de la regularización.
+- **Resultado contable ≠ base imponible.** Las diferencias permanentes no vuelven nunca; las temporarias, sí. Las
+  temporarias son las que generan impuesto diferido.
+- **Gasto por impuesto = corriente + diferido** (NRV 13.ª). El diferido no cambia lo que se paga, sino el año en que
+  se reconoce el gasto.
+- **El crédito por pérdidas exige un juicio** (probabilidad de beneficios). Por eso es una casilla y empieza
+  desmarcada.
+- **Al escribir la prueba de integración apareció un fallo antiguo:** al aviso de cuentas controladas de Nóminas le
+  faltaba su nombre. La prueba que lo comprueba falló antes del arreglo.
+
+**Decisiones:** ADR 0040 · Impuesto sobre Sociedades en el cierre.
+
+**Pendiente de validar por Diosvely:** los tipos de 2026 (y los de reducida dimensión de 2025 a 2029) en el BOE, y
+qué provisiones vienen marcadas por defecto.
+
+**Siguiente paso:** v0.42.0 · operaciones societarias (constitución, ampliación y reducción de capital, reparto del
+resultado y dividendos).

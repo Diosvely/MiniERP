@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.audit_lines · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0037_audit_checks 0041_fixed_assets 0043_year_end_adjustments 0045_provisions 0046_asset_impairment 0047_inventory_closing 0049_payroll   →   la vigente es la de 0049_payroll
+-- Definida en: 0037_audit_checks 0041_fixed_assets 0043_year_end_adjustments 0045_provisions 0046_asset_impairment 0047_inventory_closing 0049_payroll 0058_corporate_tax_posting   →   la vigente es la de 0058_corporate_tax_posting
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.audit_lines(p_company uuid, p_year integer, p_to_date date DEFAULT NULL::date)
@@ -19,6 +19,9 @@ AS $function$
               -- v0.37.0: provisiones
               when exists (select 1 from erp.provision_movements pm where pm.entry_id = coalesce(e.reversal_of, e.id)) then 'provision'
               when exists (select 1 from erp.inventory_counts ic where ic.entry_id = coalesce(e.reversal_of, e.id)) then 'inventory'
+              -- v0.41.0: Impuesto sobre Sociedades
+              when exists (select 1 from erp.corporate_tax_returns ct
+                           where coalesce(e.reversal_of, e.id) in (ct.current_entry_id, ct.deferred_entry_id)) then 'corporate_tax'
               -- v0.38.0: nóminas y sus pagos
               when exists (select 1 from erp.payroll_runs pr
                            where coalesce(e.reversal_of, e.id) in (pr.entry_id, pr.net_payment_entry_id, pr.ss_payment_entry_id)) then 'payroll'

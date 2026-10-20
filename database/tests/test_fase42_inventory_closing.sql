@@ -76,7 +76,7 @@ begin
   perform public.factura(e, prov, '2026-05-20', '[{"account_no":"60100001","amount":10000,"tax_code":"IGIC7"}]');
   select string_agg(step || ':' || code || '=' || status, ' ' order by step) into s from erp.closing_checklist(e, 2026);
   assert s = '1:settlements=pending 2:accruals_reversed=done 3:depreciation=na 4:asset_impairment=na 5:accruals=review '
-             '6:bad_debts=done 7:provisions=review 8:inventory=pending 9:audit_checks=done 10:close=pending', s;
+             '6:bad_debts=done 7:provisions=review 8:inventory=pending 9:audit_checks=done 10:corporate_tax=pending 11:close=pending', s;
   raise notice 'OK  · asistente de 2026: faltan las liquidaciones, el inventario y el cierre; el resto, revisar o hecho';
 
   -- ---------- 2. Inventario del 31/12/2026 ----------
@@ -116,7 +116,9 @@ begin
   -- ---------- 3. Liquidaciones y cierre: el asistente lo ve ----------
   for q in 1..4 loop perform erp.post_tax_settlement(e, 'IGIC', 2026, q); end loop;
   assert public.paso(e, 2026, 'settlements') = 'done' and public.paso(e, 2026, 'inventory') = 'done';
+  perform erp.set_control_mode(e, 'guided');   -- v0.41.0: en estricto no se cierra sin el Impuesto sobre Sociedades (aquí no se calcula)
   perform erp.close_fiscal_year(e, 2026, true);
+  perform erp.set_control_mode(e, 'strict');
   assert public.paso(e, 2026, 'close') = 'done';
   assert public.saldo(e, 2027, '300') = 8000 and public.saldo(e, 2027, '390') = -500 and public.saldo(e, 2027, '310') = 2000, 'apertura de 2027';
   raise notice 'OK  · asistente: liquidaciones, inventario y cierre hechos; la apertura de 2027 trae 300 8.000, 390 −500 y 310 2.000';

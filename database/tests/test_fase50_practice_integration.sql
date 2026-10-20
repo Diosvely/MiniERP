@@ -58,7 +58,7 @@ begin
          (select row_to_json(p)::text from erp.v_exercise_progress p where key = 'purchase_vat');
   assert (select ai_at is not null from erp.v_exercise_progress where key = 'purchase_vat');
   assert (select ai_score is null and ai_model is null and attempts = 1 from erp.v_exercise_progress where key = 'sale_igic'), 'sin intento de la IA: vacío';
-  assert (select count(*) from erp.v_exercise_progress) = 14;
+  assert (select count(*) from erp.v_exercise_progress) = 16;
   raise notice 'OK  · la IA guarda su modelo (sin espacios) y el progreso enseña su último intento; el alumno, sin modelo';
 
   -- respuestas no válidas

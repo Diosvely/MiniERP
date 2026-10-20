@@ -67,7 +67,8 @@ begin
 
   -- ---------- 1) Comprobaciones ----------
   c := erp.year_closing_preview(e, 2026);
-  assert (c->>'can_close')::boolean and not (c->>'has_warnings')::boolean, 'sin errores ni avisos';
+  -- (v0.41.0: el único aviso es que falta el Impuesto sobre Sociedades, que este supuesto no calcula)
+  assert (c->>'can_close')::boolean and (select jsonb_agg(x->>'code') from jsonb_array_elements(c->'checks') x where x->>'severity' <> 'info') = '["corporate_tax_missing"]', 'sin errores ni más avisos: ' || (c->'checks')::text;
   assert (c->>'result')::numeric = 3520;
   assert c->>'result_account_no' = '12900000', '129 + ceros hasta 8 dígitos';
   assert c->'checks' @> '[{"code":"result_account_created"},{"code":"next_year_created"}]', 'informa de lo que creará';

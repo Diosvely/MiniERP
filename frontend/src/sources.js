@@ -71,10 +71,10 @@ export const SOURCES = {
     en: { title: 'Royal Decree 1514/2007, Spanish chart of accounts (PGC)', ref: 'Conceptual framework (accrual), recognition and measurement rules and chart of accounts' },
   },
   lis: {
-    issuer: 'BOE', checked: '2026-10-19',
+    issuer: 'BOE', checked: '2026-10-20',
     url: 'https://www.boe.es/eli/es/l/2014/11/27/27/con',
-    es: { title: 'Ley 27/2014, del Impuesto sobre Sociedades', ref: 'Arts. 12 (amortizaciones) y 13 (deterioros y provisiones)' },
-    en: { title: 'Law 27/2014 on Corporate Income Tax', ref: 'Arts. 12 (depreciation) and 13 (impairments and provisions)' },
+    es: { title: 'Ley 27/2014, del Impuesto sobre Sociedades', ref: 'Arts. 10 a 15 (base imponible, amortizaciones, deterioros, provisiones y gastos no deducibles), 26 (bases negativas), 29 y DT 44.ª (tipos) y 101 y 104 (reducida dimensión)' },
+    en: { title: 'Law 27/2014 on Corporate Income Tax', ref: 'Arts. 10 to 15 (taxable base, depreciation, impairments, provisions and non-deductible expenses), 26 (tax losses), 29 and DT 44.ª (rates) and 101 and 104 (reduced size)' },
   },
   lirpf: {
     issuer: 'BOE', checked: '2026-10-19',

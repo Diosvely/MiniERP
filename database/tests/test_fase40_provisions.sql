@@ -118,7 +118,9 @@ begin
            '2026-12-31', 'x'), 'belongs to a provision'), 'no se anula desde el diario';
   raise notice 'OK  · modo estricto: la 142 solo la mueve el módulo; su asiento no se anula desde el diario';
 
+  perform erp.set_control_mode(e, 'guided');   -- v0.41.0: en estricto no se cierra sin el Impuesto sobre Sociedades (aquí no se calcula)
   perform erp.close_fiscal_year(e, 2026, true);
+  perform erp.set_control_mode(e, 'strict');
 
   -- ---------- 2. 2027: revisión, aplicación y reclasificación ----------
   select * into r from erp.revise_provision(jsonb_build_object('provision_id', lit, 'review_date', '2027-12-31', 'new_amount', 15000));
@@ -151,7 +153,9 @@ begin
   perform erp.apply_provision(jsonb_build_object('provision_id', imp, 'application_date', '2027-04-20', 'paid', 3200, 'cash_account_no', '57200001'));
   raise notice 'OK  · deshacer el último movimiento (reclasificación, aplicación) y volver a hacerlo';
 
+  perform erp.set_control_mode(e, 'guided');   -- v0.41.0: en estricto no se cierra sin el Impuesto sobre Sociedades (aquí no se calcula)
   perform erp.close_fiscal_year(e, 2027, true);
+  perform erp.set_control_mode(e, 'strict');
   assert public.saldo(e, 2027, '142') = 0 and public.saldo(e, 2027, '5293') = -15000 and public.saldo(e, 2027, '4999') = -1200
      and public.saldo(e, 2027, '5292') = 0, 'saldos al cierre de 2027 (con la apertura): ' || public.saldo(e, 2027, '5293');
 

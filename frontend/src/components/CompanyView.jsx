@@ -16,6 +16,7 @@ import Payroll from './Payroll'
 import TaxForms from './TaxForms'
 import FinancialStatements from './FinancialStatements'
 import YearClosing from './YearClosing'
+import CorporateTax from './CorporateTax'
 import Withholdings from './Withholdings'
 import Payments from './Payments'
 import ProRata from './ProRata'
@@ -44,6 +45,7 @@ const SCREENS = [
   { id: 'home', group: '', basic: true },
   { id: 'entry', group: 'menuAccounting', basic: true, write: true },
   { id: 'journal', group: 'menuAccounting', basic: true },
+  { id: 'corporate_tax', group: 'menuAccounting' },   // v0.41.0 · antes del cierre
   { id: 'closing', group: 'menuAccounting' },
   { id: 'assets', group: 'menuAccounting', basic: 'hidden' },
   { id: 'adjustments', group: 'menuAccounting' },
@@ -256,6 +258,7 @@ export default function CompanyView({ company: base, readOnly, canPublish, isOwn
           <JournalEntryForm company={company} draft={draft} onPosted={() => setRefreshKey((k) => k + 1)} />
         )}
         {section === 'journal' && <GeneralJournal company={company} readOnly={readOnly} refreshKey={refreshKey} />}
+        {section === 'corporate_tax' && <CorporateTax company={company} readOnly={readOnly} />}
         {section === 'closing' && <YearClosing company={company} readOnly={readOnly} />}
         {section === 'invoices' && <Invoices company={company} readOnly={readOnly} />}
         {section === 'payments' && <Payments company={company} readOnly={readOnly} />}

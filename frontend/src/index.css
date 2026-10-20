@@ -847,3 +847,15 @@ table.casillas tr.total td { font-weight: 700; border-top: 1px solid var(--borde
 .resumen-ia-evaluacion { font-weight: 600; }
 .evaluar-ia td.num { white-space: nowrap; }
 .cuadre-respuesta { margin: 0; min-height: 1.2em; text-align: right; color: var(--aviso); }
+
+/* --- v0.41.0: Impuesto sobre Sociedades --- */
+.etiqueta.etiqueta-texto { color: var(--texto); background: color-mix(in srgb, var(--primario) 12%, transparent); }
+.estado-is { font-weight: 600; padding: 6px 10px; border-radius: 6px; border-left: 4px solid var(--borde); background: var(--fondo); }
+.estado-is.draft { border-left-color: var(--alerta-fondo); }
+.estado-is.posted { border-left-color: var(--exito); }
+table.casillas tr.excluido td { color: var(--suave); text-decoration: line-through; }
+table.casillas tr.excluido td:first-child { text-decoration: none; }
+.articulo { color: var(--suave); }
+.ajuste-manual { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; padding: 10px; border: 1px dashed var(--borde); border-radius: 8px; }
+.ajuste-manual .fila { flex-wrap: wrap; }
+.impuesto-sociedades + .tarjeta label.opcion { display: flex; gap: 8px; align-items: flex-start; }

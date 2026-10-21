@@ -2,6 +2,40 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.41.2] - 2026-10-21
+### Añadido
+- **Panel de IA:** botón «✨ IA» abajo a la derecha, con el **Tutor de asientos** como conversación y el **Analista IA**
+  del ejercicio que estés viendo (EFE, Ratios).
+  - «Pasar al asiento» lleva la propuesta a Nuevo asiento desde cualquier pantalla.
+  - En el PC ancho el panel va al lado y no tapa nada.
+  - La conversación no se guarda.
+### Cambiado
+- Nuevo asiento ya no tiene el Tutor encima. El EFE y los Ratios abren el Analista desde un botón.
+- Tests: 30 s por test y la mitad de los núcleos, para que en Windows no se agote el tiempo por saturación.
+### Corregido
+- Contraste de «Dentro de la zona» y «Por debajo» en los Ratios (modo claro).
+
+## [0.41.1] - 2026-10-21
+### Añadido
+- **Pantalla ancha en el PC:**
+  - el contenido llega hasta 1.600 px;
+  - las tarjetas pequeñas van de dos en dos y Cierre muestra el asistente al lado;
+  - letra de 14 px y menos relleno desde 900 px.
+- **Menú en acordeón:** una sola área abierta (la de la pantalla actual), flechas del teclado y área «Empresa».
+- **Asientos en una línea:**
+  - Enter avanza y crea la línea nueva;
+  - lo que falta para cuadrar sale en gris (Enter o «=» lo ponen);
+  - línea vacía + Enter lleva a Contabilizar;
+  - Ctrl + Supr o la papelera borran la línea;
+  - fecha, documento y concepto van en una fila.
+### Quitado
+- Los botones «=» y «✕» de cada línea del asiento.
+### Corregido
+- Móvil: Clientes y proveedores se salía 90 px de la pantalla, y la fecha de Nuevo asiento, 5 px.
+- Modo Auditor: hueco gris bajo la ruta cuando el menú era más alto que el contenido.
+- Aviso de cuentas controladas: faltaba el nombre del módulo Nóminas.
+- Contraste de la etiqueta «Factura» del Libro diario.
+
 ## [0.41.0] - 2026-10-20
 ### Añadido
 - **Impuesto sobre Sociedades** (pantalla en Contabilidad; migraciones `0057_corporate_tax.sql`,

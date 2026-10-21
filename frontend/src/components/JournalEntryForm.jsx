@@ -11,6 +11,8 @@ import { TEMPLATES } from '../templates'
 import Term from './Term'
 import { ICON } from '../icons'
 import { controlledLines, moduleScreen } from '../controlled'
+import { cents, enterAction, lineKeyAction, removeLineFrom, suggestionFor } from '../entryKeys'
+import { Trash2 } from 'lucide-react'
 
 const emptyLine = () => ({ accountText: '', gl_account_id: '', debit: '', credit: '', description: '' })
 
@@ -27,9 +29,12 @@ function expandDot(text, digits) {
   return zeros >= 0 ? left + '0'.repeat(zeros) + right : t
 }
 
-// Formulario de asiento: cabecera + líneas, con cuadre en vivo y manejo rápido con teclado
-//   Enter: cuenta → Debe → Haber → "=" → cuenta de la línea siguiente
-//   +    : nueva línea (en cualquier campo de la línea: un importe nunca lleva "+")
+// Formulario de asiento: cabecera + líneas, con cuadre en vivo y manejo rápido con teclado (v0.41.1: una fila por línea,
+// la lógica de cada tecla está en src/entryKeys.js)
+//   Enter: cuenta → Debe (o el lado del importe propuesto) → línea siguiente; al final de la última, una línea nueva
+//   El importe que falta para cuadrar se propone en gris en la línea vacía: Enter o «=» lo ponen
+//   Enter en una línea vacía con el asiento cuadrado → botón «Contabilizar»
+//   Ctrl + Supr (o la papelera al pasar el ratón): borrar la línea · +: nueva línea debajo
 //   −    : borrar la línea, SOLO con el campo de cuenta vacío (en los importes el "−" se escribe normal)
 //   Al borrar una línea con datos aparece "Línea borrada · Deshacer" durante 5 segundos
 //   Cuenta: se busca por número (572…) o por nombre ("caja", "bancos"); ↑ ↓ para elegir, Enter, Escape para cerrar
@@ -47,6 +52,7 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
   const [postedOk, setPostedOk] = useState(false)   // tras contabilizar: enlace "Ver en el diario"
   const [focusTarget, setFocusTarget] = useState(null)   // { line, field } a enfocar tras re-dibujar
   const linesRef = useRef(null)
+  const postRef = useRef(null)   // botón «Contabilizar»: Enter en una línea vacía con el asiento cuadrado
   const [removed, setRemoved] = useState(null)   // { line, index } · última línea borrada, para deshacer
   const undoTimer = useRef(null)
   const [suggest, setSuggest] = useState(null)   // { line, active } · lista de cuentas abierta bajo una línea
@@ -85,15 +91,14 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
   // Mover el cursor cuando React ya ha dibujado la línea (por ejemplo, una línea nueva)
   useEffect(() => {
     if (!focusTarget) return
-    const el = linesRef.current?.querySelector(
+    const el = focusTarget.field === 'post' ? postRef.current : linesRef.current?.querySelector(
       `[data-line="${focusTarget.line}"][data-field="${focusTarget.field}"]`)
     el?.focus()
     el?.select?.()
     setFocusTarget(null)
   }, [focusTarget, lines])
 
-  // Totales en céntimos para evitar errores de decimales (0.1 + 0.2 ≠ 0.3 en JavaScript)
-  const cents = (v) => Math.round((parseFloat(String(v).replace(',', '.')) || 0) * 100)
+  // Totales en céntimos para evitar errores de decimales (0.1 + 0.2 ≠ 0.3 en JavaScript): cents() de entryKeys.js
   const totalDebit = lines.reduce((s, l) => s + cents(l.debit), 0)
   const totalCredit = lines.reduce((s, l) => s + cents(l.credit), 0)
   const difference = totalDebit - totalCredit
@@ -161,7 +166,7 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
       return copy
     })
     setSuggest(null)
-    setFocusTarget({ line: i, field: lines[i].expect ?? 'debit' })
+    setFocusTarget({ line: i, field: lines[i].expect ?? 'debit' })   // al lado que pide la plantilla; si no, al Debe
   }
 
   // Plantilla: cada línea toma la primera subcuenta de su grupo; los importes quedan para el usuario
@@ -188,9 +193,8 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
   }
 
   function removeLine(i) {
-    if (lines.length <= 2) return
     const gone = lines[i]
-    setLines((prev) => prev.filter((_, j) => j !== i))
+    setLines((prev) => removeLineFrom(prev, i, emptyLine))
     setFocusTarget({ line: Math.max(0, i - 1), field: 'account' })
     // Solo se ofrece deshacer si la línea tenía algo escrito
     clearTimeout(undoTimer.current)
@@ -207,29 +211,36 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
     const { line, index } = removed
     setLines((prev) => {
       const copy = [...prev]
-      copy.splice(index, 0, line)
+      if (prev.length === 2 && !prev[index].accountText && !prev[index].debit && !prev[index].credit) copy[index] = line   // se había vaciado
+      else copy.splice(index, 0, line)
       return copy
     })
     setRemoved(null)
     setFocusTarget({ line: index, field: 'account' })
   }
 
-  // Pone en la línea la diferencia que falta para cuadrar
-  function fillDifference(i) {
-    const others = (field) => lines.reduce((s, l, j) => (j === i ? s : s + cents(l[field])), 0)
-    const diff = others('debit') - others('credit')
+  // Pone en la línea el importe propuesto (lo que falta para cuadrar), en su lado
+  function fillSuggestion(i, sug) {
+    const amount = String(sug.cents / 100).replace('.', ',')
     setLines((prev) => {
       const copy = [...prev]
-      copy[i] = { ...copy[i], debit: diff < 0 ? String(-diff / 100) : '', credit: diff > 0 ? String(diff / 100) : '' }
+      copy[i] = { ...copy[i], debit: sug.side === 'debit' ? amount : '', credit: sug.side === 'credit' ? amount : '' }
       return copy
     })
   }
 
+  // A la cuenta de la línea siguiente; después de la última, una línea nueva
+  const nextLine = (i) => (i === lines.length - 1 ? addLine(i) : setFocusTarget({ line: i + 1, field: 'account' }))
+
   // Teclado dentro de una línea
   function onLineKey(e, i, field) {
-    if (e.key === '+') {
+    const sug = suggestionFor(lines, i)
+    const other = lineKeyAction(e, field, sug)
+    if (other) {
       e.preventDefault()
-      return addLine(i)
+      if (other.type === 'remove') return removeLine(i)
+      if (other.type === 'add') return addLine(i)
+      if (other.type === 'fill') return fillSuggestion(i, sug)
     }
     // "−" borra solo desde el campo de cuenta vacío: en Debe/Haber se escribe como signo
     if (e.key === '-' && field === 'account' && !lines[i].accountText.trim()) {
@@ -251,16 +262,13 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
       }
     }
     if (e.key !== 'Enter') return
-    e.preventDefault()   // en el botón "=", Enter NO lo aplica: solo avanza
-    if (field === 'account') {
-      if (resolveAccount(i)) setFocusTarget({ line: i, field: 'debit' })
-    } else if (field === 'debit') {
-      setFocusTarget({ line: i, field: 'credit' })
-    } else if (field === 'credit') {
-      setFocusTarget({ line: i, field: 'eq' })
-    } else if (field === 'eq') {
-      setFocusTarget({ line: (i + 1) % lines.length, field: 'account' })
-    }
+    e.preventDefault()
+    const resolved = field === 'account' && lines[i].accountText.trim() ? resolveAccount(i) : Boolean(lines[i].gl_account_id)
+    const act = enterAction({ field, line: lines[i], i, suggestion: sug, balanced, resolved })
+    if (act.type === 'focus') setFocusTarget({ line: act.line, field: act.field })
+    else if (act.type === 'post') setFocusTarget({ field: 'post' })
+    else if (act.type === 'fill') { fillSuggestion(i, sug); nextLine(i) }
+    else if (act.type === 'next') nextLine(i)
   }
 
   async function save(post) {
@@ -317,7 +325,7 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
     <section className="tarjeta formulario-asiento">
       <h2>{t('newEntry')}</h2>
 
-      <div className="rejilla-cabecera">
+      <div className="rejilla-cabecera cabecera-asiento">
         <label>{t('postingDate')}
           <input type="date" value={header.posting_date}
                  onChange={(e) => setHeader({ ...header, posting_date: e.target.value })} />
@@ -325,9 +333,11 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
         <label>{t('documentNo')}
           <input value={header.document_no} onChange={(e) => setHeader({ ...header, document_no: e.target.value })} />
         </label>
+        <label className="concepto-asiento">{t('entryConcept')}
+          <input placeholder={t('entryDescription')} value={header.description}
+                 onChange={(e) => setHeader({ ...header, description: e.target.value })} />
+        </label>
       </div>
-      <input placeholder={t('entryDescription')} value={header.description}
-             onChange={(e) => setHeader({ ...header, description: e.target.value })} />
 
       {/* ¿Qué ha pasado? Plantillas de los asientos más frecuentes */}
       <div className="plantillas">
@@ -366,12 +376,18 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
         <p>{t('explainDraft')}</p>
       </details>
 
-      <div ref={linesRef}>
+      <div ref={linesRef} className="lineas-asiento">
+        <div className="linea cabecera-lineas" aria-hidden="true">
+          <span>{t('account')}</span><span>{t('debit')}</span><span>{t('credit')}</span><span />
+        </div>
         {lines.map((l, i) => {
           const account = accounts.find((a) => a.id === l.gl_account_id)
           const unknown = l.accountText.trim() !== '' && !account
           const options = suggest?.line === i && !account ? matchAccounts(l.accountText) : []
           const listId = `cuentas-${i}`
+          const sug = suggestionFor(lines, i)
+          // Importe propuesto (lo que falta para cuadrar), en gris en su lado: Enter o «=» lo ponen
+          const hint = (side) => (sug?.side === side ? `= ${money(sug.cents / 100, language)}` : t(side))
           return (
             <div key={i} className={l.total ? 'linea linea-total' : 'linea'}>
               <div className="cuenta-linea">
@@ -399,21 +415,20 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
                   {account ? accountName(account, language) : unknown ? t('accountNotFound') : ''}
                 </span>
               </div>
-              <input data-line={i} data-field="debit" placeholder={t('debit')} inputMode="decimal" value={l.debit}
-                     aria-label={t('debit')} className={l.expect === 'debit' ? 'esperado' : ''}
+              <input data-line={i} data-field="debit" placeholder={hint('debit')} inputMode="decimal" value={l.debit}
+                     aria-label={t('debit')} title={sug?.side === 'debit' ? t('suggestedAmount') : undefined}
+                     className={[l.expect === 'debit' ? 'esperado' : '', sug?.side === 'debit' ? 'propuesto' : ''].join(' ').trim()}
                      onChange={(e) => updateLine(i, 'debit', e.target.value)}
                      onKeyDown={(e) => onLineKey(e, i, 'debit')} />
-              <input data-line={i} data-field="credit" placeholder={t('credit')} inputMode="decimal" value={l.credit}
-                     aria-label={t('credit')} className={l.expect === 'credit' ? 'esperado' : ''}
+              <input data-line={i} data-field="credit" placeholder={hint('credit')} inputMode="decimal" value={l.credit}
+                     aria-label={t('credit')} title={sug?.side === 'credit' ? t('suggestedAmount') : undefined}
+                     className={[l.expect === 'credit' ? 'esperado' : '', sug?.side === 'credit' ? 'propuesto' : ''].join(' ').trim()}
                      onChange={(e) => updateLine(i, 'credit', e.target.value)}
                      onKeyDown={(e) => onLineKey(e, i, 'credit')} />
-              <div className="acciones-linea">
-                <button type="button" className="secundario" data-line={i} data-field="eq"
-                        onClick={() => fillDifference(i)} onKeyDown={(e) => onLineKey(e, i, 'eq')}
-                        title={t('fillDifference')}>=</button>
-                <button type="button" className="secundario" disabled={lines.length <= 2} tabIndex={-1}
-                        onClick={() => removeLine(i)} title={t('removeLine')}>✕</button>
-              </div>
+              <button type="button" className="papelera" tabIndex={-1} onClick={() => removeLine(i)}
+                      title={t('removeLineKey')} aria-label={`${t('removeLine')} ${i + 1}`}>
+                <Trash2 size={16} aria-hidden="true" />
+              </button>
             </div>
           )
         })}
@@ -451,7 +466,7 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
 
       <div className="fila">
         <button type="button" className="secundario" disabled={saving} onClick={() => save(false)}>{t('saveDraft')}</button>
-        <button type="button" disabled={saving || !balanced || blocked} title={blocked ? t('ctl.postDisabled') : undefined}
+        <button type="button" ref={postRef} disabled={saving || !balanced || blocked} title={blocked ? t('ctl.postDisabled') : undefined}
                 onClick={() => save(true)}>{t('post')}</button>
       </div>
 

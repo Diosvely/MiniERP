@@ -3,7 +3,8 @@ import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import { workYear } from '../workDate'
 import { money } from '../format'
-import AiAnalyst from './AiAnalyst'
+import { AskAnalyst } from './AiPanel'
+import { useAiTopic } from '../aiContext'
 import ErrorBox from './ErrorBox'
 import RatioTrend from './RatioTrend'
 
@@ -16,6 +17,7 @@ export default function Ratios({ company }) {
   const { t, language } = useI18n()
   const [years, setYears] = useState([])
   const [year, setYear] = useState(() => workYear(company))   // año de la fecha de trabajo
+  useAiTopic({ kind: 'analyst', year: Number(year) })   // v0.41.2: el Analista del panel de IA interpreta este ejercicio
   const [rows, setRows] = useState([])
   const [open, setOpen] = useState({})
   const [loading, setLoading] = useState(false)
@@ -151,7 +153,7 @@ export default function Ratios({ company }) {
       })}
 
       {rows.length > 0 && <p className="ayuda">{t('ratiosNote')}</p>}
-      {rows.length > 0 && <AiAnalyst company={company} year={year} />}
+      {rows.length > 0 && <AskAnalyst />}
     </>
   )
 }

@@ -1208,3 +1208,25 @@ qué provisiones vienen marcadas por defecto.
 
 **Siguiente paso:** v0.42.0 · operaciones societarias (constitución, ampliación y reducción de capital, reparto del
 resultado y dividendos).
+
+## 2026-10-21 · v0.41.1 · v0.41.2 · Mejoras de uso (contabilizando de verdad)
+
+**Qué se hizo**
+- **Pantalla ancha y densidad** (215, 215b, 215c), **menú en acordeón** (216), **asientos en una línea** (217) y
+  **panel de IA** (218, 218b).
+- Las ideas salieron de usar el ERP a diario con ContaSol al lado. Se apuntan en un documento privado
+  (`mejoras-de-uso.md`) y se meten entre versiones.
+- **Pruebas:** 187 tests de la web. axe-core sin fallos en modo claro y oscuro, en PC y en móvil.
+
+**Lo que se aprende**
+- **La usabilidad también es contabilidad:** un asiento que se mete solo con el teclado ahorra horas al mes. Por eso
+  ContaSol y A3 proponen el importe que falta para cuadrar.
+- **Probar como lo usa la persona.** El hueco gris del modo Auditor no salía en mis capturas, que eran del modo
+  Básico, con un menú más corto. Ahora se prueban los dos modos.
+- **Un fallo que solo pasa en un PC sigue siendo un fallo.** Los tests superaban los 5 s en Windows por saturación,
+  no por el código. Se arregla con margen y menos procesos a la vez, y queda un test que lo vigila.
+
+**Decisiones:** ADR 0041 · Mejoras de uso: pantalla ancha, menú en acordeón, asientos en una línea y panel de IA.
+
+**Siguiente paso:** v0.42.0 · operaciones societarias (constitución, ampliación y reducción de capital, reparto del
+resultado, dividendos y compensación de pérdidas).

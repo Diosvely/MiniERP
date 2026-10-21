@@ -48,7 +48,8 @@ li span { color: var(--suave); font-size: .9rem; }
 .cuentas li.nivel-4 { padding-left: 24px; }
 .cuentas li.subcuenta { padding-left: 32px; color: var(--primario); }
 label { display: flex; flex-direction: column; gap: 4px; font-size: .85rem; color: var(--suave); }
-.rejilla-cabecera { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.rejilla-cabecera { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }   /* v0.41.1: minmax(0, …) para que un desplegable largo no desborde el móvil */
+.rejilla-cabecera > *, .rejilla-cabecera select, .rejilla-cabecera input { min-width: 0; max-width: 100%; }
 .linea { display: grid; grid-template-columns: 1fr 1fr auto; gap: 6px; padding: 8px 0; border-bottom: 1px dashed var(--borde); }
 .linea select { grid-column: 1 / -1; }
 .linea input { min-width: 0; }
@@ -136,7 +137,21 @@ tr.anomalia.error td { background: rgba(180,35,24,.12); color: var(--aviso); }
 .insignia.error { background: var(--aviso); color: var(--sobre-color); }
 
 /* --- K1: menú agrupado por áreas --- */
-main:has(.empresa-layout) { max-width: 1120px; }
+/* v0.41.1 · en el PC se usa todo el ancho, con un tope de 1600 px (en un monitor enorme la vista no se separa tanto
+   que haya que mover la cabeza). Los párrafos se quedan en ~90 caracteres por línea: más largos se leen peor. */
+main:has(.empresa-layout) { max-width: 1600px; }
+.empresa-layout .tarjeta p, .empresa-layout p.ayuda { max-width: 90ch; }
+/* En una pantalla ancha (≥ 1320 px) dos tarjetas seguidas sin tabla van una al lado de la otra, en el orden de
+   lectura; las demás ocupan todo el ancho. Quién va emparejada lo decide src/wideLayout.js (clase «mitad»). */
+/* align-content: start: si el menú es más alto que el contenido (modo Auditor), las filas NO se estiran para igualarlo
+   (eso dejaba un hueco gris enorme bajo la ruta) */
+@media (min-width: 1320px) {
+  .empresa-contenido { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0 16px; align-items: start; align-content: start; }
+  .empresa-contenido > * { grid-column: 1 / -1; }
+  .empresa-contenido > .mitad { grid-column: auto; }
+  /* Cierre del ejercicio: el asistente (los pasos) a la izquierda y el cierre a la derecha */
+  .empresa-contenido > .asistente-cierre:has(+ .cierre), .empresa-contenido > .asistente-cierre + .cierre { grid-column: auto; }
+}
 .empresa-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 20px; }
 .boton-menu { display: flex; gap: 8px; align-items: center; background: var(--tarjeta); color: var(--texto);
               border: 1px solid var(--borde); margin-bottom: 12px; text-align: left; }
@@ -153,6 +168,7 @@ main:has(.empresa-layout) { max-width: 1120px; }
 .ruta { display: none; color: var(--suave); font-size: .85rem; margin: 0 0 10px; }
 @media (min-width: 900px) {
   .empresa-layout { grid-template-columns: 220px minmax(0, 1fr); }
+  main:has(.empresa-layout) { padding: 16px 24px; }
   .empresa-cabecera { grid-column: 1 / -1; }
   .boton-menu { display: none; }
   .menu-empresa { display: flex; position: sticky; top: 16px; align-self: start; }
@@ -163,7 +179,7 @@ main:has(.empresa-layout) { max-width: 1120px; }
 .asiento { display: flex; flex-direction: column; }
 .asiento.anulado .concepto, .asiento.anulado table { opacity: .55; }
 .etiquetas { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
-.etiqueta { font-size: .75rem; padding: 2px 8px; border-radius: 999px; background: rgba(31,94,255,.10); color: var(--primario); }
+.etiqueta { font-size: .75rem; padding: 2px 8px; border-radius: 999px; background: rgba(31,94,255,.10); color: color-mix(in srgb, var(--primario) 80%, var(--texto)); }   /* v0.41.1: contraste AA también sobre su fondo */
 .etiqueta.anula { background: rgba(26,127,55,.12); color: var(--exito); }
 .etiqueta.anulado { background: rgba(180,35,24,.10); color: var(--aviso); }
 button.pequeno { align-self: flex-start; padding: 6px 10px; font-size: .85rem; margin-top: 6px; }
@@ -186,6 +202,16 @@ button.pequeno { align-self: flex-start; padding: 6px 10px; font-size: .85rem; m
 .menu-grupo h3 { margin: 0 0 2px; padding: 6px 10px; border-radius: 6px; background: var(--fondo);
                  border-left: 3px solid var(--borde); cursor: default; user-select: none; }
 .menu-grupo button { margin-left: 8px; }
+/* v0.41.1 · acordeón: el título del área es un botón que abre su área y cierra las demás */
+.menu-grupo.acordeon h3 { padding: 0; }
+.menu-grupo button.titulo-grupo { margin: 0; width: 100%; display: flex; align-items: center; gap: 6px; padding: 6px 10px;
+  background: transparent; color: var(--suave); font: inherit; font-size: .75rem; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .06em; border-radius: 6px; cursor: pointer; }
+.menu-grupo button.titulo-grupo:hover { background: rgba(31,94,255,.08); color: var(--texto); }
+.menu-grupo.acordeon.abierto button.titulo-grupo { color: var(--texto); }
+.punto-actual { margin-left: auto; color: var(--primario); font-size: .7rem; }
+.menu-botones { display: flex; flex-direction: column; gap: 2px; margin-top: 2px; }
+.menu-botones .menu-grupo { gap: 4px; }
 
 /* --- Estados financieros --- */
 .tabla-ancha { overflow-x: auto; }
@@ -239,8 +265,8 @@ button.pequeno { align-self: flex-start; padding: 6px 10px; font-size: .85rem; m
 .ratio-valor { grid-column: 2; display: flex; gap: 8px; align-items: baseline; justify-content: flex-end; white-space: nowrap; }
 .ratio-anterior { grid-column: 2; text-align: right; font-size: .8rem; color: var(--suave); white-space: nowrap; }
 .ratio-estado { display: inline-block; font-size: .75rem; font-weight: 700; padding: 1px 8px; border-radius: 999px; }
-.ratio-estado.ok { background: rgba(26,127,55,.12); color: var(--exito); }
-.ratio-estado.low, .ratio-estado.high { background: rgba(245,165,36,.18); color: var(--alerta); }
+.ratio-estado.ok { background: rgba(26,127,55,.12); color: color-mix(in srgb, var(--exito) 80%, var(--texto)); }   /* v0.41.2: contraste AA sobre su fondo */
+.ratio-estado.low, .ratio-estado.high { background: rgba(245,165,36,.18); color: color-mix(in srgb, var(--alerta) 55%, var(--texto)); }
 .ratio-detalle { padding: 0 4px 12px 22px; display: flex; flex-direction: column; gap: 6px; font-size: .9rem; }
 .ratio-detalle p { margin: 0; }
 .leyenda-ratios { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 0; }
@@ -440,7 +466,27 @@ a.enlace:hover { text-decoration: underline; }
 .sugerencias li:last-child { border-bottom: 0; }
 .sugerencias li.activa, .sugerencias li:hover { background: color-mix(in srgb, var(--primario) 12%, var(--tarjeta)); }
 input.esperado { border-color: var(--primario); box-shadow: inset 0 0 0 1px var(--primario); }
-.linea-total .acciones-linea button:first-child { border-width: 2px; font-weight: 700; }
+/* v0.41.1 · asiento en una línea: el importe propuesto en gris (placeholder) y la papelera */
+input.propuesto::placeholder { color: var(--primario); opacity: .75; font-style: italic; }
+.linea input[inputmode="decimal"] { text-align: right; font-variant-numeric: tabular-nums; }
+.papelera { background: transparent; color: var(--suave); border: 0; padding: 6px; align-self: center; line-height: 0; }
+.papelera:hover, .papelera:focus-visible { color: var(--aviso); background: color-mix(in srgb, var(--aviso) 10%, transparent); }
+.cabecera-lineas { display: none; }
+.cabecera-asiento { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.cabecera-asiento .concepto-asiento { grid-column: 1 / -1; }
+@media (min-width: 700px) {
+  /* PC: una fila por línea · Cuenta (con su nombre al lado) | Debe | Haber | papelera */
+  .lineas-asiento .linea { grid-template-columns: minmax(0, 1fr) 9.5em 9.5em 2.2em; align-items: center; padding: 3px 0; }
+  .lineas-asiento .cuenta-linea { grid-column: auto; flex-direction: row; align-items: center; gap: 8px; }
+  .lineas-asiento .cuenta-linea input { width: 13em; flex: none; }
+  .lineas-asiento .nombre-cuenta { flex: 1; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0; }
+  .lineas-asiento .cabecera-lineas { display: grid; padding: 0 0 2px; border-bottom: 1px solid var(--borde); color: var(--suave); font-size: .8rem; }
+  .lineas-asiento .cabecera-lineas span:nth-child(2), .lineas-asiento .cabecera-lineas span:nth-child(3) { text-align: right; padding-right: 10px; }
+  .papelera { opacity: 0; }
+  .linea:hover .papelera, .linea:focus-within .papelera, .papelera:focus-visible { opacity: 1; }
+  .cabecera-asiento { grid-template-columns: 11em 10em minmax(0, 1fr); }
+  .cabecera-asiento .concepto-asiento { grid-column: auto; }
+}
 
 
 /* --- v0.27.0: glosario (ⓘ con globo y página) --- */
@@ -705,7 +751,7 @@ td.num { white-space: nowrap; }
 .comprobacion-detalle th, .comprobacion-detalle td { text-align: left; padding: 4px 8px; border-bottom: 1px solid var(--borde); white-space: nowrap; }
 .comprobacion-detalle th { color: var(--suave); font-weight: 600; font-size: .8rem; }
 .comprobacion-arreglo { color: var(--suave) !important; }
-.opciones-modo { display: grid; gap: 8px; }
+.opciones-modo { display: grid; gap: 8px; grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr)); }   /* v0.41.1: en dos columnas si caben */
 .opcion-modo { display: flex; gap: 10px; align-items: flex-start; padding: 10px 12px; border: 1px solid var(--borde); border-radius: 8px; cursor: pointer; }
 .opcion-modo.activa { border-color: var(--primario); background: color-mix(in srgb, var(--primario) 6%, var(--tarjeta)); }
 .opcion-modo input { margin-top: 3px; }
@@ -859,3 +905,63 @@ table.casillas tr.excluido td:first-child { text-decoration: none; }
 .ajuste-manual { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; padding: 10px; border: 1px dashed var(--borde); border-radius: 8px; }
 .ajuste-manual .fila { flex-wrap: wrap; }
 .impuesto-sociedades + .tarjeta label.opcion { display: flex; gap: 8px; align-items: flex-start; }
+
+/* --- v0.41.2 · PANEL DE IA: botón flotante abajo a la derecha y panel lateral (en el móvil, a pantalla completa) --- */
+.boton-ia { position: fixed; right: 20px; bottom: 20px; z-index: 60; border-radius: 999px; padding: 12px 18px;
+            font-weight: 700; box-shadow: 0 6px 20px rgba(0,0,0,.25); display: flex; align-items: center; gap: 6px; }
+.boton-ia[aria-expanded="true"] { background: var(--texto); color: var(--fondo); }
+.panel-ia { position: fixed; z-index: 55; top: 0; right: 0; bottom: 0; width: min(440px, 100vw); display: flex; flex-direction: column;
+            background: var(--tarjeta); border-left: 1px solid var(--borde); box-shadow: -8px 0 24px rgba(0,0,0,.15); }
+.panel-ia[hidden] { display: none; }
+.panel-ia-cabecera { display: flex; align-items: center; justify-content: space-between; padding: 12px 14px; border-bottom: 1px solid var(--borde); }
+.panel-ia-cabecera .cerrar { padding: 4px 10px; }
+.panel-ia-pestanas { display: flex; gap: 4px; padding: 8px 14px 0; border-bottom: 1px solid var(--borde); }
+.panel-ia-pestanas button { background: transparent; color: var(--suave); border-radius: 8px 8px 0 0; border-bottom: 2px solid transparent; }
+.panel-ia-pestanas button.activa { color: var(--primario); border-bottom-color: var(--primario); font-weight: 700; }
+.panel-ia-contenido { flex: 1; overflow-y: auto; padding: 12px 14px 0; }
+.chat-ia { display: flex; flex-direction: column; gap: 10px; }
+.chat-mensajes { display: flex; flex-direction: column; gap: 14px; }
+.chat-mensajes > li { border: 0; padding: 0; }
+.chat-turno { display: flex; flex-direction: column; gap: 6px; }
+.burbuja { margin: 0; padding: 10px 12px; border-radius: 12px; line-height: 1.45; }
+.burbuja.usuario { align-self: flex-end; max-width: 85%; background: var(--primario); color: var(--sobre-color); border-bottom-right-radius: 4px; white-space: pre-wrap; }
+.burbuja.ia { background: var(--fondo); border: 1px solid var(--borde); border-bottom-left-radius: 4px; display: flex; flex-direction: column; gap: 8px; }
+.burbuja.escribiendo { color: var(--suave); }
+.burbuja .propuesta { display: flex; flex-direction: column; gap: 8px; }
+.burbuja table .porque { display: block; color: var(--suave); font-size: .8rem; }
+.chat-entrada { position: sticky; bottom: 0; z-index: 2; display: flex; flex-direction: column; gap: 6px; background: var(--tarjeta);
+               padding: 8px 0; box-shadow: 0 -10px 12px -6px var(--tarjeta); }
+.chat-entrada textarea { width: 100%; resize: vertical; font: inherit; padding: 8px 10px; border-radius: 8px; border: 1px solid var(--borde);
+                         background: var(--tarjeta); color: var(--texto); }
+.chat-entrada button { align-self: flex-end; }
+.en-panel h3 { margin: 0; }
+.analista-ia.en-panel { border-left: 0; }
+.pedir-ia { margin: 0 0 12px; }
+@media (min-width: 1100px) {
+  /* PC ancho: el panel se pone al lado y el contenido deja su sitio (no tapa nada) */
+  .empresa-layout:has(> .panel-ia:not([hidden])) { padding-right: 440px; }
+  .boton-ia[aria-expanded="true"] { right: 460px; }
+}
+@media (max-width: 600px) {
+  .boton-ia { right: 12px; bottom: 12px; padding: 10px 14px; }
+  .boton-ia[aria-expanded="true"] { display: none; }   /* a pantalla completa se cierra con ✕ o Escape */
+}
+@media print { .boton-ia, .panel-ia { display: none !important; } }
+
+/* --- v0.41.1 · DENSIDAD EN EL PC: letra un poco más pequeña y menos relleno, para que quepa más sin hacer scroll ---
+   Solo en pantalla y desde 900 px (el móvil y la impresión no cambian). Los tamaños en rem bajan solos con la raíz
+   (16 → 14 px); los rellenos en px se ajustan aquí. Quien la quiera más grande puede usar el zoom del navegador. */
+@media screen and (min-width: 900px) {
+  html { font-size: 14px; }
+  :root { line-height: 1.4; }
+  main:has(.empresa-layout) { padding: 12px 20px; }
+  .tarjeta { padding: 12px 14px; margin-bottom: 12px; gap: 8px; }
+  .empresa-contenido { gap: 0 12px; }
+  input, select, button { padding: 6px 10px; }
+  li { padding: 6px 0; }
+  h2 { margin-bottom: 8px; }
+  .tarjeta h3 { margin: 6px 0 2px; }
+  .tarjeta > h3:first-child, .tarjeta > h2:first-child { margin-top: 0; }
+  .menu-empresa { padding: 6px; gap: 6px; }
+  .menu-grupo button { padding: 5px 8px; }
+}

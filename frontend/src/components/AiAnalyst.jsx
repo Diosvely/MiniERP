@@ -6,7 +6,8 @@ import ErrorBox from './ErrorBox'
 
 // Analista IA (Cloudflare Workers AI, modelo open source): interpreta los estados, el EFE y los ratios ya calculados.
 // Lo ven el propietario y el titular de los datos de la empresa (erp.ai_status, con cuota diaria). La IA no cambia nada.
-export default function AiAnalyst({ company, year }) {
+// v0.41.2: vive en el panel de IA (inPanel); la pantalla (EFE, Ratios) le pasa el ejercicio
+export default function AiAnalyst({ company, year, inPanel = false }) {
   const { t, language } = useI18n()
   const [allowed, setAllowed] = useState(false)
   const [result, setResult] = useState(null)
@@ -51,8 +52,8 @@ export default function AiAnalyst({ company, year }) {
   const a = result?.analysis
 
   return (
-    <section className="tarjeta analista-ia">
-      <h2>🤖 {t('aiTitle')} · {year}</h2>
+    <section className={inPanel ? 'chat-ia analista-ia en-panel' : 'tarjeta analista-ia'}>
+      {inPanel ? <h3>{t('aiPanelYear').replace('{y}', year)}</h3> : <h2>🤖 {t('aiTitle')} · {year}</h2>}
       <p className="ayuda">{t('aiIntro')}</p>
       <button type="button" disabled={busy || remaining === 0} onClick={analyse}>
         {busy ? `${t('aiThinking')}…` : result ? t('aiAgain') : t('aiAnalyse')}

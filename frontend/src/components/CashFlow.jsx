@@ -3,7 +3,8 @@ import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import { workYear } from '../workDate'
 import { money } from '../format'
-import AiAnalyst from './AiAnalyst'
+import { AskAnalyst } from './AiPanel'
+import { useAiTopic } from '../aiContext'
 import ErrorBox from './ErrorBox'
 import ReportActions from './ReportActions'
 import { downloadXlsx, fileName } from '../exportXlsx'
@@ -16,6 +17,7 @@ export default function CashFlow({ company }) {
   const { t, language } = useI18n()
   const [years, setYears] = useState([])
   const [year, setYear] = useState(() => workYear(company))   // año de la fecha de trabajo
+  useAiTopic({ kind: 'analyst', year: Number(year) })   // v0.41.2: el Analista del panel de IA interpreta este ejercicio
   const [method, setMethod] = useState('indirect')
   const [hideZero, setHideZero] = useState(true)
   const [rows, setRows] = useState([])
@@ -229,7 +231,7 @@ export default function CashFlow({ company }) {
           )}
         </section>
       )}
-      {check && <AiAnalyst company={company} year={year} />}
+      {check && <AskAnalyst />}
     </>
   )
 }

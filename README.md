@@ -39,7 +39,7 @@ Proyecto de aprendizaje en evolución.
 | **Balance (modo oscuro) con el glosario** | **Modo auditor de una empresa importada** |
 | ![Balance con el globo del glosario](docs/capturas/04-balance-oscuro.png) | ![Recorrido del auditor](docs/capturas/05-modo-auditor.png) |
 
-Más capturas: [pantalla de entrada](docs/capturas/01-entrada.png) · [errores en lenguaje claro](docs/capturas/06-errores-claros.png) · [Inicio en el móvil](docs/capturas/07-inicio-movil.png) · [cascada del EFE](docs/capturas/08-efe-cascada.png) · [Balance comparativo](docs/capturas/09-balance-comparativo.png) · [libro mayor en el móvil](docs/capturas/10-mayor-movil.png) · [cobros y pagos](docs/capturas/11-cobros-pagos.png) · [comprobaciones](docs/capturas/12-comprobaciones.png) · [inmovilizado](docs/capturas/13-inmovilizado.png) · [ajustes de cierre](docs/capturas/14-ajustes-cierre.png) · [asistente de cierre](docs/capturas/15-asistente-cierre.png) · [nóminas](docs/capturas/16-nominas.png) · [modelos y fuentes](docs/capturas/17-modelos.png) · [practicar](docs/capturas/18-practicar.png) · [impuesto sobre sociedades](docs/capturas/19-impuesto-sociedades.png)
+Más capturas: [pantalla de entrada](docs/capturas/01-entrada.png) · [errores en lenguaje claro](docs/capturas/06-errores-claros.png) · [Inicio en el móvil](docs/capturas/07-inicio-movil.png) · [cascada del EFE](docs/capturas/08-efe-cascada.png) · [Balance comparativo](docs/capturas/09-balance-comparativo.png) · [libro mayor en el móvil](docs/capturas/10-mayor-movil.png) · [cobros y pagos](docs/capturas/11-cobros-pagos.png) · [comprobaciones](docs/capturas/12-comprobaciones.png) · [inmovilizado](docs/capturas/13-inmovilizado.png) · [ajustes de cierre](docs/capturas/14-ajustes-cierre.png) · [asistente de cierre](docs/capturas/15-asistente-cierre.png) · [nóminas](docs/capturas/16-nominas.png) · [modelos y fuentes](docs/capturas/17-modelos.png) · [practicar](docs/capturas/18-practicar.png) · [impuesto sobre sociedades](docs/capturas/19-impuesto-sociedades.png) · [panel de IA](docs/capturas/20-panel-ia.png)
 
 ---
 
@@ -50,7 +50,7 @@ española y el funcionamiento real de un ERP. Los ERP comerciales son caros y di
 propia, así que decidí **construir uno**. Diseñar la tabla de asientos obliga a entender *por qué* un ERP impone
 cada regla. Además, todo el código está en inglés para practicar el vocabulario técnico de BC y SAP.
 
-## ¿Qué hace hoy? (v0.41.0)
+## ¿Qué hace hoy? (v0.41.2)
 
 **Primeros pasos y navegación**
 - **Pantalla de Inicio** en cada empresa:
@@ -62,7 +62,8 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
     arriba en las empresas importadas y demos; en una empresa propia, cuando ya tiene lo básico (y la ruta se pliega
     al completarla).
 - **Modo Básico / Auditor:** un menú corto en lenguaje sencillo para quien empieza (9 entradas) o el menú completo
-  por áreas para revisar.
+  por áreas para revisar, en acordeón (una sola área abierta: la de la pantalla actual).
+- **Pantalla ancha en el PC:** hasta 1.600 px, con las tarjetas pequeñas de dos en dos; en el móvil, una columna.
 - **Cada pantalla tiene su enlace** (`#/empresa/<id>/balance`): se puede recargar, volver atrás y compartir.
 - **Fecha de trabajo de cada empresa** (la *Work Date* de BC): hoy si la empresa está al día, o la de su último
   asiento si es histórica o importada. De ella salen el año de los informes, el trimestre de las liquidaciones, el
@@ -81,8 +82,9 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
   cada empresa. **Subcuentas** validadas e **importación desde CSV** con vista previa.
 - **Empresas** por sector y territorio fiscal: **Península → IVA** o **Canarias → IGIC**. Ejercicios con 12
   periodos.
-- **Asientos** con cuadre en vivo, manejo rápido con teclado (atajo del punto `572.1 = 57200001`, botón "=" y
-  deshacer) y numeración correlativa sin huecos.
+- **Asientos** en una línea por apunte (Cuenta | Debe | Haber) con cuadre en vivo y manejo con teclado como ContaSol o
+  A3: Enter avanza y crea la línea nueva, lo que falta para cuadrar sale en gris (Enter o "=" lo ponen), Ctrl + Supr
+  borra la línea (con deshacer), atajo del punto `572.1 = 57200001`, y numeración correlativa sin huecos.
 - **Plantillas "¿Qué ha pasado?"** (compra, venta, cobro, pago, nómina) que rellenan las subcuentas, y **buscador de
   cuentas por nombre** ("caja", "bancos").
 - **Inmutabilidad:** un asiento contabilizado no se edita ni se borra; se **anula con contraasiento** (con fecha y
@@ -173,6 +175,8 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
   progreso por tandas. Sirve para enseñar una importación y quitarla después. Una demo publicada no se puede borrar.
 
 **Inteligencia artificial** (Cloudflare Workers AI, modelos open source)
+- **Panel de IA** (botón ✨ abajo a la derecha): el Tutor como conversación y el Analista del ejercicio que estés
+  viendo, en un panel lateral que no tapa la pantalla en el PC.
 - **Analista IA:** interpreta el balance, la PyG, el EFE y los ratios ya calculados (fortalezas, alertas y
   preguntas del auditor). Solo recibe **cifras agregadas**: nunca nombres de empresas, terceros ni conceptos.
 - **Tutor de asientos:** describes una operación ("factura de la abogada de 1.000 € más IVA") y la IA propone el
@@ -217,7 +221,7 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
 | Web | **React + Vite** | Componentes por pantalla, i18n propio (es/en), rutas con almohadilla, iconos `lucide-react` |
 | IA | **Cloudflare Workers AI** + Pages Functions | `/api/ai` (Mistral Small 3.1) y `/api/tutor` (gpt-oss-120b); la clave nunca llega al navegador |
 | Despliegue | **Cloudflare Pages** | Despliegue automático desde `main`, dirección de prueba por rama y cabeceras de seguridad (`_headers`) |
-| Calidad | **GitHub Actions** + **Vitest** + Dependabot | 54 pruebas SQL, 159 tests de la web, lint, build y auditoría de dependencias en cada Pull Request |
+| Calidad | **GitHub Actions** + **Vitest** + Dependabot | 54 pruebas SQL, 187 tests de la web, lint, build y auditoría de dependencias en cada Pull Request |
 | Versionado | Git + GitHub | Ramas, Pull Requests, `main` protegida, versiones etiquetadas y decisiones documentadas (ADR) |
 
 **Principio clave:** la web nunca es la única barrera. Aunque alguien manipule el navegador, PostgreSQL rechaza:
@@ -304,7 +308,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
     ├── glosario.md            vocabulario contable bilingüe
     ├── seguridad-supabase.md  lista de ajustes de seguridad del panel de Supabase
     ├── capturas/              capturas de la app para el README
-    └── decisiones/            ADR 0001 → 0040
+    └── decisiones/            ADR 0001 → 0041
 ```
 
 ## Calidad
@@ -313,7 +317,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
   - las 54 pruebas de la base de datos sobre PostgreSQL 16, cada una en una base limpia con todas las migraciones
     (la fase 23 vigila también que toda clave foránea tenga índice; la 34 lanza unas 300 operaciones al azar por
     empresa y exige nueve invariantes contables; la 35 compara al céntimo cinco supuestos calculados desde la norma);
-  - **159 tests de la web con Vitest**: formatos, rutas, importadores, errores, idiomas (español e inglés con las
+  - **187 tests de la web con Vitest**: formatos, rutas, importadores, errores, idiomas (español e inglés con las
     mismas claves), glosario, plantillas, la defensa de las funciones de IA, la lectura por páginas, el borrado por
     tandas, la fecha de trabajo, los gráficos, el análisis horizontal y la exportación a Excel;
   - lint, build y auditoría de dependencias de la web.
@@ -384,7 +388,7 @@ bash scripts/test-db.sh fase25     # solo las que contienen "fase25"
 
 ```bash
 cd frontend
-npm test                           # 159 tests con Vitest
+npm test                           # 187 tests con Vitest
 ```
 
 ### Importar una contabilidad propia
@@ -437,6 +441,7 @@ cuadrados. El ERP también lee directamente los diarios de Sage (Excel) y Busine
 - [x] **v0.40.0**: catálogo de operaciones («dónde se registra»), 14 supuestos autocorregidos (Practicar) y «Evaluar la IA»
 - [x] **v0.40.1**: el corrector solo admite cuentas válidas del PGC (la 4009 no es la 400)
 - [x] **v0.41.0**: Impuesto sobre Sociedades en el cierre: base imponible, cuota, bases negativas e impuesto diferido
+- [x] **v0.41.1 · v0.41.2**: mejoras de uso: pantalla ancha, menú en acordeón, asientos en una línea y panel de IA
 - [ ] v0.42.0: operaciones societarias (capital, reparto del resultado y dividendos)
 - [ ] v0.43.0: préstamos a coste amortizado y arrendamiento financiero
 - [ ] v0.44.0: grupos 8 y 9, subvenciones y ECPN

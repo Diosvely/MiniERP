@@ -1,4 +1,6 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { markHalves } from '../wideLayout'
+import { groupForSection, nextIndex, toggleGroup } from '../menuAccordion'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import Accounts from './Accounts'
@@ -22,7 +24,8 @@ import Payments from './Payments'
 import ProRata from './ProRata'
 import CashFlow from './CashFlow'
 import Ratios from './Ratios'
-import EntryTutor from './EntryTutor'
+import AiPanel from './AiPanel'
+import { AiProvider } from './AiContext'
 import CompanyAccess from './CompanyAccess'
 import EntryDetail from './EntryDetail'
 import DeleteCompany from './DeleteCompany'
@@ -85,6 +88,17 @@ export default function CompanyView({ company: base, readOnly, canPublish, isOwn
   // FECHA DE TRABAJO (Work Date de BC): hoy si la empresa está al día; si es histórica o importada, la de su
   // último asiento. Se calcula una vez al abrir la empresa y las pantallas la leen de company.work_date.
   const [work, setWork] = useState(null)
+  // v0.41.1 · pantalla ancha: empareja las tarjetas pequeñas (y vuelve a mirarlo cuando la pantalla carga sus datos)
+  const contentRef = useRef(null)
+  useLayoutEffect(() => {
+    const el = contentRef.current
+    if (!el) return
+    markHalves(el)
+    const obs = new MutationObserver(() => markHalves(el))
+    obs.observe(el, { childList: true, subtree: true })
+    return () => obs.disconnect()
+  }, [])
+
   useEffect(() => {
     let alive = true
     Promise.all([
@@ -153,7 +167,26 @@ export default function CompanyView({ company: base, readOnly, canPublish, isOwn
 
   const group = mode === 'auditor' ? byId[section]?.group : ''
 
+  // v0.41.1 · Menú en acordeón: una sola área abierta (la de la pantalla actual al entrar en ella)
+  const [openGroup, setOpenGroup] = useState(byId[section]?.group || 'menuAccounting')
+  const sectionGroup = byId[section]?.group
+  useEffect(() => { setOpenGroup((g) => groupForSection(sectionGroup, g)) }, [sectionGroup])   // eslint-disable-line react-hooks/set-state-in-effect
+  // Flechas ↑ ↓ (e Inicio / Fin) para moverse por los botones del menú
+  function menuKeys(e) {
+    if (!['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(e.key)) return
+    const buttons = [...e.currentTarget.querySelectorAll('button:not([disabled])')]
+    const i = nextIndex(buttons.indexOf(document.activeElement), buttons.length, e.key)
+    if (i >= 0) { e.preventDefault(); buttons[i].focus() }
+  }
+
+  // v0.41.2 · «Pasar al asiento» desde el Tutor del panel: lleva la propuesta a Nuevo asiento (estés donde estés)
+  function draftFromTutor(d) {
+    setDraft(d)
+    if (section !== 'entry') go('entry')
+  }
+
   return (
+    <AiProvider company={company}>
     <div className="empresa-layout">
       <div className="empresa-cabecera">
         <button className="secundario" onClick={onBack}>← {t('back')}</button>
@@ -179,19 +212,36 @@ export default function CompanyView({ company: base, readOnly, canPublish, isOwn
         <span>☰</span> {group && <>{t(group)} › </>}<strong>{label(section)}</strong>
       </button>
 
-      <aside className={menuOpen ? 'menu-empresa abierto' : 'menu-empresa'}>
+      <aside className={menuOpen ? 'menu-empresa abierto' : 'menu-empresa'} onKeyDown={menuKeys}>
         {menu.map(([g, ids]) => (
-          <div key={g || 'basico'} className="menu-grupo">
-            {g && <h3>{t(g)}</h3>}
-            {ids.map((id) => (
+          <div key={g || 'basico'} className={g ? `menu-grupo acordeon${openGroup === g ? ' abierto' : ''}` : 'menu-grupo'}>
+            {g && (
+              <h3>
+                <button type="button" className="titulo-grupo" aria-expanded={openGroup === g} aria-controls={`menu-${g}`}
+                        onClick={() => setOpenGroup(toggleGroup(openGroup, g))}>
+                  <span aria-hidden="true">{openGroup === g ? '▾' : '▸'}</span> {t(g)}
+                  {openGroup !== g && ids.includes(section) && <span className="punto-actual" aria-hidden="true">●</span>}
+                </button>
+              </h3>
+            )}
+            {(!g || openGroup === g) && <div id={g ? `menu-${g}` : undefined} className="menu-botones">{ids.map((id) => (
               <button key={id} type="button" className={section === id ? 'activa' : ''}
                       aria-current={section === id ? 'page' : undefined} onClick={() => go(id)}>
                 {label(id)}
                 {sub(id) && <small>{sub(id)}</small>}
               </button>
-            ))}
+            ))}</div>}
           </div>
         ))}
+        {(canPublish || canDelete) && (
+          <div className={`menu-grupo acordeon${openGroup === 'menuCompany' ? ' abierto' : ''}`}>
+            <h3>
+              <button type="button" className="titulo-grupo" aria-expanded={openGroup === 'menuCompany'} aria-controls="menu-menuCompany"
+                      onClick={() => setOpenGroup(toggleGroup(openGroup, 'menuCompany'))}>
+                <span aria-hidden="true">{openGroup === 'menuCompany' ? '▾' : '▸'}</span> {t('menuCompany')}
+              </button>
+            </h3>
+            {openGroup === 'menuCompany' && <div id="menu-menuCompany" className="menu-botones">
         {canPublish && (
           <div className="menu-grupo">
             <button type="button" className="secundario"
@@ -210,9 +260,12 @@ export default function CompanyView({ company: base, readOnly, canPublish, isOwn
             {company.is_demo && <small className="ayuda">{t('deleteCompanyDemoHint')}</small>}
           </div>
         )}
+            </div>}
+          </div>
+        )}
       </aside>
 
-      <section className="empresa-contenido">
+      <section className="empresa-contenido" ref={contentRef}>
         {readOnly && <p className="solo-lectura">👁 {t('readOnly')}</p>}
         <ErrorBox error={error} company={company} />
         {company.is_data_owner && <p className="titular">🤝 {t('dataOwnerBanner')}</p>}
@@ -253,7 +306,6 @@ export default function CompanyView({ company: base, readOnly, canPublish, isOwn
 
         {work === null ? <Loading /> : (<>
         {section === 'home' && <Home company={company} readOnly={readOnly} mode={mode} onAuditor={() => setMode('auditor')} />}
-        {section === 'entry' && !readOnly && <EntryTutor company={company} onLoad={setDraft} />}
         {section === 'entry' && !readOnly && (
           <JournalEntryForm company={company} draft={draft} onPosted={() => setRefreshKey((k) => k + 1)} />
         )}
@@ -282,6 +334,8 @@ export default function CompanyView({ company: base, readOnly, canPublish, isOwn
         {section === 'access' && isOwner && <CompanyAccess company={company} />}
         </>)}
       </section>
+      <AiPanel company={company} canWrite={!readOnly} onDraft={draftFromTutor} />
     </div>
+    </AiProvider>
   )
 }

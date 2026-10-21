@@ -83,3 +83,14 @@ describe('cuentas controladas: nombre de cada módulo', () => {
     }
   })
 })
+
+// v0.42.0 · Gastos de constitución en la 113: el ahorro de impuesto va a reservas (las mismas cifras que la fase 56)
+describe('Impuesto sobre Sociedades · gastos cargados a reservas', () => {
+  const c = { current_tax: 25000, equity_tax_effect: 300, withholdings: 0, differential: 24700, deferred_tax: 0, deferred_rate: 25,
+    temporary_increase: 0, temporary_decrease: 0, loss_credit: 0, loss_credit_used: 0 }
+  it('6300 25.000 / 113 300 · 4752 24.700, y cuadra', () => {
+    const { current } = entriesPreview(c)
+    expect(current).toEqual([{ account: '6300', debit: 25000, credit: 0 }, { account: '113', debit: 0, credit: 300 }, { account: '4752', debit: 0, credit: 24700 }])
+    expect(balanced(current)).toBe(true)
+  })
+})

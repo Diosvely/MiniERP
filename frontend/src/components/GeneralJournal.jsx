@@ -126,6 +126,7 @@ export default function GeneralJournal({ company, readOnly, refreshKey }) {
               {e.source === 'payment' && <span className="etiqueta">{t('sourcePayment')}</span>}
               {e.source === 'closing' && <span className="etiqueta">🔒 {t('sourceClosing')}</span>}
               {e.source === 'corporate_tax' && <span className="etiqueta">{t('sourceCorporateTax')}</span>}
+              {e.source === 'equity' && <span className="etiqueta">{t('sourceEquity')}</span>}
               {e.reversal_of_no && <span className="etiqueta anula">↩ {t('reversesEntry').replace('{n}', e.reversal_of_no)}</span>}
               {e.reversed_by_no && <span className="etiqueta anulado">✕ {t('reversedByEntry').replace('{n}', e.reversed_by_no)}</span>}
             </div>

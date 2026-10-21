@@ -76,6 +76,12 @@ export const SOURCES = {
     es: { title: 'Ley 27/2014, del Impuesto sobre Sociedades', ref: 'Arts. 10 a 15 (base imponible, amortizaciones, deterioros, provisiones y gastos no deducibles), 26 (bases negativas), 29 y DT 44.ª (tipos) y 101 y 104 (reducida dimensión)' },
     en: { title: 'Law 27/2014 on Corporate Income Tax', ref: 'Arts. 10 to 15 (taxable base, depreciation, impairments, provisions and non-deductible expenses), 26 (tax losses), 29 and DT 44.ª (rates) and 101 and 104 (reduced size)' },
   },
+  lsc: {
+    issuer: 'BOE', checked: '2026-10-21',
+    url: 'https://www.boe.es/eli/es/rdlg/2010/07/02/1/con',
+    es: { title: 'Real Decreto Legislativo 1/2010, Ley de Sociedades de Capital', ref: 'Arts. 4 (capital mínimo; SL de menos de 3.000 €, Ley 18/2022), 78 y 79 (desembolso), 273, 274 y 277 (reparto, reserva legal y dividendo a cuenta), 295 a 304 (aumento) y 317 a 322 (reducción por pérdidas)' },
+    en: { title: 'Royal Legislative Decree 1/2010, Spanish Companies Act (LSC)', ref: 'Arts. 4 (minimum capital; SL under €3,000, Law 18/2022), 78 and 79 (payment), 273, 274 and 277 (distribution, legal reserve and interim dividend), 295 to 304 (increase) and 317 to 322 (reduction for losses)' },
+  },
   lirpf: {
     issuer: 'BOE', checked: '2026-10-19',
     url: 'https://www.boe.es/eli/es/l/2006/11/28/35/con',

@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.run_audit_checks · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0037_audit_checks 0039_review_fixes 0042_assets_integration 0044_adjustments_integration 0046_asset_impairment 0048_closing_integration 0050_payroll_integration 0053_forms_integration   →   la vigente es la de 0053_forms_integration
+-- Definida en: 0037_audit_checks 0039_review_fixes 0042_assets_integration 0044_adjustments_integration 0046_asset_impairment 0048_closing_integration 0050_payroll_integration 0053_forms_integration 0061_equity_integration   →   la vigente es la de 0061_equity_integration
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.run_audit_checks(p_company uuid, p_year integer, p_to_date date DEFAULT NULL::date)
@@ -98,9 +98,9 @@ begin
       with g as (
         select a.k, a.source, min(a.account_no) as account_no, sum(a.credit - a.debit) as amount,
                (select sum(l.credit - l.debit) from erp.journal_lines l join erp.gl_accounts ga on ga.id = l.gl_account_id
-                where l.entry_id = a.k and ga.account_no like '4751%') as original
+                where l.entry_id = a.k and ga.account_no like '4751%' and ga.account_no not like '47512%') as original
         from erp.audit_lines(p_company, p_year, v_to) a
-        where a.account_no like '4751%'
+        where a.account_no like '4751%' and a.account_no not like '47512%'   -- v0.42.0: la 47512 (dividendos) va al modelo 123
         group by a.k, a.source
       ), n as (
         select g.*, e.entry_no, e.posting_date,

@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.corporate_tax_calc · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0057_corporate_tax   →   la vigente es la de 0057_corporate_tax
+-- Definida en: 0057_corporate_tax 0061_equity_integration   →   la vigente es la de 0061_equity_integration
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.corporate_tax_calc(p_company uuid, p_year integer, p_regime text DEFAULT NULL::text, p_recognize boolean DEFAULT NULL::boolean)
@@ -14,6 +14,7 @@ declare
   v_limit numeric; v_avail numeric; v_comp numeric := 0; v_usage jsonb := '[]'; v_left numeric; b record;
   v_base numeric; v_q jsonb; v_quota numeric; v_rate numeric; v_wh numeric; v_diff numeric;
   v_loss numeric; v_credit numeric; v_credit_used numeric := 0; v_def numeric; v_warn jsonb := '[]';
+  v_eq numeric; v_eqtax numeric := 0;
 begin
   if not erp.can_read(p_company) then raise exception 'Not allowed to read this company'; end if;
   select * into v_fy from erp.fiscal_years where company_id = p_company and year = p_year;
@@ -67,6 +68,13 @@ begin
   where e.company_id = p_company and e.fiscal_year_id = v_fy.id and e.status = 'posted'
     and e.entry_type not in ('closing_pl', 'closing') and g.account_no like '473%';
   v_diff := v_quota - v_wh;
+  -- v0.42.0 · gastos cargados a reservas (113): el impuesto que ahorran va también contra reservas, no a la PyG (NRV 13.ª,
+  -- apdo. 2.1): el gasto por impuesto corriente (6300) es el de la base sin ellos y la diferencia va a la 113 al Haber
+  select coalesce(sum((x->>'amount')::numeric), 0) into v_eq
+  from jsonb_array_elements(v_adj) x where (x->>'included')::boolean and x->>'origin' = 'equity_costs';
+  if v_eq > 0 then
+    v_eqtax := ((erp.corporate_tax_quota(p_year, v_regime, greatest(v_base + v_eq, 0)))->>'quota')::numeric - v_quota;
+  end if;
 
   -- impuesto diferido (NRV 13.ª): diferencias temporarias × tipo; bases negativas, solo si se registra el crédito
   v_loss := greatest(-v_prev, 0);
@@ -94,7 +102,8 @@ begin
     'withholdings', v_wh, 'differential', v_diff,
     'outcome', case when v_diff > 0 then 'pay' when v_diff < 0 then 'refund' else 'zero' end,
     'deferred_rate', v_rate, 'loss_generated', v_loss, 'loss_credit', v_credit, 'loss_credit_used', v_credit_used,
-    'current_tax', v_quota, 'deferred_tax', v_def, 'tax_expense', v_quota + v_def,
-    'net_result', v_result - v_quota - v_def, 'warnings', v_warn);
+    'current_tax', v_quota + v_eqtax, 'deferred_tax', v_def, 'tax_expense', v_quota + v_eqtax + v_def,
+    'equity_costs', v_eq, 'equity_tax_effect', v_eqtax,
+    'net_result', v_result - v_quota - v_eqtax - v_def, 'warnings', v_warn);
 end $function$
 ;

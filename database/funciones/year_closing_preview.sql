@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.year_closing_preview · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0017_year_closing 0042_assets_integration 0044_adjustments_integration 0046_asset_impairment 0048_closing_integration 0059_corporate_tax_integration   →   la vigente es la de 0059_corporate_tax_integration
+-- Definida en: 0017_year_closing 0042_assets_integration 0044_adjustments_integration 0046_asset_impairment 0048_closing_integration 0059_corporate_tax_integration 0061_equity_integration   →   la vigente es la de 0061_equity_integration
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.year_closing_preview(p_company uuid, p_year integer)
@@ -108,6 +108,12 @@ begin
     if v_txt is not null then
       v_checks := v_checks || jsonb_build_object('code', 'withholdings_left', 'severity', 'warning', 'detail', v_txt);
     end if;
+  end if;
+
+  -- v0.42.0 · el resultado del año anterior sigue en la 129: la junta aún no lo ha repartido (Operaciones societarias)
+  if v_fy.status = 'open' and erp.equity_bal(p_company, '129', v_fy.ending_date) <> 0 then
+    v_checks := v_checks || jsonb_build_object('code', 'result_not_distributed', 'severity', 'warning',
+      'detail', erp.equity_bal(p_company, '129', v_fy.ending_date));
   end if;
 
   if not exists (select 1 from erp.gl_accounts where company_id = p_company and account_no = v_res_no) then

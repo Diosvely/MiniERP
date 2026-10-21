@@ -35,6 +35,7 @@ export function moduleScreen(modules) {
   if (m.includes('assets')) return 'assets'
   if (m.includes('payroll')) return 'payroll'   // v0.38.0
   if (m.includes('corporate_tax')) return 'corporate_tax'   // v0.41.0
+  if (m.includes('equity')) return 'equity'   // v0.42.0
   if (m.includes('accruals') || m.includes('impairments') || m.includes('provisions') || m.includes('inventory')) return 'adjustments'   // v0.36.0 / v0.37.0
   return 'journal'
 }

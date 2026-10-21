@@ -1230,3 +1230,33 @@ resultado y dividendos).
 
 **Siguiente paso:** v0.42.0 · operaciones societarias (constitución, ampliación y reducción de capital, reparto del
 resultado, dividendos y compensación de pérdidas).
+
+## 2026-10-21 · v0.42.0 · Operaciones societarias
+
+**Qué se hizo**
+- **Supuestos de referencia** (220): seis, calculados a mano desde la LSC y validados antes de programar.
+- **Motor** (0060): constitución, ampliaciones, dividendos pasivos, reparto del resultado, dividendo a cuenta, pago
+  del dividendo y pérdidas.
+- **Integración** (0061): facturas a la 113 y su impuesto, cierre, auditor, cuentas controladas, glosario, LSC y
+  Practicar.
+- **Pantalla:** «Operaciones societarias», con la propuesta de reparto y los asientos antes de contabilizar.
+- **Pruebas:** 56 SQL y 200 tests de la web.
+
+**Lo que se aprende**
+- **El resultado es de la junta.** Hasta que no lo reparte, está en la 129. El orden lo marca la ley: pérdidas,
+  reserva legal, dividendo y reservas voluntarias.
+- **La reserva legal protege a los acreedores:** por eso hay límites al dividendo (arts. 273 y 277).
+- **Los gastos de constitución van contra reservas:** no son un gasto del año, pero sí se deducen en el impuesto.
+- **Una retención en la subcuenta equivocada descuadra una comprobación.** La del dividendo va al 123, no al 111: por
+  eso tiene su propia subcuenta.
+- **Al probar se encuentran fallos que no se ven al escribir:**
+  - deshacer elegía mal entre dos operaciones registradas a la misma hora;
+  - una función con permisos de más.
+
+**Decisiones:** ADR 0042 · Operaciones societarias.
+
+**Pendiente de validar por Diosvely:** si la reserva legal se calcula sobre el beneficio del ejercicio aunque haya
+pérdidas pendientes.
+
+**Siguiente paso:** v0.43.0 · financiación: préstamos a coste amortizado (tipo de interés efectivo) y arrendamiento
+financiero.

@@ -2,6 +2,29 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.42.0] - 2026-10-21
+### Añadido
+- **Operaciones societarias** (pantalla en Contabilidad; migraciones `0060_equity_operations.sql` y
+  `0061_equity_integration.sql`):
+  - forma jurídica de la empresa (SA / SL);
+  - constitución y ampliación de capital, con prima y con cargo a reservas, y dividendos pasivos;
+  - reparto del resultado: propuesta con la reserva legal (arts. 274 y 4.2 LSC) y la comprobación del art. 273;
+  - dividendo a cuenta con el límite del art. 277;
+  - pago del dividendo con la retención del 19 % (47512, modelo 123);
+  - pérdidas: compensarlas con reservas o reducir el capital;
+  - historial con «Deshacer», de la última a la primera.
+- Facturas recibidas a la **113** (gastos de constitución y de ampliación, NRV 9.ª). En el Impuesto sobre Sociedades
+  son un ajuste deducible y su ahorro de impuesto va a reservas.
+- **Cierre:** aviso si el resultado del año anterior sigue sin repartir.
+- **Cuentas controladas:** 190, 194, 1030, 5580, 526 y 557.
+- **Glosario:** reserva legal, dividendo a cuenta, prima de emisión y desembolsos pendientes.
+- **Fuentes:** la LSC.
+- **Practicar:** 18 supuestos.
+- El subgrupo 19 del PGC en la plantilla.
+- **Pruebas:** fases 55 y 56 (56 pruebas SQL) y 200 tests en la web.
+### Corregido
+- La comprobación de la 4751 con el 111 / 115 ya no cuenta la retención de dividendos (47512).
+
 ## [0.41.2] - 2026-10-21
 ### Añadido
 - **Panel de IA:** botón «✨ IA» abajo a la derecha, con el **Tutor de asientos** como conversación y el **Analista IA**

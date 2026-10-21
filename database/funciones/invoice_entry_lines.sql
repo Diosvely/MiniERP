@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.invoice_entry_lines · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0011_invoices 0018_withholding_exempt 0019_reverse_charge_surcharge 0020_pro_rata 0041_fixed_assets   →   la vigente es la de 0041_fixed_assets
+-- Definida en: 0011_invoices 0018_withholding_exempt 0019_reverse_charge_surcharge 0020_pro_rata 0041_fixed_assets 0061_equity_integration   →   la vigente es la de 0061_equity_integration
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.invoice_entry_lines(p jsonb)
@@ -97,8 +97,9 @@ begin
       raise exception 'Line %: account % is a heading account', r.n, a.account_no;
     end if;
     -- Regla contable: compras a grupos 2 (inmovilizado) o 6 (gastos); ventas al grupo 7 (ingresos)
-    if v_type = 'purchase' and left(a.account_no, 1) not in ('2', '6') then
-      raise exception 'Line %: account % is not valid in a received invoice (use group 6 or 2)', r.n, a.account_no;
+    -- v0.42.0: también la 113 (gastos de constitución o de ampliación de capital, que van contra reservas: NRV 9.ª)
+    if v_type = 'purchase' and left(a.account_no, 1) not in ('2', '6') and a.account_no not like '113%' then
+      raise exception 'Line %: account % is not valid in a received invoice (use group 6 or 2, or 113 for incorporation or capital increase costs)', r.n, a.account_no;
     end if;
     -- v0.35.0: la venta de un inmovilizado se factura a su cuenta (20x / 21x / 22x); la baja la hace el módulo
     if v_type = 'sale' and left(a.account_no, 1) <> '7' and left(a.account_no, 2) not in ('20', '21', '22') then

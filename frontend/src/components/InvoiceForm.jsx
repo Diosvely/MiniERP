@@ -51,7 +51,8 @@ export default function InvoiceForm({ company, invoiceType, invoices, onPosted }
       const failed = p.error || a.error || x.error || k.error || w.error
       if (failed) return setError(failed.message)
       setPartners(p.data.filter((r) => !r.blocked))
-      setAccounts(a.data.filter((r) => groups.includes(r.account_no[0])))
+      // v0.42.0: en las recibidas, también la 113 (gastos de constitución o de ampliación de capital, contra reservas)
+      setAccounts(a.data.filter((r) => groups.includes(r.account_no[0]) || (purchase && r.account_no.startsWith('113'))))
       // Primero los tipos con cuota (de mayor a menor) y después las operaciones sin cuota con su causa
       const keys = Object.fromEntries(k.data.map((c) => [c.code, c.exemption_key]))
       setTaxes(x.data.map((r) => ({ ...r, exemption_key: keys[r.tax_code] })))

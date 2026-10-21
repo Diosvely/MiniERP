@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.corporate_tax_proposals · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0057_corporate_tax 0059_corporate_tax_integration   →   la vigente es la de 0059_corporate_tax_integration
+-- Definida en: 0057_corporate_tax 0059_corporate_tax_integration 0061_equity_integration   →   la vigente es la de 0061_equity_integration
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.corporate_tax_proposals(p_company uuid, p_year integer)
@@ -115,6 +115,18 @@ begin
       concept := format('Reversión de la provisión %s (aplicada o revisada a la baja)', p.code); amount := least(v_pend, p.dec);
       article := 'LIS art. 14'; included := true; return next;
     end if;
+  end loop;
+  -- f) v0.42.0 · Gastos de constitución y de ampliación de capital cargados a reservas (NRV 9.ª, apdo. 4): no pasan por
+  --    la PyG pero son deducibles (LIS art. 11.3: solo no lo son si una norma lo dice). Uno por factura recibida a la 113.
+  for i in select inv.id, coalesce(inv.external_document_no, inv.invoice_no) as doc, sum(l.debit - l.credit) as amount
+           from erp.invoices inv join erp.journal_entries e on e.id = inv.entry_id
+           join erp.journal_lines l on l.entry_id = e.id join erp.gl_accounts g on g.id = l.gl_account_id
+           where inv.company_id = p_company and e.fiscal_year_id = v_fy.id and e.status = 'posted' and e.reversed_by is null
+             and g.account_no like '113%'
+           group by inv.id, inv.external_document_no, inv.invoice_no having sum(l.debit - l.credit) > 0 loop
+    origin := 'equity_costs'; source_id := i.id; kind := 'permanent'; direction := 'decrease';
+    concept := format('Gastos de constitución o ampliación cargados a reservas (113) · factura %s', i.doc);
+    amount := i.amount; article := 'LIS art. 11.3'; included := true; return next;
   end loop;
 end $function$
 ;

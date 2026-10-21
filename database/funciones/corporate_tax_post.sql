@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.corporate_tax_post · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0058_corporate_tax_posting   →   la vigente es la de 0058_corporate_tax_posting
+-- Definida en: 0058_corporate_tax_posting 0061_equity_integration   →   la vigente es la de 0061_equity_integration
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.corporate_tax_post(p_company uuid, p_year integer)
@@ -26,6 +26,10 @@ begin
 
   -- impuesto corriente
   v_cur := v_cur || jsonb_build_object('account_id', erp.adjust_account(p_company, '6300', 'Impuesto corriente'), 'debit', v_quota, 'credit', 0);
+  -- v0.42.0 · el ahorro de impuesto de los gastos cargados a reservas, a reservas (113 H)
+  if coalesce((g->>'equity_tax_effect')::numeric, 0) > 0 then
+    v_cur := v_cur || jsonb_build_object('account_id', erp.adjust_account(p_company, '113', 'Reservas voluntarias'), 'debit', 0, 'credit', (g->>'equity_tax_effect')::numeric);
+  end if;
   for a in select gl.id, sum(l.debit - l.credit) as bal
            from erp.journal_lines l join erp.journal_entries e on e.id = l.entry_id join erp.gl_accounts gl on gl.id = l.gl_account_id
            where e.company_id = p_company and e.fiscal_year_id = v_fy.id and e.status = 'posted'

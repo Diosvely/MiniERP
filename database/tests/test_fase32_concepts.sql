@@ -22,7 +22,7 @@ select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a1
 do $$
 declare v text;
 begin
-  assert (select count(*) from erp.concepts) = 58, 'los 58 términos del glosario (41 + 2 del inmovilizado, 0042, + 2 de los ajustes de cierre, 0044, + 3 del cierre II, 0048, + 2 de nóminas, 0050, + 2 de modelos, 0053, + 2 de practicar, 0055, + 4 del Impuesto sobre Sociedades, 0059): ' || (select count(*) from erp.concepts);
+  assert (select count(*) from erp.concepts) = 62, 'los 62 términos del glosario (41 + 2 del inmovilizado, 0042, + 2 de los ajustes de cierre, 0044, + 3 del cierre II, 0048, + 2 de nóminas, 0050, + 2 de modelos, 0053, + 2 de practicar, 0055, + 4 del Impuesto sobre Sociedades, 0059, + 4 de operaciones societarias, 0061): ' || (select count(*) from erp.concepts);
   assert (select term from erp.concepts where key = 'controlledAccount') = 'Cuenta controlada';
   assert (select sap from erp.concepts where key = 'controlledAccount') = 'Reconciliation account';
   assert (select pgc from erp.concepts where key = 'inputTax') = '{472}';

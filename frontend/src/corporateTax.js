@@ -42,6 +42,8 @@ export function entriesPreview(c) {
   const r = (v) => cents(v) / 100
   const current = []
   if (r(c.current_tax) > 0) current.push(line('6300', r(c.current_tax), 0))
+  // v0.42.0: el impuesto que ahorran los gastos cargados a reservas, a reservas
+  if (r(c.equity_tax_effect) > 0) current.push(line('113', 0, r(c.equity_tax_effect)))
   if (r(c.withholdings) !== 0) current.push(line('473', Math.max(-r(c.withholdings), 0), Math.max(r(c.withholdings), 0)))
   if (r(c.differential) > 0) current.push(line('4752', 0, r(c.differential)))
   if (r(c.differential) < 0) current.push(line('4709', -r(c.differential), 0))

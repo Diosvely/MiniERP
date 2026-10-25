@@ -23,6 +23,7 @@ import Equity from './Equity'
 import Financing from './Financing'
 import Grants from './Grants'
 import EquityStatement from './EquityStatement'
+import CaseStudy from './CaseStudy'
 import Withholdings from './Withholdings'
 import Payments from './Payments'
 import ProRata from './ProRata'
@@ -67,6 +68,7 @@ const SCREENS = [
   { id: 'withholdings', group: 'menuTaxes' },
   { id: 'prorata', group: 'menuTaxes' },
   { id: 'taxes', group: 'menuTaxes', basic: 'hidden' },
+  { id: 'case', group: 'menuReports', basic: true, caseOnly: true },   // v0.46.0 · solo en la empresa de un caso completo
   { id: 'balance', group: 'menuReports', basic: true },
   { id: 'pyg', group: 'menuReports', basic: true },
   { id: 'cashflow', group: 'menuReports' },
@@ -80,8 +82,8 @@ const SCREENS = [
   // Ficha de un asiento: no sale en ningún menú, se llega desde el libro mayor (#/…/asiento/<año>/<nº>)
   { id: 'asiento', group: 'menuAccounting', basic: 'hidden', menu: false },
 ]
-// Orden del menú Básico (9 entradas como máximo): de lo que más se usa a lo que menos
-const BASIC_ORDER = ['home', 'invoices', 'payments', 'entry', 'journal', 'settlement', 'balance', 'pyg', 'partners']
+// Orden del menú Básico (9 entradas como máximo, 10 en la empresa de un caso): de lo que más se usa a lo que menos
+const BASIC_ORDER = ['home', 'case', 'invoices', 'payments', 'entry', 'journal', 'settlement', 'balance', 'pyg', 'partners']
 
 // Modo elegido: se guarda en este navegador (si no deja guardar, siempre empieza en Básico)
 const savedMode = () => { try { return localStorage.getItem('erp-modo') === 'auditor' ? 'auditor' : 'basic' } catch { return 'basic' } }
@@ -123,7 +125,8 @@ export default function CompanyView({ company: base, readOnly, canPublish, isOwn
   const setMode = (m) => { setModeState(m); saveMode(m) }
 
   // Pantallas a las que tiene acceso (en los dos modos): el modo solo cambia el menú, no los permisos
-  const screens = SCREENS.filter((s) => !(s.write && readOnly) && !(s.owner && !(isOwner && company.my_role === 'admin')))
+  const screens = SCREENS.filter((s) => !(s.write && readOnly) && !(s.owner && !(isOwner && company.my_role === 'admin'))
+    && !(s.caseOnly && !company.case_key))
   const allowed = screens.map((s) => s.id)
   const byId = Object.fromEntries(screens.map((s) => [s.id, s]))
   const menu = mode === 'basic'
@@ -324,6 +327,7 @@ export default function CompanyView({ company: base, readOnly, canPublish, isOwn
         {section === 'financing' && <Financing company={company} readOnly={readOnly} />}
         {section === 'grants' && <Grants company={company} readOnly={readOnly} />}
         {section === 'ecpn' && <EquityStatement company={company} />}
+        {section === 'case' && <CaseStudy company={company} />}
         {section === 'invoices' && <Invoices company={company} readOnly={readOnly} />}
         {section === 'payments' && <Payments company={company} readOnly={readOnly} />}
         {section === 'assets' && <Assets company={company} readOnly={readOnly} />}

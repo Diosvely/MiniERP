@@ -84,6 +84,15 @@ const RULES = [
   [/^The date is earlier than the last posting of this grant/, 'grantDateEarly'],
   [/^Asset (\S+) is not depreciated up to (\S+)/, 'grantDepreciate', 'assets'],
   [/^Only an active capital grant can be imputed/, 'grantRest', 'grants'],
+  // v0.46.0 · Casos completos
+  [/^Unknown case: /, 'caseUnknown'],
+  [/^Load the case into a new company/, 'caseNotNew'],
+  [/^This case needs a company in the Canary Islands/, 'caseCanary'],
+  [/^This case needs a limited company/, 'caseSl'],
+  [/^No case loaded in this company/, 'caseNone'],
+  [/^Sign in to load a case/, 'caseSignIn'],
+  [/^Invalid case mode/, 'caseMode'],
+  [/^No permission: only the company admin can load a case/, 'caseAdmin'],
   // v0.41.0 · Impuesto sobre Sociedades
   [/^This entry belongs to the corporate income tax/, 'entryFromCorporateTax', 'corporate_tax'],
   [/^The corporate tax of (.+) is already posted/, 'ctPosted', 'corporate_tax'],

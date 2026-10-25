@@ -9,12 +9,13 @@ import { companyPath, navigate, useHashRoute } from '../router'
 import Empty from './Empty'
 import ErrorBox from './ErrorBox'
 import WebUsage from './WebUsage'
+import { MODES } from '../cases'
 
 const emptyForm = { name: '', vat_registration_no: '', industry: 'services', tax_territory: 'canary_islands', control_mode: 'strict' }
 
 // Lista de empresas: las mías + las de demostración (solo lectura) + alta de empresa
 export default function Companies({ session }) {
-  const { t } = useI18n()
+  const { t, language } = useI18n()
   const [companies, setCompanies] = useState([])
   const [profile, setProfile] = useState(null)   // { app_role, max_companies, companies_created }
   const [form, setForm] = useState(emptyForm)
@@ -23,6 +24,8 @@ export default function Companies({ session }) {
   const [copied, setCopied] = useState(false)     // enlace de la demo copiado
   const [importing, setImporting] = useState(false) // importar el diario de otro ERP
   const [changingPassword, setChangingPassword] = useState(false)
+  const [cases, setCases] = useState([])          // v0.46.0 · casos completos para cargar en una empresa nueva
+  const [loadingCase, setLoadingCase] = useState(null)   // 'caso/modo' mientras se carga
 
   async function load() {
     // v_my_companies devuelve también mi rol en cada empresa (null = demo ajena → solo lectura)
@@ -32,6 +35,8 @@ export default function Companies({ session }) {
     setLoaded(true)
     const { data: p } = await supabase.rpc('my_profile').single()
     setProfile(p)
+    const { data: cs } = await supabase.from('cases').select('key, sort, title, title_en, description, description_en').order('sort')
+    setCases(cs ?? [])
     return data
   }
 
@@ -75,6 +80,18 @@ export default function Companies({ session }) {
   }
 
   const change = (field) => (e) => setForm({ ...form, [field]: e.target.value })
+
+  // v0.46.0 · Cargar un caso completo: la base de datos crea la empresa (con el límite de siempre) y hace cada operación
+  // con su módulo; al terminar se abre su pantalla «Caso»
+  async function loadCase(key, mode) {
+    setError('')
+    setLoadingCase(`${key}/${mode}`)
+    const { data, error } = await supabase.rpc('create_case_company', { p_case: key, p_mode: mode })
+    setLoadingCase(null)
+    if (error) return setError(error.message)
+    await load()
+    navigate(companyPath(data.company_id, 'case'))
+  }
 
   const mine = companies.filter((c) => c.my_role)
   const demos = companies.filter((c) => c.is_demo && !c.my_role)
@@ -184,6 +201,26 @@ export default function Companies({ session }) {
             <button type="button" className="secundario" onClick={() => setImporting(true)}>📥 {t('importJournalButton')}</button>
           </section>
         ))}
+
+      {!isGuest && canCreate && cases.length > 0 && (
+        <section className="tarjeta">
+          <h2>{t('cs.cardTitle')}</h2>
+          <p className="ayuda">{t('cs.cardHelp')}</p>
+          {cases.map((c) => (
+            <div key={c.key} className="caso-cargar">
+              <strong>{language === 'en' ? c.title_en : c.title}</strong>
+              <p className="ayuda">{language === 'en' ? c.description_en : c.description}</p>
+              <div className="fila-botones">
+                {MODES.map((md) => (
+                  <button key={md} type="button" className={md === 'full' ? '' : 'secundario'} disabled={Boolean(loadingCase)}
+                          aria-describedby={`caso-${c.key}-${md}`} onClick={() => loadCase(c.key, md)}>
+                    {loadingCase === `${c.key}/${md}` ? `${t('cs.loading')}…` : t(`cs.load.${md}`)}
+                  </button>))}
+              </div>
+              {MODES.map((md) => <p key={md} id={`caso-${c.key}-${md}`} className="ayuda">{t(`cs.load.${md}`)}: {t(`cs.loadHelp.${md}`)}</p>)}
+            </div>))}
+        </section>
+      )}
 
       {isGuest ? null : canCreate ? (
         <form onSubmit={create} className="tarjeta">

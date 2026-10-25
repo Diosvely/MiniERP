@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.cash_flow_check · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0022_cash_flow   →   la vigente es la de 0022_cash_flow
+-- Definida en: 0022_cash_flow 0066_complete_case   →   la vigente es la de 0066_complete_case
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.cash_flow_check(p_company uuid, p_year integer)
@@ -25,25 +25,12 @@ begin
   from (select substr(line_code, 2, 1) a, sum(amount) s from erp.cf_direct_detail(p_company, p_year) group by 1) x;
 
   -- Asientos sin dinero (la 57 no varía) con cuentas de actividades distintas
-  with cash as (select * from erp.cf_entry_cash(p_company, p_year) where cash <> 0),
-  acc as (
-    select e.id, l.gl_account_id, -sum(l.debit - l.credit) as amount
-    from erp.journal_entries e
-    join erp.fiscal_years fy on fy.id = e.fiscal_year_id and fy.year = p_year
-    join erp.journal_lines l on l.entry_id = e.id
-    where e.company_id = p_company and e.status = 'posted' and e.entry_type = 'normal'
-      and e.id not in (select entry_id from cash)
-    group by e.id, l.gl_account_id
-    having sum(l.debit - l.credit) <> 0),
-  mp as (
-    select g.id, substr(m.home_line, 2, 1) as act
-    from erp.gl_accounts g cross join lateral erp.cf_account_map(g.account_no) m
-    where g.id in (select gl_account_id from acc) and g.account_no not like '57%'),
-  per_act as (
-    select acc.id, mp.act, sum(acc.amount) as amount
-    from acc join mp on mp.id = acc.gl_account_id
-    group by acc.id, mp.act
-    having sum(acc.amount) <> 0)
+  with per_act as (
+    select f.entry_id as id, substr(f.home_line, 2, 1) as act, sum(f.flow) as amount
+    from erp.cf_line_flows(p_company, p_year) f
+    where f.entry_id not in (select ce.entry_id from erp.cf_entry_cash(p_company, p_year) ce where ce.cash <> 0)
+    group by 1, 2
+    having sum(f.flow) <> 0)
   select coalesce(jsonb_agg(jsonb_build_object('entry_no', e.entry_no, 'date', e.posting_date,
                     'description', e.description, 'activities', x.acts) order by e.entry_no), '[]'),
          jsonb_build_object('A', coalesce(sum((x.acts->>'A')::numeric), 0), 'B', coalesce(sum((x.acts->>'B')::numeric), 0),

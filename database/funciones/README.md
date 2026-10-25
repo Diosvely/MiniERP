@@ -1,6 +1,6 @@
 # Funciones del esquema erp (versión vigente)
 
-Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0065`.
+Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0066`.
 No se edita a mano: el código fuente son las migraciones. Esto es para **estudiar** cada función en su forma
 actual sin rastrear sus redefiniciones.
 
@@ -9,7 +9,7 @@ actual sin rastrear sus redefiniciones.
 - **Tipo:** *invoker* (se ejecuta con los permisos de quien llama: manda la RLS), *security definer* (con los del
   dueño: comprueba ella misma los permisos) o *trigger*.
 
-293 funciones.
+300 funciones.
 
 | Función | Versiones | Vigente en | Tipo |
 |---|---|---|---|
@@ -58,16 +58,22 @@ actual sin rastrear sus redefiniciones.
 | [`cancel_provision_movement`](cancel_provision_movement.sql) | 1 | 0045_provisions | security definer |
 | [`cancel_tax_settlement`](cancel_tax_settlement.sql) | 1 | 0012_tax_settlement | invoker |
 | [`cancel_write_off`](cancel_write_off.sql) | 1 | 0043_year_end_adjustments | security definer |
-| [`cash_flow_check`](cash_flow_check.sql) | 1 | 0022_cash_flow | security definer |
+| [`case_balance`](case_balance.sql) | 1 | 0066_complete_case | invoker |
+| [`case_compare`](case_compare.sql) | 1 | 0066_complete_case | invoker |
+| [`case_entry`](case_entry.sql) | 1 | 0066_complete_case | invoker |
+| [`case_invoice`](case_invoice.sql) | 1 | 0066_complete_case | invoker |
+| [`case_payment`](case_payment.sql) | 1 | 0066_complete_case | invoker |
+| [`cash_flow_check`](cash_flow_check.sql) | 2 | 0066_complete_case | security definer |
 | [`cash_flow_statement`](cash_flow_statement.sql) | 1 | 0022_cash_flow | security definer |
-| [`cf_account_flows`](cf_account_flows.sql) | 1 | 0022_cash_flow | security definer |
+| [`cf_account_flows`](cf_account_flows.sql) | 2 | 0066_complete_case | security definer |
 | [`cf_account_map`](cf_account_map.sql) | 1 | 0022_cash_flow | invoker |
 | [`cf_cash`](cf_cash.sql) | 1 | 0022_cash_flow | security definer |
 | [`cf_detail`](cf_detail.sql) | 1 | 0022_cash_flow | security definer |
-| [`cf_direct_detail`](cf_direct_detail.sql) | 1 | 0022_cash_flow | security definer |
+| [`cf_direct_detail`](cf_direct_detail.sql) | 2 | 0066_complete_case | security definer |
 | [`cf_entry_cash`](cf_entry_cash.sql) | 1 | 0022_cash_flow | security definer |
 | [`cf_indirect_detail`](cf_indirect_detail.sql) | 1 | 0022_cash_flow | security definer |
 | [`cf_line_accounts`](cf_line_accounts.sql) | 1 | 0022_cash_flow | security definer |
+| [`cf_line_flows`](cf_line_flows.sql) | 1 | 0066_complete_case | security definer |
 | [`check_payment_applications`](check_payment_applications.sql) | 1 | 0035_payments | invoker |
 | [`check_tax_account`](check_tax_account.sql) | 1 | 0010_tax_setup | invoker |
 | [`cleanup_guests`](cleanup_guests.sql) | 2 | 0034_web_usage | security definer |
@@ -181,6 +187,7 @@ actual sin rastrear sus redefiniciones.
 | [`is_year_closing_entry`](is_year_closing_entry.sql) | 1 | 0017_year_closing | invoker |
 | [`legal_form_from_tax_id`](legal_form_from_tax_id.sql) | 1 | 0033_withholding_rules | invoker |
 | [`link_payment`](link_payment.sql) | 1 | 0035_payments | security definer |
+| [`load_case`](load_case.sql) | 1 | 0066_complete_case | invoker |
 | [`loan_account`](loan_account.sql) | 1 | 0062_loans | security definer |
 | [`loan_accrual_amount`](loan_accrual_amount.sql) | 1 | 0062_loans | security definer |
 | [`loan_calc`](loan_calc.sql) | 1 | 0062_loans | invoker |

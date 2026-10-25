@@ -1326,3 +1326,26 @@ financiero.
 **Decisiones:** ADR 0044 · Subvenciones, grupos 8 y 9 y ECPN.
 
 **Siguiente paso:** v0.45.0 · casos completos: un ejercicio entero, de la constitución a las cuentas anuales.
+
+## 2026-10-25 · v0.45.0 · Casos completos
+
+**Qué se hizo**
+- **Caso de referencia** (235): «Taller Atlántico SL», un ejercicio entero calculado a mano y validado antes de
+  programar.
+- **Motor** (0066):
+  - `erp.load_case` carga el caso con las funciones de cada módulo;
+  - `erp.case_compare` compara 97 cifras con el documento;
+  - cuatro arreglos del estado de flujos de efectivo.
+- **Pruebas:** 61 SQL y 227 tests de la web.
+- **Rama:** `feat/v0.45.0-casos`, que entra en `main` con un Pull Request.
+
+**Lo que se aprende**
+- **Todo junto se prueba distinto que por separado.** La cuenta de resultados, el balance, el ECPN, el impuesto y los
+  modelos salieron al céntimo a la primera; el EFE tenía cuatro fallos que ningún módulo veía solo.
+- **El EFE clasifica por lo que se compra, no por la cuenta del tercero:** el pago de una máquina a la 400 es inversión.
+- **Lo devengado no es dinero:** los intereses sin pagar y el impuesto que va a reservas no son flujos.
+- **El deterioro, como la amortización:** se suma al resultado en los ajustes.
+
+**Decisiones:** ADR 0045 · Casos completos y lo que encontraron en el EFE.
+
+**Siguiente paso:** v0.46.0 · la pantalla «Casos»: cargar el caso, sus operaciones y la comparación de cifras.

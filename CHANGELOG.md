@@ -2,6 +2,25 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.45.0] - 2026-10-25
+### Añadido
+- **Caso completo «Taller Atlántico SL»** (migración `0066_complete_case.sql`): un ejercicio entero de una SL canaria,
+  de la constitución a las cuentas anuales, calculado a mano y validado antes de programar.
+  - `erp.load_case` lo carga en una empresa nueva con las funciones de cada módulo;
+  - `erp.case_compare` compara 97 cifras: cuenta de resultados, balance, ECPN, EFE por los dos métodos, Impuesto sobre
+    Sociedades y modelos 420 y 111;
+  - catálogo de casos (`erp.cases`) y sus cifras esperadas (`erp.case_expected`).
+- **Pruebas:** fase 61 (61 pruebas SQL).
+
+### Corregido
+- **Estado de flujos de efectivo:**
+  - el pago o cobro de una factura se clasifica como lo que compró o vendió: la base de un inmovilizado, en inversión;
+    la de los gastos de constitución (113), en financiación; el impuesto, en explotación. Una factura de inmovilizado sin
+    pagar ya no sale como inversión;
+  - los intereses devengados y no pagados (506, 527, 528), con los intereses y no en financiación;
+  - el impuesto que se lleva a reservas, con el impuesto sobre beneficios y no en financiación;
+  - el deterioro de clientes y de existencias, en los ajustes del resultado (A-2 b).
+
 ## [0.44.0] - 2026-10-25
 ### Añadido
 - **Subvenciones** (pantalla en Contabilidad; migraciones `0064_grants.sql` y `0065_grants_integration.sql`):

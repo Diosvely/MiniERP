@@ -1349,3 +1349,27 @@ financiero.
 **Decisiones:** ADR 0045 · Casos completos y lo que encontraron en el EFE.
 
 **Siguiente paso:** v0.46.0 · la pantalla «Casos»: cargar el caso, sus operaciones y la comparación de cifras.
+
+## 2026-10-25 · v0.46.0 · Pantalla «Casos»
+
+**Qué se hizo**
+- **Diseño validado antes de construir** (238): dos modos de carga y dónde va la pantalla.
+- **Motor** (0067-0068):
+  - las operaciones del caso y los asientos de cada una;
+  - la empresa del caso;
+  - el progreso y el estado de cada cifra.
+- **Pantallas:** la tarjeta «Casos completos» en la lista de empresas y «Caso» dentro de la empresa.
+- **Pruebas:** 62 SQL y 236 tests de la web.
+- **Rama:** `feat/v0.46.0-pantalla-casos`, que entra en `main` con un Pull Request.
+
+**Lo que se aprende**
+- **Un caso con su solución es el mejor examen:** cargado «hasta el cierre», el cierre se hace a mano y el ERP corrige
+  cada cifra.
+- **«Pendiente» no es «diferencia»:** antes del cierre, el resultado no puede cuadrar. El estado depende de un hecho (el
+  impuesto contabilizado), no de una suposición.
+- **Seguir una diferencia hasta su asiento** es el trabajo del auditor.
+
+**Decisiones:** ADR 0046 · Pantalla «Casos».
+
+**Siguiente paso:** según el plan, la fase 2: contabilidad analítica. Antes, el estudio de los ADR 0043 a 0046 y las
+fichas por pantalla.

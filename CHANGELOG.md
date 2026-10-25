@@ -2,6 +2,18 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.46.0] - 2026-10-25
+### Añadido
+- **Pantalla «Casos»** (migraciones `0067_case_screen.sql` y `0068_case_labels.sql`):
+  - en la lista de empresas, «Casos completos»: cargar «Taller Atlántico SL» en una empresa nueva, **completo** (con el
+    cierre hecho) o **hasta el cierre** (el cierre lo hace quien estudia);
+  - en la empresa del caso, «Caso»: las 19 operaciones con su fecha, su asiento, el porqué, su pantalla y sus asientos,
+    y la comparación de las 97 cifras por grupos (igual, pendiente del cierre o diferencia), exportable a Excel;
+  - en la base de datos: las operaciones de cada caso (`erp.case_steps`), los asientos de cada operación
+    (`erp.case_entries`), `erp.create_case_company`, `erp.case_progress` y el estado de cada cifra en
+    `erp.case_compare`.
+- **Pruebas:** fase 62 (62 pruebas SQL) y 236 tests en la web.
+
 ## [0.45.0] - 2026-10-25
 ### Añadido
 - **Caso completo «Taller Atlántico SL»** (migración `0066_complete_case.sql`): un ejercicio entero de una SL canaria,

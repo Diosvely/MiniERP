@@ -80,7 +80,7 @@ begin
   assert (select count(*) from erp.companies where id = p) = 0, 'NO debe ver la privada';
   assert (select count(*) from erp.v_general_journal where company_id = d) = 2, 'debe ver el diario de la demo';
   assert (select count(*) from erp.trial_balance(d, 2026)) = 2, 'debe ver sumas y saldos de la demo';
-  assert (select count(*) from erp.gl_accounts where company_id = d) = 387;   -- 385 del PGC (0021, 0026 y el subgrupo 19 de la 0060) + 2 subcuentas
+  assert (select count(*) from erp.gl_accounts where company_id = d) = 402;   -- 400 del PGC (0021, 0026, el subgrupo 19 de la 0060 y los grupos 8 y 9 de la 0064) + 2 subcuentas
   assert (select my_role from erp.v_my_companies where id = d) is null, 'en la demo no tiene rol';
   assert (select count(*) from erp.company_users where company_id = d) = 0, 'no ve el equipo de la demo';
   raise notice 'OK  · el visitante ve la empresa demo y sus informes, no las privadas';

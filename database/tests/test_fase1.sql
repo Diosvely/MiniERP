@@ -43,7 +43,7 @@ begin
   insert into erp.companies (name, vat_registration_no, industry, tax_territory)
   values ('Pruebas Servicios Canarias SL', 'B00000000', 'services', 'canary_islands')
   returning id into e;
-  assert (select count(*) from erp.gl_accounts where company_id = e) = 385, 'el PGC no se copió completo (352 + 10 de la 0021 + 16 de la 0026 + 7 del subgrupo 19, 0060)';
+  assert (select count(*) from erp.gl_accounts where company_id = e) = 400, 'el PGC no se copió completo (352 + 10 de la 0021 + 16 de la 0026 + 7 del subgrupo 19, 0060, + 15 de los grupos 8 y 9 y la 522, 0064)';
   assert erp.my_role(e) = 'admin', 'la creadora no es admin';
   raise notice 'OK  · alta de empresa: PGC copiado (378 cuentas) y creadora como admin';
 
@@ -219,7 +219,7 @@ begin
   assert (select count(*) from erp.journal_lines) = 0, 'Beto NO debería ver apuntes';
   assert (select count(*) from erp.v_general_journal) = 0, 'las vistas deben respetar RLS';
   assert (select count(*) from erp.trial_balance(e, 2026)) = 0, 'sumas y saldos debe respetar RLS';
-  assert (select count(*) from erp.coa_template) = 385, 'el PGC plantilla sí es visible (378 + el subgrupo 19 de la 0060)';
+  assert (select count(*) from erp.coa_template) = 400, 'el PGC plantilla sí es visible (378 + el subgrupo 19 de la 0060 + los grupos 8 y 9 y la 522 de la 0064)';
   perform public.debe_fallar(format('insert into erp.company_users (company_id, user_id, role) values (%L, auth.uid(), %L)', e, 'admin'),
                              'row-level security', 'Beto no puede autoinvitarse');
   raise notice 'OK  · aislamiento: Beto no ve nada de la empresa de Ana';

@@ -130,7 +130,7 @@ begin
   perform erp.loan_year_end(e, '2026-12-31');
   assert (select status from erp.closing_checklist(e, 2026) where code = 'financing') = 'done', 'financiación hecha';
   assert public.saldo(e, '1740', '2026-12-31') = 27394.04 and public.saldo(e, '5240', '2026-12-31') = 11575.37, 'balance del leasing';
-  assert (select string_agg(step || ':' || code, ' ' order by step) from erp.closing_checklist(e, 2026) where step >= 9) = '9:financing 10:audit_checks 11:corporate_tax 12:close', 'pasos';
+  assert (select string_agg(step || ':' || code, ' ' order by step) from erp.closing_checklist(e, 2026) where step >= 9) = '9:financing 10:grants 11:audit_checks 12:corporate_tax 13:close', 'pasos';
   execute 'set constraints all immediate'; execute 'set constraints all deferred';
   assert (select status from erp.run_audit_checks(e, 2026, '2026-12-31') where code = 'financing_ledger') = 'ok', 'auditor: financiación';
   assert (select status from erp.run_audit_checks(e, 2026, '2026-12-31') where code = 'assets_ledger') = 'ok', 'auditor: inmovilizado (la ficha cuadra con la 213)';

@@ -1293,3 +1293,36 @@ financiero.
 **Decisiones:** ADR 0043 · Financiación.
 
 **Siguiente paso:** v0.44.0 · subvenciones, los grupos 8 y 9 y el estado de cambios en el patrimonio neto (ECPN).
+
+## 2026-10-25 · v0.44.0 · Subvenciones, grupos 8 y 9 y ECPN
+
+**Qué se hizo**
+- **Supuestos de referencia** (230): cuatro, calculados a mano y validados antes de programar. El ECPN se enseña a
+  todas las empresas.
+- **Motor** (0064):
+  - subvenciones de capital y a la explotación, reintegrables, imputación con la amortización y baja;
+  - los grupos 8 y 9 en el plan de cuentas, el balance y el EFE.
+- **Integración** (0065):
+  - el cierre de los grupos 8 y 9 contra la 130 y la baja desde Inmovilizado;
+  - el ECPN;
+  - el asistente, el auditor, las cuentas controladas, el glosario y Practicar.
+- **Pantallas:** «Subvenciones» y «Cambios en el patrimonio neto».
+- **Pruebas:** 60 SQL y 227 tests de la web.
+- **Flujo nuevo de trabajo:** la versión se hace en una rama (`feat/v0.44.0-subvenciones`) y entra en `main` con un
+  Pull Request.
+
+**Lo que se aprende**
+- **La subvención de capital se reconoce con la amortización** (correlación ingresos-gastos), neta de su impuesto
+  futuro.
+- **Los grupos 8 y 9 son la cuenta de resultados del patrimonio neto.** Se cierran contra la 130 y de ellos sale la
+  parte A del ECPN.
+- **El ECPN explica el patrimonio neto del balance.** Si no cuadra, hay un error.
+- **Los invariantes encontraron lo que no se veía:**
+  - el balance sin los grupos 8 y 9;
+  - el EFE con una sola 4708;
+  - un `NULL` en el ECPN;
+  - un prefijo `PN` que también era `PNC`.
+
+**Decisiones:** ADR 0044 · Subvenciones, grupos 8 y 9 y ECPN.
+
+**Siguiente paso:** v0.45.0 · casos completos: un ejercicio entero, de la constitución a las cuentas anuales.

@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.invoice_entry_lines · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0011_invoices 0018_withholding_exempt 0019_reverse_charge_surcharge 0020_pro_rata 0041_fixed_assets 0061_equity_integration   →   la vigente es la de 0061_equity_integration
+-- Definida en: 0011_invoices 0018_withholding_exempt 0019_reverse_charge_surcharge 0020_pro_rata 0041_fixed_assets 0061_equity_integration 0063_financing_integration   →   la vigente es la de 0063_financing_integration
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.invoice_entry_lines(p jsonb)
@@ -98,7 +98,12 @@ begin
     end if;
     -- Regla contable: compras a grupos 2 (inmovilizado) o 6 (gastos); ventas al grupo 7 (ingresos)
     -- v0.42.0: también la 113 (gastos de constitución o de ampliación de capital, que van contra reservas: NRV 9.ª)
-    if v_type = 'purchase' and left(a.account_no, 1) not in ('2', '6') and a.account_no not like '113%' then
+    -- v0.43.0: la cuota de un leasing (desde Financiación): 174 / 524 (principal) y 527 / 528 (intereses devengados)
+    if v_type = 'purchase' and a.account_no ~ '^(174|524|527|528)' and coalesce(current_setting('erp.loan_engine', true), '') <> 'on' then
+      raise exception 'Line %: account % belongs to a finance lease: register the instalment invoice from Financing', r.n, a.account_no;
+    end if;
+    if v_type = 'purchase' and left(a.account_no, 1) not in ('2', '6') and a.account_no not like '113%'
+       and not (a.account_no ~ '^(174|524|527|528)' and coalesce(current_setting('erp.loan_engine', true), '') = 'on') then
       raise exception 'Line %: account % is not valid in a received invoice (use group 6 or 2, or 113 for incorporation or capital increase costs)', r.n, a.account_no;
     end if;
     -- v0.35.0: la venta de un inmovilizado se factura a su cuenta (20x / 21x / 22x); la baja la hace el módulo

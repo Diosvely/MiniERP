@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.delete_company_step · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0029_performance 0035_payments 0041_fixed_assets 0043_year_end_adjustments 0045_provisions 0047_inventory_closing 0049_payroll 0058_corporate_tax_posting 0060_equity_operations   →   la vigente es la de 0060_equity_operations
+-- Definida en: 0029_performance 0035_payments 0041_fixed_assets 0043_year_end_adjustments 0045_provisions 0047_inventory_closing 0049_payroll 0058_corporate_tax_posting 0060_equity_operations 0062_loans   →   la vigente es la de 0062_loans
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.delete_company_step(p_company uuid, p_batch integer DEFAULT 5000)
@@ -20,6 +20,7 @@ begin
   perform set_config('erp.deleting_company', 'on', true);   -- solo dura esta transacción
 
   -- Documentos que apuntan a asientos (en la primera tanda; en las siguientes ya no hay nada)
+  delete from erp.loans                  where company_id = p_company;   -- v0.43.0 (su cuadro y sus movimientos, en cascada)
   delete from erp.equity_operations      where company_id = p_company;   -- v0.42.0
   delete from erp.corporate_tax_returns  where company_id = p_company;   -- v0.41.0 (sus ajustes, en cascada)
   delete from erp.payroll_runs           where company_id = p_company;   -- v0.38.0 (las nóminas de cada empleado, en cascada)

@@ -20,6 +20,7 @@ import FinancialStatements from './FinancialStatements'
 import YearClosing from './YearClosing'
 import CorporateTax from './CorporateTax'
 import Equity from './Equity'
+import Financing from './Financing'
 import Withholdings from './Withholdings'
 import Payments from './Payments'
 import ProRata from './ProRata'
@@ -52,6 +53,7 @@ const SCREENS = [
   { id: 'corporate_tax', group: 'menuAccounting' },   // v0.41.0 · antes del cierre
   { id: 'closing', group: 'menuAccounting' },
   { id: 'equity', group: 'menuAccounting' },   // v0.42.0 · el reparto, después del cierre
+  { id: 'financing', group: 'menuAccounting' },   // v0.43.0 · préstamos y leasing
   { id: 'assets', group: 'menuAccounting', basic: 'hidden' },
   { id: 'adjustments', group: 'menuAccounting' },
   { id: 'payroll', group: 'menuAccounting' },   // v0.38.0
@@ -315,6 +317,7 @@ export default function CompanyView({ company: base, readOnly, canPublish, isOwn
         {section === 'corporate_tax' && <CorporateTax company={company} readOnly={readOnly} />}
         {section === 'closing' && <YearClosing company={company} readOnly={readOnly} />}
         {section === 'equity' && <Equity company={company} readOnly={readOnly} />}
+        {section === 'financing' && <Financing company={company} readOnly={readOnly} />}
         {section === 'invoices' && <Invoices company={company} readOnly={readOnly} />}
         {section === 'payments' && <Payments company={company} readOnly={readOnly} />}
         {section === 'assets' && <Assets company={company} readOnly={readOnly} />}

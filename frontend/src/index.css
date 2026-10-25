@@ -965,3 +965,8 @@ table.casillas tr.excluido td:first-child { text-decoration: none; }
   .menu-empresa { padding: 6px; gap: 6px; }
   .menu-grupo button { padding: 5px 8px; }
 }
+
+/* v0.43.0 · Financiación: en el cuadro, las cuotas pagadas en gris y la siguiente resaltada */
+table.informe tr.excluido td { color: var(--suave); }
+table.informe tr.seleccionado td { background: color-mix(in srgb, var(--primario) 9%, transparent); }
+.tarjeta details summary { cursor: pointer; }

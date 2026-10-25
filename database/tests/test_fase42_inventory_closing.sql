@@ -76,7 +76,7 @@ begin
   perform public.factura(e, prov, '2026-05-20', '[{"account_no":"60100001","amount":10000,"tax_code":"IGIC7"}]');
   select string_agg(step || ':' || code || '=' || status, ' ' order by step) into s from erp.closing_checklist(e, 2026);
   assert s = '1:settlements=pending 2:accruals_reversed=done 3:depreciation=na 4:asset_impairment=na 5:accruals=review '
-             '6:bad_debts=done 7:provisions=review 8:inventory=pending 9:audit_checks=done 10:corporate_tax=pending 11:close=pending', s;
+             '6:bad_debts=done 7:provisions=review 8:inventory=pending 9:financing=na 10:audit_checks=done 11:corporate_tax=pending 12:close=pending', s;
   raise notice 'OK  · asistente de 2026: faltan las liquidaciones, el inventario y el cierre; el resto, revisar o hecho';
 
   -- ---------- 2. Inventario del 31/12/2026 ----------

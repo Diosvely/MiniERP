@@ -113,8 +113,8 @@ begin
   assert public.chk(s, 2026, 'corporate_tax_missing') = 'error' and not (erp.year_closing_preview(s, 2026)->>'can_close')::boolean, 'estricto: no se cierra';
   assert public.falla(format('select erp.close_fiscal_year(%L, 2026, true)', s), 'cannot be closed'), 'estricto: ni aceptando avisos';
   assert (select status from erp.closing_checklist(e, 2026) where code = 'corporate_tax') = 'pending'
-     and (select step from erp.closing_checklist(e, 2026) where code = 'corporate_tax') = 10
-     and (select step from erp.closing_checklist(e, 2026) where code = 'close') = 11, 'asistente: paso 10 pendiente; el cierre es el 11';
+     and (select step from erp.closing_checklist(e, 2026) where code = 'corporate_tax') = 11
+     and (select step from erp.closing_checklist(e, 2026) where code = 'close') = 12, 'asistente: paso 11 pendiente; el cierre es el 12 (v0.43.0: la financiación es el 9)';
   assert (select status from erp.closing_checklist(z, 2026) where code = 'corporate_tax') = 'na' and public.chk(z, 2026, 'corporate_tax_missing') is null,
          'sin resultado no hace falta';
   assert (select status from erp.integrity_checks(e, 2026) where code = 'corporate_tax') = 'n/a';

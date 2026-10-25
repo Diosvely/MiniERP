@@ -30,6 +30,7 @@ export function controlledLines(lines, rules) {
 export function moduleScreen(modules) {
   const m = Array.isArray(modules) ? modules : String(modules ?? '').split(/,\s*/)
   if (m.includes('payments')) return 'payments'
+  if (m.includes('financing')) return 'financing'   // v0.43.0 (antes que las facturas: la 524 también la mueve la factura de la cuota)
   if (m.includes('invoices')) return 'invoices'
   if (m.includes('settlement')) return 'settlement'
   if (m.includes('assets')) return 'assets'

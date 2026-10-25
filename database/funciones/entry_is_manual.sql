@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.entry_is_manual · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0036_controlled_accounts 0041_fixed_assets 0043_year_end_adjustments 0045_provisions 0046_asset_impairment 0047_inventory_closing 0049_payroll 0058_corporate_tax_posting 0060_equity_operations   →   la vigente es la de 0060_equity_operations
+-- Definida en: 0036_controlled_accounts 0041_fixed_assets 0043_year_end_adjustments 0045_provisions 0046_asset_impairment 0047_inventory_closing 0049_payroll 0058_corporate_tax_posting 0060_equity_operations 0062_loans   →   la vigente es la de 0062_loans
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.entry_is_manual(p_entry uuid)
@@ -27,6 +27,7 @@ AS $function$
      and not exists (select 1 from erp.payroll_runs pr where e.id in (pr.entry_id, pr.net_payment_entry_id, pr.ss_payment_entry_id))   -- v0.38.0
      and not exists (select 1 from erp.corporate_tax_returns ct where e.id in (ct.current_entry_id, ct.deferred_entry_id))   -- v0.41.0
      and not exists (select 1 from erp.equity_operations eo where e.id = any (eo.entry_ids))   -- v0.42.0
+     and not exists (select 1 from erp.loan_events le where le.entry_id = e.id)   -- v0.43.0
   from erp.journal_entries e where e.id = p_entry;
 $function$
 ;

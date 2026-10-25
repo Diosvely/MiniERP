@@ -39,7 +39,7 @@ do $$
 declare g jsonb; x record; ans jsonb;
 begin
   -- ---------- 1. Catálogo ----------
-  assert (select count(*) from erp.operations) = 20 and (select count(*) from erp.exercises) = 18;
+  assert (select count(*) from erp.operations) = 22 and (select count(*) from erp.exercises) = 20;   -- v0.43.0: + 2 y 2 de financiación
   assert not exists (select 1 from erp.operations o, unnest(o.sources) k where not exists (select 1 from erp.sources s where s.key = k))
      and not exists (select 1 from erp.exercises o, unnest(o.sources) k where not exists (select 1 from erp.sources s where s.key = k)),
          'todas las fuentes citadas existen en la base documental';
@@ -102,7 +102,7 @@ begin
   assert (select attempts || ' ' || best_score || ' ' || solved from erp.v_exercise_progress where key = 'purchase_vat') = '2 100 true';
   assert (select attempts || ' ' || coalesce(ai_score, -1) || ' ' || coalesce(ai_ok::text, '-') from erp.v_exercise_progress where key = 'sale_igic') = '0 33 false',
          (select attempts || ' ' || coalesce(ai_score, -1) || ' ' || coalesce(ai_ok::text, '-') from erp.v_exercise_progress where key = 'sale_igic');
-  assert (select count(*) from erp.v_exercise_progress) = 18;
+  assert (select count(*) from erp.v_exercise_progress) = 20;   -- v0.43.0: + 2 de financiación
   assert public.falla($q$select erp.submit_exercise('purchase_vat', '[]', 'otro')$q$, 'Invalid attempt');
   raise notice 'OK  · intentos guardados: dos del alumno (mejor nota 100, resuelto) y uno de la IA (33), aparte';
 end $$;
@@ -112,7 +112,7 @@ do $$
 begin
   assert (select count(*) from erp.exercise_attempts) = 0, 'otro usuario no ve los intentos ajenos';
   assert (select sum(attempts) from erp.v_exercise_progress) = 0;
-  assert (select count(*) from erp.exercises) = 18, 'pero sí los supuestos';
+  assert (select count(*) from erp.exercises) = 20, 'pero sí los supuestos';
   raise notice 'OK  · cada usuario ve solo sus intentos';
 end $$;
 select set_config('request.jwt.claim.sub', '', false) \gset

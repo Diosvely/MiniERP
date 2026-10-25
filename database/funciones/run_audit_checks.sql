@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.run_audit_checks · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0037_audit_checks 0039_review_fixes 0042_assets_integration 0044_adjustments_integration 0046_asset_impairment 0048_closing_integration 0050_payroll_integration 0053_forms_integration 0061_equity_integration   →   la vigente es la de 0061_equity_integration
+-- Definida en: 0037_audit_checks 0039_review_fixes 0042_assets_integration 0044_adjustments_integration 0046_asset_impairment 0048_closing_integration 0050_payroll_integration 0053_forms_integration 0061_equity_integration 0063_financing_integration   →   la vigente es la de 0063_financing_integration
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.run_audit_checks(p_company uuid, p_year integer, p_to_date date DEFAULT NULL::date)
@@ -345,7 +345,7 @@ begin
       into v_items, v_det
       from n;
 
-    elsif r.code in ('provisions_ledger', 'inventory_ledger', 'payroll_ledger') then
+    elsif r.code in ('provisions_ledger', 'inventory_ledger', 'payroll_ledger', 'financing_ledger') then
       -- v0.37.0 · las cuentas de provisiones (141 / 142 / 5292 / 5293 / 499) y de existencias (30-36 / 39) frente a lo
       --   que han contabilizado sus módulos: la diferencia es un asiento manual o un saldo importado sin su ficha
       with lm as (
@@ -353,13 +353,16 @@ begin
                bool_or(exists (select 1 from erp.provision_movements pm where pm.entry_id = e.id)
                        or exists (select 1 from erp.inventory_counts ic where ic.entry_id = e.id and ic.status = 'posted')
                        -- v0.38.0: la nómina y sus pagos
-                       or exists (select 1 from erp.payroll_runs pr where e.id in (pr.entry_id, pr.net_payment_entry_id, pr.ss_payment_entry_id))) as module
+                       or exists (select 1 from erp.payroll_runs pr where e.id in (pr.entry_id, pr.net_payment_entry_id, pr.ss_payment_entry_id))
+                       -- v0.43.0: los préstamos y el leasing (también la factura de la cuota)
+                       or exists (select 1 from erp.loan_events le where le.entry_id = e.id and le.status = 'posted')) as module
         from erp.journal_lines jl join erp.journal_entries e on e.id = jl.entry_id
         join erp.gl_accounts g on g.id = jl.gl_account_id
         where e.company_id = p_company and e.status = 'posted' and e.posting_date <= v_to and e.entry_type <> 'closing'
           and not exists (select 1 from erp.year_closings yc where yc.opening_entry_id = e.id)
           and case r.code when 'provisions_ledger' then g.account_no ~ '^(141|142|5292|5293|499)'
                           when 'payroll_ledger' then g.account_no ~ '^(465|476)'   -- v0.38.0
+                          when 'financing_ledger' then g.account_no ~ '^(170|171|174|520|521|524|527|528)'   -- v0.43.0
                           else g.account_no ~ '^3[0-6]|^39' end
           -- un movimiento anulado y su contraasiento se compensan: ninguno de los dos cuenta como del módulo
           and not (e.reversal_of is not null or e.reversed_by is not null)

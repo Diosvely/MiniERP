@@ -2,6 +2,27 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.43.0] - 2026-10-24
+### Añadido
+- **Financiación** (pantalla en Contabilidad; migraciones `0062_loans.sql` y `0063_financing_integration.sql`):
+  - **préstamos** con sistema francés (mensual, trimestral, semestral o anual), a coste amortizado con el tipo de
+    interés efectivo (NRV 9.ª): las comisiones van dentro de los intereses, no a gasto el primer día;
+  - **arrendamiento financiero** (NRV 8.ª), por el menor del valor razonable y el valor actual de los pagos:
+    - el alta crea la ficha del activo en Inmovilizado;
+    - cada cuota se registra como factura recibida de la entidad, con su IVA / IGIC;
+  - **deuda a corto y a largo plazo**, con la reclasificación del cierre (1700 → 5200, 1740 → 5240);
+  - **intereses devengados al cierre**, con el tipo efectivo en base 30/360, a la 527 / 528. La cuota siguiente los
+    salda;
+  - cálculo en vivo del cuadro y del asiento antes de dar de alta;
+  - «Deshacer» del último movimiento al primero. Deshacer la cuota del leasing emite la rectificativa completa.
+- **Asistente de cierre:** paso nuevo, el 9, «Préstamos y leasing». El auditor pasa al 10, el Impuesto sobre Sociedades
+  al 11 y el cierre al 12.
+- **Auditor:** comprobación `financing_ledger` (las cuentas de los préstamos frente al módulo).
+- **Cuentas controladas:** 170, 171, 174, 520, 521, 524, 527 y 528.
+- **Glosario:** coste amortizado, tipo de interés efectivo, arrendamiento financiero y deuda a corto y a largo plazo.
+- **Practicar:** 20 supuestos.
+- **Pruebas:** fases 57 y 58 (58 pruebas SQL) y 214 tests en la web.
+
 ## [0.42.0] - 2026-10-21
 ### Añadido
 - **Operaciones societarias** (pantalla en Contabilidad; migraciones `0060_equity_operations.sql` y

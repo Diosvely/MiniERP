@@ -1260,3 +1260,36 @@ pérdidas pendientes.
 
 **Siguiente paso:** v0.43.0 · financiación: préstamos a coste amortizado (tipo de interés efectivo) y arrendamiento
 financiero.
+
+## 2026-10-24 · v0.43.0 · Financiación: préstamos y leasing
+
+**Qué se hizo**
+- **Supuestos de referencia** (225): cuatro, calculados a mano y validados antes de programar. Al programar se
+  corrigió un céntimo del F2.
+- **Motor** (0062):
+  - cuadro francés;
+  - tipo de interés efectivo;
+  - leasing por el menor valor;
+  - deuda a corto y a largo;
+  - intereses devengados y reclasificación del cierre.
+- **Integración** (0063):
+  - la factura de la cuota del leasing y la ficha del activo;
+  - el paso del asistente de cierre, el auditor y las cuentas controladas;
+  - el glosario y Practicar.
+- **Pantalla:** «Financiación», con el cálculo en vivo, la cuota o su factura, el cierre y la opción de deshacer.
+- **Pruebas:** 58 SQL y 214 tests de la web.
+
+**Lo que se aprende**
+- **La deuda es lo que recibes.** Las comisiones suben el tipo efectivo y se reparten como intereses.
+- **El TIE es la TIR de la deuda:** con él, los intereses de cada año son los que tocan.
+- **Corto y largo plazo es cuestión de liquidez:** al cierre se reclasifica lo que vence en 12 meses.
+- **El leasing es una compra a plazos:** el activo se amortiza y cada cuota lleva IVA / IGIC.
+- **Al probar se encuentran fallos que no se ven al escribir:**
+  - un céntimo de redondeo en el propio documento de supuestos;
+  - la subcuenta del IGIC de Canarias (4721);
+  - índices que faltaban;
+  - un nombre de módulo sin traducir.
+
+**Decisiones:** ADR 0043 · Financiación.
+
+**Siguiente paso:** v0.44.0 · subvenciones, los grupos 8 y 9 y el estado de cambios en el patrimonio neto (ECPN).

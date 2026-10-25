@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.dispose_asset · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0041_fixed_assets 0046_asset_impairment   →   la vigente es la de 0046_asset_impairment
+-- Definida en: 0041_fixed_assets 0046_asset_impairment 0065_grants_integration   →   la vigente es la de 0065_grants_integration
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.dispose_asset(p jsonb)
@@ -103,6 +103,10 @@ begin
                               disposal_invoice_id = v_inv.id, disposal_entry_id = v_entry
   where id = a.id;
   entry_no := v_no; net_book_value := v_nbv; result := v_res;
+  -- v0.44.0: lo que queda de sus subvenciones de capital, a resultados (NRV 18.ª)
+  perform erp.grant_impute_rest(jsonb_build_object('grant_id', g.id, 'date', v_date))
+  from erp.grants g
+  where g.asset_id = a.id and g.kind = 'capital' and g.status = 'active' and (erp.grant_position(g.id)->>'unconditional')::boolean;
   return next;
 end $function$
 ;

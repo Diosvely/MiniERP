@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.tg_entry_adjust_reverse · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0043_year_end_adjustments 0045_provisions 0047_inventory_closing 0049_payroll 0058_corporate_tax_posting 0060_equity_operations 0062_loans   →   la vigente es la de 0062_loans
+-- Definida en: 0043_year_end_adjustments 0045_provisions 0047_inventory_closing 0049_payroll 0058_corporate_tax_posting 0060_equity_operations 0062_loans 0064_grants   →   la vigente es la de 0064_grants
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.tg_entry_adjust_reverse()
@@ -35,6 +35,10 @@ begin
     -- v0.43.0: préstamos y arrendamiento financiero
     if exists (select 1 from erp.loan_events where entry_id = new.reversal_of) then
       raise exception 'This entry belongs to a loan or finance lease: undo it from Financing';
+    end if;
+    -- v0.44.0: subvenciones
+    if exists (select 1 from erp.grant_events where entry_id = new.reversal_of) then
+      raise exception 'This entry belongs to a grant: undo it from Grants';
     end if;
     -- v0.38.0: nóminas y sus pagos
     if exists (select 1 from erp.payroll_runs where new.reversal_of in (entry_id, net_payment_entry_id, ss_payment_entry_id)) then

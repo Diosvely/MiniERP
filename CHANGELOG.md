@@ -2,6 +2,27 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.44.0] - 2026-10-25
+### Añadido
+- **Subvenciones** (pantalla en Contabilidad; migraciones `0064_grants.sql` y `0065_grants_integration.sql`):
+  - de capital, vinculadas a su activo de Inmovilizado, y a la explotación;
+  - reintegrables (522 / 172) y su paso a no reintegrables;
+  - concesión con su efecto impositivo (8301 / 479) y cobro;
+  - imputación en el cierre con la amortización del activo (840 / 746, 479 / 8301);
+  - al dar de baja el activo, lo pendiente pasa a resultados;
+  - «Deshacer» del último movimiento al primero.
+- **Grupos 8 y 9** en el plan de cuentas, en el balance (A-2) y en el estado de flujos de efectivo. En el cierre del
+  ejercicio se regularizan contra la 130.
+- **Estado de cambios en el patrimonio neto** (Informes), para todas las empresas: parte A (ingresos y gastos
+  reconocidos) y parte B (estado total por columnas), comprobado contra el balance. Se puede exportar a Excel.
+- **Asistente de cierre:** paso nuevo, el 10 «Subvenciones»; el cierre pasa a ser el 13. Aviso del cierre si falta la
+  imputación.
+- **Auditor:** comprobación `grants_ledger`.
+- **Cuentas controladas:** 94, 84, 83 y 4708.
+- **Glosario:** subvención de capital, subvención reintegrable, grupos 8 y 9 y ECPN.
+- **Practicar:** 22 supuestos.
+- **Pruebas:** fases 59 y 60 (60 pruebas SQL) y 227 tests en la web.
+
 ## [0.43.0] - 2026-10-24
 ### Añadido
 - **Financiación** (pantalla en Contabilidad; migraciones `0062_loans.sql` y `0063_financing_integration.sql`):

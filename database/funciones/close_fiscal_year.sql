@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.close_fiscal_year · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0017_year_closing   →   la vigente es la de 0017_year_closing
+-- Definida en: 0017_year_closing 0065_grants_integration   →   la vigente es la de 0065_grants_integration
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.close_fiscal_year(p_company uuid, p_year integer, p_accept_warnings boolean DEFAULT false)
@@ -45,6 +45,10 @@ begin
   if not exists (select 1 from erp.gl_accounts where company_id = p_company and account_no = v_res_no) then
     perform erp.create_posting_account(p_company, v_res_no, 'Resultado del ejercicio', 'Profit (loss) for the year');
   end if;
+  -- v0.44.0: las subcuentas 13x de la regularización de los grupos 8 y 9, si no existen
+  perform erp.create_posting_account(p_company, l->>'account_no', 'Subvenciones, donaciones y legados')
+  from jsonb_array_elements(c->'closing_pl_lines') l
+  where not exists (select 1 from erp.gl_accounts g where g.company_id = p_company and g.account_no = l->>'account_no');
   select id into v_next from erp.fiscal_years where company_id = p_company and year = p_year + 1;
   if v_next is null then
     v_next := erp.create_fiscal_year(p_company, p_year + 1);

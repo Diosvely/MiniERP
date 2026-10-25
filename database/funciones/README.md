@@ -1,6 +1,6 @@
 # Funciones del esquema erp (versión vigente)
 
-Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0063`.
+Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0065`.
 No se edita a mano: el código fuente son las migraciones. Esto es para **estudiar** cada función en su forma
 actual sin rastrear sus redefiniciones.
 
@@ -9,7 +9,7 @@ actual sin rastrear sus redefiniciones.
 - **Tipo:** *invoker* (se ejecuta con los permisos de quien llama: manda la RLS), *security definer* (con los del
   dueño: comprueba ella misma los permisos) o *trigger*.
 
-279 funciones.
+293 funciones.
 
 | Función | Versiones | Vigente en | Tipo |
 |---|---|---|---|
@@ -40,7 +40,7 @@ actual sin rastrear sus redefiniciones.
 | [`asset_posted`](asset_posted.sql) | 1 | 0041_fixed_assets | invoker |
 | [`asset_result_account`](asset_result_account.sql) | 1 | 0041_fixed_assets | security definer |
 | [`asset_tranche_at`](asset_tranche_at.sql) | 1 | 0046_asset_impairment | invoker |
-| [`audit_lines`](audit_lines.sql) | 10 | 0062_loans | invoker |
+| [`audit_lines`](audit_lines.sql) | 11 | 0064_grants | invoker |
 | [`balance_anomalies`](balance_anomalies.sql) | 1 | 0013_balance_rules | invoker |
 | [`balance_nature`](balance_nature.sql) | 1 | 0013_balance_rules | invoker |
 | [`can_read`](can_read.sql) | 2 | 0007_demo_and_limits | security definer |
@@ -49,7 +49,7 @@ actual sin rastrear sus redefiniciones.
 | [`cancel_accrual`](cancel_accrual.sql) | 1 | 0043_year_end_adjustments | security definer |
 | [`cancel_asset_impairment`](cancel_asset_impairment.sql) | 1 | 0046_asset_impairment | security definer |
 | [`cancel_depreciation`](cancel_depreciation.sql) | 1 | 0041_fixed_assets | security definer |
-| [`cancel_disposal`](cancel_disposal.sql) | 1 | 0041_fixed_assets | security definer |
+| [`cancel_disposal`](cancel_disposal.sql) | 2 | 0065_grants_integration | security definer |
 | [`cancel_impairment`](cancel_impairment.sql) | 1 | 0043_year_end_adjustments | security definer |
 | [`cancel_inventory`](cancel_inventory.sql) | 1 | 0047_inventory_closing | security definer |
 | [`cancel_payment`](cancel_payment.sql) | 1 | 0035_payments | security definer |
@@ -71,8 +71,8 @@ actual sin rastrear sus redefiniciones.
 | [`check_payment_applications`](check_payment_applications.sql) | 1 | 0035_payments | invoker |
 | [`check_tax_account`](check_tax_account.sql) | 1 | 0010_tax_setup | invoker |
 | [`cleanup_guests`](cleanup_guests.sql) | 2 | 0034_web_usage | security definer |
-| [`close_fiscal_year`](close_fiscal_year.sql) | 1 | 0017_year_closing | invoker |
-| [`closing_checklist`](closing_checklist.sql) | 4 | 0063_financing_integration | invoker |
+| [`close_fiscal_year`](close_fiscal_year.sql) | 2 | 0065_grants_integration | invoker |
+| [`closing_checklist`](closing_checklist.sql) | 5 | 0065_grants_integration | invoker |
 | [`company_access`](company_access.sql) | 1 | 0027_members | security definer |
 | [`concepts_for_account`](concepts_for_account.sql) | 1 | 0038_concepts | invoker |
 | [`control_rule_for`](control_rule_for.sql) | 1 | 0036_controlled_accounts | invoker |
@@ -98,12 +98,12 @@ actual sin rastrear sus redefiniciones.
 | [`create_posting_account`](create_posting_account.sql) | 1 | 0002_chart_of_accounts | invoker |
 | [`create_provision`](create_provision.sql) | 1 | 0045_provisions | security definer |
 | [`delete_company`](delete_company.sql) | 1 | 0004_journal_entries | security definer |
-| [`delete_company_step`](delete_company_step.sql) | 10 | 0062_loans | security definer |
+| [`delete_company_step`](delete_company_step.sql) | 11 | 0064_grants | security definer |
 | [`depreciation_schedule`](depreciation_schedule.sql) | 2 | 0046_asset_impairment | invoker |
-| [`dispose_asset`](dispose_asset.sql) | 2 | 0046_asset_impairment | security definer |
+| [`dispose_asset`](dispose_asset.sql) | 3 | 0065_grants_integration | security definer |
 | [`ensure_tax_account`](ensure_tax_account.sql) | 1 | 0010_tax_setup | invoker |
 | [`entry_controlled_lines`](entry_controlled_lines.sql) | 1 | 0036_controlled_accounts | invoker |
-| [`entry_is_manual`](entry_is_manual.sql) | 10 | 0062_loans | security definer |
+| [`entry_is_manual`](entry_is_manual.sql) | 11 | 0064_grants | security definer |
 | [`entry_tutor_context`](entry_tutor_context.sql) | 3 | 0033_withholding_rules | security definer |
 | [`equity_bal`](equity_bal.sql) | 2 | 0061_equity_integration | invoker |
 | [`equity_bank`](equity_bank.sql) | 1 | 0060_equity_operations | security definer |
@@ -125,6 +125,9 @@ actual sin rastrear sus redefiniciones.
 | [`equity_reserves_to_capital`](equity_reserves_to_capital.sql) | 1 | 0060_equity_operations | security definer |
 | [`equity_save`](equity_save.sql) | 1 | 0060_equity_operations | security definer |
 | [`equity_start`](equity_start.sql) | 1 | 0060_equity_operations | security definer |
+| [`equity_statement`](equity_statement.sql) | 1 | 0065_grants_integration | security definer |
+| [`equity_statement_column`](equity_statement_column.sql) | 1 | 0065_grants_integration | invoker |
+| [`equity_statement_lines`](equity_statement_lines.sql) | 1 | 0065_grants_integration | security definer |
 | [`equity_status`](equity_status.sql) | 1 | 0060_equity_operations | security definer |
 | [`financial_ratios`](financial_ratios.sql) | 1 | 0023_financial_ratios | security definer |
 | [`financial_statement`](financial_statement.sql) | 2 | 0032_comparative_statements | invoker |
@@ -138,7 +141,18 @@ actual sin rastrear sus redefiniciones.
 | [`general_ledger`](general_ledger.sql) | 1 | 0029_performance | invoker |
 | [`global_impairment_calc`](global_impairment_calc.sql) | 1 | 0043_year_end_adjustments | invoker |
 | [`grade_exercise`](grade_exercise.sql) | 2 | 0056_grader_fixes | invoker |
+| [`grant_cancel`](grant_cancel.sql) | 1 | 0064_grants | security definer |
+| [`grant_check`](grant_check.sql) | 1 | 0064_grants | security definer |
+| [`grant_collect`](grant_collect.sql) | 1 | 0064_grants | security definer |
 | [`grant_company_access`](grant_company_access.sql) | 1 | 0027_members | security definer |
+| [`grant_create`](grant_create.sql) | 1 | 0064_grants | security definer |
+| [`grant_imputation_amount`](grant_imputation_amount.sql) | 1 | 0064_grants | security definer |
+| [`grant_impute_rest`](grant_impute_rest.sql) | 1 | 0064_grants | security definer |
+| [`grant_position`](grant_position.sql) | 1 | 0064_grants | security definer |
+| [`grant_status`](grant_status.sql) | 1 | 0064_grants | security definer |
+| [`grant_unconditional`](grant_unconditional.sql) | 1 | 0064_grants | security definer |
+| [`grant_year_end`](grant_year_end.sql) | 1 | 0064_grants | security definer |
+| [`grant_year_end_preview`](grant_year_end_preview.sql) | 1 | 0064_grants | security definer |
 | [`home_kpis`](home_kpis.sql) | 1 | 0031_home_kpis | security definer |
 | [`impair_asset`](impair_asset.sql) | 1 | 0046_asset_impairment | security definer |
 | [`impair_receivable`](impair_receivable.sql) | 1 | 0043_year_end_adjustments | security definer |
@@ -227,7 +241,7 @@ actual sin rastrear sus redefiniciones.
 | [`reverse_impairment`](reverse_impairment.sql) | 1 | 0043_year_end_adjustments | security definer |
 | [`revise_provision`](revise_provision.sql) | 1 | 0045_provisions | security definer |
 | [`revoke_company_access`](revoke_company_access.sql) | 1 | 0027_members | security definer |
-| [`run_audit_checks`](run_audit_checks.sql) | 10 | 0063_financing_integration | invoker |
+| [`run_audit_checks`](run_audit_checks.sql) | 11 | 0065_grants_integration | invoker |
 | [`run_payroll`](run_payroll.sql) | 1 | 0049_payroll | security definer |
 | [`save_employee`](save_employee.sql) | 1 | 0049_payroll | security definer |
 | [`set_company_demo`](set_company_demo.sql) | 1 | 0027_members | security definer |
@@ -249,7 +263,7 @@ actual sin rastrear sus redefiniciones.
 | [`tg_company_copy_coa`](tg_company_copy_coa.sql) | 1 | 0002_chart_of_accounts | trigger |
 | [`tg_company_rules`](tg_company_rules.sql) | 3 | 0027_members | trigger |
 | [`tg_company_vat_regime`](tg_company_vat_regime.sql) | 1 | 0019_reverse_charge_surcharge | trigger |
-| [`tg_entry_adjust_reverse`](tg_entry_adjust_reverse.sql) | 7 | 0062_loans | trigger |
+| [`tg_entry_adjust_reverse`](tg_entry_adjust_reverse.sql) | 8 | 0064_grants | trigger |
 | [`tg_entry_asset_reverse`](tg_entry_asset_reverse.sql) | 2 | 0046_asset_impairment | trigger |
 | [`tg_entry_check_inverse`](tg_entry_check_inverse.sql) | 2 | 0021_journal_import | trigger |
 | [`tg_entry_controlled_accounts`](tg_entry_controlled_accounts.sql) | 1 | 0036_controlled_accounts | trigger |
@@ -291,4 +305,4 @@ actual sin rastrear sus redefiniciones.
 | [`withholding_summary`](withholding_summary.sql) | 2 | 0050_payroll_integration | invoker |
 | [`write_off_receivable`](write_off_receivable.sql) | 1 | 0043_year_end_adjustments | security definer |
 | [`year_account_balances`](year_account_balances.sql) | 1 | 0017_year_closing | invoker |
-| [`year_closing_preview`](year_closing_preview.sql) | 7 | 0061_equity_integration | invoker |
+| [`year_closing_preview`](year_closing_preview.sql) | 8 | 0065_grants_integration | invoker |

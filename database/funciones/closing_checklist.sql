@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.closing_checklist · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0047_inventory_closing 0048_closing_integration 0059_corporate_tax_integration 0063_financing_integration   →   la vigente es la de 0063_financing_integration
+-- Definida en: 0047_inventory_closing 0048_closing_integration 0059_corporate_tax_integration 0063_financing_integration 0065_grants_integration   →   la vigente es la de 0065_grants_integration
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.closing_checklist(p_company uuid, p_year integer)
@@ -97,20 +97,34 @@ begin
   end if;
   return next;
 
-  -- 10) Comprobaciones del auditor sin avisos ni errores
+  -- 10) v0.44.0 · Subvenciones: la imputación del año de las de capital (después de la amortización, paso 3)
+  select count(*) into v_m from erp.grants g where g.company_id = p_company and g.kind = 'capital' and g.status = 'active' and g.grant_date <= v_fy.ending_date;
+  step := 10; code := 'grants'; screen := 'grants';
+  if v_m = 0 then
+    status := 'na'; detail := jsonb_build_object('grants', 0);
+  else
+    declare gy jsonb := erp.grant_year_end_preview(p_company, v_fy.ending_date);
+    begin
+      status := case when (gy->>'imputation_total')::numeric > 0 or (gy->>'tax_total')::numeric > 0 or (gy->>'depreciation_pending')::int > 0 then 'pending' else 'done' end;
+      detail := jsonb_build_object('grants', v_m, 'imputation', gy->'imputation_total', 'depreciation_pending', gy->'depreciation_pending');
+    end;
+  end if;
+  return next;
+
+  -- 11) Comprobaciones del auditor sin avisos ni errores
   select count(*), string_agg(c.code, ', ' order by c.sort) into v_n, v_txt
   from erp.run_audit_checks(p_company, p_year, v_fy.ending_date) c where c.status in ('warning', 'error');
-  step := 10; code := 'audit_checks'; screen := 'checks';
+  step := 11; code := 'audit_checks'; screen := 'checks';
   status := case when v_n = 0 then 'done' else 'pending' end; detail := jsonb_build_object('open', v_n, 'codes', v_txt); return next;
 
-  -- 11) v0.41.0 · Impuesto sobre Sociedades (antes de la regularización)
-  step := 11; code := 'corporate_tax'; screen := 'corporate_tax';
+  -- 12) v0.41.0 · Impuesto sobre Sociedades (antes de la regularización)
+  step := 12; code := 'corporate_tax'; screen := 'corporate_tax';
   status := case when exists (select 1 from erp.corporate_tax_returns r where r.fiscal_year_id = v_fy.id and r.status = 'posted') then 'done'
                  when erp.pre_tax_result(p_company, v_fy.id) = 0 then 'na' else 'pending' end;
   detail := jsonb_build_object('pre_tax_result', erp.pre_tax_result(p_company, v_fy.id)); return next;
 
-  -- 12) Cierre del ejercicio (regularización, cierre y apertura)
-  step := 12; code := 'close'; screen := 'closing';
+  -- 13) Cierre del ejercicio (regularización, cierre y apertura)
+  step := 13; code := 'close'; screen := 'closing';
   status := case when v_fy.status = 'closed' then 'done' else 'pending' end;
   detail := jsonb_build_object('fiscal_year_status', v_fy.status); return next;
 end $function$

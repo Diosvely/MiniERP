@@ -21,6 +21,8 @@ import YearClosing from './YearClosing'
 import CorporateTax from './CorporateTax'
 import Equity from './Equity'
 import Financing from './Financing'
+import Grants from './Grants'
+import EquityStatement from './EquityStatement'
 import Withholdings from './Withholdings'
 import Payments from './Payments'
 import ProRata from './ProRata'
@@ -54,6 +56,7 @@ const SCREENS = [
   { id: 'closing', group: 'menuAccounting' },
   { id: 'equity', group: 'menuAccounting' },   // v0.42.0 · el reparto, después del cierre
   { id: 'financing', group: 'menuAccounting' },   // v0.43.0 · préstamos y leasing
+  { id: 'grants', group: 'menuAccounting' },   // v0.44.0 · subvenciones
   { id: 'assets', group: 'menuAccounting', basic: 'hidden' },
   { id: 'adjustments', group: 'menuAccounting' },
   { id: 'payroll', group: 'menuAccounting' },   // v0.38.0
@@ -67,6 +70,7 @@ const SCREENS = [
   { id: 'balance', group: 'menuReports', basic: true },
   { id: 'pyg', group: 'menuReports', basic: true },
   { id: 'cashflow', group: 'menuReports' },
+  { id: 'ecpn', group: 'menuReports' },   // v0.44.0 · estado de cambios en el patrimonio neto
   { id: 'ratios', group: 'menuReports' },
   { id: 'reports', group: 'menuReports' },
   { id: 'checks', group: 'menuReports' },
@@ -318,6 +322,8 @@ export default function CompanyView({ company: base, readOnly, canPublish, isOwn
         {section === 'closing' && <YearClosing company={company} readOnly={readOnly} />}
         {section === 'equity' && <Equity company={company} readOnly={readOnly} />}
         {section === 'financing' && <Financing company={company} readOnly={readOnly} />}
+        {section === 'grants' && <Grants company={company} readOnly={readOnly} />}
+        {section === 'ecpn' && <EquityStatement company={company} />}
         {section === 'invoices' && <Invoices company={company} readOnly={readOnly} />}
         {section === 'payments' && <Payments company={company} readOnly={readOnly} />}
         {section === 'assets' && <Assets company={company} readOnly={readOnly} />}

@@ -231,5 +231,5 @@ export const GLOSSARY = {
 export const SECTION_TERM = {
   entry: 'entry', journal: 'journal', closing: 'closing', invoices: 'invoice', settlement: 'settlement',
   withholdings: 'withholding', payments: 'openItem', prorata: 'prorata', taxes: 'vat', balance: 'balance', pyg: 'pyg',
-  cashflow: 'cashflow', ratios: 'ratio', reports: 'trialBalance', checks: 'auditCheck', forms: 'taxForm', corporate_tax: 'taxableBase', equity: 'legalReserve', financing: 'amortizedCost', assets: 'fixedAsset', adjustments: 'deferral', payroll: 'payroll', accounts: 'subaccount', partners: 'partner',
+  cashflow: 'cashflow', ratios: 'ratio', reports: 'trialBalance', checks: 'auditCheck', forms: 'taxForm', corporate_tax: 'taxableBase', equity: 'legalReserve', financing: 'amortizedCost', grants: 'capitalGrant', ecpn: 'equityStatement', assets: 'fixedAsset', adjustments: 'deferral', payroll: 'payroll', accounts: 'subaccount', partners: 'partner',
 }

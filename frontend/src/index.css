@@ -970,3 +970,8 @@ table.casillas tr.excluido td:first-child { text-decoration: none; }
 table.informe tr.excluido td { color: var(--suave); }
 table.informe tr.seleccionado td { background: color-mix(in srgb, var(--primario) 9%, transparent); }
 .tarjeta details summary { cursor: pointer; }
+
+/* v0.44.0 · Subvenciones: las casillas, en su propia fila (casilla y texto juntos) */
+.opciones-subvencion { display: flex; flex-wrap: wrap; gap: .5rem 1.5rem; margin: .5rem 0; }
+.opciones-subvencion label.opcion { display: flex; align-items: center; gap: .4rem; }
+.opciones-subvencion label.opcion input { width: auto; margin: 0; }

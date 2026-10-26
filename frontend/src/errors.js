@@ -17,7 +17,7 @@ const RULES = [
   [/^Reopen fiscal year (.+) first$/, 'reopenFirst', 'closing'],
   [/^Fiscal year (\S+) does not exist$/, 'yearMissing', 'closing'],
   [/^Fiscal year (.+) cannot be closed: (.+)$/, 'cannotClose'],
-  [/^Review and accept the warnings before closing/, 'acceptWarnings'],
+  [/^Review and accept the warnings before closing(?! the month)/, 'acceptWarnings'],
 
   // Asientos
   [/^Unbalanced entry: debit (.+) ≠ credit (.+) \(difference (.+)\)$/, 'unbalanced'],
@@ -93,6 +93,15 @@ const RULES = [
   [/^Sign in to load a case/, 'caseSignIn'],
   [/^Invalid case mode/, 'caseMode'],
   [/^No permission: only the company admin can load a case/, 'caseAdmin'],
+  // v0.47.0 · Contabilidad mes a mes
+  [/^Monthly accounting: the open month is (\S+) \((\S+) to (\S+)\); close it before posting on (\S+)/, 'mmLater', 'home'],
+  [/^Monthly accounting: the accounting starts on (\S+)/, 'mmStart'],
+  [/^Review and accept the warnings before closing the month/, 'mmAccept'],
+  [/^December is closed with the year-end closing/, 'mmDecember', 'closing'],
+  [/^There is no closed month to reopen/, 'mmNothing'],
+  [/^The previous month belongs to a closed fiscal year/, 'mmYearClosed', 'closing'],
+  [/^This company does not use monthly accounting/, 'mmNotMonthly'],
+  [/^The company already has entries: the start date/, 'mmHasEntries'],
   // v0.41.0 · Impuesto sobre Sociedades
   [/^This entry belongs to the corporate income tax/, 'entryFromCorporateTax', 'corporate_tax'],
   [/^The corporate tax of (.+) is already posted/, 'ctPosted', 'corporate_tax'],

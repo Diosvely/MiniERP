@@ -3,9 +3,12 @@ import { supabase } from '../supabase'
 import { fetchAll } from '../paging'
 import { useI18n } from '../i18n'
 import { workDate } from '../workDate'
+import DateField from './DateField'
+import QuickAccount from './QuickAccount'
 import { accountName, money } from '../format'
 import Link from './Link'
-import { companyPath } from '../router'
+import { companyPath, navigate } from '../router'
+import { setFlash } from '../flash'
 import ErrorBox from './ErrorBox'
 import { TEMPLATES } from '../templates'
 import Term from './Term'
@@ -40,7 +43,8 @@ function expandDot(text, digits) {
 //   Cuenta: se busca por número (572…) o por nombre ("caja", "bancos"); ↑ ↓ para elegir, Enter, Escape para cerrar
 //   Plantillas "¿Qué ha pasado?": rellenan las cuentas; tú solo escribes los importes
 //   draft: asiento que propone el Tutor de asientos ({ id, description, lines: [{ account_no, debit, credit, description }] })
-export default function JournalEntryForm({ company, onPosted, draft }) {
+//   editId: v0.47.0 · un borrador guardado que se sigue editando (se abre desde la pantalla «Asientos»)
+export default function JournalEntryForm({ company, onPosted, draft, editId }) {
   const { t, language } = useI18n()
   const [accounts, setAccounts] = useState([])
   const [fiscalYears, setFiscalYears] = useState([])
@@ -58,6 +62,8 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
   const [suggest, setSuggest] = useState(null)   // { line, active } · lista de cuentas abierta bajo una línea
   const [missing, setMissing] = useState([])     // grupos del PGC sin subcuenta al aplicar una plantilla
   const [rules, setRules] = useState([])         // cuentas controladas (0036): qué módulo mueve cada cuenta
+  const [editing, setEditing] = useState(editId ?? null)   // v0.47.0 · id del borrador que se está editando
+  const [creating, setCreating] = useState(null)   // v0.47.0 · { line, no }: alta de una subcuenta que no existe
 
   // Solo subcuentas (posting): son las únicas donde se puede apuntar
   const loadAccounts = () => fetchAll(() => supabase.from('gl_accounts').select('id, account_no, name, name_en')
@@ -87,6 +93,23 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
       setError(''); setMessage(t('tutorLoaded'))
     })
   }, [draft?.id])
+
+  // v0.47.0 · Seguir un borrador: su cabecera y sus líneas, tal como se guardaron (aunque estén a medias)
+  useEffect(() => {
+    if (!editId) return
+    Promise.all([
+      loadAccounts(),
+      supabase.from('journal_entries').select('id, posting_date, description, document_no, status').eq('id', editId).single(),
+      supabase.from('journal_lines').select('gl_account_id, debit, credit, description, line_no').eq('entry_id', editId).order('line_no'),
+    ]).then(([list, e, l]) => {
+      if (e.error || e.data?.status !== 'draft') { setEditing(null); return setError(e.error?.message ?? t('draftNotFound')) }
+      const no = (id) => list.find((a) => a.id === id)?.account_no ?? ''
+      setHeader({ posting_date: e.data.posting_date, description: e.data.description === 'Borrador' ? '' : e.data.description ?? '', document_no: e.data.document_no ?? '' })
+      const ls = (l.data ?? []).map((x) => ({ accountText: no(x.gl_account_id), gl_account_id: x.gl_account_id,
+        debit: Number(x.debit) ? String(x.debit) : '', credit: Number(x.credit) ? String(x.credit) : '', description: x.description ?? '' }))
+      setLines(ls.length >= 2 ? ls : [...ls, ...Array(2 - ls.length).fill(0).map(emptyLine)])
+    })
+  }, [editId])   // eslint-disable-line react-hooks/exhaustive-deps
 
   // Mover el cursor cuando React ya ha dibujado la línea (por ejemplo, una línea nueva)
   useEffect(() => {
@@ -128,6 +151,17 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
       // Al teclear la cuenta, se vincula en cuanto el número coincide exactamente
       if (field === 'accountText') copy[i].gl_account_id = byNo(value.trim())?.id ?? ''
       return copy
+    })
+  }
+
+  // v0.47.0 · Una subcuenta que no existe se puede crear desde la línea si es un número (con el atajo del punto)
+  const creatable = (text) => /^\d+$/.test(expandDot(text, company.posting_account_digits))
+  function accountCreated(i, no) {
+    loadAccounts().then((list) => {
+      const a = list.find((x) => x.account_no === no)
+      setLines((prev) => { const copy = [...prev]; copy[i] = { ...copy[i], accountText: no, gl_account_id: a?.id ?? '' }; return copy })
+      setCreating(null)
+      setFocusTarget({ line: i, field: 'debit' })
     })
   }
 
@@ -277,45 +311,43 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
     setPostedOk(false)
     const fy = fiscalYears.find((y) => header.posting_date >= y.starting_date && header.posting_date <= y.ending_date)
     if (!fy) return setError(t('noFiscalYear'))
-    if (!header.description.trim()) return setError(t('needDescription'))
-    if (usedLines.length < 2) return setError(t('needTwoLines'))
+    // v0.47.0 · Un borrador se puede guardar a medias (una línea, sin cuadrar); para contabilizar, completo
+    if (usedLines.length < 1) return setError(t('needOneLine'))
+    if (post && !header.description.trim()) return setError(t('needDescription'))
+    if (post && usedLines.length < 2) return setError(t('needTwoLines'))
     if (post && !balanced) return setError(t('unbalanced'))
 
     setSaving(true)
-    // 1) Cabecera del asiento (queda en borrador)
-    const { data: entry, error: e1 } = await supabase.from('journal_entries')
-      .insert({ ...header, document_no: header.document_no || null, company_id: company.id, fiscal_year_id: fy.id })
-      .select('id').single()
+    const payloadLines = usedLines.map((l) => ({ gl_account_id: l.gl_account_id, debit: cents(l.debit) / 100, credit: cents(l.credit) / 100,
+      description: l.description || null }))
+    // 1) El borrador (nuevo o el que se está editando): erp.save_draft, 0070
+    let { data: id, error: e1 } = await supabase.rpc('save_draft', { p: { company_id: company.id, entry_id: editing, posting_date: header.posting_date,
+      description: header.description, document_no: header.document_no || null, lines: payloadLines } })
+    if (e1?.code === 'PGRST202' && !editing) {
+      // Sin la migración 0070: como antes, cabecera y líneas por separado
+      const { data: entry, error: ea } = await supabase.from('journal_entries')
+        .insert({ ...header, description: header.description || 'Borrador', document_no: header.document_no || null, company_id: company.id, fiscal_year_id: fy.id })
+        .select('id').single()
+      if (ea) { setSaving(false); return setError(ea.message) }
+      const { error: eb } = await supabase.from('journal_lines').insert(payloadLines.map((l, i) => ({ ...l, entry_id: entry.id, company_id: company.id, line_no: i + 1 })))
+      if (eb) { setSaving(false); return setError(eb.message) }
+      id = entry.id; e1 = null
+    }
     if (e1) { setSaving(false); return setError(e1.message) }
+    setEditing(id)
 
-    // 2) Líneas (apuntes)
-    const { error: e2 } = await supabase.from('journal_lines').insert(
-      usedLines.map((l, i) => ({
-        entry_id: entry.id,
-        company_id: company.id,
-        line_no: i + 1,
-        gl_account_id: l.gl_account_id,
-        debit: cents(l.debit) / 100,
-        credit: cents(l.credit) / 100,
-        description: l.description || null,
-      })))
-    if (e2) { setSaving(false); return setError(e2.message) }
-
-    // 3) Contabilizar (la base de datos vuelve a validar el cuadre y el periodo)
+    // 2) Contabilizar (la base de datos vuelve a validar el cuadre y el periodo). Si falla, el borrador queda guardado.
+    let done = t('savedDraft')
     if (post) {
-      const { data: entryNo, error: e3 } = await supabase.rpc('post_entry', { p_entry: entry.id })
+      const { data: entryNo, error: e3 } = await supabase.rpc('post_entry', { p_entry: id })
       setSaving(false)
       if (e3) return setError(e3.message)
-      setMessage(t('postedAs').replace('{n}', entryNo))
-      setPostedOk(true)
-    } else {
-      setSaving(false)
-      setMessage(t('savedDraft'))
-    }
-    setHeader({ posting_date: header.posting_date, description: '', document_no: '' })
-    setLines([emptyLine(), emptyLine()])
-    setMissing([])
+      done = t('postedAs').replace('{n}', entryNo)
+    } else setSaving(false)
+    // v0.47.0 · Hecho: se cierra la pantalla y se vuelve a «Asientos», que dice lo que se hizo
     onPosted?.()
+    setFlash(done)
+    navigate(companyPath(company.id, 'entries'))
   }
 
   const tax = company.tax_territory === 'canary_islands' ? 'IGIC' : 'IVA'
@@ -323,12 +355,16 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
 
   return (
     <section className="tarjeta formulario-asiento">
-      <h2>{t('newEntry')}</h2>
+      <div className="titulo-modelo">
+        <h2>{editing ? t('editDraft') : t('newEntry')}</h2>
+        <Link to={companyPath(company.id, 'entries')} className="enlace">← {t('backToEntries')}</Link>
+      </div>
+      {editing && <p className="ayuda">✎ {t('editDraftHelp')}</p>}
 
       <div className="rejilla-cabecera cabecera-asiento">
         <label>{t('postingDate')}
-          <input type="date" value={header.posting_date}
-                 onChange={(e) => setHeader({ ...header, posting_date: e.target.value })} />
+          <DateField value={header.posting_date} company={company} id="asiento-fecha"
+                     onChange={(d) => setHeader((h) => ({ ...h, posting_date: d }))} />
         </label>
         <label>{t('documentNo')}
           <input value={header.document_no} onChange={(e) => setHeader({ ...header, document_no: e.target.value })} />
@@ -413,6 +449,9 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
                 )}
                 <span className={unknown ? 'nombre-cuenta aviso' : 'nombre-cuenta'}>
                   {account ? accountName(account, language) : unknown ? t('accountNotFound') : ''}
+                  {unknown && creatable(l.accountText) && creating?.line !== i && (
+                    <> · <button type="button" className="enlace" onClick={() => setCreating({ line: i, no: expandDot(l.accountText, company.posting_account_digits) })}>
+                      {t('qa.ask').replace('{n}', expandDot(l.accountText, company.posting_account_digits))}</button></>)}
                 </span>
               </div>
               <input data-line={i} data-field="debit" placeholder={hint('debit')} inputMode="decimal" value={l.debit}
@@ -429,6 +468,9 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
                       title={t('removeLineKey')} aria-label={`${t('removeLine')} ${i + 1}`}>
                 <Trash2 size={16} aria-hidden="true" />
               </button>
+              {creating?.line === i && (
+                <QuickAccount company={company} accountNo={creating.no} onCancel={() => setCreating(null)}
+                              onCreated={(no) => accountCreated(i, no)} />)}
             </div>
           )
         })}

@@ -2,6 +2,26 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.47.0] - 2026-10-26
+### Añadido
+- **Contabilidad mes a mes** (migración `0069_monthly_accounting.sql`):
+  - fecha de inicio y modo mes a mes al crear la empresa;
+  - solo se contabiliza en el mes abierto;
+  - «Cerrar mes» en la cabecera, con avisos (borradores, nómina y liquidación del trimestre), y reabrir el último mes;
+  - diciembre se cierra con el Cierre del ejercicio.
+- **Fecha rápida** como ContaSol: el día solo (`2`), día y mes (`1503`, `15/3`), `h` para hoy, ↑ ↓ y el calendario.
+  Avisa si la fecha cae fuera del mes abierto.
+- **Pantalla «Asientos»** (migración `0070_entries_screen.sql`), la primera de Contabilidad:
+  - una fila por asiento con su origen y su estado (contabilizado, en edición o con error, y por qué), con un color
+    suave por estado;
+  - filtros Mes actual · Desde / hasta · Todos, estado, origen y búsqueda; totales y Excel;
+  - abrir un borrador para seguir con él, contabilizar varios de una vez y borrar borradores.
+- **Nuevo asiento:**
+  - se abre desde «Asientos» y vuelve a la lista al guardar o contabilizar;
+  - los borradores se guardan a medias;
+  - una subcuenta que no existe se crea desde la línea.
+- **Pruebas:** fases 63 y 64 (64 pruebas SQL) y 252 tests en la web.
+
 ## [0.46.0] - 2026-10-25
 ### Añadido
 - **Pantalla «Casos»** (migraciones `0067_case_screen.sql` y `0068_case_labels.sql`):

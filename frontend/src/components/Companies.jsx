@@ -10,8 +10,12 @@ import Empty from './Empty'
 import ErrorBox from './ErrorBox'
 import WebUsage from './WebUsage'
 import { MODES } from '../cases'
+import DateField from './DateField'
+import { defaultStart } from '../monthly'
+import { todayIso } from '../workDate'
 
-const emptyForm = { name: '', vat_registration_no: '', industry: 'services', tax_territory: 'canary_islands', control_mode: 'strict' }
+const emptyForm = () => ({ name: '', vat_registration_no: '', industry: 'services', tax_territory: 'canary_islands', control_mode: 'strict',
+  start_date: defaultStart(todayIso()), monthly: true })   // v0.47.0 · fecha de inicio y mes a mes
 
 // Lista de empresas: las mías + las de demostración (solo lectura) + alta de empresa
 export default function Companies({ session }) {
@@ -61,21 +65,23 @@ export default function Companies({ session }) {
     e.preventDefault()
     setError('')
     // 1) Alta de la empresa (la base de datos copia el PGC, te hace admin y controla el límite)
+    const { start_date: start, monthly, ...fields } = form
     const { data, error } = await supabase
       .from('companies')
-      .insert({ ...form, created_by: session.user.id })
+      .insert({ ...fields, created_by: session.user.id })
       .select('id')
       .single()
     if (error) return setError(error.message)
 
-    // 2) Ejercicio del año en curso con sus 12 periodos
-    const { error: e2 } = await supabase.rpc('create_fiscal_year', {
-      p_company: data.id,
-      p_year: new Date().getFullYear(),
-    })
-    if (e2) return setError(e2.message)
+    // 2) v0.47.0 · Inicio de la contabilidad: el ejercicio de la fecha de inicio con sus 12 periodos y, mes a mes,
+    //    los meses anteriores cerrados. Sin la migración 0069, el ejercicio del año en curso, como antes.
+    const { error: e2 } = await supabase.rpc('start_accounting', { p_company: data.id, p_start: start, p_monthly: monthly })
+    if (e2?.code === 'PGRST202') {
+      const { error: e3 } = await supabase.rpc('create_fiscal_year', { p_company: data.id, p_year: new Date().getFullYear() })
+      if (e3) return setError(e3.message)
+    } else if (e2) return setError(e2.message)
 
-    setForm(emptyForm)
+    setForm(emptyForm())
     load()
   }
 
@@ -247,6 +253,14 @@ export default function Companies({ session }) {
             {['strict', 'guided'].map((cm) => <option key={cm} value={cm}>{t(`controlMode.${cm}.label`)}</option>)}
           </select>
           <p id="alta-control-ayuda" className="ayuda">{t(`controlMode.${form.control_mode}.help`)}</p>
+          {/* v0.47.0 · Fecha de inicio y contabilidad mes a mes */}
+          <label htmlFor="alta-inicio">{t('mm.startDate')}</label>
+          <DateField id="alta-inicio" value={form.start_date} company={null} required onChange={(d) => setForm((f) => ({ ...f, start_date: d }))} />
+          <label className="opcion">
+            <input type="checkbox" checked={form.monthly} aria-describedby="alta-mensual-ayuda"
+                   onChange={(e) => setForm((f) => ({ ...f, monthly: e.target.checked }))} /> {t('mm.monthly')}
+          </label>
+          <p id="alta-mensual-ayuda" className="ayuda">{t(form.monthly ? 'mm.monthlyHelp' : 'mm.freeHelp')}</p>
           <button type="submit">{t('createCompany')}</button>
         </form>
       ) : (

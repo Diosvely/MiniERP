@@ -1373,3 +1373,30 @@ financiero.
 
 **Siguiente paso:** según el plan, la fase 2: contabilidad analítica. Antes, el estudio de los ADR 0043 a 0046 y las
 fichas por pantalla.
+
+## 2026-10-26 · v0.47.0 · Mejoras de uso II
+
+**Qué se hizo**
+- **Mejoras 7 a 10 de `mejoras-de-uso.md`**, validadas antes de construir.
+- **Motor:**
+  - 0069: la contabilidad mes a mes;
+  - 0070: la lista de asientos con su origen y su estado, los borradores a medias y contabilizar varios.
+- **Pantallas:**
+  - la fecha de inicio en el alta;
+  - «Cerrar mes» en la cabecera;
+  - la fecha rápida;
+  - «Asientos»;
+  - Nuevo asiento, que vuelve a la lista;
+  - crear una subcuenta desde el asiento.
+- **Pruebas:** 64 SQL y 252 tests de la web.
+- **Rama:** `feat/v0.47.0-mejoras-uso`, que entra en `main` con un Pull Request.
+
+**Lo que se aprende**
+- **El cierre mensual protege lo revisado:** solo se contabiliza en el mes abierto, como en BC (ventana de registro) y
+  SAP (OB52).
+- **El estado de un borrador se calcula, no se guarda:** así siempre dice la verdad.
+- **El número del asiento llega al contabilizar:** numeración correlativa, por fecha.
+
+**Decisiones:** ADR 0047 · Mejoras de uso II.
+
+**Siguiente paso:** más mejoras de uso que Diosvely va apuntando y, después, la fase 2 (contabilidad analítica).

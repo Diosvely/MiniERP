@@ -3,6 +3,7 @@ import { supabase } from '../supabase'
 import { fetchAll } from '../paging'
 import { useI18n } from '../i18n'
 import { workDate } from '../workDate'
+import DateField from './DateField'
 import { accountName, money, taxLabel } from '../format'
 import Link from './Link'
 import { companyPath } from '../router'
@@ -189,10 +190,12 @@ export default function InvoiceForm({ company, invoiceType, invoices, onPosted }
           </label>
         )}
         <label>{t('invoiceDate')}
-          <input type="date" value={header.invoice_date} onChange={set('invoice_date')} />
+          <DateField value={header.invoice_date} company={company} id="factura-fecha"
+                     onChange={(d) => { setHeader((h) => ({ ...h, invoice_date: d })); setPreview(null) }} />
         </label>
         <label>{t('registrationDate')}
-          <input type="date" value={header.posting_date || header.invoice_date} onChange={set('posting_date')} />
+          <DateField value={header.posting_date || header.invoice_date} company={company} id="factura-registro"
+                     onChange={(d) => { setHeader((h) => ({ ...h, posting_date: d })); setPreview(null) }} />
         </label>
       </div>
       <input placeholder={t('invoiceDescription')} value={header.description} onChange={set('description')} />

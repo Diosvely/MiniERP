@@ -257,6 +257,12 @@ const RULES = [
   // Importación
   [/^The company already has entries: imports go into a new, empty company$/, 'importNotEmpty'],
   [/^Too many rows: maximum (\d+) per import$/, 'tooManyRows'],
+  // v0.49.0 · Empresas temporales de los registrados
+  [/^You already have a temporary company/, 'tmpAlready'],
+  [/^Temporary companies are full right now/, 'tmpFull'],
+  [/^Too many lines for a temporary import: (\d+) \(maximum (\d+)\)$/, 'tmpTooMany'],
+  [/^Registered users import into a temporary company$/, 'tmpOnlyTemp'],
+  [/^A temporary company cannot be made permanent or extended$/, 'tmpPermanent'],
   [/^Import cancelled: (\d+) row\(s\) with errors/, 'importRowsErrors'],
 
   // Inicio de sesión (Supabase Auth)

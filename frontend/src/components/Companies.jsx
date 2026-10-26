@@ -13,6 +13,7 @@ import { MODES } from '../cases'
 import DateField from './DateField'
 import { defaultStart } from '../monthly'
 import { todayIso } from '../workDate'
+import { TEMP_CHANGED, idleText, importCard, shortDateTime } from '../temporary'
 
 const emptyForm = () => ({ name: '', vat_registration_no: '', industry: 'services', tax_territory: 'canary_islands', control_mode: 'strict',
   start_date: defaultStart(todayIso()), monthly: true })   // v0.47.0 · fecha de inicio y mes a mes
@@ -30,6 +31,7 @@ export default function Companies({ session }) {
   const [changingPassword, setChangingPassword] = useState(false)
   const [cases, setCases] = useState([])          // v0.46.0 · casos completos para cargar en una empresa nueva
   const [loadingCase, setLoadingCase] = useState(null)   // 'caso/modo' mientras se carga
+  const [temp, setTemp] = useState(null)   // v0.49.0 · erp.temp_status: ¿importo en permanente o en temporal?
 
   async function load() {
     // v_my_companies devuelve también mi rol en cada empresa (null = demo ajena → solo lectura)
@@ -41,6 +43,8 @@ export default function Companies({ session }) {
     setProfile(p)
     const { data: cs } = await supabase.from('cases').select('key, sort, title, title_en, description, description_en').order('sort')
     setCases(cs ?? [])
+    const { data: ts, error: te } = await supabase.rpc('temp_status')
+    setTemp(te ? null : ts)   // sin la migración 0072, como antes
     return data
   }
 
@@ -52,6 +56,7 @@ export default function Companies({ session }) {
   // Al terminar una importación se abre la empresa nueva
   async function imported(companyId) {
     setImporting(false)
+    window.dispatchEvent(new Event(TEMP_CHANGED))   // v0.49.0 · el latido empieza a contar con la temporal nueva
     await load()
     navigate(companyPath(companyId))
   }
@@ -105,6 +110,7 @@ export default function Companies({ session }) {
   const isGuest = Boolean(session.user.is_anonymous)
   const demoLink = `${window.location.origin}/?demo`
   const canCreate = profile && (profile.max_companies === null || profile.companies_created < profile.max_companies)
+  const imp = importCard(temp, canCreate)   // v0.49.0 · un registrado importa en una empresa temporal
 
   // Si hay una empresa abierta, mostramos su pantalla en lugar de la lista.
   // key: al cambiar de empresa (o de permiso) la pantalla empieza de cero (sin asiento a medias del Tutor, etc.)
@@ -140,6 +146,7 @@ export default function Companies({ session }) {
       <Link to={companyPath(c.id)} className="enlace-empresa">
         <strong>
           {c.name} {c.is_demo && <span className="insignia">{t('demoBadge')}</span>}
+          {c.temporary && <span className="insignia insignia-temporal">⏳ {t('tmp.badge')}</span>}
         </strong>
         <span>
           {c.vat_registration_no} · {t(`industry.${c.industry}`)} · {t(`territory.${c.tax_territory}`)}
@@ -198,13 +205,21 @@ export default function Companies({ session }) {
       )}
       {isOwner && <WebUsage />}
 
-      {!isGuest && canCreate && (importing
-        ? <JournalImport onDone={imported} onCancel={() => { setImporting(false); load() }} />
+      {!isGuest && imp.show && (importing
+        ? <JournalImport onDone={imported} onCancel={() => { setImporting(false); load() }} temporary={imp.temporary ? temp : null} />
         : (
           <section className="tarjeta">
-            <h2>{t('importJournalTitle')}</h2>
-            <p className="ayuda">{t('importJournalCard')}</p>
-            <button type="button" className="secundario" onClick={() => setImporting(true)}>📥 {t('importJournalButton')}</button>
+            <h2>{t(imp.temporary ? 'tmp.importTitle' : 'importJournalTitle')}</h2>
+            <p className="ayuda">{imp.temporary
+              ? t('tmp.importHelp').replace('{idle}', idleText(temp.idle_minutes)).replace('{hours}', temp.max_hours)
+                .replace('{lines}', Number(temp.max_lines_per_import).toLocaleString(language)).replace('{ai}', temp.ai_daily_limit)
+              : t('importJournalCard')}</p>
+            {imp.blocked === 'hasTemp' && (
+              <p className="aviso">⏳ {t('tmp.hasTemp').replace('{name}', temp.company.name)
+                .replace('{date}', shortDateTime(temp.company.expires_at, language)).replace('{idle}', idleText(temp.idle_minutes))}{' '}
+                <Link to={companyPath(temp.company.id)} className="enlace">{t('tmp.open')} →</Link></p>)}
+            {imp.blocked === 'full' && <p className="aviso" role="status">⏳ {t('tmp.full')}</p>}
+            {!imp.blocked && <button type="button" className="secundario" onClick={() => setImporting(true)}>📥 {t('importJournalButton')}</button>}
           </section>
         ))}
 

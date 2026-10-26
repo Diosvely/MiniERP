@@ -1,6 +1,6 @@
 # Funciones del esquema erp (versión vigente)
 
-Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0071`.
+Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0072`.
 No se edita a mano: el código fuente son las migraciones. Esto es para **estudiar** cada función en su forma
 actual sin rastrear sus redefiniciones.
 
@@ -9,7 +9,7 @@ actual sin rastrear sus redefiniciones.
 - **Tipo:** *invoker* (se ejecuta con los permisos de quien llama: manda la RLS), *security definer* (con los del
   dueño: comprueba ella misma los permisos) o *trigger*.
 
-316 funciones.
+327 funciones.
 
 | Función | Versiones | Vigente en | Tipo |
 |---|---|---|---|
@@ -22,11 +22,12 @@ actual sin rastrear sus redefiniciones.
 | [`adjust_post`](adjust_post.sql) | 1 | 0043_year_end_adjustments | security definer |
 | [`adjust_reverse`](adjust_reverse.sql) | 1 | 0043_year_end_adjustments | security definer |
 | [`aging`](aging.sql) | 1 | 0035_payments | invoker |
-| [`ai_allowed`](ai_allowed.sql) | 1 | 0027_members | security definer |
-| [`ai_consume`](ai_consume.sql) | 1 | 0027_members | security definer |
+| [`ai_allowed`](ai_allowed.sql) | 2 | 0072_temporary_companies | security definer |
+| [`ai_consume`](ai_consume.sql) | 2 | 0072_temporary_companies | security definer |
 | [`ai_context`](ai_context.sql) | 2 | 0027_members | security definer |
+| [`ai_daily_limit`](ai_daily_limit.sql) | 1 | 0072_temporary_companies | security definer |
 | [`ai_ratio_value`](ai_ratio_value.sql) | 1 | 0024_ai_context | invoker |
-| [`ai_status`](ai_status.sql) | 1 | 0027_members | security definer |
+| [`ai_status`](ai_status.sql) | 2 | 0072_temporary_companies | security definer |
 | [`apply_provision`](apply_provision.sql) | 1 | 0045_provisions | security definer |
 | [`asset_account_pair`](asset_account_pair.sql) | 1 | 0041_fixed_assets | security definer |
 | [`asset_accumulated_at`](asset_accumulated_at.sql) | 1 | 0041_fixed_assets | invoker |
@@ -108,7 +109,7 @@ actual sin rastrear sus redefiniciones.
 | [`create_posting_account`](create_posting_account.sql) | 1 | 0002_chart_of_accounts | invoker |
 | [`create_provision`](create_provision.sql) | 1 | 0045_provisions | security definer |
 | [`delete_company`](delete_company.sql) | 1 | 0004_journal_entries | security definer |
-| [`delete_company_step`](delete_company_step.sql) | 11 | 0064_grants | security definer |
+| [`delete_company_step`](delete_company_step.sql) | 12 | 0072_temporary_companies | security definer |
 | [`delete_draft`](delete_draft.sql) | 1 | 0070_entries_screen | security definer |
 | [`depreciation_schedule`](depreciation_schedule.sql) | 2 | 0046_asset_impairment | invoker |
 | [`dispose_asset`](dispose_asset.sql) | 3 | 0065_grants_integration | security definer |
@@ -180,7 +181,7 @@ actual sin rastrear sus redefiniciones.
 | [`import_posting_accounts`](import_posting_accounts.sql) | 1 | 0008_import_accounts | invoker |
 | [`import_prepare`](import_prepare.sql) | 1 | 0021_journal_import | security definer |
 | [`import_preview`](import_preview.sql) | 1 | 0021_journal_import | security definer |
-| [`import_start`](import_start.sql) | 1 | 0021_journal_import | invoker |
+| [`import_start`](import_start.sql) | 2 | 0072_temporary_companies | invoker |
 | [`integrity_checks`](integrity_checks.sql) | 2 | 0059_corporate_tax_integration | invoker |
 | [`intra_eu_lines`](intra_eu_lines.sql) | 1 | 0052_forms_347_349 | invoker |
 | [`inventory_account`](inventory_account.sql) | 1 | 0047_inventory_closing | security definer |
@@ -192,6 +193,7 @@ actual sin rastrear sus redefiniciones.
 | [`is_data_owner`](is_data_owner.sql) | 1 | 0027_members | security definer |
 | [`is_owner`](is_owner.sql) | 1 | 0007_demo_and_limits | security definer |
 | [`is_settlement_entry`](is_settlement_entry.sql) | 2 | 0017_year_closing | invoker |
+| [`is_trusted`](is_trusted.sql) | 1 | 0072_temporary_companies | security definer |
 | [`is_year_closing_entry`](is_year_closing_entry.sql) | 1 | 0017_year_closing | invoker |
 | [`legal_form_from_tax_id`](legal_form_from_tax_id.sql) | 1 | 0033_withholding_rules | invoker |
 | [`link_payment`](link_payment.sql) | 1 | 0035_payments | security definer |
@@ -216,7 +218,7 @@ actual sin rastrear sus redefiniciones.
 | [`loan_year_end`](loan_year_end.sql) | 1 | 0062_loans | security definer |
 | [`loan_year_end_preview`](loan_year_end_preview.sql) | 1 | 0062_loans | security definer |
 | [`month_close_preview`](month_close_preview.sql) | 1 | 0069_monthly_accounting | security definer |
-| [`my_profile`](my_profile.sql) | 2 | 0015_guest_access | security definer |
+| [`my_profile`](my_profile.sql) | 3 | 0072_temporary_companies | security definer |
 | [`my_role`](my_role.sql) | 1 | 0006_security_rls | security definer |
 | [`net_turnover`](net_turnover.sql) | 1 | 0057_corporate_tax | invoker |
 | [`next_subaccount_no`](next_subaccount_no.sql) | 1 | 0025_entry_tutor | invoker |
@@ -245,6 +247,7 @@ actual sin rastrear sus redefiniciones.
 | [`provision_balance`](provision_balance.sql) | 1 | 0045_provisions | invoker |
 | [`provision_post`](provision_post.sql) | 1 | 0045_provisions | security definer |
 | [`provision_prefix`](provision_prefix.sql) | 1 | 0045_provisions | invoker |
+| [`purge_company_step`](purge_company_step.sql) | 1 | 0072_temporary_companies | security definer |
 | [`quarter_end`](quarter_end.sql) | 1 | 0012_tax_settlement | invoker |
 | [`quarter_start`](quarter_start.sql) | 1 | 0012_tax_settlement | invoker |
 | [`ratio_parts`](ratio_parts.sql) | 2 | 0024_ai_context | security definer |
@@ -277,11 +280,17 @@ actual sin rastrear sus redefiniciones.
 | [`tax_form_lines`](tax_form_lines.sql) | 1 | 0051_tax_forms | invoker |
 | [`tax_rate_text`](tax_rate_text.sql) | 1 | 0010_tax_setup | invoker |
 | [`tax_settlement_calc`](tax_settlement_calc.sql) | 4 | 0039_review_fixes | invoker |
+| [`temp_capacity`](temp_capacity.sql) | 1 | 0072_temporary_companies | security definer |
+| [`temp_cleanup`](temp_cleanup.sql) | 1 | 0072_temporary_companies | security definer |
+| [`temp_expired`](temp_expired.sql) | 1 | 0072_temporary_companies | invoker |
+| [`temp_heartbeat`](temp_heartbeat.sql) | 1 | 0072_temporary_companies | security definer |
+| [`temp_leave`](temp_leave.sql) | 1 | 0072_temporary_companies | security definer |
+| [`temp_status`](temp_status.sql) | 1 | 0072_temporary_companies | security definer |
 | [`template_parent`](template_parent.sql) | 1 | 0008_import_accounts | invoker |
 | [`tf_row`](tf_row.sql) | 1 | 0051_tax_forms | invoker |
 | [`tg_company_add_admin`](tg_company_add_admin.sql) | 1 | 0001_core | trigger |
 | [`tg_company_copy_coa`](tg_company_copy_coa.sql) | 1 | 0002_chart_of_accounts | trigger |
-| [`tg_company_rules`](tg_company_rules.sql) | 3 | 0027_members | trigger |
+| [`tg_company_rules`](tg_company_rules.sql) | 4 | 0072_temporary_companies | trigger |
 | [`tg_company_vat_regime`](tg_company_vat_regime.sql) | 1 | 0019_reverse_charge_surcharge | trigger |
 | [`tg_entry_adjust_reverse`](tg_entry_adjust_reverse.sql) | 8 | 0064_grants | trigger |
 | [`tg_entry_asset_reverse`](tg_entry_asset_reverse.sql) | 2 | 0046_asset_impairment | trigger |
@@ -296,6 +305,8 @@ actual sin rastrear sus redefiniciones.
 | [`tg_fiscal_year_status`](tg_fiscal_year_status.sql) | 1 | 0017_year_closing | trigger |
 | [`tg_gl_account_block_default`](tg_gl_account_block_default.sql) | 1 | 0013_balance_rules | trigger |
 | [`tg_gl_account_validate`](tg_gl_account_validate.sql) | 1 | 0002_chart_of_accounts | trigger |
+| [`tg_import_batch_temporary`](tg_import_batch_temporary.sql) | 1 | 0072_temporary_companies | trigger |
+| [`tg_import_lines_caps`](tg_import_lines_caps.sql) | 1 | 0072_temporary_companies | trigger |
 | [`tg_invoice_due_date`](tg_invoice_due_date.sql) | 1 | 0035_payments | trigger |
 | [`tg_invoice_line_asset_cost`](tg_invoice_line_asset_cost.sql) | 1 | 0046_asset_impairment | trigger |
 | [`tg_invoice_loan_credit_memo`](tg_invoice_loan_credit_memo.sql) | 1 | 0063_financing_integration | trigger |

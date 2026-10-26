@@ -2,6 +2,29 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.49.0] - 2026-10-26
+### Añadido
+- **Empresas temporales para los registrados** (migración `0072_temporary_companies.sql`):
+  - lo que importa un registrado va a una empresa temporal, que no gasta su empresa permanente;
+  - se borra tras 2 h sin usar la aplicación o a las 48 h, gracias a un latido de la web y a una limpieza programada
+    (pg_cron cada 15 minutos);
+  - topes en `erp.temp_settings`: 20.000 líneas por importación, 200.000 entre todas las temporales, 25 a la vez y
+    freno a los 425 MB;
+  - IA en su temporal, con 5 consultas al día (los miembros, 10).
+- **En la web:**
+  - «Prueba el ERP con tu diario», con el aviso antes de subir y el tope de líneas;
+  - «⏳ Temporal» en la lista y la franja de cuándo se borra;
+  - latido cada 5 minutos y aviso al cerrar la pestaña;
+  - cinco errores nuevos en lenguaje claro.
+- Prueba de la base de datos `fase 66` y tests de la web (`tests/temporary.test.js`).
+- ADR 0049.
+
+### Cambiado
+- Un registrado ya no puede importar en su empresa permanente: lo que importa va siempre a una temporal.
+- El borrado de una empresa se reparte en dos funciones: una comprueba quién lo pide (`delete_company_step`) y otra
+  borra (`purge_company_step`), que también usa la limpieza.
+
+
 ## [0.48.0] - 2026-10-26
 ### Añadido
 - **PGC de estudio** (migración `0071_pgc_study.sql`), un libro de consulta de solo lectura y común a todas las empresas:

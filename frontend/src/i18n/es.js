@@ -64,6 +64,7 @@ export default {
   editDraft: 'Seguir el borrador',
   editDraftHelp: 'Estás editando un borrador guardado: guárdalo otra vez o contabilízalo.',
   draftNotFound: 'Ese borrador ya no existe o ya está contabilizado.',
+  backToEntries: 'Volver a Asientos',
   needTwoLines: 'Un asiento necesita al menos 2 líneas con cuenta e importe.',
   needDescription: 'Escribe el concepto del asiento.',
   unbalanced: 'El asiento no cuadra: el Debe debe ser igual al Haber.',

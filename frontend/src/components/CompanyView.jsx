@@ -54,7 +54,7 @@ import { computeWorkDate } from '../workDate'
 const SCREENS = [
   { id: 'home', group: '', basic: true },
   { id: 'entries', group: 'menuAccounting', basic: true },   // v0.47.0 · la pantalla principal: una fila por asiento
-  { id: 'entry', group: 'menuAccounting', basic: true, write: true },
+  { id: 'entry', group: 'menuAccounting', basic: true, write: true, menu: false },   // v0.47.0 · se abre desde «Asientos» (+ Nuevo)
   { id: 'journal', group: 'menuAccounting', basic: true },
   { id: 'corporate_tax', group: 'menuAccounting' },   // v0.41.0 · antes del cierre
   { id: 'closing', group: 'menuAccounting' },
@@ -85,8 +85,11 @@ const SCREENS = [
   // Ficha de un asiento: no sale en ningún menú, se llega desde el libro mayor (#/…/asiento/<año>/<nº>)
   { id: 'asiento', group: 'menuAccounting', basic: 'hidden', menu: false },
 ]
+// v0.47.0 · Nuevo asiento no está en el menú: mientras se usa, se marca «Asientos», desde donde se abre
+const menuActive = (section, id) => section === id || (section === 'entry' && id === 'entries')
+
 // Orden del menú Básico (9 entradas como máximo, 10 en la empresa de un caso): de lo que más se usa a lo que menos
-const BASIC_ORDER = ['home', 'case', 'entries', 'invoices', 'payments', 'entry', 'settlement', 'balance', 'pyg', 'partners']   // v0.47.0: «Asientos» en lugar del Libro diario
+const BASIC_ORDER = ['home', 'case', 'entries', 'invoices', 'payments', 'settlement', 'balance', 'pyg', 'partners']   // v0.47.0: «Asientos» en lugar del Libro diario
 
 // Modo elegido: se guarda en este navegador (si no deja guardar, siempre empieza en Básico)
 const savedMode = () => { try { return localStorage.getItem('erp-modo') === 'auditor' ? 'auditor' : 'basic' } catch { return 'basic' } }
@@ -248,8 +251,8 @@ export default function CompanyView({ company: base, readOnly, canPublish, isOwn
               </h3>
             )}
             {(!g || openGroup === g) && <div id={g ? `menu-${g}` : undefined} className="menu-botones">{ids.map((id) => (
-              <button key={id} type="button" className={section === id ? 'activa' : ''}
-                      aria-current={section === id ? 'page' : undefined} onClick={() => go(id)}>
+              <button key={id} type="button" className={menuActive(section, id) ? 'activa' : ''}
+                      aria-current={menuActive(section, id) ? 'page' : undefined} onClick={() => go(id)}>
                 {label(id)}
                 {sub(id) && <small>{sub(id)}</small>}
               </button>

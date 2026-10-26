@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest'
+import { setFlash, takeFlash } from '../src/flash'
 import { filterEntries, monthRange, rangeDates, rowTarget, selectable, sourcesOf, summary } from '../src/entries'
 import es from '../src/i18n/es.js'
 import en from '../src/i18n/en.js'
@@ -58,5 +59,12 @@ describe('asientos · textos', () => {
     expect(problems.length).toBe(9)
     for (const x of sources) expect(es.ent.source[x], x).toBeTruthy()
     for (const x of problems) expect(es.ent.problem[x], x).toBeTruthy()
+  })
+})
+
+describe('asientos · al volver de Nuevo asiento', () => {
+  it('el mensaje se enseña una vez', () => {
+    setFlash('Contabilizado con el nº 15.')
+    expect([takeFlash(), takeFlash()]).toEqual(['Contabilizado con el nº 15.', null])
   })
 })

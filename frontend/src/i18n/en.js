@@ -64,6 +64,7 @@ export default {
   editDraft: 'Continue the draft',
   editDraftHelp: 'You are editing a saved draft: save it again or post it.',
   draftNotFound: 'That draft no longer exists or is already posted.',
+  backToEntries: 'Back to Entries',
   needTwoLines: 'An entry needs at least 2 lines with account and amount.',
   needDescription: 'Write the entry description.',
   unbalanced: 'The entry is unbalanced: debit must equal credit.',

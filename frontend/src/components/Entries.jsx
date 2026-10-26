@@ -8,6 +8,7 @@ import { workDate } from '../workDate'
 import { monthName } from '../monthly'
 import { PAGE, RANGES, filterEntries, monthRange, rangeDates, rowTarget, saveRange, savedRange, selectable, sourcesOf, summary } from '../entries'
 import { downloadXlsx, fileName } from '../exportXlsx'
+import { takeFlash } from '../flash'
 import DateField from './DateField'
 import Link from './Link'
 import ErrorBox from './ErrorBox'
@@ -30,7 +31,7 @@ export default function Entries({ company, readOnly, refreshKey }) {
   const [filters, setFilters] = useState({ state: '', source: '', text: '' })
   const [checked, setChecked] = useState([])
   const [error, setError] = useState('')
-  const [message, setMessage] = useState('')
+  const [message, setMessage] = useState(takeFlash)   // lo que se acaba de hacer en Nuevo asiento
   const [confirmDelete, setConfirmDelete] = useState(null)
   const [busy, setBusy] = useState(false)
   const [reload, setReload] = useState(0)

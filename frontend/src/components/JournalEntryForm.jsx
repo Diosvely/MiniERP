@@ -7,6 +7,7 @@ import DateField from './DateField'
 import { accountName, money } from '../format'
 import Link from './Link'
 import { companyPath, navigate } from '../router'
+import { setFlash } from '../flash'
 import ErrorBox from './ErrorBox'
 import { TEMPLATES } from '../templates'
 import Term from './Term'
@@ -323,22 +324,17 @@ export default function JournalEntryForm({ company, onPosted, draft, editId }) {
     setEditing(id)
 
     // 2) Contabilizar (la base de datos vuelve a validar el cuadre y el periodo). Si falla, el borrador queda guardado.
+    let done = t('savedDraft')
     if (post) {
       const { data: entryNo, error: e3 } = await supabase.rpc('post_entry', { p_entry: id })
       setSaving(false)
       if (e3) return setError(e3.message)
-      setMessage(t('postedAs').replace('{n}', entryNo))
-      setPostedOk(true)
-    } else {
-      setSaving(false)
-      setMessage(t('savedDraft'))
-    }
-    setEditing(null)
-    setHeader({ posting_date: header.posting_date, description: '', document_no: '' })
-    setLines([emptyLine(), emptyLine()])
-    setMissing([])
+      done = t('postedAs').replace('{n}', entryNo)
+    } else setSaving(false)
+    // v0.47.0 · Hecho: se cierra la pantalla y se vuelve a «Asientos», que dice lo que se hizo
     onPosted?.()
-    if (editId) navigate(companyPath(company.id, 'entry'), { replace: true })
+    setFlash(done)
+    navigate(companyPath(company.id, 'entries'))
   }
 
   const tax = company.tax_territory === 'canary_islands' ? 'IGIC' : 'IVA'
@@ -346,8 +342,11 @@ export default function JournalEntryForm({ company, onPosted, draft, editId }) {
 
   return (
     <section className="tarjeta formulario-asiento">
-      <h2>{editing ? t('editDraft') : t('newEntry')}</h2>
-      {editing && <p className="ayuda">✎ {t('editDraftHelp')} <Link to={companyPath(company.id, 'entries')} className="enlace">{t('nav.entries.label')} →</Link></p>}
+      <div className="titulo-modelo">
+        <h2>{editing ? t('editDraft') : t('newEntry')}</h2>
+        <Link to={companyPath(company.id, 'entries')} className="enlace">← {t('backToEntries')}</Link>
+      </div>
+      {editing && <p className="ayuda">✎ {t('editDraftHelp')}</p>}
 
       <div className="rejilla-cabecera cabecera-asiento">
         <label>{t('postingDate')}

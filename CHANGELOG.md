@@ -2,6 +2,24 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.48.0] - 2026-10-26
+### Añadido
+- **PGC de estudio** (migración `0071_pgc_study.sql`), un libro de consulta de solo lectura y común a todas las empresas:
+  - 9 grupos, 78 subgrupos y 712 cuentas, con dónde aparece cada una en las cuentas anuales;
+  - 70 fichas de estudio (pendientes de validar por Diosvely), 23 normas de registro y valoración y 6 principios.
+- **Pantalla «PGC de estudio»** (`#/pgc`), con el botón «PGC» en la cabecera:
+  - buscador, grupos, árbol y la ficha de cada cuenta, con enlaces entre cuentas y a su norma;
+  - pestañas de normas de valoración y principios;
+  - enlaces directos a una cuenta o a una norma.
+- **El PGC en Nuevo asiento:** un ⓘ en cada línea (o «?» en la cuenta) y el botón «PGC» abren la ficha en un panel
+  lateral, sin perder el asiento; el aviso de cuenta controlada enlaza a su ficha.
+- Prueba de la base de datos `fase 65` y tests de la web del PGC (`tests/pgc.test.js`).
+- ADR 0048.
+
+### Cambiado
+- En el móvil, los enlaces de la cabecera pasan a una segunda fila cuando no caben.
+
+
 ## [0.47.0] - 2026-10-26
 ### Añadido
 - **Contabilidad mes a mes** (migración `0069_monthly_accounting.sql`):

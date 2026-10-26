@@ -6,9 +6,10 @@ import BusyBar from './components/BusyBar'
 import Landing from './components/Landing'
 import Glossary from './components/Glossary'
 import Practice from './components/Practice'
+import Pgc from './components/Pgc'
 import Link from './components/Link'
 import { useHashRoute } from './router'
-import { BookOpen, GraduationCap } from 'lucide-react'
+import { BookMarked, BookOpen, GraduationCap } from 'lucide-react'
 import { ICON } from './icons'
 
 export default function App() {
@@ -32,7 +33,7 @@ export default function App() {
 
 function Layout({ session }) {
   const { t } = useI18n()
-  const route = useHashRoute()   // #/glosario se abre con sesión o sin ella; #/practicar (v0.40.0) necesita sesión: guarda tu progreso
+  const route = useHashRoute()   // #/glosario se abre con sesión o sin ella; #/practicar (v0.40.0) necesita sesión: guarda tu progreso; #/pgc (v0.48.0) también: los datos los lee quien ha entrado
   return (
     <main>
       {/* Aviso "Cargando…" arriba mientras llegan datos de Supabase (v0.25.0) */}
@@ -41,6 +42,7 @@ function Layout({ session }) {
         <h1>{t('appTitle')}</h1>
         <div className="cabecera-acciones">
           {session && <Link to="/practicar" className="enlace-glosario" aria-label={t('practice')}><GraduationCap {...ICON} /> <span>{t('practice')}</span></Link>}
+          {session && <Link to="/pgc" className="enlace-glosario" aria-label={t('pgc.title')}><BookMarked {...ICON} /> <span>{t('pgc.button')}</span></Link>}
           <Link to="/glosario" className="enlace-glosario" aria-label={t('glossary')}><BookOpen {...ICON} /> <span>{t('glossary')}</span></Link>
           <LanguageSwitch />
         </div>
@@ -48,7 +50,8 @@ function Layout({ session }) {
       {route[0] === 'glosario' ? <Glossary />
         : !session ? <Landing />
           : route[0] === 'practicar' ? <Practice exerciseKey={route[1]} />
-            : <Companies session={session} />}
+            : route[0] === 'pgc' ? <Pgc route={route.slice(1)} />
+              : <Companies session={session} />}
     </main>
   )
 }

@@ -5,6 +5,8 @@ import { useI18n } from '../i18n'
 import { workDate } from '../workDate'
 import DateField from './DateField'
 import QuickAccount from './QuickAccount'
+import PgcPanel from './PgcPanel'
+import { pgcCodeOf } from '../pgc'
 import { accountName, money } from '../format'
 import Link from './Link'
 import { companyPath, navigate } from '../router'
@@ -15,7 +17,7 @@ import Term from './Term'
 import { ICON } from '../icons'
 import { controlledLines, moduleScreen } from '../controlled'
 import { cents, enterAction, lineKeyAction, removeLineFrom, suggestionFor } from '../entryKeys'
-import { Trash2 } from 'lucide-react'
+import { BookMarked, Trash2 } from 'lucide-react'
 
 const emptyLine = () => ({ accountText: '', gl_account_id: '', debit: '', credit: '', description: '' })
 
@@ -64,6 +66,8 @@ export default function JournalEntryForm({ company, onPosted, draft, editId }) {
   const [rules, setRules] = useState([])         // cuentas controladas (0036): qué módulo mueve cada cuenta
   const [editing, setEditing] = useState(editId ?? null)   // v0.47.0 · id del borrador que se está editando
   const [creating, setCreating] = useState(null)   // v0.47.0 · { line, no }: alta de una subcuenta que no existe
+  const [pgc, setPgc] = useState(null)   // v0.48.0 · { account }: panel con la ficha del PGC de estudio
+  const pgcFrom = useRef(null)   // dónde estaba el foco, para volver al cerrar el panel
 
   // Solo subcuentas (posting): son las únicas donde se puede apuntar
   const loadAccounts = () => fetchAll(() => supabase.from('gl_accounts').select('id, account_no, name, name_en')
@@ -267,7 +271,17 @@ export default function JournalEntryForm({ company, onPosted, draft, editId }) {
   const nextLine = (i) => (i === lines.length - 1 ? addLine(i) : setFocusTarget({ line: i + 1, field: 'account' }))
 
   // Teclado dentro de una línea
+  // v0.48.0 · Ficha del PGC: la de la cuenta de la línea (sus 4 primeros dígitos), o el buscador
+  const pgcCode = (l) => {
+    const a = accounts.find((x) => x.id === l.gl_account_id)
+    return pgcCodeOf(a?.account_no ?? expandDot(l.accountText, company.posting_account_digits))
+  }
+  function openPgc(account, from) { pgcFrom.current = from ?? document.activeElement; setPgc((p) => ({ account: account ?? null, stamp: (p?.stamp ?? 0) + 1 })) }
+  function closePgc() { setPgc(null); requestAnimationFrame(() => pgcFrom.current?.focus?.()) }
+
   function onLineKey(e, i, field) {
+    // «?» en el campo de cuenta: la ficha del PGC de esa cuenta (en una cuenta no se escribe «?»)
+    if (field === 'account' && e.key === '?') { e.preventDefault(); return openPgc(pgcCode(lines[i])) }
     const sug = suggestionFor(lines, i)
     const other = lineKeyAction(e, field, sug)
     if (other) {
@@ -358,6 +372,10 @@ export default function JournalEntryForm({ company, onPosted, draft, editId }) {
       <div className="titulo-modelo">
         <h2>{editing ? t('editDraft') : t('newEntry')}</h2>
         <Link to={companyPath(company.id, 'entries')} className="enlace">← {t('backToEntries')}</Link>
+        <button type="button" className="secundario boton-pgc" aria-expanded={Boolean(pgc)} aria-controls="panel-pgc"
+                onClick={() => (pgc ? closePgc() : openPgc([...lines].reverse().map(pgcCode).find(Boolean)))}>
+          <BookMarked {...ICON} /> {t('pgc.button')}
+        </button>
       </div>
       {editing && <p className="ayuda">✎ {t('editDraftHelp')}</p>}
 
@@ -448,6 +466,9 @@ export default function JournalEntryForm({ company, onPosted, draft, editId }) {
                   </ul>
                 )}
                 <span className={unknown ? 'nombre-cuenta aviso' : 'nombre-cuenta'}>
+                  {pgcCode(l) && (
+                    <button type="button" className="pgc-i" tabIndex={-1} title={t('pgc.lineTitle')}
+                            aria-label={t('pgc.lineLabel').replace('{n}', pgcCode(l))} onClick={() => openPgc(pgcCode(l), linesRef.current?.querySelector(`[data-line="${i}"][data-field="account"]`))}>ⓘ</button>)}
                   {account ? accountName(account, language) : unknown ? t('accountNotFound') : ''}
                   {unknown && creatable(l.accountText) && creating?.line !== i && (
                     <> · <button type="button" className="enlace" onClick={() => setCreating({ line: i, no: expandDot(l.accountText, company.posting_account_digits) })}>
@@ -502,7 +523,9 @@ export default function JournalEntryForm({ company, onPosted, draft, editId }) {
           </p>
           <p>{t(blocked ? 'ctl.strictHelp' : 'ctl.guidedHelp')
               .replace('{m}', ctlModules.map((m) => t(`ctl.module.${m}`)).join(t('ctl.or')))}</p>
-          <Link to={companyPath(company.id, ctlScreen)} className="boton secundario">{t('err.goTo')} {screenLabel(ctlScreen)} →</Link>
+          <Link to={companyPath(company.id, ctlScreen)} className="boton secundario">{t('err.goTo')} {screenLabel(ctlScreen)} →</Link>{' '}
+          <button type="button" className="enlace" onClick={() => openPgc(controlled[0].account_no.slice(0, 4))}>
+            {t('pgc.seeCard').replace('{n}', controlled[0].account_no.slice(0, 4))}</button>
         </div>
       )}
 
@@ -518,6 +541,7 @@ export default function JournalEntryForm({ company, onPosted, draft, editId }) {
           {postedOk && <> · <Link to={companyPath(company.id, 'journal')} className="enlace">{t('seeInJournal')} →</Link></>}
         </p>
       )}
+      <PgcPanel open={Boolean(pgc)} account={pgc?.account} stamp={pgc?.stamp} onClose={closePgc} />
     </section>
   )
 }

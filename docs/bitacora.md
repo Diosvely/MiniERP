@@ -1400,3 +1400,27 @@ fichas por pantalla.
 **Decisiones:** ADR 0047 · Mejoras de uso II.
 
 **Siguiente paso:** más mejoras de uso que Diosvely va apuntando y, después, la fase 2 (contabilidad analítica).
+
+## 2026-10-26 · v0.48.0 · PGC de estudio
+
+**Qué se hizo**
+- **El PGC dentro del ERP**, a partir del prototipo y la especificación de otro chat, con los datos comprobados y el
+  diseño validado antes de construir.
+- **Motor:** 0071, con seis tablas de solo lectura: 712 cuentas, 70 fichas, 23 NRV y 6 principios. Se añadieron la 2804
+  y las cuentas de los grupos 8 y 9.
+- **Pantallas:**
+  - «PGC de estudio» (`#/pgc`), con cuentas, fichas, normas y principios;
+  - un panel en Nuevo asiento: el ⓘ de cada línea, «?» en la cuenta y el botón «PGC».
+- **Pruebas:** 65 SQL y 265 tests de la web.
+- **Rama:** `feat/v0.48.0-pgc-estudio`, que entra en `main` con un Pull Request.
+
+**Lo que se aprende**
+- **El número de la cuenta ya dice qué es:** grupo, subgrupo y cuenta.
+- **Cada cuenta tiene su naturaleza:** cuándo se carga y cuándo se abona, con un ejemplo que cuadra.
+- **El cuadro de cuentas dice dónde; la norma de valoración, cuánto.**
+
+**Decisiones:** ADR 0048 · PGC de estudio.
+
+**Pendiente:** validar las 70 fichas (regla A3) y añadir las de las cuentas del caso completo que aún no tienen.
+
+**Siguiente paso:** más mejoras de uso que Diosvely va apuntando y, después, la fase 2 (contabilidad analítica).

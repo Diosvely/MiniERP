@@ -1568,6 +1568,8 @@ export default {
     reversedBy: 'reversed by no. {n}',
     totals: 'Total of {n} entries', more: 'Show more ({n} of {t})', empty: 'No entries with these filters.',
   },
+  // v0.47.0 · Create a posting account from the entry
+  qa: { title: 'New posting account', ask: 'Create {n}?' },
   nav: {
     home: { label: 'Home', sub: '' },
     entries: { label: 'Entries', sub: 'One per row · status · source' },

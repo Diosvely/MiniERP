@@ -1567,6 +1567,8 @@ export default {
     reversedBy: 'anulado por el nº {n}',
     totals: 'Total de {n} asientos', more: 'Ver más ({n} de {t})', empty: 'No hay asientos con estos filtros.',
   },
+  // v0.47.0 · Crear una subcuenta desde el asiento
+  qa: { title: 'Nueva subcuenta', ask: '¿Crear la {n}?' },
   nav: {
     home: { label: 'Inicio', sub: '' },
     entries: { label: 'Asientos', sub: 'Uno por línea · estado · origen' },

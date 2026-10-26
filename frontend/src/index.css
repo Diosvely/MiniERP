@@ -1031,3 +1031,7 @@ a.boton-enlace { display: inline-block; padding: 6px 14px; border-radius: 8px; b
 .lista-asientos th:first-child, .lista-asientos td:first-child { width: 2.2em; min-width: 0; padding-right: 0; }
 .lista-asientos th:last-child, .lista-asientos td:last-child { width: 2.6em; padding-left: 0; }
 .lista-asientos td:nth-child(5) { min-width: 14em; }
+
+/* v0.47.0 · Crear una subcuenta sin salir del asiento */
+.linea .cuenta-rapida { grid-column: 1 / -1; display: flex; flex-direction: column; gap: 6px; margin: 4px 0 10px; padding: 10px 12px;
+  border: 1px solid var(--primario); border-radius: 8px; background: color-mix(in srgb, var(--primario) 5%, var(--tarjeta)); }

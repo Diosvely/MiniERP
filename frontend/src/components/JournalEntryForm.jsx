@@ -4,6 +4,7 @@ import { fetchAll } from '../paging'
 import { useI18n } from '../i18n'
 import { workDate } from '../workDate'
 import DateField from './DateField'
+import QuickAccount from './QuickAccount'
 import { accountName, money } from '../format'
 import Link from './Link'
 import { companyPath, navigate } from '../router'
@@ -62,6 +63,7 @@ export default function JournalEntryForm({ company, onPosted, draft, editId }) {
   const [missing, setMissing] = useState([])     // grupos del PGC sin subcuenta al aplicar una plantilla
   const [rules, setRules] = useState([])         // cuentas controladas (0036): qué módulo mueve cada cuenta
   const [editing, setEditing] = useState(editId ?? null)   // v0.47.0 · id del borrador que se está editando
+  const [creating, setCreating] = useState(null)   // v0.47.0 · { line, no }: alta de una subcuenta que no existe
 
   // Solo subcuentas (posting): son las únicas donde se puede apuntar
   const loadAccounts = () => fetchAll(() => supabase.from('gl_accounts').select('id, account_no, name, name_en')
@@ -149,6 +151,17 @@ export default function JournalEntryForm({ company, onPosted, draft, editId }) {
       // Al teclear la cuenta, se vincula en cuanto el número coincide exactamente
       if (field === 'accountText') copy[i].gl_account_id = byNo(value.trim())?.id ?? ''
       return copy
+    })
+  }
+
+  // v0.47.0 · Una subcuenta que no existe se puede crear desde la línea si es un número (con el atajo del punto)
+  const creatable = (text) => /^\d+$/.test(expandDot(text, company.posting_account_digits))
+  function accountCreated(i, no) {
+    loadAccounts().then((list) => {
+      const a = list.find((x) => x.account_no === no)
+      setLines((prev) => { const copy = [...prev]; copy[i] = { ...copy[i], accountText: no, gl_account_id: a?.id ?? '' }; return copy })
+      setCreating(null)
+      setFocusTarget({ line: i, field: 'debit' })
     })
   }
 
@@ -436,6 +449,9 @@ export default function JournalEntryForm({ company, onPosted, draft, editId }) {
                 )}
                 <span className={unknown ? 'nombre-cuenta aviso' : 'nombre-cuenta'}>
                   {account ? accountName(account, language) : unknown ? t('accountNotFound') : ''}
+                  {unknown && creatable(l.accountText) && creating?.line !== i && (
+                    <> · <button type="button" className="enlace" onClick={() => setCreating({ line: i, no: expandDot(l.accountText, company.posting_account_digits) })}>
+                      {t('qa.ask').replace('{n}', expandDot(l.accountText, company.posting_account_digits))}</button></>)}
                 </span>
               </div>
               <input data-line={i} data-field="debit" placeholder={hint('debit')} inputMode="decimal" value={l.debit}
@@ -452,6 +468,9 @@ export default function JournalEntryForm({ company, onPosted, draft, editId }) {
                       title={t('removeLineKey')} aria-label={`${t('removeLine')} ${i + 1}`}>
                 <Trash2 size={16} aria-hidden="true" />
               </button>
+              {creating?.line === i && (
+                <QuickAccount company={company} accountNo={creating.no} onCancel={() => setCreating(null)}
+                              onCreated={(no) => accountCreated(i, no)} />)}
             </div>
           )
         })}

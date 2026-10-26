@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.ai_consume · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0027_members   →   la vigente es la de 0027_members
+-- Definida en: 0027_members 0072_temporary_companies   →   la vigente es la de 0072_temporary_companies
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.ai_consume(p_company uuid)
@@ -20,8 +20,7 @@ begin
   if erp.is_owner() then
     return jsonb_build_object('used', v_used, 'limit', null, 'remaining', null);
   end if;
-  select coalesce(ai_daily_limit, 10) into v_limit from erp.app_profiles where user_id = auth.uid();
-  v_limit := coalesce(v_limit, 10);
+  v_limit := erp.ai_daily_limit();
   if v_used > v_limit then
     raise exception 'Daily AI limit reached (% per day)', v_limit;
   end if;

@@ -25,6 +25,7 @@ import Grants from './Grants'
 import EquityStatement from './EquityStatement'
 import CaseStudy from './CaseStudy'
 import MonthBar from './MonthBar'
+import TempBadge from './TempBadge'
 import Entries from './Entries'
 import Withholdings from './Withholdings'
 import Payments from './Payments'
@@ -232,6 +233,8 @@ export default function CompanyView({ company: base, readOnly, canPublish, isOwn
           ))}
         </div>
       </div>
+      {/* v0.49.0 · Empresa temporal de un registrado: cuándo se borra */}
+      {company.temporary && <TempBadge company={company} />}
 
       {/* Móvil: botón de menú con la ruta actual (Área › Pantalla) */}
       <button type="button" className="boton-menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>

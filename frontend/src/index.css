@@ -1138,3 +1138,9 @@ button.enlace.pgc-ir { display: inline; align-self: auto; font: inherit; text-de
 @media (max-width: 1099px) { body:has(.panel-pgc:not([hidden])) .boton-ia { display: none; } }
 @media print { .panel-pgc, .boton-pgc, .pgc-i { display: none !important; } }
 .panel-pgc:focus { outline: none; }
+
+/* v0.49.0 · Empresas temporales de los registrados */
+.insignia.insignia-temporal { background: color-mix(in srgb, var(--alerta) 16%, var(--tarjeta)); color: var(--texto); }
+.aviso-temporal { margin: 6px 0 10px; padding: 8px 12px; border-radius: 8px; line-height: 1.45; font-size: .9rem;
+  background: color-mix(in srgb, var(--alerta) 12%, var(--tarjeta)); color: var(--texto); border-left: 3px solid var(--alerta); }
+.cabecera-temporal { margin: 0 0 12px; grid-column: 1 / -1; }

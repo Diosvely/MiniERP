@@ -7,6 +7,7 @@ import Landing from './components/Landing'
 import Glossary from './components/Glossary'
 import Practice from './components/Practice'
 import Pgc from './components/Pgc'
+import TempKeeper from './components/TempKeeper'
 import Link from './components/Link'
 import { useHashRoute } from './router'
 import { BookMarked, BookOpen, GraduationCap } from 'lucide-react'
@@ -38,6 +39,8 @@ function Layout({ session }) {
     <main>
       {/* Aviso "Cargando…" arriba mientras llegan datos de Supabase (v0.25.0) */}
       <BusyBar />
+      {/* v0.49.0 · Latido de las empresas temporales (no se ve) */}
+      {session && <TempKeeper session={session} />}
       <header className="cabecera">
         <h1>{t('appTitle')}</h1>
         <div className="cabecera-acciones">

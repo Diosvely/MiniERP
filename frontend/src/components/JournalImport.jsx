@@ -5,13 +5,14 @@ import { useI18n } from '../i18n'
 import { money } from '../format'
 import { readJournal } from '../importers'
 import ErrorBox from './ErrorBox'
+import { idleText, tooManyLines } from '../temporary'
 
 const CHUNK = 2000   // filas por envío al subir el fichero
 
 // Importar el diario completo de otro ERP (Sage, Dynamics BC o la plantilla del laboratorio) en una empresa nueva.
 // 1. leer y convertir en el navegador · 2. subir por bloques · 3. vista previa con controles de auditor
 // 4. importar mes a mes · 5. cerrar los ejercicios anteriores
-export default function JournalImport({ onDone, onCancel }) {
+export default function JournalImport({ onDone, onCancel, temporary }) {
   const { t, language } = useI18n()
   const [file, setFile] = useState(null)
   const [parsed, setParsed] = useState(null)      // { source, rows, digits, years }
@@ -110,6 +111,9 @@ export default function JournalImport({ onDone, onCancel }) {
     <section className="tarjeta importar-diario">
       <h2>{t('importJournalTitle')}</h2>
       <p className="ayuda">{t('importJournalIntro')}</p>
+      {/* v0.49.0 · Empresa temporal de un registrado: se borra sola */}
+      {temporary && (
+        <p className="aviso-temporal" role="note">⏳ {t('tmp.importWarning').replace('{idle}', idleText(temporary.idle_minutes)).replace('{hours}', temporary.max_hours)}</p>)}
 
       {!ids && (
         <>
@@ -129,6 +133,9 @@ export default function JournalImport({ onDone, onCancel }) {
               .replace('{s}', t(`importSource.${parsed.source}`)).replace('{n}', parsed.rows.length.toLocaleString(language))
               .replace('{d}', parsed.digits).replace('{y}', parsed.years.join(', '))}</li>
           </ul>
+          {tooManyLines(temporary, parsed.rows.length) && (
+            <p className="aviso" role="alert">⚠ {t('tmp.tooMany').replace('{n}', parsed.rows.length.toLocaleString(language))
+              .replace('{max}', Number(temporary.max_lines_per_import).toLocaleString(language))}</p>)}
           <div className="rejilla-tres">
             <label>{t('companyName')}<input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></label>
             <label>{t('territoryLabel')}
@@ -145,7 +152,7 @@ export default function JournalImport({ onDone, onCancel }) {
           <p className="ayuda">{t('importPrivateHelp')}</p>
           <div className="fila">
             <button type="button" className="secundario" disabled={busy} onClick={onCancel}>{t('cancel')}</button>
-            <button type="button" disabled={busy || !form.name.trim()} onClick={upload}>{t('importUploadCheck')}</button>
+            <button type="button" disabled={busy || !form.name.trim() || tooManyLines(temporary, parsed.rows.length)} onClick={upload}>{t('importUploadCheck')}</button>
           </div>
         </>
       )}

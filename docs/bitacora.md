@@ -1424,3 +1424,32 @@ fichas por pantalla.
 **Pendiente:** validar las 70 fichas (regla A3) y añadir las de las cuentas del caso completo que aún no tienen.
 
 **Siguiente paso:** más mejoras de uso que Diosvely va apuntando y, después, la fase 2 (contabilidad analítica).
+
+## 2026-10-26 · v0.49.0 · Empresas temporales para los registrados
+
+**Qué se hizo**
+- **Idea de Diosvely:** que los registrados puedan importar su diario y usar la IA, sin llenar los 500 MB de Supabase.
+  Diseño validado antes de construir, con el espacio medido (20.000 líneas ≈ 15 MB en el peor caso).
+- **Motor:** 0072, con:
+  - la empresa temporal (2 h sin uso o 48 h);
+  - el latido, la salida y la limpieza por tandas con pg_cron;
+  - los topes en una tabla de ajustes;
+  - la IA a 5 consultas al día para los registrados.
+- **Pantallas:**
+  - «Prueba el ERP con tu diario»;
+  - el aviso y el tope de líneas;
+  - «⏳ Temporal» y su franja;
+  - el latido y el aviso al cerrar la pestaña.
+- **Pruebas:** 66 SQL y 274 tests de la web.
+- **Rama:** `feat/v0.49.0-empresas-temporales`, que entra en `main` con un Pull Request.
+
+**Lo que se aprende**
+- **Lo que no se puede detectar, se deduce:** la última señal de vida decide, no el cierre de la pestaña.
+- **Limitar por lo que ocupa** (líneas), no por cuántas empresas hay.
+- **Postgres reutiliza el espacio de lo borrado, pero no lo devuelve:** hay que vigilar el pico.
+
+**Decisiones:** ADR 0049 · Empresas temporales.
+
+**Pendiente:** comprobar en Supabase que pg_cron programa la limpieza y probar con un registrado de verdad.
+
+**Siguiente paso:** más mejoras de uso que Diosvely va apuntando y, después, la fase 2 (contabilidad analítica).

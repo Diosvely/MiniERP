@@ -1,4 +1,4 @@
-import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
+import { Fragment, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react'
 import { markHalves } from '../wideLayout'
 import { groupForSection, nextIndex, toggleGroup } from '../menuAccordion'
 import { supabase } from '../supabase'
@@ -24,6 +24,7 @@ import Financing from './Financing'
 import Grants from './Grants'
 import EquityStatement from './EquityStatement'
 import CaseStudy from './CaseStudy'
+import MonthBar from './MonthBar'
 import Withholdings from './Withholdings'
 import Payments from './Payments'
 import ProRata from './ProRata'
@@ -98,6 +99,8 @@ export default function CompanyView({ company: base, readOnly, canPublish, isOwn
   // FECHA DE TRABAJO (Work Date de BC): hoy si la empresa está al día; si es histórica o importada, la de su
   // último asiento. Se calcula una vez al abrir la empresa y las pantallas la leen de company.work_date.
   const [work, setWork] = useState(null)
+  const [workMonth, setWorkMonth] = useState(null)   // v0.47.0 · contabilidad mes a mes: el mes abierto (erp.work_month)
+  const [monthKey, setMonthKey] = useState(0)        // se vuelve a leer al cerrar o reabrir un mes
   // v0.41.1 · pantalla ancha: empareja las tarjetas pequeñas (y vuelve a mirarlo cuando la pantalla carga sus datos)
   const contentRef = useRef(null)
   useLayoutEffect(() => {
@@ -115,12 +118,17 @@ export default function CompanyView({ company: base, readOnly, canPublish, isOwn
       supabase.from('fiscal_years').select('starting_date, ending_date, status').eq('company_id', base.id),
       supabase.from('journal_entries').select('posting_date').eq('company_id', base.id).eq('status', 'posted')
         .order('posting_date', { ascending: false }).limit(1),
-    ]).then(([y, e]) => {
-      if (alive) setWork(computeWorkDate({ years: y.data ?? [], lastPosted: e.data?.[0]?.posting_date ?? null }))
+      base.monthly ? supabase.rpc('work_month', { p_company: base.id }) : Promise.resolve({ data: null }),
+    ]).then(([y, e, w]) => {
+      if (!alive) return
+      // Mes a mes: la fecha de trabajo es la del mes abierto (la del último asiento del mes o el día 1)
+      const wm = base.monthly && w.data?.year ? w.data : null
+      setWorkMonth(wm)
+      setWork(wm?.work_date ?? computeWorkDate({ years: y.data ?? [], lastPosted: e.data?.[0]?.posting_date ?? null }))
     })
     return () => { alive = false }
-  }, [base.id])
-  const company = useMemo(() => ({ ...base, work_date: work ?? undefined }), [base, work])
+  }, [base.id, base.monthly, monthKey])
+  const company = useMemo(() => ({ ...base, work_date: work ?? undefined, work_month: workMonth ?? undefined }), [base, work, workMonth])
   const [mode, setModeState] = useState(savedMode)
   const setMode = (m) => { setModeState(m); saveMode(m) }
 
@@ -208,6 +216,8 @@ export default function CompanyView({ company: base, readOnly, canPublish, isOwn
           <span>{t(`territory.${company.tax_territory}`)}</span>
           {company.data_credit && <span className="mencion">📊 {company.data_credit}</span>}
         </div>
+        {company.monthly && workMonth && (
+          <MonthBar company={company} readOnly={readOnly} onChanged={() => { setWork(null); setMonthKey((k) => k + 1); setRefreshKey((k) => k + 1) }} />)}
         <div className="modo" role="group" aria-label={t('modeLabel')}>
           {['basic', 'auditor'].map((m) => (
             <button key={m} type="button" className={mode === m ? 'activo' : ''} aria-pressed={mode === m}
@@ -315,7 +325,7 @@ export default function CompanyView({ company: base, readOnly, canPublish, isOwn
           </p>
         )}
 
-        {work === null ? <Loading /> : (<>
+        {work === null ? <Loading /> : (<Fragment key={`mes-${monthKey}`}>{/* v0.47.0 · al cerrar o reabrir un mes, las pantallas empiezan con la fecha nueva */}
         {section === 'home' && <Home company={company} readOnly={readOnly} mode={mode} onAuditor={() => setMode('auditor')} />}
         {section === 'entry' && !readOnly && (
           <JournalEntryForm company={company} draft={draft} onPosted={() => setRefreshKey((k) => k + 1)} />
@@ -348,7 +358,7 @@ export default function CompanyView({ company: base, readOnly, canPublish, isOwn
         {section === 'accounts' && <Accounts company={company} readOnly={readOnly} />}
         {section === 'partners' && <Partners company={company} readOnly={readOnly} />}
         {section === 'access' && isOwner && <CompanyAccess company={company} />}
-        </>)}
+        </Fragment>)}
       </section>
       <AiPanel company={company} canWrite={!readOnly} onDraft={draftFromTutor} />
     </div>

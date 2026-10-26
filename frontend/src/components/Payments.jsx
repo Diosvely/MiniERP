@@ -4,6 +4,7 @@ import { fetchAll } from '../paging'
 import { useI18n } from '../i18n'
 import { money, shortDate } from '../format'
 import { workDate } from '../workDate'
+import DateField from './DateField'
 import { companyPath } from '../router'
 import { buildApplications, linkCandidates, partnersWithPending, previewEntry } from '../payments'
 import Link from './Link'
@@ -193,7 +194,7 @@ export default function Payments({ company, readOnly }) {
             {!readOnly && !linkMode && (
               <>
                 <div className="rejilla-cabecera">
-                  <label>{t('date')}<input type="date" value={form.date} onChange={(e) => setForm({ ...form, date: e.target.value })} /></label>
+                  <label>{t('date')}<DateField value={form.date} company={company} id="pago-fecha" onChange={(d) => setForm((f) => ({ ...f, date: d }))} /></label>
                   <label>{t(type === 'payment' ? 'pay.from' : 'pay.to')}
                     <select value={form.cash} onChange={(e) => setForm({ ...form, cash: e.target.value })}>
                       {cashAccounts.map((a) => <option key={a.account_no} value={a.account_no}>{a.account_no} · {a.name}</option>)}
@@ -266,7 +267,7 @@ export default function Payments({ company, readOnly }) {
                 <div className="anular-pago">
                   {!p.linked && (
                     <>
-                      <label>{t('date')}<input type="date" value={cancelling.date} onChange={(e) => setCancelling({ ...cancelling, date: e.target.value })} /></label>
+                      <label>{t('date')}<DateField value={cancelling.date} company={company} id="anular-fecha" onChange={(d) => setCancelling((c) => ({ ...c, date: d }))} /></label>
                       <input placeholder={t('pay.reason')} value={cancelling.reason} onChange={(e) => setCancelling({ ...cancelling, reason: e.target.value })} />
                     </>
                   )}

@@ -3,6 +3,7 @@ import { supabase } from '../supabase'
 import { fetchAll } from '../paging'
 import { useI18n } from '../i18n'
 import { workDate } from '../workDate'
+import DateField from './DateField'
 import { accountName, money } from '../format'
 import Link from './Link'
 import { companyPath } from '../router'
@@ -327,8 +328,8 @@ export default function JournalEntryForm({ company, onPosted, draft }) {
 
       <div className="rejilla-cabecera cabecera-asiento">
         <label>{t('postingDate')}
-          <input type="date" value={header.posting_date}
-                 onChange={(e) => setHeader({ ...header, posting_date: e.target.value })} />
+          <DateField value={header.posting_date} company={company} id="asiento-fecha"
+                     onChange={(d) => setHeader((h) => ({ ...h, posting_date: d }))} />
         </label>
         <label>{t('documentNo')}
           <input value={header.document_no} onChange={(e) => setHeader({ ...header, document_no: e.target.value })} />

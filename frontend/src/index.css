@@ -484,7 +484,7 @@ input.propuesto::placeholder { color: var(--primario); opacity: .75; font-style:
   .lineas-asiento .cabecera-lineas span:nth-child(2), .lineas-asiento .cabecera-lineas span:nth-child(3) { text-align: right; padding-right: 10px; }
   .papelera { opacity: 0; }
   .linea:hover .papelera, .linea:focus-within .papelera, .papelera:focus-visible { opacity: 1; }
-  .cabecera-asiento { grid-template-columns: 11em 10em minmax(0, 1fr); }
+  .cabecera-asiento { grid-template-columns: 12.5em 10em minmax(0, 1fr); }
   .cabecera-asiento .concepto-asiento { grid-column: auto; }
 }
 
@@ -983,3 +983,22 @@ table.informe tr.seleccionado td { background: color-mix(in srgb, var(--primario
 .grupo-caso > summary { cursor: pointer; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 4px 0; }
 .grupo-caso table .codigo { min-width: 4.5em; display: inline-block; }
 .asientos-caso .enlace { white-space: nowrap; }
+
+/* v0.47.0 · Fecha rápida y contabilidad mes a mes */
+.campo-fecha { display: flex; flex-direction: column; gap: 2px; position: relative; }
+.fila-fecha { display: flex; align-items: center; gap: 4px; }
+.fila-fecha input[type="text"] { flex: 1; min-width: 8.5em; }
+.boton-calendario { flex: none; padding: 4px 8px; background: transparent; border: 1px solid var(--borde); color: var(--texto); }
+.selector-oculto { position: absolute; right: 0; bottom: 0; width: 1px; height: 1px; opacity: 0; pointer-events: none; border: 0; padding: 0; }
+.barra-mes { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; position: relative; }
+.mes-abierto { white-space: nowrap; padding: 4px 10px; border-radius: 999px; background: color-mix(in srgb, var(--primario) 8%, var(--tarjeta)); }
+.empresa-cabecera .barra-mes { flex-direction: row; }
+.empresa-cabecera .panel-mes, .empresa-cabecera .panel-mes span { color: var(--texto); font-size: inherit; }
+.empresa-cabecera .panel-mes .fila-botones { flex-direction: row; }
+.barra-mes > button { padding: 6px 12px; font-size: .9rem; }
+.campo-fecha .aviso { font-size: .8rem; }
+.panel-mes { position: absolute; top: calc(100% + 6px); left: 0; z-index: 20; width: min(440px, 92vw); padding: 14px 16px;
+  background: var(--tarjeta); border: 1px solid var(--borde); border-radius: 10px; box-shadow: 0 8px 24px rgba(0,0,0,.15); }
+.panel-mes h3 { margin: 0 0 8px; }
+.avisos-mes { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; margin: 8px 0; }
+@media (max-width: 700px) { .panel-mes { position: fixed; left: 4vw; right: 4vw; top: 70px; width: auto; } }

@@ -1002,3 +1002,32 @@ table.informe tr.seleccionado td { background: color-mix(in srgb, var(--primario
 .panel-mes h3 { margin: 0 0 8px; }
 .avisos-mes { padding-left: 0; list-style: none; display: flex; flex-direction: column; gap: 6px; margin: 8px 0; }
 @media (max-width: 700px) { .panel-mes { position: fixed; left: 4vw; right: 4vw; top: 70px; width: auto; } }
+
+/* v0.47.0 · Pantalla «Asientos»: color de la fila muy suave según el estado (el texto del estado lo dice también) */
+:root { --fila-posted: color-mix(in srgb, var(--exito) 7%, var(--tarjeta)); --fila-ok: color-mix(in srgb, var(--suave) 9%, var(--tarjeta));
+  --fila-error: color-mix(in srgb, var(--aviso) 8%, var(--tarjeta)); }
+.botones-rango { display: flex; flex-wrap: wrap; gap: 6px; margin: 6px 0 10px; }
+.botones-rango button { padding: 6px 14px; border-radius: 999px; font-size: .9rem; }
+.botones-rango button.activo { background: var(--primario); color: var(--sobre-color); border: 1px solid var(--primario); }
+.lista-asientos tbody tr.fila-asiento { cursor: pointer; }
+.lista-asientos tbody tr.estado-posted td { background: var(--fila-posted); }
+.lista-asientos tbody tr.estado-ok td { background: var(--fila-ok); }
+.lista-asientos tbody tr.estado-error td { background: var(--fila-error); }
+.lista-asientos tbody tr.fila-asiento:hover td { filter: brightness(.97); }
+.lista-asientos .enlace-fila { color: inherit; text-decoration: none; }
+.lista-asientos .enlace-fila:hover, .lista-asientos .enlace-fila:focus-visible { text-decoration: underline; }
+.texto-estado { white-space: nowrap; font-weight: 600; font-size: .85rem; }
+.texto-estado.estado-posted { color: var(--exito); }
+.texto-estado.estado-ok { color: var(--suave); }
+.texto-estado.estado-error { color: var(--aviso); }
+.lista-asientos .motivo { display: block; color: var(--aviso); font-size: .78rem; }
+.insignia-estado.estado-posted { background: var(--fila-posted); color: var(--exito); }
+.insignia-estado.estado-ok { background: var(--fila-ok); color: var(--texto); }
+.insignia-estado.estado-error { background: var(--fila-error); color: var(--aviso); }
+.papelera.visible { opacity: 1; }
+a.boton-enlace { display: inline-block; padding: 6px 14px; border-radius: 8px; background: var(--primario); color: var(--sobre-color); text-decoration: none; }
+.lista-asientos thead th { position: relative; }   /* el texto oculto de las cabeceras no se sale de la tabla en el móvil */
+.lista-asientos { width: 100%; }
+.lista-asientos th:first-child, .lista-asientos td:first-child { width: 2.2em; min-width: 0; padding-right: 0; }
+.lista-asientos th:last-child, .lista-asientos td:last-child { width: 2.6em; padding-left: 0; }
+.lista-asientos td:nth-child(5) { min-width: 14em; }

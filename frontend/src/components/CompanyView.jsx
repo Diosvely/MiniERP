@@ -25,6 +25,7 @@ import Grants from './Grants'
 import EquityStatement from './EquityStatement'
 import CaseStudy from './CaseStudy'
 import MonthBar from './MonthBar'
+import Entries from './Entries'
 import Withholdings from './Withholdings'
 import Payments from './Payments'
 import ProRata from './ProRata'
@@ -52,6 +53,7 @@ import { computeWorkDate } from '../workDate'
 //   write: true      → solo si se puede escribir (no en demos ni para el rol viewer)
 const SCREENS = [
   { id: 'home', group: '', basic: true },
+  { id: 'entries', group: 'menuAccounting', basic: true },   // v0.47.0 · la pantalla principal: una fila por asiento
   { id: 'entry', group: 'menuAccounting', basic: true, write: true },
   { id: 'journal', group: 'menuAccounting', basic: true },
   { id: 'corporate_tax', group: 'menuAccounting' },   // v0.41.0 · antes del cierre
@@ -84,7 +86,7 @@ const SCREENS = [
   { id: 'asiento', group: 'menuAccounting', basic: 'hidden', menu: false },
 ]
 // Orden del menú Básico (9 entradas como máximo, 10 en la empresa de un caso): de lo que más se usa a lo que menos
-const BASIC_ORDER = ['home', 'case', 'invoices', 'payments', 'entry', 'journal', 'settlement', 'balance', 'pyg', 'partners']
+const BASIC_ORDER = ['home', 'case', 'entries', 'invoices', 'payments', 'entry', 'settlement', 'balance', 'pyg', 'partners']   // v0.47.0: «Asientos» en lugar del Libro diario
 
 // Modo elegido: se guarda en este navegador (si no deja guardar, siempre empieza en Básico)
 const savedMode = () => { try { return localStorage.getItem('erp-modo') === 'auditor' ? 'auditor' : 'basic' } catch { return 'basic' } }
@@ -328,8 +330,9 @@ export default function CompanyView({ company: base, readOnly, canPublish, isOwn
         {work === null ? <Loading /> : (<Fragment key={`mes-${monthKey}`}>{/* v0.47.0 · al cerrar o reabrir un mes, las pantallas empiezan con la fecha nueva */}
         {section === 'home' && <Home company={company} readOnly={readOnly} mode={mode} onAuditor={() => setMode('auditor')} />}
         {section === 'entry' && !readOnly && (
-          <JournalEntryForm company={company} draft={draft} onPosted={() => setRefreshKey((k) => k + 1)} />
+          <JournalEntryForm key={params[0] ?? 'nuevo'} company={company} draft={draft} editId={params[0]} onPosted={() => setRefreshKey((k) => k + 1)} />
         )}
+        {section === 'entries' && <Entries company={company} readOnly={readOnly} refreshKey={refreshKey} />}
         {section === 'journal' && <GeneralJournal company={company} readOnly={readOnly} refreshKey={refreshKey} />}
         {section === 'corporate_tax' && <CorporateTax company={company} readOnly={readOnly} />}
         {section === 'closing' && <YearClosing company={company} readOnly={readOnly} />}

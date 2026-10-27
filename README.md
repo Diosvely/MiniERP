@@ -50,7 +50,7 @@ española y el funcionamiento real de un ERP. Los ERP comerciales son caros y di
 propia, así que decidí **construir uno**. Diseñar la tabla de asientos obliga a entender *por qué* un ERP impone
 cada regla. Además, todo el código está en inglés para practicar el vocabulario técnico de BC y SAP.
 
-## ¿Qué hace hoy? (v0.49.0)
+## ¿Qué hace hoy? (v0.50.0)
 
 **Primeros pasos y navegación**
 - **Pantalla de Inicio** en cada empresa:
@@ -183,6 +183,10 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
   reclasificación al cierre).
 - **Exportar a Excel** (importes como números y fechas como fechas, listos para una tabla dinámica o Power BI) e
   **imprimir / guardar en PDF** el Balance, la PyG, el EFE, sumas y saldos, el mayor y el diario.
+- **Puente a Power BI:** un esquema `bi` de solo lectura con el modelo en estrella de las empresas demo (saldos a fin
+  de mes con su línea del balance ya decidida, flujos clasificados y las cifras del ERP para comprobar), al que Power BI
+  entra con su propio usuario. La [guía](docs/powerbi/GUIA.md) explica cómo conectar y construir el informe con Claude
+  Code.
 - En el móvil, el mayor y sumas y saldos se ven como **tarjetas**, y las fechas van en formato dd/mm/aaaa.
 - **Rastro contable:** el nº de asiento del mayor abre la **ficha del asiento**, y cada cuenta de la ficha (y del
   diario) abre su libro mayor; una anulación lleva a su pareja. Como el FBL3N → FB03 de SAP. "Volver" y el botón
@@ -246,7 +250,7 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
 | Web | **React + Vite** | Componentes por pantalla, i18n propio (es/en), rutas con almohadilla, iconos `lucide-react` |
 | IA | **Cloudflare Workers AI** + Pages Functions | `/api/ai` (Mistral Small 3.1) y `/api/tutor` (gpt-oss-120b); la clave nunca llega al navegador |
 | Despliegue | **Cloudflare Pages** | Despliegue automático desde `main`, dirección de prueba por rama y cabeceras de seguridad (`_headers`) |
-| Calidad | **GitHub Actions** + **Vitest** + Dependabot | 66 pruebas SQL, 274 tests de la web, lint, build y auditoría de dependencias en cada Pull Request |
+| Calidad | **GitHub Actions** + **Vitest** + Dependabot | 67 pruebas SQL, 274 tests de la web, lint, build y auditoría de dependencias en cada Pull Request |
 | Versionado | Git + GitHub | Ramas, Pull Requests, `main` protegida, versiones etiquetadas y decisiones documentadas (ADR) |
 
 **Principio clave:** la web nunca es la única barrera. Aunque alguien manipule el navegador, PostgreSQL rechaza:
@@ -284,6 +288,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 - [Decisiones (ADR)](docs/decisiones/): por qué se eligió cada cosa.
 - [Guía de Git del proyecto](docs/guia-git.md): plantilla para crear ramas, hacer Pull Requests y versionar.
 - [CHANGELOG](CHANGELOG.md): cambios de cada versión.
+- [Guía de Power BI](docs/powerbi/GUIA.md): conectar Power BI al esquema `bi` y construir el informe con Claude Code.
 
 ## Estructura del repositorio
 
@@ -296,12 +301,12 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 ├── scripts/volcar-funciones.sh  genera database/funciones/ (versión vigente de cada función)
 ├── scripts/generar-diagnostico.sh  genera database/diagnostico-supabase.sql (¿le falta algo a tu Supabase?)
 ├── database/
-│   ├── migrations/            0001 → 0072, se ejecutan en orden en Supabase
+│   ├── migrations/            0001 → 0073, se ejecutan en orden en Supabase
 │   ├── funciones/             versión vigente de cada función, para estudiarla (generado)
 │   ├── diagnostico-supabase.sql  consulta de solo lectura: qué le falta a tu Supabase (generado)
 │   ├── reset/                 reset del schema antiguo (solo histórico)
 │   ├── seed/                  datos de ejemplo (opcional)
-│   └── tests/                 pruebas automáticas en SQL (fases 1 → 66) y simulador de Supabase
+│   └── tests/                 pruebas automáticas en SQL (fases 1 → 67) y simulador de Supabase
 ├── frontend/                  web React + Vite
 │   ├── .env.example           variables de entorno (sin valores reales)
 │   ├── public/_headers        cabeceras de seguridad (CSP…) que aplica Cloudflare Pages
@@ -334,13 +339,13 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
     ├── glosario.md            vocabulario contable bilingüe
     ├── seguridad-supabase.md  lista de ajustes de seguridad del panel de Supabase
     ├── capturas/              capturas de la app para el README
-    └── decisiones/            ADR 0001 → 0049
+    └── decisiones/            ADR 0001 → 0050
 ```
 
 ## Calidad
 
 - **Integración continua** (GitHub Actions) en cada Pull Request:
-  - las 66 pruebas de la base de datos sobre PostgreSQL 16, cada una en una base limpia con todas las migraciones
+  - las 67 pruebas de la base de datos sobre PostgreSQL 16, cada una en una base limpia con todas las migraciones
     (la fase 23 vigila también que toda clave foránea tenga índice; la 34 lanza unas 300 operaciones al azar por
     empresa y exige nueve invariantes contables; la 35 compara al céntimo cinco supuestos calculados desde la norma);
   - **274 tests de la web con Vitest**: formatos, rutas, importadores, errores, idiomas (español e inglés con las
@@ -355,7 +360,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 
 1. **Base de datos.** En un proyecto de Supabase:
    - activa **`pg_cron`** en *Database → Extensions* (para la limpieza de invitados y de las empresas temporales);
-   - en el *SQL Editor*, ejecuta en orden `database/migrations/0001` … `0072`.
+   - en el *SQL Editor*, ejecuta en orden `database/migrations/0001` … `0073`.
    - comprueba que no falta nada: pega `database/diagnostico-supabase.sql` (solo lee) en el *SQL Editor*. Si no
      devuelve ninguna fila, tu base de datos coincide con el repositorio.
 2. **API.** En *Project Settings → Data API → Exposed schemas*, añade `erp`.
@@ -406,7 +411,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 Con PostgreSQL instalado (Linux, WSL o Git Bash):
 
 ```bash
-bash scripts/test-db.sh            # las 66 pruebas, cada una en una base limpia
+bash scripts/test-db.sh            # las 67 pruebas, cada una en una base limpia
 bash scripts/test-db.sh fase25     # solo las que contienen "fase25"
 ```
 
@@ -476,8 +481,9 @@ cuadrados. El ERP también lee directamente los diarios de Sage (Excel) y Busine
 - [x] **v0.47.0**: mejoras de uso: contabilidad mes a mes, fecha rápida y pantalla «Asientos»
 - [x] **v0.48.0**: PGC de estudio: cuentas, fichas, normas de valoración y principios, también desde Nuevo asiento
 - [x] **v0.49.0**: empresas temporales: los registrados importan su diario (con IA) y se borra solo
+- [x] **v0.50.0**: puente a Power BI: esquema `bi` de solo lectura y guía para construir el informe con Claude Code
 - [ ] Ontología contable y chat con la IA (consulta, nunca calcula)
-- [ ] Puente a Power BI (vistas para conectar directamente)
+- [ ] Más informes en Power BI e incrustarlos en el ERP con RLS por empresa
 - [ ] Contabilidad analítica y presupuesto frente a real
 - [ ] Después: existencias permanentes, RIC y ZEC (fiscalidad canaria), cartera de efectos y conciliación bancaria
 

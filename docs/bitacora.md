@@ -1453,3 +1453,28 @@ fichas por pantalla.
 **Pendiente:** comprobar en Supabase que pg_cron programa la limpieza y probar con un registrado de verdad.
 
 **Siguiente paso:** más mejoras de uso que Diosvely va apuntando y, después, la fase 2 (contabilidad analítica).
+
+## 2026-10-27 · v0.50.0 · Puente a Power BI
+
+**Qué se hizo**
+- **Para la charla de datos de Microsoft:** un diario de un cliente se importa en el ERP y Claude Code, con el MCP de
+  Power BI, construye el informe en PBIP, que se comprueba al céntimo contra el ERP. Diseño validado antes de
+  construir.
+- **Motor:** 0073, con el esquema `bi` de solo lectura (modelo en estrella de las empresas demo, saldos con la línea del
+  balance ya decidida, flujos clasificados y cifras de control) y el usuario `powerbi_reader`.
+- **Guía:** `docs/powerbi/GUIA.md`, con la conexión, el modelo, las medidas DAX, las páginas, las cifras esperadas y las
+  instrucciones para Claude Code.
+- **Comprobado en Supabase:** `powerbi_reader` lee `bi` y no puede ni entrar en el esquema del ERP.
+- **Pruebas:** 67 SQL; la web no cambia (274 tests).
+- **Rama:** `feat/v0.50.0-puente-power-bi`, que entra en `main` con un Pull Request.
+
+**Lo que se aprende**
+- **Un contrato de datos** separa el ERP de los informes: el ERP cambia por dentro sin romperlos.
+- **El ERP decide, Power BI calcula:** las reglas contables viven en un solo sitio.
+- **En Supabase, cada Run del SQL Editor es una sesión nueva:** un `set role` no pasa a la ejecución siguiente.
+
+**Decisiones:** ADR 0050 · Puente a Power BI.
+
+**Pendiente:** el primer ensayo en Power BI Desktop (conexión, certificado y medidas DAX frente a las cifras esperadas).
+
+**Siguiente paso:** preparar la charla (ensayos con Claude Code y el MCP, diapositivas y vídeo de respaldo).

@@ -1,5 +1,5 @@
 -- =====================================================================
--- DIAGNÓSTICO DE SUPABASE · migraciones 0001 … 0072 (GENERADO por scripts/generar-diagnostico.sh: no editar)
+-- DIAGNÓSTICO DE SUPABASE · migraciones 0001 … 0073 (GENERADO por scripts/generar-diagnostico.sh: no editar)
 -- ---------------------------------------------------------------------
 -- Pégalo en el SQL Editor de Supabase y pulsa Run. SOLO LEE: no cambia nada.
 -- Devuelve una fila por cada diferencia con el repositorio. Ninguna fila («No rows returned») = todo al día.

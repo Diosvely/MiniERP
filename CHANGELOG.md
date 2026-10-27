@@ -2,6 +2,19 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.50.0] - 2026-10-27
+### Añadido
+- **Puente a Power BI** (migración `0073_powerbi_bridge.sql`): esquema `bi` de solo lectura con las empresas demo.
+  - Modelo en estrella: empresa, fecha, cuenta, líneas de los estados con su puente, ratios, apuntes, saldos a fin de
+    mes con la línea del balance ya decidida por el ERP, y flujos ya clasificados.
+  - `control_estados`: las cifras del ERP para comprobar Power BI.
+  - Usuario `powerbi_reader`, que solo lee `bi`.
+- **Guía de Power BI** (`docs/powerbi/GUIA.md`): conexión por el *session pooler* de Supabase, relaciones, medidas
+  DAX, páginas, cifras esperadas del caso completo e instrucciones para construir el informe con Claude Code.
+- Prueba de la base de datos `fase 67`.
+- ADR 0050.
+
+
 ## [0.49.0] - 2026-10-26
 ### Añadido
 - **Empresas temporales para los registrados** (migración `0072_temporary_companies.sql`):

@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.tg_gl_account_block_default()
  RETURNS trigger
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 begin
   if new.account_type = 'posting' and left(new.account_no, 3) in ('570', '571') then

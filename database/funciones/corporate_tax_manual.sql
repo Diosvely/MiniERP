@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.corporate_tax_manual(p jsonb)
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare r erp.corporate_tax_returns; v_id uuid := nullif(p->>'id', '')::uuid; a erp.corporate_tax_adjustments;
 begin

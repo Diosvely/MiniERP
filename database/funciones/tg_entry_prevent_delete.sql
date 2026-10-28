@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.tg_entry_prevent_delete()
  RETURNS trigger
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 begin
   if old.status = 'posted' and coalesce(current_setting('erp.deleting_company', true), '') <> 'on' then

@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.integrity_checks(p_company uuid, p_year integer)
  RETURNS TABLE(code text, sort integer, status text, expected numeric, actual numeric, detail jsonb, title text, title_en text)
  LANGUAGE plpgsql
  STABLE
+ SET jit TO 'off'
 AS $function$
 declare
   v_fy    erp.fiscal_years;

@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.tg_line_set_tax_code()
  RETURNS trigger
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 declare
   v_codes text[];

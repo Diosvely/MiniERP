@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.cf_line_flows · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0066_complete_case 0074_report_simulation   →   la vigente es la de 0074_report_simulation
+-- Definida en: 0066_complete_case 0074_report_simulation 0076_performance   →   la vigente es la de 0076_performance
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.cf_line_flows(p_company uuid, p_year integer)
@@ -15,7 +15,7 @@ AS $function$
     join erp.journal_entries e on e.id = l.entry_id and erp.counts_in_reports(e.status, e.id) and e.entry_type = 'normal'
     join erp.fiscal_years fy on fy.id = e.fiscal_year_id and fy.year = p_year
     join erp.gl_accounts g on g.id = l.gl_account_id
-    where e.company_id = p_company and g.account_no not like '57%'
+    where e.company_id = p_company and l.company_id = p_company and g.account_no not like '57%'
     group by l.entry_id, g.id, g.account_no, g.name, g.name_en
     having sum(l.debit - l.credit) <> 0),
   mb as (

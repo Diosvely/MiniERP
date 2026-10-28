@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.asset_impairment_account(p_company uuid, p_asset_
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare v_prefix text; v_name text;
 begin

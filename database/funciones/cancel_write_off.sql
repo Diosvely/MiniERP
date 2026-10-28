@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.cancel_write_off(p_writeoff uuid, p_date date DEF
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare w erp.receivable_writeoffs; v_no int; v_rev uuid;
 begin

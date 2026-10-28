@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.grant_check(p_company uuid, p_date date)
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare v_fy erp.fiscal_years;
 begin

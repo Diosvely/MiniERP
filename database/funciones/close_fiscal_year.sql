@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.close_fiscal_year(p_company uuid, p_year integer, p_accept_warnings boolean DEFAULT false)
  RETURNS TABLE(closing_id uuid, result numeric, closing_pl_no integer, closing_no integer, opening_no integer)
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 declare
   c        jsonb;

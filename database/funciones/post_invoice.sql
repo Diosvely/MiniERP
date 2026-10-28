@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.post_invoice(p jsonb)
  RETURNS TABLE(invoice_id uuid, invoice_no text, entry_no integer)
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 declare
   v_company   uuid := (p->>'company_id')::uuid;

@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.form_349(p_company uuid, p_year integer, p_quarte
  RETURNS TABLE(section text, partner_id uuid, partner_name text, vat_registration_no text, op_key text, amount numeric, corrected_period text, previously_declared numeric)
  LANGUAGE plpgsql
  STABLE
+ SET jit TO 'off'
 AS $function$
 #variable_conflict use_column
 declare v_type text := (select case c.tax_territory when 'canary_islands' then 'IGIC' else 'VAT' end from erp.companies c where c.id = p_company);

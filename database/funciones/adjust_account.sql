@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.adjust_account(p_company uuid, p_prefix text, p_n
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare
   v_no text := rpad(p_prefix, (select posting_account_digits from erp.companies where id = p_company) - 1, '0') || '1';

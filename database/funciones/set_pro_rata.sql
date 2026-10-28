@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.set_pro_rata(p_company uuid, p_tax_type text, p_year integer, p_pct numeric)
  RETURNS void
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 begin
   if not erp.is_admin(p_company) then

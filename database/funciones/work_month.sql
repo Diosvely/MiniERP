@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.work_month(p_company uuid)
  LANGUAGE plpgsql
  STABLE SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare v_co erp.companies; v_p erp.accounting_periods; v_last date;
 begin

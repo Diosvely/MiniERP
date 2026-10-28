@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.web_usage(p_days integer DEFAULT 30)
  LANGUAGE plpgsql
  STABLE SECURITY DEFINER
  SET search_path TO ''
+ SET jit TO 'off'
 AS $function$
 declare
   v_days   int := least(greatest(coalesce(p_days, 30), 7), 90);

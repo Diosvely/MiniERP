@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.corporate_tax_proposals(p_company uuid, p_year in
  RETURNS TABLE(origin text, source_id uuid, kind text, direction text, concept text, amount numeric, article text, included boolean)
  LANGUAGE plpgsql
  STABLE
+ SET jit TO 'off'
 AS $function$
 declare
   v_fy erp.fiscal_years; v_erd boolean; v_debtors numeric;

@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.tg_partner_sync_account_name()
  RETURNS trigger
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 begin
   if new.gl_account_id is not null and new.name is distinct from old.name then

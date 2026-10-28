@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.tg_entry_asset_reverse()
  RETURNS trigger
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 begin
   if new.reversal_of is not null and coalesce(current_setting('erp.asset_engine', true), '') <> 'on'

@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.save_draft(p jsonb)
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare v_company uuid := (p->>'company_id')::uuid; v_id uuid := (p->>'entry_id')::uuid; v_date date := (p->>'posting_date')::date;
         v_fy uuid; e erp.journal_entries;

@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.loan_rows(p_pays numeric[], p_net numeric, p_rate
  RETURNS TABLE(n integer, payment numeric, interest numeric, reduction numeric, balance numeric)
  LANGUAGE plpgsql
  IMMUTABLE
+ SET jit TO 'off'
 AS $function$
 declare v_bal numeric := p_net; t int; k int := array_length(p_pays, 1);
 begin

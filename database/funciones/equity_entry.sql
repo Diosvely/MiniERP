@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.equity_entry(p_company uuid, p_date date, p_desc 
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare v_entry uuid;
 begin

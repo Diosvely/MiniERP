@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.create_case_company(p_case text DEFAULT 'taller_a
  RETURNS jsonb
  LANGUAGE plpgsql
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare v_case erp.cases; v_name text; v_n int := 1; e uuid;
 begin

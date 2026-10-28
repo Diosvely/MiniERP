@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.equity_save(p_company uuid, p_code text, p_kind t
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare v_id uuid;
 begin

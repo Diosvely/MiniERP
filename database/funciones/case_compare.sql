@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.case_compare(p_company uuid, p_case text DEFAULT 
  LANGUAGE plpgsql
  STABLE
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare v_case erp.cases; v_ecpn jsonb; v_cit jsonb;
 begin

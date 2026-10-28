@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.import_start(p_name text, p_digits integer, p_territory text, p_industry text, p_source text, p_file_name text DEFAULT NULL::text)
  RETURNS TABLE(company_id uuid, batch_id uuid)
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 declare
   v_company uuid;

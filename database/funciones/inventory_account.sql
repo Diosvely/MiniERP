@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.inventory_account(p_company uuid, p_stock_no text
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare d text := substr(p_stock_no, 2, 1); v_prefix text;
 begin

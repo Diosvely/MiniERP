@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.cancel_tax_settlement(p_settlement uuid)
  RETURNS void
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 declare
   s erp.tax_settlements;

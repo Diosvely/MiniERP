@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.loan_effective_rate(p_pays numeric[], p_net numer
  RETURNS numeric
  LANGUAGE plpgsql
  IMMUTABLE
+ SET jit TO 'off'
 AS $function$
 declare lo numeric := 0; hi numeric := 1; m numeric; k int;
 begin

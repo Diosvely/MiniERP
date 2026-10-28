@@ -1,5 +1,5 @@
 -- =====================================================================
--- DIAGNÓSTICO DE SUPABASE · migraciones 0001 … 0075 (GENERADO por scripts/generar-diagnostico.sh: no editar)
+-- DIAGNÓSTICO DE SUPABASE · migraciones 0001 … 0076 (GENERADO por scripts/generar-diagnostico.sh: no editar)
 -- ---------------------------------------------------------------------
 -- Pégalo en el SQL Editor de Supabase y pulsa Run. SOLO LEE: no cambia nada.
 -- Devuelve una fila por cada diferencia con el repositorio. Ninguna fila («No rows returned») = todo al día.
@@ -37,7 +37,7 @@ f(sig, hash) as (values
   ('erp.asset_posted(uuid)', '67cf71b06f833adcc2066790172dc4a9'),
   ('erp.asset_result_account(uuid,text,numeric)', 'ac4a6e8a5ed55e3965ef64d6c3fd839d'),
   ('erp.asset_tranche_at(integer,date,date,numeric,numeric,date)', '6074b3448707a1447ac8a7df95025c74'),
-  ('erp.audit_lines(uuid,integer,date)', 'ffc5dc7faed830cd1d6c1c51e4807cb9'),
+  ('erp.audit_lines(uuid,integer,date)', '042e74fa6706efb60c766fbaf6145c33'),
   ('erp.balance_anomalies(uuid,integer,integer,date,boolean)', '6c1e0f22000565db3ead24538fd5271a'),
   ('erp.balance_nature(text)', '603c017acceda478a91af5ea4e7c4455'),
   ('erp.can_read(uuid)', '18ac296a51b0301e7c16f62a547a0593'),
@@ -66,13 +66,13 @@ f(sig, hash) as (values
   ('erp.cash_flow_statement(uuid,integer,text,boolean)', '670c6dd40e393706cca0156fcd2c42c2'),
   ('erp.cf_account_flows(uuid,integer)', '48429048ec2a08f717ca85d6ada61245'),
   ('erp.cf_account_map(text)', 'c52a335c06406f207b27533c43ddc157'),
-  ('erp.cf_cash(uuid,integer)', 'da222cb85cf2e7d8f8b68188307e94b6'),
+  ('erp.cf_cash(uuid,integer)', '776dfbcdf8ea629b021884ecc881e7f0'),
   ('erp.cf_detail(uuid,integer,text)', 'c908b02d1b98732e5ef1fd16c1cdaba0'),
   ('erp.cf_direct_detail(uuid,integer)', '380c2c2da9bdda3e2b1d666e20656692'),
-  ('erp.cf_entry_cash(uuid,integer)', '5871481aaa628ff63205288fc1105839'),
+  ('erp.cf_entry_cash(uuid,integer)', '046ebd8a703fcfe2dd3010d253cdabff'),
   ('erp.cf_indirect_detail(uuid,integer)', 'feeba4f78382d7eb7ca567e685c70a40'),
   ('erp.cf_line_accounts(uuid,integer,text,text,boolean)', '3414ed265b4ee9feab2c0346bdf7cfb0'),
-  ('erp.cf_line_flows(uuid,integer)', 'c8d9dc30d5303b05665fb556b8bea0a4'),
+  ('erp.cf_line_flows(uuid,integer)', '168b66b3da83d1b2b0ddc1588948d3ea'),
   ('erp.check_payment_applications(uuid,uuid,text,jsonb)', '48d6071b4a12ce381dc421a03508f0a5'),
   ('erp.check_tax_account(uuid,uuid,text,text)', '2920ef5258cb2046d5deb941c32fbd2a'),
   ('erp.cleanup_guests(integer)', '2aa89be4ae879ffc3242083c523e953f'),

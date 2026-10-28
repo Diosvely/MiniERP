@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.financial_statement(p_company uuid, p_year intege
  RETURNS TABLE(code text, parent text, sort integer, level integer, label text, label_en text, is_total boolean, amount numeric, amount_prev numeric)
  LANGUAGE plpgsql
  STABLE
+ SET jit TO 'off'
 AS $function$
 #variable_conflict use_column
 declare v_prev text := coalesce(nullif(current_setting('erp.simulate', true), ''), 'off');

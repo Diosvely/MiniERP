@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.import_preview(p_batch uuid)
  LANGUAGE plpgsql
  STABLE SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare
   b          erp.import_batches;

@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.adjust_finish(p_entry uuid)
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare v int;
 begin

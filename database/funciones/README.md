@@ -1,6 +1,6 @@
 # Funciones del esquema erp (versión vigente)
 
-Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0075`.
+Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0076`.
 No se edita a mano: el código fuente son las migraciones. Esto es para **estudiar** cada función en su forma
 actual sin rastrear sus redefiniciones.
 
@@ -41,7 +41,7 @@ actual sin rastrear sus redefiniciones.
 | [`asset_posted`](asset_posted.sql) | 1 | 0041_fixed_assets | invoker |
 | [`asset_result_account`](asset_result_account.sql) | 1 | 0041_fixed_assets | security definer |
 | [`asset_tranche_at`](asset_tranche_at.sql) | 1 | 0046_asset_impairment | invoker |
-| [`audit_lines`](audit_lines.sql) | 11 | 0064_grants | invoker |
+| [`audit_lines`](audit_lines.sql) | 12 | 0076_performance | invoker |
 | [`balance_anomalies`](balance_anomalies.sql) | 2 | 0074_report_simulation | invoker |
 | [`balance_nature`](balance_nature.sql) | 1 | 0013_balance_rules | invoker |
 | [`can_read`](can_read.sql) | 2 | 0007_demo_and_limits | security definer |
@@ -70,13 +70,13 @@ actual sin rastrear sus redefiniciones.
 | [`cash_flow_statement`](cash_flow_statement.sql) | 2 | 0074_report_simulation | security definer |
 | [`cf_account_flows`](cf_account_flows.sql) | 2 | 0066_complete_case | security definer |
 | [`cf_account_map`](cf_account_map.sql) | 1 | 0022_cash_flow | invoker |
-| [`cf_cash`](cf_cash.sql) | 2 | 0074_report_simulation | security definer |
+| [`cf_cash`](cf_cash.sql) | 3 | 0076_performance | security definer |
 | [`cf_detail`](cf_detail.sql) | 1 | 0022_cash_flow | security definer |
 | [`cf_direct_detail`](cf_direct_detail.sql) | 2 | 0066_complete_case | security definer |
-| [`cf_entry_cash`](cf_entry_cash.sql) | 2 | 0074_report_simulation | security definer |
+| [`cf_entry_cash`](cf_entry_cash.sql) | 3 | 0076_performance | security definer |
 | [`cf_indirect_detail`](cf_indirect_detail.sql) | 1 | 0022_cash_flow | security definer |
 | [`cf_line_accounts`](cf_line_accounts.sql) | 2 | 0074_report_simulation | security definer |
-| [`cf_line_flows`](cf_line_flows.sql) | 2 | 0074_report_simulation | security definer |
+| [`cf_line_flows`](cf_line_flows.sql) | 3 | 0076_performance | security definer |
 | [`check_payment_applications`](check_payment_applications.sql) | 1 | 0035_payments | invoker |
 | [`check_tax_account`](check_tax_account.sql) | 1 | 0010_tax_setup | invoker |
 | [`cleanup_guests`](cleanup_guests.sql) | 2 | 0034_web_usage | security definer |

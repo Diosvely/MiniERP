@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.corporate_tax_settings(p_return uuid, p_regime te
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 begin
   perform erp.corporate_tax_draft(p_return);

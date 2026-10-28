@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.asset_event_check(a erp.fixed_assets, p_date date
  RETURNS void
  LANGUAGE plpgsql
  STABLE
+ SET jit TO 'off'
 AS $function$
 begin
   if a.status <> 'active' then raise exception 'Asset % is already disposed', a.code; end if;

@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.post_entries(p_company uuid, p_entries uuid[])
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare r record; v_no int; v_ok jsonb := '[]'::jsonb; v_ko jsonb := '[]'::jsonb;
 begin

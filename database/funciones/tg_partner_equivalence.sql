@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.tg_partner_equivalence()
  RETURNS trigger
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 begin
   if new.equivalence_surcharge and (new.partner_type not in ('customer', 'debtor') or new.tax_territory <> 'mainland') then

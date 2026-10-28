@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.tg_partner_withholding_validate()
  RETURNS trigger
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 begin
   -- Se ejecuta después de partner_validate (orden alfabético), con el NIF ya normalizado

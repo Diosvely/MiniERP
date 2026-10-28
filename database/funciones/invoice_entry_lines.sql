@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.invoice_entry_lines(p jsonb)
  RETURNS TABLE(line_no integer, gl_account_id uuid, account_no text, account_name text, debit numeric, credit numeric, tax_code text, tax_base numeric, line_role text, src_line integer, amount numeric, sign integer, description text)
  LANGUAGE plpgsql
  STABLE
+ SET jit TO 'off'
 AS $function$
 declare
   v_company   uuid := (p->>'company_id')::uuid;

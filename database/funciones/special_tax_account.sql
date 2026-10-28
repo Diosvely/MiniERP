@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.special_tax_account(p_company uuid, p_root text, p_tax_type text, p_marker text, p_value numeric, p_name text, p_name_en text)
  RETURNS uuid
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 declare
   v_digits smallint;

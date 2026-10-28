@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.write_off_receivable(p jsonb)
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare
   v_inv     erp.invoices;

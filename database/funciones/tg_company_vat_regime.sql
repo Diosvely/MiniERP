@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.tg_company_vat_regime()
  RETURNS trigger
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 begin
   if new.vat_regime = 'equivalence_surcharge' and new.tax_territory <> 'mainland' then

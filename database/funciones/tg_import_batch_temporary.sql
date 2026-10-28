@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.tg_import_batch_temporary()
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 begin
   if auth.uid() is not null and not erp.is_trusted()

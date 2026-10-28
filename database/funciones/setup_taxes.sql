@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.setup_taxes(p_company uuid, p_tax_type text DEFAULT NULL::text)
  RETURNS TABLE(tax_code text, account_role text, account_no text, status text)
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 declare
   v_type    text;

@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.grant_year_end_preview(p_company uuid, p_date dat
  LANGUAGE plpgsql
  STABLE SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare r jsonb := '[]'; g erp.grants; v jsonb;
 begin

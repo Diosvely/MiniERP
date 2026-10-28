@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.trial_balance(p_company uuid, p_year integer, p_l
  RETURNS TABLE(account_no text, name text, name_en text, total_debit numeric, total_credit numeric, debit_balance numeric, credit_balance numeric)
  LANGUAGE plpgsql
  STABLE
+ SET jit TO 'off'
 AS $function$
 #variable_conflict use_column
 declare v_prev text := coalesce(nullif(current_setting('erp.simulate', true), ''), 'off');

@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.tg_tax_setup_special_accounts()
  RETURNS trigger
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 declare
   c     erp.tax_codes;

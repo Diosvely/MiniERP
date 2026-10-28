@@ -2,6 +2,20 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.52.1] - 2026-10-28
+### Corregido
+- **«La consulta ha tardado demasiado» en Comprobaciones y en Caso** (Supabase, con empresas grandes en la base):
+  migración `0076_performance.sql`.
+  - `erp.audit_lines` buscaba el documento de cada apunte con `coalesce(...)`, que con la seguridad fila a fila no usa
+    índices: recorría tablas enteras de todas las empresas por cada apunte. Ahora cada búsqueda va por su índice.
+  - Las funciones de flujos filtran los apuntes por la empresa.
+  - JIT de PostgreSQL apagado para la web y para las funciones del ERP: compilar cada consulta tardaba más que
+    ejecutarla.
+  - En la prueba local, con 150.000 asientos de otra empresa al lado: Comprobaciones, de 5 s a 0,13 s; Caso, de 1,2 s
+    a 0,25 s.
+- Prueba de la base de datos `fase 70` (regresión con una empresa grande de otro usuario).
+
+
 ## [0.52.0] - 2026-10-28
 ### Añadido
 - **Barra superior** encima del contenido de la empresa, con «Tableros ▾» (el menú lateral no cambia).

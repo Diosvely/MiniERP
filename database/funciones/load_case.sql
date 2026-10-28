@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.load_case(p_company uuid, p_case text DEFAULT 'ta
  RETURNS jsonb
  LANGUAGE plpgsql
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare
   e uuid := p_company; v_case erp.cases; v_co erp.companies; c text; q int;

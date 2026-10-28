@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.loan_accrual_amount(p_loan uuid, p_date date)
  LANGUAGE plpgsql
  STABLE SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare
   l erp.loans; v_paid int; s erp.loan_schedule; v_from date; v_bal numeric; f numeric; v_total numeric; v_done numeric;

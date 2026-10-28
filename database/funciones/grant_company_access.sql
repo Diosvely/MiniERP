@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.grant_company_access(p_company uuid, p_email text
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare v_user uuid;
 begin

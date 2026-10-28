@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.create_partner(p_company uuid, p_type text, p_name text, p_vat_no text DEFAULT NULL::text, p_territory text DEFAULT NULL::text, p_account_no text DEFAULT NULL::text, p_email text DEFAULT NULL::text)
  RETURNS TABLE(partner_id uuid, account_no text)
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 declare
   v_digits     smallint;

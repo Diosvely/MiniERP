@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.import_post_month(p_batch uuid, p_year integer, p
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare
   b       erp.import_batches;

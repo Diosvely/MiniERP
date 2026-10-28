@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.closing_checklist(p_company uuid, p_year integer)
  RETURNS TABLE(step integer, code text, status text, detail jsonb, screen text)
  LANGUAGE plpgsql
  STABLE
+ SET jit TO 'off'
 AS $function$
 declare
   v_fy    erp.fiscal_years;

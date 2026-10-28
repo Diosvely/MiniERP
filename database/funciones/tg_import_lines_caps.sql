@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.tg_import_lines_caps()
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare
   v_s   erp.temp_settings;

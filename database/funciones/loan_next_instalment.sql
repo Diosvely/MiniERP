@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.loan_next_instalment(p_loan uuid)
  LANGUAGE plpgsql
  STABLE SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare l erp.loans; pos jsonb; s erp.loan_schedule; v_acc numeric; v_short numeric;
 begin

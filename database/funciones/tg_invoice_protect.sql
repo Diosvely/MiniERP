@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.tg_invoice_protect()
  RETURNS trigger
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 begin
   if coalesce(current_setting('erp.deleting_company', true), '') = 'on' then

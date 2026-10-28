@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.case_entry(e uuid, p_date date, p_desc text, p_li
  RETURNS uuid
  LANGUAGE plpgsql
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare a uuid;
 begin

@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.submit_exercise(p_key text, p_answer jsonb, p_by 
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare g jsonb;
 begin

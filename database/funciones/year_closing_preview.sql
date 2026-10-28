@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.year_closing_preview(p_company uuid, p_year integ
  RETURNS jsonb
  LANGUAGE plpgsql
  STABLE
+ SET jit TO 'off'
 AS $function$
 declare
   v_fy       erp.fiscal_years;

@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.fs_line_accounts(p_company uuid, p_year integer, 
  RETURNS TABLE(account_no text, account_name text, account_name_en text, line_code text, amount numeric)
  LANGUAGE plpgsql
  STABLE
+ SET jit TO 'off'
 AS $function$
 #variable_conflict use_column
 declare v_prev text := coalesce(nullif(current_setting('erp.simulate', true), ''), 'off');

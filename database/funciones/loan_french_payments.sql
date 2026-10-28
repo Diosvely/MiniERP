@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.loan_french_payments(p_principal numeric, p_rate 
  RETURNS numeric[]
  LANGUAGE plpgsql
  IMMUTABLE
+ SET jit TO 'off'
 AS $function$
 declare v_pay numeric; v_bal numeric := p_principal; v_int numeric; r numeric[] := '{}'; t int;
 begin

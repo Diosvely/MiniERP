@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.case_mark(e uuid, p_n integer)
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 begin
   if not erp.is_admin(e) then raise exception 'No permission: only the company admin can load a case'; end if;

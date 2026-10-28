@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.corporate_tax_quota(p_year integer, p_regime text
  RETURNS jsonb
  LANGUAGE plpgsql
  STABLE
+ SET jit TO 'off'
 AS $function$
 declare r record; v_from int; v_prev numeric := 0; v_quota numeric := 0; v_marginal numeric; v_rows jsonb := '[]';
 begin

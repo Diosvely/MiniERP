@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.post_entry(p_entry uuid)
  RETURNS integer
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 declare
   v_e       erp.journal_entries;

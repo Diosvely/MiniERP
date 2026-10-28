@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.grant_impute_rest(p jsonb)
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare g erp.grants; pos jsonb; v_date date := (p->>'date')::date; v_amt numeric; v_tax numeric; v_entry uuid;
 begin

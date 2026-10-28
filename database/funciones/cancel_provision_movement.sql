@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.cancel_provision_movement(p_provision uuid, p_dat
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare v erp.provisions; m erp.provision_movements; v_no int;
 begin

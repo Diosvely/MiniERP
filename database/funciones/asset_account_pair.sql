@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.asset_account_pair(p_company uuid, p_asset_no tex
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 -- 2x → su amortización acumulada (28x: 21x → 281x, 20x → 280x, 22x → 282x) o su gasto (68x)
 declare

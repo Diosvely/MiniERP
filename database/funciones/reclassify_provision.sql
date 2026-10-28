@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.reclassify_provision(p_provision uuid, p_date dat
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare v erp.provisions; v_bal numeric; v_new uuid; v_entry uuid; v_no int;
 begin

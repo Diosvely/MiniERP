@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.asset_depr_at(p_asset uuid, p_date date)
  RETURNS numeric
  LANGUAGE plpgsql
  STABLE
+ SET jit TO 'off'
 AS $function$
 declare
   a      erp.fixed_assets;

@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.grant_imputation_amount(p_grant uuid, p_date date
  LANGUAGE plpgsql
  STABLE SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare g erp.grants; pos jsonb; a erp.fixed_assets; v_from date; v_dep numeric; v_target numeric; v_tax numeric; v_pending boolean;
 begin

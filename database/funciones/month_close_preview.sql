@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.month_close_preview(p_company uuid)
  LANGUAGE plpgsql
  STABLE SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare v_p erp.accounting_periods; v_w jsonb := '[]'::jsonb; v_n int; v_q int; v_tax text;
 begin

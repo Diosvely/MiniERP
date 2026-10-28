@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.import_posting_accounts(p_company uuid, p_rows jsonb, p_dry_run boolean DEFAULT true)
  RETURNS TABLE(line_no integer, account_no text, name text, status text, message text)
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 declare
   v_digits  smallint;

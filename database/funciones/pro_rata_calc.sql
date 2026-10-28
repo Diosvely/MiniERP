@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.pro_rata_calc(p_company uuid, p_tax_type text, p_
  RETURNS jsonb
  LANGUAGE plpgsql
  STABLE
+ SET jit TO 'off'
 AS $function$
 declare
   v_pr       erp.pro_rata;

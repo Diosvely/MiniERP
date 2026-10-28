@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.tg_entry_controlled_accounts()
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare
   v_hit jsonb;

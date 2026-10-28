@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.loan_calc(p jsonb)
  RETURNS jsonb
  LANGUAGE plpgsql
  STABLE
+ SET jit TO 'off'
 AS $function$
 declare
   v_kind text := coalesce(p->>'kind', 'loan'); v_freq int := coalesce((p->>'frequency')::int, 12); v_n int := (p->>'periods')::int;

@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.tg_invoice_line_asset_cost()
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare v_inv erp.invoices; a erp.fixed_assets; v_delta numeric;
 begin

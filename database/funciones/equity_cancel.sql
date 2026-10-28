@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.equity_cancel(p_operation uuid)
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare r erp.equity_operations; v_e uuid;
 begin

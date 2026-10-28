@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.general_ledger(p_company uuid, p_year integer, p_
  RETURNS TABLE(posting_date date, entry_no integer, document_no text, description text, debit numeric, credit numeric, running_balance numeric)
  LANGUAGE plpgsql
  STABLE
+ SET jit TO 'off'
 AS $function$
 #variable_conflict use_column
 declare v_prev text := coalesce(nullif(current_setting('erp.simulate', true), ''), 'off');

@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.draft_problem(p_entry uuid)
  LANGUAGE plpgsql
  STABLE SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare e erp.journal_entries; v_co erp.companies; v_n int; v_d numeric; v_c numeric; v_fy erp.fiscal_years; v_per erp.accounting_periods; v_wp erp.accounting_periods;
 begin

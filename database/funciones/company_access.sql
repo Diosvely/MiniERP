@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.company_access(p_company uuid)
  LANGUAGE plpgsql
  STABLE SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 begin
   if not erp.is_owner() then raise exception 'Only the application owner can manage access'; end if;

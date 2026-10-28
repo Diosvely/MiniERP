@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.grant_year_end(p_company uuid, p_date date)
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare pv jsonb; x jsonb; g erp.grants; v_entry uuid; v_n int := 0;
 begin

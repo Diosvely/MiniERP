@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.cancel_inventory(p_count uuid, p_date date DEFAUL
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare c erp.inventory_counts; v_no int;
 begin

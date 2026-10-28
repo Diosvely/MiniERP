@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.create_fiscal_year(p_company uuid, p_year integer)
  RETURNS uuid
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 declare
   v_id uuid;

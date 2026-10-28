@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.provision_post(p_company uuid, p_date date, p_des
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare v_entry uuid; x jsonb; n int := 0;
 begin

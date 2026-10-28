@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.tg_partner_validate()
  RETURNS trigger
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 begin
   new.vat_registration_no := erp.normalize_tax_id(new.vat_registration_no);

@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.cancel_asset_impairment(p_asset uuid, p_date date
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare a erp.fixed_assets; ev erp.asset_events; v_n int;
 begin

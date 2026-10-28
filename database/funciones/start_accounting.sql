@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.start_accounting(p_company uuid, p_start date, p_
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare v_fy uuid;
 begin

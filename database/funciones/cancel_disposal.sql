@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.cancel_disposal(p_asset uuid, p_date date DEFAULT
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare a erp.fixed_assets; v_no int;
 begin

@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.loan_status(p_company uuid)
  LANGUAGE plpgsql
  STABLE SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 begin
   if not erp.can_read(p_company) then raise exception 'No permission to read this company'; end if;

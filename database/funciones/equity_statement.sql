@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.equity_statement(p_company uuid, p_year integer)
  LANGUAGE plpgsql
  STABLE SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare v_fy erp.fiscal_years; a jsonb; b jsonb; v_rec numeric; v_end numeric; v_bal numeric;
 begin

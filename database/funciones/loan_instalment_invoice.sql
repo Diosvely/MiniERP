@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.loan_instalment_invoice(p jsonb)
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare
   l erp.loans; x jsonb; v_date date; v_post date; v_lines jsonb := '[]'; v_tax text := nullif(btrim(p->>'tax_code'), '');

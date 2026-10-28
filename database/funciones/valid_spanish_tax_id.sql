@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.valid_spanish_tax_id(p text)
  RETURNS boolean
  LANGUAGE plpgsql
  IMMUTABLE
+ SET jit TO 'off'
 AS $function$
 declare
   v       text := erp.normalize_tax_id(p);

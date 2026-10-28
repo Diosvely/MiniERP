@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.cancel_payroll(p_run uuid, p_date date DEFAULT NU
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare r erp.payroll_runs; v_no int;
 begin

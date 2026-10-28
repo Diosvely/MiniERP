@@ -1519,6 +1519,24 @@ export default {
     before: 'Cae antes del mes abierto ({m}): ese mes ya está cerrado.',
     after: 'Cae después del mes abierto ({m}): cierra el mes antes de contabilizarla.',
   },
+  // v0.51.0 · Mes rápido y simulación con los asientos en edición en los informes
+  rp: {
+    months: 'Meses del ejercicio',
+    all: 'Todo',
+    allTitle: 'El ejercicio entero',
+    monthTitle: 'Hasta el {d}',
+  },
+  sim: {
+    label: 'Incluir los asientos en edición (simulación)',
+    help: 'Suma los borradores que cuadran y se podrían contabilizar, para ver su efecto antes de contabilizarlos. Los que tienen errores no entran.',
+    prefix: 'SIMULACIÓN',
+    loading: 'contando los asientos en edición…',
+    none: 'no hay asientos en edición en este periodo: el informe es el contabilizado.',
+    one: 'incluye 1 asiento en edición, que aún no está contabilizado.',
+    many: 'incluye {n} asientos en edición, que aún no están contabilizados.',
+    link: 'Ver los asientos',
+    draft: 'Asiento en edición (aún sin número)',
+  },
   mm: {
     help: 'Mes abierto: solo se contabiliza en él. Al cerrarlo, pasas al siguiente.',
     close: 'Cerrar mes',

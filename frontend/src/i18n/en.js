@@ -1520,6 +1520,24 @@ export default {
     before: 'It falls before the open month ({m}): that month is already closed.',
     after: 'It falls after the open month ({m}): close the month before posting it.',
   },
+  // v0.51.0 · Quick month and simulation with entries being edited in the reports
+  rp: {
+    months: 'Months of the year',
+    all: 'All',
+    allTitle: 'The whole year',
+    monthTitle: 'Up to {d}',
+  },
+  sim: {
+    label: 'Include entries being edited (simulation)',
+    help: 'Adds the drafts that balance and could be posted, to see their effect before posting them. Drafts with errors are left out.',
+    prefix: 'SIMULATION',
+    loading: 'counting the entries being edited…',
+    none: 'there are no entries being edited in this period: the report shows what is posted.',
+    one: 'includes 1 entry being edited, not posted yet.',
+    many: 'includes {n} entries being edited, not posted yet.',
+    link: 'See the entries',
+    draft: 'Entry being edited (no number yet)',
+  },
   mm: {
     help: 'Open month: entries are posted only in it. When you close it, you move to the next one.',
     close: 'Close month',

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { fetchAll } from '../paging'
 import { useI18n } from '../i18n'
-import { workYear } from '../workDate'
+import { workDate, workYear } from '../workDate'
 import { accountName, money, shortDate } from '../format'
 import Empty from './Empty'
 import { companyPath, navigate } from '../router'
@@ -10,11 +10,17 @@ import ErrorBox from './ErrorBox'
 import ReportActions from './ReportActions'
 import { downloadXlsx, fileName } from '../exportXlsx'
 import Link from './Link'
+import DateField from './DateField'
+import MonthPicker from './MonthPicker'
+import SimulationToggle, { SimulationBanner } from './SimulationToggle'
+import { moveToYear, reportBase, simTitle } from '../reportPeriod'
 
 const LEVELS = [['', 'levelPosting'], ['3', 'levelAccount'], ['2', 'levelSubgroup'], ['1', 'levelGroup']]
 
 // Informes del auditor: sumas y saldos, libro mayor y saldos anómalos
 // params (desde la ruta): ['mayor', cuenta, año] abre directamente el libro mayor de esa cuenta (rastro contable)
+// v0.51.0 · «hasta» con la fecha rápida y los botones de mes, y la simulación con los asientos en edición (ADR 0051):
+// en el mayor, un asiento en edición aún no tiene número y sale marcado con ✎.
 export default function Reports({ company, params = [] }) {
   const { t, language } = useI18n()
   const fromLink = params[0] === 'mayor' && params[1]
@@ -23,6 +29,7 @@ export default function Reports({ company, params = [] }) {
   const [year, setYear] = useState(() => (fromLink && Number(params[2])) || workYear(company))   // año de la fecha de trabajo
   const [level, setLevel] = useState('')
   const [toDate, setToDate] = useState('')
+  const [sim, setSim] = useState(false)          // simulación: incluir los asientos en edición
   const [trial, setTrial] = useState([])
   const [anomalies, setAnomalies] = useState([])
   const [accounts, setAccounts] = useState([])
@@ -50,13 +57,13 @@ export default function Reports({ company, params = [] }) {
 
   // Sumas y saldos + anomalías del mismo nivel y fecha
   useEffect(() => {
-    const args = { p_company: company.id, p_year: Number(year), p_level: level ? Number(level) : null, p_to_date: toDate || null }
+    const args = { p_company: company.id, p_year: Number(year), p_level: level ? Number(level) : null, p_to_date: toDate || null, p_drafts: sim }
     Promise.all([fetchAll(() => supabase.rpc('trial_balance', args)), supabase.rpc('balance_anomalies', args)])
       .then(([tb, an]) => {
         if (tb.error || an.error) return setError((tb.error || an.error).message)
         setError(''); setTrial(tb.data); setAnomalies(an.data)
       })
-  }, [company.id, year, level, toDate])
+  }, [company.id, year, level, toDate, sim])
 
   // Libro mayor de una subcuenta: la función filtra primero y calcula el saldo después (0029),
   // y se lee por páginas porque una cuenta puede tener más de 1.000 apuntes en un año
@@ -64,14 +71,14 @@ export default function Reports({ company, params = [] }) {
     if (!ledgerAccount) return setLedger([])
     let alive = true
     fetchAll(() => supabase.rpc('general_ledger', {
-      p_company: company.id, p_year: Number(year), p_account: ledgerAccount, p_to_date: toDate || null,
+      p_company: company.id, p_year: Number(year), p_account: ledgerAccount, p_to_date: toDate || null, p_drafts: sim,
     })).then(({ data, error }) => {
       if (!alive) return
       if (error) return setError(error.message)
       setError(''); setLedger(data)
     })
     return () => { alive = false }
-  }, [company.id, year, ledgerAccount, toDate])
+  }, [company.id, year, ledgerAccount, toDate, sim])
 
   // La dirección sigue al mayor que se está viendo: al volver desde un asiento («atrás») se abre esta misma cuenta
   useEffect(() => {
@@ -95,6 +102,9 @@ export default function Reports({ company, params = [] }) {
   const ledgerDebit = ledger.reduce((s, r) => s + Number(r.debit), 0)
   const ledgerCredit = ledger.reduce((s, r) => s + Number(r.credit), 0)
   const accountInfo = accounts.find((a) => a.account_no === ledgerAccount)
+  const filters = `${t('year')} ${year}${toDate ? ` · ${t('toDate')} ${toDate}` : ''}`
+  const info = `${sim ? `${t('sim.prefix')} · ` : ''}${company.name} · ${filters}`
+  const st = (title) => simTitle(title, sim, t('sim.prefix'))
 
   return (
     <>
@@ -107,7 +117,7 @@ export default function Reports({ company, params = [] }) {
       <section className="tarjeta">
         <div className="rejilla-tres">
           <label>{t('year')}
-            <select value={year} onChange={(e) => setYear(e.target.value)}>
+            <select value={year} onChange={(e) => { setYear(e.target.value); setToDate(moveToYear(toDate, e.target.value)) }}>
               {years.map((y) => <option key={y} value={y}>{y}</option>)}
             </select>
           </label>
@@ -126,9 +136,13 @@ export default function Reports({ company, params = [] }) {
             </label>
           ) : <span />}
           <label>{t('toDate')}
-            <input type="date" value={toDate} onChange={(e) => setToDate(e.target.value)} />
+            <DateField value={toDate} onChange={setToDate} company={company} label={t('toDate')} clearable monthHint={false}
+                       baseDate={reportBase(toDate, year, workDate(company))} />
           </label>
         </div>
+        <MonthPicker year={year} value={toDate} onChange={setToDate} />
+        <SimulationToggle value={sim} onChange={setSim} />
+        <SimulationBanner company={company} year={year} toDate={toDate} value={sim} />
         <ErrorBox error={error} company={company} />
       </section>
 
@@ -136,11 +150,11 @@ export default function Reports({ company, params = [] }) {
         <section className="tarjeta">
           <div className="titulo-informe">
             <h2>{t('trialBalance')} {year}</h2>
-            {trial.length > 0 && <ReportActions info={`${company.name} · ${t('year')} ${year}${toDate ? ` · ${t('toDate')} ${toDate}` : ''}`}
+            {trial.length > 0 && <ReportActions info={info}
               onExcel={() => downloadXlsx({
-                title: `${t('trialBalance')} · ${company.name}`, sheet: t('trialBalance'),
-                subtitle: `${t('year')} ${year}${toDate ? ` · ${t('toDate')} ${toDate}` : ''}`,
-                file: fileName(t('trialBalance'), company.name, year, toDate),
+                title: `${st(t('trialBalance'))} · ${company.name}`, sheet: t('trialBalance'),
+                subtitle: filters,
+                file: fileName(st(t('trialBalance')), company.name, year, toDate),
                 columns: [
                   { header: t('account'), key: 'no', type: 'text', width: 12 },
                   { header: t('accountName'), key: 'name', type: 'text', width: 44 },
@@ -197,11 +211,11 @@ export default function Reports({ company, params = [] }) {
         <section className="tarjeta">
           <div className="titulo-informe">
             <h2>{t('generalLedger')} {ledgerAccount && `· ${ledgerAccount} ${accountInfo ? accountName(accountInfo, language) : ''}`}</h2>
-            {ledger.length > 0 && <ReportActions info={`${company.name} · ${t('year')} ${year}${toDate ? ` · ${t('toDate')} ${toDate}` : ''}`}
+            {ledger.length > 0 && <ReportActions info={info}
               onExcel={() => downloadXlsx({
-                title: `${t('generalLedger')} ${ledgerAccount} ${accountInfo ? accountName(accountInfo, language) : ''} · ${company.name}`,
-                subtitle: `${t('year')} ${year}${toDate ? ` · ${t('toDate')} ${toDate}` : ''}`, sheet: ledgerAccount,
-                file: fileName(t('generalLedger'), ledgerAccount, company.name, year),
+                title: `${st(t('generalLedger'))} ${ledgerAccount} ${accountInfo ? accountName(accountInfo, language) : ''} · ${company.name}`,
+                subtitle: filters, sheet: ledgerAccount,
+                file: fileName(st(t('generalLedger')), ledgerAccount, company.name, year),
                 columns: [
                   { header: t('date'), key: 'date', type: 'date', width: 12 }, { header: t('entry'), key: 'no', type: 'int', width: 9 },
                   { header: t('description'), key: 'desc', type: 'text', width: 50 },
@@ -226,8 +240,10 @@ export default function Reports({ company, params = [] }) {
                   {ledger.map((r, i) => (
                     <tr key={i}>
                       <td className="celda-fecha">{shortDate(r.posting_date)}</td>
-                      <td className="celda-asiento"><Link to={companyPath(company.id, `asiento/${year}/${r.entry_no}`)} className="num-asiento"
-                                title={t('openEntry')}>{r.entry_no}</Link></td>
+                      <td className="celda-asiento">{r.entry_no == null
+                        ? <span className="num-asiento en-edicion" title={t('sim.draft')} aria-label={t('sim.draft')}>✎</span>
+                        : <Link to={companyPath(company.id, `asiento/${year}/${r.entry_no}`)} className="num-asiento"
+                                title={t('openEntry')}>{r.entry_no}</Link>}</td>
                       <td className="celda-titulo">{r.description}</td>
                       <td className="num" data-label={t('debit')}>{Number(r.debit) ? m(r.debit) : ''}</td>
                       <td className="num" data-label={t('credit')}>{Number(r.credit) ? m(r.credit) : ''}</td>

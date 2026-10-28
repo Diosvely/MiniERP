@@ -8,6 +8,8 @@ import { useAiTopic } from '../aiContext'
 import ErrorBox from './ErrorBox'
 import ReportActions from './ReportActions'
 import { downloadXlsx, fileName } from '../exportXlsx'
+import SimulationToggle, { SimulationBanner } from './SimulationToggle'
+import { simTitle } from '../reportPeriod'
 import CashWaterfall from './CashWaterfall'
 
 // Estado de flujos de efectivo por los dos métodos (como el "Cash Flow Statement" de BC / SAP)
@@ -20,6 +22,7 @@ export default function CashFlow({ company }) {
   useAiTopic({ kind: 'analyst', year: Number(year) })   // v0.41.2: el Analista del panel de IA interpreta este ejercicio
   const [method, setMethod] = useState('indirect')
   const [hideZero, setHideZero] = useState(true)
+  const [sim, setSim] = useState(false)          // v0.51.0 · simulación: incluir los asientos en edición (ADR 0051)
   const [rows, setRows] = useState([])
   const [check, setCheck] = useState(null)
   const [open, setOpen] = useState({})           // línea → cuentas que la forman (drill-down)
@@ -37,20 +40,20 @@ export default function CashFlow({ company }) {
 
   useEffect(() => {
     setOpen({}); setLoading(true)
-    supabase.rpc('cash_flow_statement', { p_company: company.id, p_year: Number(year), p_method: method })
+    supabase.rpc('cash_flow_statement', { p_company: company.id, p_year: Number(year), p_method: method, p_drafts: sim })
       .then(({ data, error }) => {
         setLoading(false)
         if (error) return setError(error.message)
         setError(''); setRows(data)
       })
-  }, [company.id, year, method])
+  }, [company.id, year, method, sim])
 
   // El cuadre no depende del método: solo cambia con el año
   useEffect(() => {
     setCheck(null)
-    supabase.rpc('cash_flow_check', { p_company: company.id, p_year: Number(year) })
+    supabase.rpc('cash_flow_check', { p_company: company.id, p_year: Number(year), p_drafts: sim })
       .then(({ data, error }) => (error ? setError(error.message) : setCheck(data)))
-  }, [company.id, year])
+  }, [company.id, year, sim])
 
   // Como en las cuentas anuales: las salidas de dinero entre paréntesis
   const m = (v) => (Number(v) < 0 ? `(${money(-v, language)})` : money(v, language))
@@ -59,7 +62,7 @@ export default function CashFlow({ company }) {
   async function toggle(code) {
     if (open[code]) return setOpen({ ...open, [code]: null })
     const { data, error } = await supabase.rpc('cf_line_accounts', {
-      p_company: company.id, p_year: Number(year), p_method: method, p_code: code,
+      p_company: company.id, p_year: Number(year), p_method: method, p_code: code, p_drafts: sim,
     })
     if (error) return setError(error.message)
     setOpen({ ...open, [code]: data })
@@ -68,8 +71,8 @@ export default function CashFlow({ company }) {
   const visible = rows.filter((r) => !hideZero || r.is_total || Number(r.amount) !== 0 || Number(r.amount_prev) !== 0)
   const methodName = t(`cashFlowMethod.${method}`)
   const exportExcel = () => downloadXlsx({
-    title: `${t('cashFlowTitle')} · ${company.name ?? ''}`, subtitle: `${t('year')} ${year} · ${methodName}`, sheet: t('cashFlowTitle'),
-    file: fileName(t('cashFlowTitle'), methodName, company.name, year),
+    title: `${simTitle(t('cashFlowTitle'), sim, t('sim.prefix'))} · ${company.name ?? ''}`, subtitle: `${t('year')} ${year} · ${methodName}`, sheet: t('cashFlowTitle'),
+    file: fileName(simTitle(t('cashFlowTitle'), sim, t('sim.prefix')), methodName, company.name, year),
     columns: [{ header: t('fsLine'), key: 'label', type: 'text', width: 70 },
       { header: String(year), key: 'amount', type: 'money' }, { header: String(Number(year) - 1), key: 'prev', type: 'money' }],
     rows: visible.map((r) => ({ label: `${'   '.repeat(r.level)}${label(r)}`, amount: r.amount, prev: r.amount_prev })),
@@ -82,7 +85,7 @@ export default function CashFlow({ company }) {
       <section className="tarjeta">
         <div className="titulo-informe">
           <h2>{t('cashFlowTitle')}</h2>
-          {rows.length > 0 && <ReportActions onExcel={exportExcel} info={`${company.name} · ${t('year')} ${year} · ${methodName}`} />}
+          {rows.length > 0 && <ReportActions onExcel={exportExcel} info={`${sim ? `${t('sim.prefix')} · ` : ''}${company.name} · ${t('year')} ${year} · ${methodName}`} />}
         </div>
         <p className="ayuda">{method === 'indirect' ? t('cashFlowIndirectHelp') : t('cashFlowDirectHelp')}</p>
 
@@ -100,10 +103,14 @@ export default function CashFlow({ company }) {
               {years.map((y) => <option key={y} value={y}>{y}</option>)}
             </select>
           </label>
-          <label className="opcion">
-            <input type="checkbox" checked={hideZero} onChange={(e) => setHideZero(e.target.checked)} /> {t('hideZeroLines')}
-          </label>
+          <div className="opciones-informe">
+            <label className="opcion">
+              <input type="checkbox" checked={hideZero} onChange={(e) => setHideZero(e.target.checked)} /> {t('hideZeroLines')}
+            </label>
+            <SimulationToggle value={sim} onChange={setSim} />
+          </div>
         </div>
+        <SimulationBanner company={company} year={year} value={sim} />
         <ErrorBox error={error} company={company} />
 
         {check && (
@@ -121,7 +128,8 @@ export default function CashFlow({ company }) {
           </figure>
         )}
 
-        <div className="tabla-ancha">
+        {/* en el móvil la tabla se desplaza: con tabindex también con el teclado */}
+        <div className="tabla-ancha" tabIndex={0} role="region" aria-label={t('cashFlowTitle')}>
           <table className="estado">
             <thead>
               <tr><th /><th className="num">{year}</th><th className="num">{Number(year) - 1}</th></tr>
@@ -162,7 +170,7 @@ export default function CashFlow({ company }) {
         <section className="tarjeta">
           <h2>{t('cashFlowCompare')}</h2>
           <p className="ayuda">{t('cashFlowCompareHelp')}</p>
-          <div className="tabla-ancha">
+          <div className="tabla-ancha" tabIndex={0} role="region" aria-label={t('cashFlowCompare')}>
             <table className="informe">
               <thead>
                 <tr>
@@ -200,7 +208,7 @@ export default function CashFlow({ company }) {
             <>
               <h3>{t('cashFlowCrossTitle').replace('{n}', check.cross_count)}</h3>
               <p className="ayuda">{t('cashFlowCrossHelp')}</p>
-              <div className="tabla-ancha">
+              <div className="tabla-ancha" tabIndex={0} role="region" aria-label={t('cashFlowCrossTitle').replace('{n}', check.cross_count)}>
                 <table className="informe">
                   <thead>
                     <tr>

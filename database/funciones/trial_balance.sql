@@ -1,13 +1,18 @@
 -- =====================================================================
 -- erp.trial_balance · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0005_reports 0021_journal_import   →   la vigente es la de 0021_journal_import
+-- Definida en: 0005_reports 0021_journal_import 0074_report_simulation   →   la vigente es la de 0074_report_simulation
 -- =====================================================================
 
-CREATE OR REPLACE FUNCTION erp.trial_balance(p_company uuid, p_year integer, p_level integer DEFAULT NULL::integer, p_to_date date DEFAULT NULL::date)
+CREATE OR REPLACE FUNCTION erp.trial_balance(p_company uuid, p_year integer, p_level integer DEFAULT NULL::integer, p_to_date date DEFAULT NULL::date, p_drafts boolean DEFAULT false)
  RETURNS TABLE(account_no text, name text, name_en text, total_debit numeric, total_credit numeric, debit_balance numeric, credit_balance numeric)
- LANGUAGE sql
+ LANGUAGE plpgsql
  STABLE
 AS $function$
+#variable_conflict use_column
+declare v_prev text := coalesce(nullif(current_setting('erp.simulate', true), ''), 'off');
+begin
+  if p_drafts then perform set_config('erp.simulate', 'on', true); end if;
+  return query
   with mov as (
     select case when p_level is null then a.account_no else left(a.account_no, p_level) end as account_no,
            l.debit, l.credit
@@ -17,7 +22,7 @@ AS $function$
     join erp.gl_accounts     a  on a.id = l.gl_account_id
     where e.company_id = p_company
       and fy.year = p_year
-      and e.status = 'posted'
+      and erp.counts_in_reports(e.status, e.id)
       and e.entry_type <> 'closing'            -- sin el asiento de cierre: si no, un año cerrado sale todo a cero
       and (p_to_date is null or e.posting_date <= p_to_date)
   )
@@ -32,5 +37,6 @@ AS $function$
   left join erp.gl_accounts a on a.company_id = p_company and a.account_no = m.account_no
   group by m.account_no, a.name, a.name_en
   order by m.account_no;
-$function$
+  perform set_config('erp.simulate', v_prev, true);
+end $function$
 ;

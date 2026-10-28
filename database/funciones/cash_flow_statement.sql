@@ -1,17 +1,19 @@
 -- =====================================================================
 -- erp.cash_flow_statement · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0022_cash_flow   →   la vigente es la de 0022_cash_flow
+-- Definida en: 0022_cash_flow 0074_report_simulation   →   la vigente es la de 0074_report_simulation
 -- =====================================================================
 
-CREATE OR REPLACE FUNCTION erp.cash_flow_statement(p_company uuid, p_year integer, p_method text)
+CREATE OR REPLACE FUNCTION erp.cash_flow_statement(p_company uuid, p_year integer, p_method text, p_drafts boolean DEFAULT false)
  RETURNS TABLE(code text, parent text, sort integer, level integer, label text, label_en text, is_total boolean, amount numeric, amount_prev numeric)
  LANGUAGE plpgsql
  STABLE SECURITY DEFINER
  SET search_path TO 'erp', 'public'
 AS $function$
+declare v_prev text := coalesce(nullif(current_setting('erp.simulate', true), ''), 'off');
 begin
   if not erp.can_read(p_company) then raise exception 'Not allowed to read this company'; end if;
   if p_method not in ('indirect', 'direct') then raise exception 'Unknown cash flow method: %', p_method; end if;
+  if p_drafts then perform set_config('erp.simulate', 'on', true); end if;
   return query
   with recursive depth(code, level) as (
     select l.code, 0 from erp.cf_lines l where l.method = p_method and l.parent is null
@@ -38,5 +40,6 @@ begin
   join tot t on t.code = l.code
   where l.method = p_method
   order by l.sort;
+  perform set_config('erp.simulate', v_prev, true);
 end $function$
 ;

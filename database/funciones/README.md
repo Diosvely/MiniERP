@@ -1,6 +1,6 @@
 # Funciones del esquema erp (versión vigente)
 
-Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0073`.
+Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0074`.
 No se edita a mano: el código fuente son las migraciones. Esto es para **estudiar** cada función en su forma
 actual sin rastrear sus redefiniciones.
 
@@ -9,7 +9,7 @@ actual sin rastrear sus redefiniciones.
 - **Tipo:** *invoker* (se ejecuta con los permisos de quien llama: manda la RLS), *security definer* (con los del
   dueño: comprueba ella misma los permisos) o *trigger*.
 
-327 funciones.
+331 funciones.
 
 | Función | Versiones | Vigente en | Tipo |
 |---|---|---|---|
@@ -42,7 +42,7 @@ actual sin rastrear sus redefiniciones.
 | [`asset_result_account`](asset_result_account.sql) | 1 | 0041_fixed_assets | security definer |
 | [`asset_tranche_at`](asset_tranche_at.sql) | 1 | 0046_asset_impairment | invoker |
 | [`audit_lines`](audit_lines.sql) | 11 | 0064_grants | invoker |
-| [`balance_anomalies`](balance_anomalies.sql) | 1 | 0013_balance_rules | invoker |
+| [`balance_anomalies`](balance_anomalies.sql) | 2 | 0074_report_simulation | invoker |
 | [`balance_nature`](balance_nature.sql) | 1 | 0013_balance_rules | invoker |
 | [`can_read`](can_read.sql) | 2 | 0007_demo_and_limits | security definer |
 | [`can_use_ai`](can_use_ai.sql) | 1 | 0024_ai_context | invoker |
@@ -66,17 +66,17 @@ actual sin rastrear sus redefiniciones.
 | [`case_mark`](case_mark.sql) | 1 | 0067_case_screen | security definer |
 | [`case_payment`](case_payment.sql) | 1 | 0066_complete_case | invoker |
 | [`case_progress`](case_progress.sql) | 1 | 0067_case_screen | invoker |
-| [`cash_flow_check`](cash_flow_check.sql) | 2 | 0066_complete_case | security definer |
-| [`cash_flow_statement`](cash_flow_statement.sql) | 1 | 0022_cash_flow | security definer |
+| [`cash_flow_check`](cash_flow_check.sql) | 3 | 0074_report_simulation | security definer |
+| [`cash_flow_statement`](cash_flow_statement.sql) | 2 | 0074_report_simulation | security definer |
 | [`cf_account_flows`](cf_account_flows.sql) | 2 | 0066_complete_case | security definer |
 | [`cf_account_map`](cf_account_map.sql) | 1 | 0022_cash_flow | invoker |
-| [`cf_cash`](cf_cash.sql) | 1 | 0022_cash_flow | security definer |
+| [`cf_cash`](cf_cash.sql) | 2 | 0074_report_simulation | security definer |
 | [`cf_detail`](cf_detail.sql) | 1 | 0022_cash_flow | security definer |
 | [`cf_direct_detail`](cf_direct_detail.sql) | 2 | 0066_complete_case | security definer |
-| [`cf_entry_cash`](cf_entry_cash.sql) | 1 | 0022_cash_flow | security definer |
+| [`cf_entry_cash`](cf_entry_cash.sql) | 2 | 0074_report_simulation | security definer |
 | [`cf_indirect_detail`](cf_indirect_detail.sql) | 1 | 0022_cash_flow | security definer |
-| [`cf_line_accounts`](cf_line_accounts.sql) | 1 | 0022_cash_flow | security definer |
-| [`cf_line_flows`](cf_line_flows.sql) | 1 | 0066_complete_case | security definer |
+| [`cf_line_accounts`](cf_line_accounts.sql) | 2 | 0074_report_simulation | security definer |
+| [`cf_line_flows`](cf_line_flows.sql) | 2 | 0074_report_simulation | security definer |
 | [`check_payment_applications`](check_payment_applications.sql) | 1 | 0035_payments | invoker |
 | [`check_tax_account`](check_tax_account.sql) | 1 | 0010_tax_setup | invoker |
 | [`cleanup_guests`](cleanup_guests.sql) | 2 | 0034_web_usage | security definer |
@@ -101,6 +101,7 @@ actual sin rastrear sus redefiniciones.
 | [`corporate_tax_quota`](corporate_tax_quota.sql) | 1 | 0057_corporate_tax | invoker |
 | [`corporate_tax_regime_hint`](corporate_tax_regime_hint.sql) | 1 | 0057_corporate_tax | invoker |
 | [`corporate_tax_settings`](corporate_tax_settings.sql) | 1 | 0057_corporate_tax | security definer |
+| [`counts_in_reports`](counts_in_reports.sql) | 1 | 0074_report_simulation | invoker |
 | [`create_accrual`](create_accrual.sql) | 1 | 0043_year_end_adjustments | security definer |
 | [`create_case_company`](create_case_company.sql) | 1 | 0067_case_screen | invoker |
 | [`create_fiscal_year`](create_fiscal_year.sql) | 1 | 0001_core | invoker |
@@ -114,6 +115,7 @@ actual sin rastrear sus redefiniciones.
 | [`depreciation_schedule`](depreciation_schedule.sql) | 2 | 0046_asset_impairment | invoker |
 | [`dispose_asset`](dispose_asset.sql) | 3 | 0065_grants_integration | security definer |
 | [`draft_problem`](draft_problem.sql) | 1 | 0070_entries_screen | security definer |
+| [`draft_ready`](draft_ready.sql) | 1 | 0074_report_simulation | security definer |
 | [`ensure_tax_account`](ensure_tax_account.sql) | 1 | 0010_tax_setup | invoker |
 | [`entries_list`](entries_list.sql) | 1 | 0070_entries_screen | security definer |
 | [`entry_controlled_lines`](entry_controlled_lines.sql) | 1 | 0036_controlled_accounts | invoker |
@@ -144,16 +146,16 @@ actual sin rastrear sus redefiniciones.
 | [`equity_statement_column`](equity_statement_column.sql) | 1 | 0065_grants_integration | invoker |
 | [`equity_statement_lines`](equity_statement_lines.sql) | 1 | 0065_grants_integration | security definer |
 | [`equity_status`](equity_status.sql) | 1 | 0060_equity_operations | security definer |
-| [`financial_ratios`](financial_ratios.sql) | 1 | 0023_financial_ratios | security definer |
-| [`financial_statement`](financial_statement.sql) | 2 | 0032_comparative_statements | invoker |
+| [`financial_ratios`](financial_ratios.sql) | 2 | 0074_report_simulation | security definer |
+| [`financial_statement`](financial_statement.sql) | 3 | 0074_report_simulation | invoker |
 | [`fiscal_year_company`](fiscal_year_company.sql) | 1 | 0006_security_rls | security definer |
 | [`form_347`](form_347.sql) | 1 | 0052_forms_347_349 | invoker |
 | [`form_349`](form_349.sql) | 1 | 0052_forms_347_349 | invoker |
 | [`form_349_period`](form_349_period.sql) | 1 | 0052_forms_347_349 | invoker |
 | [`fs_amounts`](fs_amounts.sql) | 1 | 0016_financial_statements | invoker |
-| [`fs_classified_accounts`](fs_classified_accounts.sql) | 2 | 0017_year_closing | invoker |
-| [`fs_line_accounts`](fs_line_accounts.sql) | 1 | 0016_financial_statements | invoker |
-| [`general_ledger`](general_ledger.sql) | 1 | 0029_performance | invoker |
+| [`fs_classified_accounts`](fs_classified_accounts.sql) | 3 | 0074_report_simulation | invoker |
+| [`fs_line_accounts`](fs_line_accounts.sql) | 2 | 0074_report_simulation | invoker |
+| [`general_ledger`](general_ledger.sql) | 2 | 0074_report_simulation | invoker |
 | [`global_impairment_calc`](global_impairment_calc.sql) | 1 | 0043_year_end_adjustments | invoker |
 | [`grade_exercise`](grade_exercise.sql) | 2 | 0056_grader_fixes | invoker |
 | [`grant_cancel`](grant_cancel.sql) | 1 | 0064_grants | security definer |
@@ -254,6 +256,7 @@ actual sin rastrear sus redefiniciones.
 | [`reclassify_provision`](reclassify_provision.sql) | 1 | 0045_provisions | security definer |
 | [`reopen_fiscal_year`](reopen_fiscal_year.sql) | 1 | 0017_year_closing | invoker |
 | [`reopen_month`](reopen_month.sql) | 1 | 0069_monthly_accounting | security definer |
+| [`report_drafts`](report_drafts.sql) | 1 | 0074_report_simulation | invoker |
 | [`result_account_no`](result_account_no.sql) | 1 | 0017_year_closing | invoker |
 | [`reverse_accrual`](reverse_accrual.sql) | 1 | 0043_year_end_adjustments | security definer |
 | [`reverse_accruals`](reverse_accruals.sql) | 1 | 0043_year_end_adjustments | security definer |
@@ -273,6 +276,7 @@ actual sin rastrear sus redefiniciones.
 | [`set_vat_regime`](set_vat_regime.sql) | 1 | 0019_reverse_charge_surcharge | invoker |
 | [`setup_taxes`](setup_taxes.sql) | 1 | 0010_tax_setup | invoker |
 | [`setup_withholdings`](setup_withholdings.sql) | 1 | 0018_withholding_exempt | invoker |
+| [`simulating`](simulating.sql) | 1 | 0074_report_simulation | invoker |
 | [`special_tax_account`](special_tax_account.sql) | 1 | 0019_reverse_charge_surcharge | invoker |
 | [`start_accounting`](start_accounting.sql) | 1 | 0069_monthly_accounting | security definer |
 | [`submit_exercise`](submit_exercise.sql) | 2 | 0055_practice_integration | security definer |
@@ -328,7 +332,7 @@ actual sin rastrear sus redefiniciones.
 | [`tg_withholding_auto_setup`](tg_withholding_auto_setup.sql) | 1 | 0018_withholding_exempt | trigger |
 | [`tg_withholding_setup_validate`](tg_withholding_setup_validate.sql) | 1 | 0018_withholding_exempt | trigger |
 | [`tg_year_closing_protect`](tg_year_closing_protect.sql) | 1 | 0017_year_closing | trigger |
-| [`trial_balance`](trial_balance.sql) | 2 | 0021_journal_import | invoker |
+| [`trial_balance`](trial_balance.sql) | 3 | 0074_report_simulation | invoker |
 | [`tutor_criteria_checks`](tutor_criteria_checks.sql) | 1 | 0026_tutor_checks | invoker |
 | [`valid_spanish_tax_id`](valid_spanish_tax_id.sql) | 1 | 0009_partners | invoker |
 | [`validate_proposed_entry`](validate_proposed_entry.sql) | 3 | 0033_withholding_rules | invoker |

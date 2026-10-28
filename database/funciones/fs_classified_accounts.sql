@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.fs_classified_accounts · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0016_financial_statements 0017_year_closing   →   la vigente es la de 0017_year_closing
+-- Definida en: 0016_financial_statements 0017_year_closing 0074_report_simulation   →   la vigente es la de 0074_report_simulation
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.fs_classified_accounts(p_company uuid, p_year integer, p_statement text, p_to_date date DEFAULT NULL::date)
@@ -11,7 +11,7 @@ AS $function$
   with acc as (
     select g.account_no, g.name, g.name_en, sum(l.debit - l.credit) as bal
     from erp.journal_lines l
-    join erp.journal_entries e on e.id = l.entry_id and e.status = 'posted'
+    join erp.journal_entries e on e.id = l.entry_id and erp.counts_in_reports(e.status, e.id)
                               and e.entry_type not in ('closing_pl', 'closing')
     join erp.fiscal_years fy   on fy.id = e.fiscal_year_id and fy.year = p_year
     join erp.gl_accounts g     on g.id = l.gl_account_id

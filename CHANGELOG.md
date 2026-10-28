@@ -2,6 +2,24 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.51.0] - 2026-10-28
+### Añadido
+- **Mes rápido en los informes** (Balance, PyG, Sumas y saldos, Libro mayor y Comprobaciones): el «hasta» con la fecha
+  rápida (`0102`, `h`, 📅) y los botones «Todo · Ene … Dic».
+- **Simulación con los asientos en edición** (Balance, PyG, Sumas y saldos, Libro mayor, Estado de flujos y Ratios):
+  una casilla que incluye los borradores que cuadran, con una franja de aviso y «SIMULACIÓN» en el Excel y la
+  impresión.
+  - Migración `0074_report_simulation.sql`: una sola regla (`erp.counts_in_reports`) y el parámetro `p_drafts` en las
+    funciones de los informes. El cierre, las liquidaciones, los modelos, las comprobaciones, la IA y Power BI no
+    cambian.
+- Prueba de la base de datos `fase 68` y tests de la web del mes rápido y la simulación.
+- ADR 0051.
+
+### Corregido
+- La casilla «Ocultar partidas sin importe» ya no se estira a todo el ancho.
+- Las tablas del estado de flujos se pueden desplazar con el teclado en el móvil.
+
+
 ## [0.50.0] - 2026-10-27
 ### Añadido
 - **Puente a Power BI** (migración `0073_powerbi_bridge.sql`): esquema `bi` de solo lectura con las empresas demo.

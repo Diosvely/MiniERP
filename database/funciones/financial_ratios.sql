@@ -1,16 +1,18 @@
 -- =====================================================================
 -- erp.financial_ratios · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0023_financial_ratios   →   la vigente es la de 0023_financial_ratios
+-- Definida en: 0023_financial_ratios 0074_report_simulation   →   la vigente es la de 0074_report_simulation
 -- =====================================================================
 
-CREATE OR REPLACE FUNCTION erp.financial_ratios(p_company uuid, p_year integer)
+CREATE OR REPLACE FUNCTION erp.financial_ratios(p_company uuid, p_year integer, p_drafts boolean DEFAULT false)
  RETURNS TABLE(code text, grp text, sort integer, label text, label_en text, formula text, formula_en text, unit text, ref_min numeric, ref_max numeric, help text, help_en text, num numeric, den numeric, value numeric, value_prev numeric, status text)
  LANGUAGE plpgsql
  STABLE SECURITY DEFINER
  SET search_path TO 'erp', 'public'
 AS $function$
+declare v_prev text := coalesce(nullif(current_setting('erp.simulate', true), ''), 'off');
 begin
   if not erp.can_read(p_company) then raise exception 'Not allowed to read this company'; end if;
+  if p_drafts then perform set_config('erp.simulate', 'on', true); end if;
   return query
   with cur as (select * from erp.ratio_parts(p_company, p_year)),
        prev as (select * from erp.ratio_parts(p_company, p_year - 1)),
@@ -31,5 +33,6 @@ begin
   from erp.ratio_defs d
   join v on v.code = d.code
   order by array_position(array['liquidity', 'solvency', 'profitability', 'activity', 'cash'], d.grp), d.sort;
+  perform set_config('erp.simulate', v_prev, true);
 end $function$
 ;

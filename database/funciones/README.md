@@ -1,6 +1,6 @@
 # Funciones del esquema erp (versión vigente)
 
-Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0074`.
+Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0075`.
 No se edita a mano: el código fuente son las migraciones. Esto es para **estudiar** cada función en su forma
 actual sin rastrear sus redefiniciones.
 
@@ -9,7 +9,7 @@ actual sin rastrear sus redefiniciones.
 - **Tipo:** *invoker* (se ejecuta con los permisos de quien llama: manda la RLS), *security definer* (con los del
   dueño: comprueba ella misma los permisos) o *trigger*.
 
-331 funciones.
+336 funciones.
 
 | Función | Versiones | Vigente en | Tipo |
 |---|---|---|---|
@@ -109,6 +109,9 @@ actual sin rastrear sus redefiniciones.
 | [`create_partner`](create_partner.sql) | 1 | 0009_partners | invoker |
 | [`create_posting_account`](create_posting_account.sql) | 1 | 0002_chart_of_accounts | invoker |
 | [`create_provision`](create_provision.sql) | 1 | 0045_provisions | security definer |
+| [`dash_metric_values`](dash_metric_values.sql) | 1 | 0075_dashboards | invoker |
+| [`dash_month_ends`](dash_month_ends.sql) | 1 | 0075_dashboards | invoker |
+| [`dashboard_data`](dashboard_data.sql) | 1 | 0075_dashboards | invoker |
 | [`delete_company`](delete_company.sql) | 1 | 0004_journal_entries | security definer |
 | [`delete_company_step`](delete_company_step.sql) | 12 | 0072_temporary_companies | security definer |
 | [`delete_draft`](delete_draft.sql) | 1 | 0070_entries_screen | security definer |
@@ -152,8 +155,10 @@ actual sin rastrear sus redefiniciones.
 | [`form_347`](form_347.sql) | 1 | 0052_forms_347_349 | invoker |
 | [`form_349`](form_349.sql) | 1 | 0052_forms_347_349 | invoker |
 | [`form_349_period`](form_349_period.sql) | 1 | 0052_forms_347_349 | invoker |
-| [`fs_amounts`](fs_amounts.sql) | 1 | 0016_financial_statements | invoker |
-| [`fs_classified_accounts`](fs_classified_accounts.sql) | 3 | 0074_report_simulation | invoker |
+| [`fs_amounts`](fs_amounts.sql) | 2 | 0075_dashboards | invoker |
+| [`fs_amounts_at`](fs_amounts_at.sql) | 1 | 0075_dashboards | invoker |
+| [`fs_classified_accounts`](fs_classified_accounts.sql) | 4 | 0075_dashboards | invoker |
+| [`fs_classified_at`](fs_classified_at.sql) | 1 | 0075_dashboards | invoker |
 | [`fs_line_accounts`](fs_line_accounts.sql) | 2 | 0074_report_simulation | invoker |
 | [`general_ledger`](general_ledger.sql) | 2 | 0074_report_simulation | invoker |
 | [`global_impairment_calc`](global_impairment_calc.sql) | 1 | 0043_year_end_adjustments | invoker |

@@ -1497,3 +1497,24 @@ fichas por pantalla.
 **Decisiones:** ADR 0051 · Mes rápido y simulación.
 
 **Siguiente paso:** v0.52.0, la barra superior con «Tableros» (diseño aparte).
+
+## 2026-10-28 · v0.52.0 · Barra superior y tableros
+
+**Qué se hizo**
+- **Barra superior** con «Tableros ▾», encima del contenido; el menú lateral sigue igual.
+- **Primer tablero, «Resumen de dirección»:** cifras clave, ingresos y gastos de cada mes, resultado acumulado,
+  tesorería y salud financiera, con los filtros de los informes. Diseño validado antes de construir.
+- **Motor:** 0075, con el catálogo (métricas, tableros y tarjetas) y `erp.dashboard_data`. La clasificación del balance
+  a varias fechas va en una sola pasada (de 18 s a 2,6 s con 60.000 asientos).
+- **Pruebas:** 69 SQL y 289 tests de la web.
+- **Rama:** `feat/v0.52.0-tableros`, que entra en `main` con un Pull Request.
+
+**Lo que se aprende**
+- **Un catálogo** dice qué es cada cifra una sola vez; la web, Power BI o la IA lo leen sin repetir reglas.
+- **Medir antes de dar algo por bueno:** el tablero cuadraba, pero tardaba 18 s con un diario grande.
+- **Una pasada en vez de 26:** sumar por días una vez y leer el saldo a cada fecha.
+
+**Decisiones:** ADR 0052 · Barra superior y tableros.
+
+**Siguiente paso:** nuevos tableros (tesorería y cobros, rentabilidad, ventas y gastos) como filas del catálogo, y más
+botones en la barra superior.

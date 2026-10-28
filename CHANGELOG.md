@@ -2,6 +2,22 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.52.0] - 2026-10-28
+### Añadido
+- **Barra superior** encima del contenido de la empresa, con «Tableros ▾» (el menú lateral no cambia).
+- **Tablero «Resumen de dirección»:** cifras clave frente al año anterior a la misma fecha, ingresos y gastos de cada
+  mes, resultado acumulado, tesorería a fin de mes y salud financiera con la zona de referencia de los Ratios. Con los
+  filtros de los informes (mes rápido y simulación), «Ver como tabla», Excel e Imprimir.
+- **Catálogo de tableros** (migración `0075_dashboards.sql`): métricas, tableros y tarjetas como filas de la base de
+  datos, y `erp.dashboard_data`, que lo calcula todo en una llamada con las reglas del Balance y la PyG.
+- Prueba de la base de datos `fase 69` y tests de la web de los tableros.
+- ADR 0052.
+
+### Cambiado
+- `erp.fs_classified_accounts` y `erp.fs_amounts` se apoyan en `erp.fs_classified_at`, que clasifica las cuentas a
+  varias fechas en una sola pasada (misma firma y mismo resultado).
+
+
 ## [0.51.0] - 2026-10-28
 ### Añadido
 - **Mes rápido en los informes** (Balance, PyG, Sumas y saldos, Libro mayor y Comprobaciones): el «hasta» con la fecha

@@ -1478,3 +1478,22 @@ fichas por pantalla.
 **Pendiente:** el primer ensayo en Power BI Desktop (conexión, certificado y medidas DAX frente a las cifras esperadas).
 
 **Siguiente paso:** preparar la charla (ensayos con Claude Code y el MCP, diapositivas y vídeo de respaldo).
+
+## 2026-10-28 · v0.51.0 · Mes rápido y simulación con los asientos en edición
+
+**Qué se hizo**
+- **Mes rápido:** en los informes con «hasta», la fecha se escribe como en los asientos (`0102`) y hay botones de mes.
+- **Simulación:** una casilla incluye los asientos en edición para ver su efecto en el balance, la PyG, las sumas y
+  saldos, el mayor, los flujos y los ratios antes de contabilizarlos. Diseño validado antes de construir.
+- **Motor:** 0074, con una sola regla para todos los informes y el parámetro `p_drafts`.
+- **Pruebas:** 68 SQL y 281 tests de la web.
+- **Rama:** `feat/v0.51.0-mes-y-simulacion`, que entra en `main` con un Pull Request.
+
+**Lo que se aprende**
+- **Una sola regla** de «qué cuenta en un informe» evita que dos informes digan cosas distintas.
+- **Simular es contabilizar sin dejar huella:** la prueba compara el informe simulado con el de después de contabilizar.
+- **Un ajuste local de la transacción** limita la simulación a la consulta que la pide.
+
+**Decisiones:** ADR 0051 · Mes rápido y simulación.
+
+**Siguiente paso:** v0.52.0, la barra superior con «Tableros» (diseño aparte).

@@ -1,13 +1,18 @@
 -- =====================================================================
 -- erp.financial_statement · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0016_financial_statements 0032_comparative_statements   →   la vigente es la de 0032_comparative_statements
+-- Definida en: 0016_financial_statements 0032_comparative_statements 0074_report_simulation   →   la vigente es la de 0074_report_simulation
 -- =====================================================================
 
-CREATE OR REPLACE FUNCTION erp.financial_statement(p_company uuid, p_year integer, p_statement text, p_to_date date DEFAULT NULL::date)
+CREATE OR REPLACE FUNCTION erp.financial_statement(p_company uuid, p_year integer, p_statement text, p_to_date date DEFAULT NULL::date, p_drafts boolean DEFAULT false)
  RETURNS TABLE(code text, parent text, sort integer, level integer, label text, label_en text, is_total boolean, amount numeric, amount_prev numeric)
- LANGUAGE sql
+ LANGUAGE plpgsql
  STABLE
 AS $function$
+#variable_conflict use_column
+declare v_prev text := coalesce(nullif(current_setting('erp.simulate', true), ''), 'off');
+begin
+  if p_drafts then perform set_config('erp.simulate', 'on', true); end if;
+  return query
   with recursive depth(code, level) as (
     select l.code, 0 from erp.fs_lines l where l.statement = p_statement and l.parent is null
     union all
@@ -24,5 +29,6 @@ AS $function$
                                 else (p_to_date - interval '1 year')::date end) prev on prev.code = l.code
   where l.statement = p_statement
   order by l.sort;
-$function$
+  perform set_config('erp.simulate', v_prev, true);
+end $function$
 ;

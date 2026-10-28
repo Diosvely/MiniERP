@@ -1,15 +1,16 @@
 -- =====================================================================
 -- erp.cash_flow_check · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0022_cash_flow 0066_complete_case   →   la vigente es la de 0066_complete_case
+-- Definida en: 0022_cash_flow 0066_complete_case 0074_report_simulation   →   la vigente es la de 0074_report_simulation
 -- =====================================================================
 
-CREATE OR REPLACE FUNCTION erp.cash_flow_check(p_company uuid, p_year integer)
+CREATE OR REPLACE FUNCTION erp.cash_flow_check(p_company uuid, p_year integer, p_drafts boolean DEFAULT false)
  RETURNS jsonb
  LANGUAGE plpgsql
  STABLE SECURITY DEFINER
  SET search_path TO 'erp', 'public'
 AS $function$
 declare
+  v_prev   text := coalesce(nullif(current_setting('erp.simulate', true), ''), 'off');
   v_cash   record;
   v_ind    jsonb;
   v_dir    jsonb;
@@ -17,6 +18,7 @@ declare
   v_ctot   jsonb;
 begin
   if not erp.can_read(p_company) then raise exception 'Not allowed to read this company'; end if;
+  if p_drafts then perform set_config('erp.simulate', 'on', true); end if;
   select * into v_cash from erp.cf_cash(p_company, p_year);
   -- totales por actividad: la segunda letra del código (IA3b → A, DB1 → B)
   select jsonb_object_agg(a, s) into v_ind
@@ -38,6 +40,7 @@ begin
     into v_cross, v_ctot
   from (select id, jsonb_object_agg(act, amount) as acts from per_act group by id) x
   join erp.journal_entries e on e.id = x.id;
+  perform set_config('erp.simulate', v_prev, true);
 
   return jsonb_build_object(
     'year', p_year,

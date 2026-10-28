@@ -9,6 +9,8 @@ import Link from './Link'
 import Term from './Term'
 import Sources from './Sources'
 import ErrorBox from './ErrorBox'
+import DateField from './DateField'
+import MonthPicker from './MonthPicker'
 
 const ICONS = { ok: '✓', info: 'ℹ', warning: '⚠', error: '✕' }
 // Comprobaciones cuyo detalle es una lista de asientos (con enlace a su ficha)
@@ -137,9 +139,13 @@ export default function Checks({ company, readOnly, onChanged }) {
       <section className="tarjeta comprobaciones">
         <h2>{t('chk.title')}</h2>
         <p className="ayuda">{t('chk.intro')}</p>
+        {/* v0.51.0 · la fecha rápida («3103», «h»…) y los botones de mes del ejercicio de la fecha. Sin simulación:
+            las comprobaciones miran solo lo contabilizado (ADR 0051) */}
         <label className="campo-fecha">{t('chk.date')}
-          <input type="date" value={date} onChange={(e) => setDate(e.target.value)} />
+          <DateField value={date} onChange={setDate} company={company} label={t('chk.date')} required monthHint={false}
+                     baseDate={date || undefined} />
         </label>
+        <MonthPicker year={year} value={date} onChange={setDate} all={false} />
         {rows && rows.length > 0 && (
           <p className="resumen-comprobaciones" role="status">
             {['error', 'warning', 'info', 'ok'].filter((s) => sum[s]).map((s) => (

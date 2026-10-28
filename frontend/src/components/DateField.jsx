@@ -7,13 +7,16 @@ import { todayIso, workDate } from '../workDate'
 // ↑ ↓ suman o restan un día y el botón 📅 abre el calendario del navegador. Guarda la fecha en ISO.
 // En la contabilidad mes a mes avisa si la fecha cae fuera del mes abierto (el motor no la dejaría contabilizar).
 //   value: aaaa-mm-dd · onChange(aaaa-mm-dd) · company: para la fecha de trabajo y el mes abierto
-export default function DateField({ value, onChange, company, id, required, label }) {
+//   v0.51.0 · en los informes: clearable (borrar el texto deja la fecha vacía: «todo el ejercicio») y
+//   monthHint={false} (el aviso del mes abierto es para contabilizar, no para consultar) y baseDate (la fecha de la
+//   que salen «2» o «0102»: en un informe, el ejercicio elegido)
+export default function DateField({ value, onChange, company, id, required, label, clearable = false, monthHint = true, baseDate }) {
   const { t } = useI18n()
   const [text, setText] = useState(showDate(value))
   const [focused, setFocused] = useState(false)
   const [invalid, setInvalid] = useState(false)
   const picker = useRef(null)
-  const base = workDate(company)
+  const base = baseDate ?? workDate(company)
 
   // Si la fecha cambia desde fuera (otro asiento, el Tutor…), se enseña la nueva
   useEffect(() => { if (!focused) { setText(showDate(value)); setInvalid(false) } }, [value, focused])   // eslint-disable-line react-hooks/set-state-in-effect
@@ -28,7 +31,7 @@ export default function DateField({ value, onChange, company, id, required, labe
     setFocused(false)
     const d = parseQuickDate(text, base, todayIso())
     if (d) { setText(showDate(d)); setInvalid(false); if (d !== value) onChange(d) }
-    else if (!text.trim()) setText(showDate(value))
+    else if (!text.trim()) { if (clearable && value) onChange(''); else setText(showDate(value)) }
   }
   function keys(e) {
     if ((e.key === 'ArrowUp' || e.key === 'ArrowDown') && value) {
@@ -38,7 +41,7 @@ export default function DateField({ value, onChange, company, id, required, labe
     } else if (e.key === 'Enter') commit()
   }
 
-  const out = company?.monthly ? outsideMonth(value, company.work_month) : null
+  const out = monthHint && company?.monthly ? outsideMonth(value, company.work_month) : null
   const hintId = id ? `${id}-aviso` : undefined
   return (
     <span className="campo-fecha">

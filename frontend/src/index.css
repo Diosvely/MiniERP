@@ -1144,3 +1144,19 @@ button.enlace.pgc-ir { display: inline; align-self: auto; font: inherit; text-de
 .aviso-temporal { margin: 6px 0 10px; padding: 8px 12px; border-radius: 8px; line-height: 1.45; font-size: .9rem;
   background: color-mix(in srgb, var(--alerta) 12%, var(--tarjeta)); color: var(--texto); border-left: 3px solid var(--alerta); }
 .cabecera-temporal { margin: 0 0 12px; grid-column: 1 / -1; }
+/* v0.51.0 · Mes rápido y simulación con los asientos en edición en los informes */
+.barra-meses { display: flex; flex-wrap: wrap; gap: 4px; margin: 8px 0 4px; }
+.barra-meses button { padding: 4px 9px; font-size: .85rem; min-width: 3.1em; background: transparent; color: var(--texto);
+  border: 1px solid var(--borde); }
+.barra-meses button.activa { background: var(--primario); color: var(--sobre-color); border-color: var(--primario); }
+.rejilla-tres .opcion input[type="checkbox"] { width: auto; flex: none; }   /* la casilla, a su tamaño (no al 100 %) */
+.opciones-informe { display: flex; flex-direction: column; gap: 6px; justify-content: center; }
+.opcion-simulacion { margin: 6px 0 2px; }
+.franja-simulacion { margin: 6px 0 10px; padding: 8px 12px; border-radius: 8px; line-height: 1.45; font-size: .9rem;
+  background: color-mix(in srgb, var(--alerta) 12%, var(--tarjeta)); color: var(--texto); border-left: 3px solid var(--alerta); }
+.franja-simulacion a { color: var(--texto); text-decoration: underline; font-weight: 600; }
+.num-asiento.en-edicion { color: var(--suave); cursor: help; }
+@media print {
+  .barra-meses, .opcion-simulacion, .franja-simulacion a { display: none !important; }
+  .franja-simulacion { background: none; border: 1px solid #000; }
+}

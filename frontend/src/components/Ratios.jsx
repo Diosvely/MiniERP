@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import SimulationToggle, { SimulationBanner } from './SimulationToggle'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import { workYear } from '../workDate'
@@ -19,6 +20,7 @@ export default function Ratios({ company }) {
   const [year, setYear] = useState(() => workYear(company))   // año de la fecha de trabajo
   useAiTopic({ kind: 'analyst', year: Number(year) })   // v0.41.2: el Analista del panel de IA interpreta este ejercicio
   const [rows, setRows] = useState([])
+  const [sim, setSim] = useState(false)          // v0.51.0 · simulación: incluir los asientos en edición (ADR 0051)
   const [open, setOpen] = useState({})
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -39,13 +41,13 @@ export default function Ratios({ company }) {
 
   useEffect(() => {
     setLoading(true)
-    supabase.rpc('financial_ratios', { p_company: company.id, p_year: Number(year) })
+    supabase.rpc('financial_ratios', { p_company: company.id, p_year: Number(year), p_drafts: sim })
       .then(({ data, error }) => {
         setLoading(false)
         if (error) return setError(error.message)
         setError(''); setRows(data)
       })
-  }, [company.id, year])
+  }, [company.id, year, sim])
 
   const n = (v, d) => Number(v).toLocaleString(locale, { minimumFractionDigits: d, maximumFractionDigits: d })
   // Valor según la unidad: 1,32 · 7,6 % · 71 días · 184.264,69 €
@@ -81,7 +83,7 @@ export default function Ratios({ company }) {
     setOpen({ ...open, [code]: !open[code] })
     if (history || years.length < 2) return
     setHistory({})
-    const all = await Promise.all(years.map((y) => supabase.rpc('financial_ratios', { p_company: company.id, p_year: y })))
+    const all = await Promise.all(years.map((y) => supabase.rpc('financial_ratios', { p_company: company.id, p_year: y, p_drafts: sim })))
     const h = {}
     all.forEach((res, i) => { h[years[i]] = Object.fromEntries((res.data ?? []).map((r) => [r.code, r.value])) })
     setHistory(h)
@@ -100,7 +102,10 @@ export default function Ratios({ company }) {
               {years.map((y) => <option key={y} value={y}>{y}</option>)}
             </select>
           </label>
+          {/* la evolución de los ejercicios se vuelve a pedir con la simulación nueva */}
+          <SimulationToggle value={sim} onChange={(v) => { setSim(v); setHistory(null) }} />
         </div>
+        <SimulationBanner company={company} year={year} value={sim} />
         <p className="leyenda-ratios">
           <span className="ratio-estado ok">✓ {t('ratioStatus.ok')}</span>
           <span className="ratio-estado low">▼ {t('ratioStatus.low')}</span>

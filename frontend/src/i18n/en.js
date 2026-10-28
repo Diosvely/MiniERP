@@ -1538,6 +1538,18 @@ export default {
     link: 'See the entries',
     draft: 'Entry being edited (no number yet)',
   },
+  // v0.52.0 · Top bar and dashboards
+  dash: {
+    bar: 'Company bar',
+    title: 'Dashboards',
+    none: 'There are no dashboards yet.',
+    at: 'at {d}',
+    compare: 'Figures at {d}, against the previous year at the same date ({p}). Calculated with the same rules as the balance sheet and income statement.',
+    noPrev: 'Figures at {d}. There is no previous year to compare with.',
+    empty: 'In {y} there are no movements yet up to the chosen date.',
+    zone: 'Reference range',
+    link: { pyg: 'See the income statement', balance: 'See the balance sheet', ratios: 'See the ratios' },
+  },
   mm: {
     help: 'Open month: entries are posted only in it. When you close it, you move to the next one.',
     close: 'Close month',
@@ -1646,6 +1658,7 @@ export default {
     tooMany: 'The file has {n} lines and a temporary company holds {max}. Try one year or one quarter.',
   },
   nav: {
+    tableros: { label: 'Dashboards', sub: 'Management summary · charts' },
     home: { label: 'Home', sub: '' },
     entries: { label: 'Entries', sub: 'One per row · status · source' },
     case: { label: 'Case', sub: 'Transactions · comparison' },

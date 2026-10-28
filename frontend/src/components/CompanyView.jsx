@@ -26,6 +26,8 @@ import EquityStatement from './EquityStatement'
 import CaseStudy from './CaseStudy'
 import MonthBar from './MonthBar'
 import TempBadge from './TempBadge'
+import TopBar from './TopBar'
+import Dashboard from './Dashboard'
 import Entries from './Entries'
 import Withholdings from './Withholdings'
 import Payments from './Payments'
@@ -54,6 +56,7 @@ import { computeWorkDate } from '../workDate'
 //   write: true      → solo si se puede escribir (no en demos ni para el rol viewer)
 const SCREENS = [
   { id: 'home', group: '', basic: true },
+  { id: 'tableros', group: '', basic: 'hidden', menu: false },   // v0.52.0 · desde la barra superior (#/…/tableros/<código>)
   { id: 'entries', group: 'menuAccounting', basic: true },   // v0.47.0 · la pantalla principal: una fila por asiento
   { id: 'entry', group: 'menuAccounting', basic: true, write: true, menu: false },   // v0.47.0 · se abre desde «Asientos» (+ Nuevo)
   { id: 'journal', group: 'menuAccounting', basic: true },
@@ -235,6 +238,8 @@ export default function CompanyView({ company: base, readOnly, canPublish, isOwn
       </div>
       {/* v0.49.0 · Empresa temporal de un registrado: cuándo se borra */}
       {company.temporary && <TempBadge company={company} />}
+      {/* v0.52.0 · Barra superior: de momento, «Tableros» (el menú lateral sigue igual) */}
+      <TopBar company={company} active={section === 'tableros' ? (params[0] ?? 'resumen') : null} />
 
       {/* Móvil: botón de menú con la ruta actual (Área › Pantalla) */}
       <button type="button" className="boton-menu" aria-expanded={menuOpen} onClick={() => setMenuOpen(!menuOpen)}>
@@ -334,6 +339,7 @@ export default function CompanyView({ company: base, readOnly, canPublish, isOwn
         )}
 
         {work === null ? <Loading /> : (<Fragment key={`mes-${monthKey}`}>{/* v0.47.0 · al cerrar o reabrir un mes, las pantallas empiezan con la fecha nueva */}
+        {section === 'tableros' && <Dashboard key={params[0] ?? 'resumen'} company={company} code={params[0] ?? 'resumen'} />}
         {section === 'home' && <Home company={company} readOnly={readOnly} mode={mode} onAuditor={() => setMode('auditor')} />}
         {section === 'entry' && !readOnly && (
           <JournalEntryForm key={params[0] ?? 'nuevo'} company={company} draft={draft} editId={params[0]} onPosted={() => setRefreshKey((k) => k + 1)} />

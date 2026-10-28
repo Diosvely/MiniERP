@@ -1537,6 +1537,18 @@ export default {
     link: 'Ver los asientos',
     draft: 'Asiento en edición (aún sin número)',
   },
+  // v0.52.0 · Barra superior y tableros
+  dash: {
+    bar: 'Barra de la empresa',
+    title: 'Tableros',
+    none: 'Todavía no hay tableros.',
+    at: 'a {d}',
+    compare: 'Cifras a {d}, frente al ejercicio anterior a la misma fecha ({p}). Calculadas con las mismas reglas que el Balance y la PyG.',
+    noPrev: 'Cifras a {d}. No hay ejercicio anterior con el que comparar.',
+    empty: 'En {y} todavía no hay movimientos hasta la fecha elegida.',
+    zone: 'Zona de referencia',
+    link: { pyg: 'Ver la cuenta de resultados', balance: 'Ver el balance', ratios: 'Ver los ratios' },
+  },
   mm: {
     help: 'Mes abierto: solo se contabiliza en él. Al cerrarlo, pasas al siguiente.',
     close: 'Cerrar mes',
@@ -1645,6 +1657,7 @@ export default {
     tooMany: 'El fichero tiene {n} líneas y en una empresa temporal caben {max}. Prueba con un año o un trimestre.',
   },
   nav: {
+    tableros: { label: 'Tableros', sub: 'Resumen de dirección · gráficos' },
     home: { label: 'Inicio', sub: '' },
     entries: { label: 'Asientos', sub: 'Uno por línea · estado · origen' },
     case: { label: 'Caso', sub: 'Operaciones · comparación' },

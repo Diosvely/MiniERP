@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.dashboard_data(p_company uuid, p_dashboard text, 
  RETURNS jsonb
  LANGUAGE plpgsql
  STABLE
+ SET jit TO 'off'
 AS $function$
 declare
   v_prev_sim text := coalesce(nullif(current_setting('erp.simulate', true), ''), 'off');

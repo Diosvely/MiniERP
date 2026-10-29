@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.entries_list(p_company uuid, p_from date DEFAULT 
  LANGUAGE plpgsql
  STABLE SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 begin
   if not erp.can_read(p_company) then raise exception 'Not allowed to read this company'; end if;

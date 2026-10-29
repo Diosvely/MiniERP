@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.delete_company_step(p_company uuid, p_batch integ
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 begin
   if not exists (select 1 from erp.company_users

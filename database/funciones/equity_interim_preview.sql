@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.equity_interim_preview(p jsonb)
  LANGUAGE plpgsql
  STABLE SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare
   v_company uuid := (p->>'company_id')::uuid; v_date date := (p->>'date')::date; v_form text;

@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.run_audit_checks(p_company uuid, p_year integer, 
  RETURNS TABLE(code text, sort integer, area text, status text, title text, title_en text, why text, why_en text, fix text, fix_en text, screen text, book numeric, ledger numeric, difference numeric, items integer, details jsonb)
  LANGUAGE plpgsql
  STABLE
+ SET jit TO 'off'
 AS $function$
 declare
   v_to     date := coalesce(p_to_date, (select f.ending_date from erp.fiscal_years f where f.company_id = p_company and f.year = p_year));

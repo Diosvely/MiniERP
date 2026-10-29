@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.equity_status(p_company uuid, p_date date)
  LANGUAGE plpgsql
  STABLE SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare v_form text; v_cap numeric;
 begin

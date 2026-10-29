@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.set_vat_regime(p_company uuid, p_regime text)
  RETURNS void
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 begin
   if not erp.is_admin(p_company) then

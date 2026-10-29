@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.cancel_pro_rata_regularization(p_company uuid, p_tax_type text, p_year integer)
  RETURNS void
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 declare
   v_pr erp.pro_rata;

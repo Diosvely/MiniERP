@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.cf_detail(p_company uuid, p_year integer, p_metho
  LANGUAGE plpgsql
  STABLE SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 begin
   if p_method = 'indirect' then return query select * from erp.cf_indirect_detail(p_company, p_year);

@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.purge_company_step(p_company uuid, p_batch intege
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare
   v_ids  uuid[];

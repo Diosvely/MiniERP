@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.tg_company_add_admin()
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 begin
   if new.created_by is null then

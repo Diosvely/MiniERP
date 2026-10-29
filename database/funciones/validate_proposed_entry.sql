@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.validate_proposed_entry(p_company uuid, p_proposa
  RETURNS jsonb
  LANGUAGE plpgsql
  STABLE
+ SET jit TO 'off'
 AS $function$
 declare
   v_lines    jsonb := '[]';

@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.tg_invoice_due_date()
  RETURNS trigger
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 begin
   if new.due_date is null then

@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.tg_withholding_auto_setup()
  RETURNS trigger
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 begin
   perform erp.withholding_setup_core(new.company_id);

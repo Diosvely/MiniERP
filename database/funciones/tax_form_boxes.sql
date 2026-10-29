@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.tax_form_boxes(p_company uuid, p_year integer, p_
  RETURNS TABLE(sort integer, form text, section text, box text, concept text, concept_en text, kind text, amount numeric)
  LANGUAGE plpgsql
  STABLE
+ SET jit TO 'off'
 AS $function$
 #variable_conflict use_column
 declare

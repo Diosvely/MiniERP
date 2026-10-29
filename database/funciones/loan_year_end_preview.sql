@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.loan_year_end_preview(p_company uuid, p_date date
  LANGUAGE plpgsql
  STABLE SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare r jsonb := '[]'; l erp.loans; a jsonb; pos jsonb;
 begin

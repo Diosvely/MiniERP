@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.tutor_criteria_checks(p_lines jsonb, p_rule text)
  RETURNS jsonb
  LANGUAGE plpgsql
  IMMUTABLE
+ SET jit TO 'off'
 AS $function$
 declare
   v_out   jsonb := '[]';

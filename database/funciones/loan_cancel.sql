@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.loan_cancel(p_loan uuid)
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare l erp.loans; ev erp.loan_events; inv erp.invoices; v_cm uuid; a erp.fixed_assets;
 begin

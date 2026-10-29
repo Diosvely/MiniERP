@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.adjust_fiscal_year(p_company uuid, p_date date)
  RETURNS uuid
  LANGUAGE plpgsql
  STABLE
+ SET jit TO 'off'
 AS $function$
 declare v uuid;
 begin

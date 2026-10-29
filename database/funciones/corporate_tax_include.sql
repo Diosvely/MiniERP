@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.corporate_tax_include(p_adjustment uuid, p_includ
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare a erp.corporate_tax_adjustments;
 begin

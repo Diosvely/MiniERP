@@ -1518,3 +1518,22 @@ fichas por pantalla.
 
 **Siguiente paso:** nuevos tableros (tesorería y cobros, rentabilidad, ventas y gastos) como filas del catálogo, y más
 botones en la barra superior.
+
+## 2026-10-28 · v0.52.1 · Comprobaciones y Caso tardaban demasiado
+
+**Qué pasó**
+- En Supabase, Comprobaciones y Caso de «Taller Atlántico SL» daban «La consulta ha tardado demasiado» (límite de 8 s).
+
+**Causa** (reproducida en local con una empresa de 150.000 asientos al lado del caso)
+- `erp.audit_lines` buscaba el documento de cada apunte con `= coalesce(e.reversal_of, e.id)`. Con la seguridad fila a
+  fila, PostgreSQL no usa el índice para esa condición y recorría tablas enteras, de todas las empresas, por cada apunte.
+- Las funciones de flujos empezaban por los apuntes de las cuentas 57 de todas las empresas.
+- El JIT de PostgreSQL compilaba cada consulta: 2,5 s de compilación para 0,08 s de consulta.
+
+**Arreglo:** 0076 (la clave calculada aparte, los apuntes filtrados por empresa y JIT apagado) y la fase 70, que falla
+sin el arreglo. Pruebas: 70 SQL.
+
+**Lo que se aprende**
+- **Un informe no debe depender del tamaño de las otras empresas.** La prueba lo comprueba con el plan de la consulta.
+- **Con la seguridad fila a fila, las condiciones deben ser simples** (`columna = valor`) para que se usen los índices.
+- **Medir dónde se va el tiempo** (`auto_explain`, `pg_stat_user_functions`) antes de tocar nada.

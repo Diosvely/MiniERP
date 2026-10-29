@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.equity_distribution(p jsonb)
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare
   v_company uuid := (p->>'company_id')::uuid; v_date date := (p->>'date')::date; v_code text; g jsonb; v_res numeric; e1 uuid;

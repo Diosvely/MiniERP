@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.check_payment_applications(p_company uuid, p_part
  RETURNS numeric
  LANGUAGE plpgsql
  STABLE
+ SET jit TO 'off'
 AS $function$
 declare
   a      record;

@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.tg_protect_data_owner()
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 begin
   -- Sin sesión (SQL Editor, pg_cron, migraciones): no se aplica

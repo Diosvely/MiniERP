@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.set_control_mode(p_company uuid, p_mode text)
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 begin
   if not erp.is_admin(p_company) then raise exception 'Only the company admin can change the control mode'; end if;

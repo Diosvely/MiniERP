@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.tg_gl_account_validate()
  RETURNS trigger
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 declare
   v_digits  smallint;

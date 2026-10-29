@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.post_tax_settlement(p_company uuid, p_tax_type text, p_year integer, p_quarter integer, p_refund boolean DEFAULT false, p_accept_difference boolean DEFAULT false)
  RETURNS TABLE(settlement_id uuid, entry_no integer, final_result numeric, outcome text)
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 declare
   c         jsonb;

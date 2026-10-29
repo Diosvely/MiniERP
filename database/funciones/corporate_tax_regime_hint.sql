@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.corporate_tax_regime_hint(p_company uuid, p_year 
  RETURNS jsonb
  LANGUAGE plpgsql
  STABLE
+ SET jit TO 'off'
 AS $function$
 declare v_fy erp.fiscal_years; v_prev erp.fiscal_years; v_basis numeric; v_by int;
 begin

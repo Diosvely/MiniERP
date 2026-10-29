@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.tg_tax_settlement_validate()
  RETURNS trigger
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 begin
   perform erp.check_tax_account(new.company_id, new.payable_account_id,    '4750', 'payable');

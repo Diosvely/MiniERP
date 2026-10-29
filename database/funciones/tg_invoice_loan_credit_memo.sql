@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.tg_invoice_loan_credit_memo()
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 begin
   if new.corrected_invoice_id is not null and coalesce(current_setting('erp.loan_engine', true), '') <> 'on'

@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.grant_create(p jsonb)
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare
   v_company uuid := (p->>'company_id')::uuid; v_kind text := coalesce(p->>'kind', 'capital'); v_date date := (p->>'date')::date;

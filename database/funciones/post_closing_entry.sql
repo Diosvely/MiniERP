@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.post_closing_entry(p_company uuid, p_fiscal_year uuid, p_date date, p_type text, p_description text, p_document text, p_lines jsonb)
  RETURNS uuid
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 declare
   v_entry uuid;

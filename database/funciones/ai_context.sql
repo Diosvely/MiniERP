@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.ai_context(p_company uuid, p_year integer, p_lang
  LANGUAGE plpgsql
  STABLE SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare
   en      boolean := p_language = 'en';

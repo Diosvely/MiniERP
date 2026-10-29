@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.tg_line_set_partner()
  RETURNS trigger
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 begin
   if new.partner_id is null then

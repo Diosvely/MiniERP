@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.reopen_month(p_company uuid)
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare v_p erp.accounting_periods; v_prev erp.accounting_periods; v_start date;
 begin

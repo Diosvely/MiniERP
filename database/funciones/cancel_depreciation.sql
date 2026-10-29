@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.cancel_depreciation(p_entry uuid, p_date date DEF
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare v_company uuid; v_no int; v_end date;
 begin

@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.dispose_asset(p jsonb)
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare
   a        erp.fixed_assets;

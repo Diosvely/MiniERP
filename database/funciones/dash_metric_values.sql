@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.dash_metric_values(p_company uuid, p_year integer
  RETURNS TABLE(at date, v jsonb)
  LANGUAGE plpgsql
  STABLE
+ SET jit TO 'off'
 AS $function$
 #variable_conflict use_column
 declare

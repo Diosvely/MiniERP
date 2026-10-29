@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.corporate_tax_post(p_company uuid, p_year integer
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare
   v_fy erp.fiscal_years; v_ret uuid; g jsonb; v_cur jsonb := '[]'; v_def jsonb := '[]'; a record;

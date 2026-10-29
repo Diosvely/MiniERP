@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.cleanup_guests(p_days integer DEFAULT 7)
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO ''
+ SET jit TO 'off'
 AS $function$
 declare
   v_ids uuid[];

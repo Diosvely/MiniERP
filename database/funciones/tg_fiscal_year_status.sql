@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.tg_fiscal_year_status()
  RETURNS trigger
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 begin
   if new.status <> old.status and coalesce(current_setting('erp.year_closing_engine', true), '') <> 'on' then

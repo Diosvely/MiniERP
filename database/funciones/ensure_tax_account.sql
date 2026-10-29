@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.ensure_tax_account(p_company uuid, p_account_no text, p_name text, p_name_en text, INOUT status text, OUT account_id uuid)
  RETURNS record
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 declare
   a erp.gl_accounts;

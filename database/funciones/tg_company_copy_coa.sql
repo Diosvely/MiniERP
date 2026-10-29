@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.tg_company_copy_coa()
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 begin
   insert into erp.gl_accounts (company_id, account_no, name, name_en, account_type, template_account, account_category)

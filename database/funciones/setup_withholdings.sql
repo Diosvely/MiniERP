@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.setup_withholdings(p_company uuid)
  RETURNS TABLE(withholding_code text, account_role text, account_no text, status text)
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 begin
   if not erp.is_admin(p_company) then

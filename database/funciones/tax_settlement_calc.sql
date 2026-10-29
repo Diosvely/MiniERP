@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.tax_settlement_calc(p_company uuid, p_tax_type te
  RETURNS jsonb
  LANGUAGE plpgsql
  STABLE
+ SET jit TO 'off'
 AS $function$
 declare
   v_start    date := erp.quarter_start(p_year, p_quarter);

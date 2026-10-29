@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.case_progress(p_company uuid)
  LANGUAGE plpgsql
  STABLE
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare v_case erp.cases; v_cl jsonb;
 begin

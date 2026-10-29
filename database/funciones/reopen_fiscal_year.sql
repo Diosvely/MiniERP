@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.reopen_fiscal_year(p_company uuid, p_year integer)
  RETURNS void
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 declare
   v_c    erp.year_closings;

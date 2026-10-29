@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.loan_create(p jsonb)
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare
   v_company uuid := (p->>'company_id')::uuid; c jsonb; v_code text; v_id uuid; v_type text := coalesce(p->>'lender_type', 'bank');

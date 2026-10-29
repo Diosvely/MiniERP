@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.case_payment(e uuid, p_type text, p_partner uuid,
  RETURNS void
  LANGUAGE plpgsql
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 begin
   perform erp.post_payment(jsonb_build_object('company_id', e, 'payment_type', p_type, 'partner_id', p_partner,

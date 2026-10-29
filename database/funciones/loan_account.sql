@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.loan_account(p_company uuid, p_no text, p_default
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare v uuid;
 begin

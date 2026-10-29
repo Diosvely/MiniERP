@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.check_tax_account(p_company uuid, p_account uuid,
  RETURNS void
  LANGUAGE plpgsql
  STABLE
+ SET jit TO 'off'
 AS $function$
 declare
   a erp.gl_accounts;

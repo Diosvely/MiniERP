@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.close_month(p_company uuid, p_accept_warnings boo
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare v_p erp.accounting_periods; v_prev jsonb;
 begin

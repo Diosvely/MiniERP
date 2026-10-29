@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.set_legal_form(p_company uuid, p_form text)
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 begin
   if not erp.is_admin(p_company) then raise exception 'Only the company admin can change the legal form'; end if;

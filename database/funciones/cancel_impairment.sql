@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.cancel_impairment(p_impairment uuid, p_date date 
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare i erp.receivable_impairments; v_no int;
 begin

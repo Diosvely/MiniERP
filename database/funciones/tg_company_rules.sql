@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.tg_company_rules()
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare
   v_max     int;

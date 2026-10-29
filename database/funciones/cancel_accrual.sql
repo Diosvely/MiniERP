@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.cancel_accrual(p_accrual uuid, p_date date DEFAUL
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare a erp.accruals; v_no int;
 begin

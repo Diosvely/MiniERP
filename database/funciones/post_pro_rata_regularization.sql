@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.post_pro_rata_regularization(p_company uuid, p_tax_type text, p_year integer)
  RETURNS jsonb
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 declare
   c        jsonb;

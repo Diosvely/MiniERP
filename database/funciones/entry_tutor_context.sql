@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.entry_tutor_context(p_company uuid, p_language te
  LANGUAGE plpgsql
  STABLE SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare
   en boolean := p_language = 'en';

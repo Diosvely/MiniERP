@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.reverse_accrual(p_accrual uuid, p_date date DEFAU
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare a erp.accruals; v_date date; v_entry uuid; v_no int;
 begin

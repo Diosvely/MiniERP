@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.payslip_calc(p_employee uuid, p_period date)
  RETURNS jsonb
  LANGUAGE plpgsql
  STABLE
+ SET jit TO 'off'
 AS $function$
 declare
   e        erp.employees;

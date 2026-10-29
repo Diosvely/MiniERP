@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.corporate_tax_calc(p_company uuid, p_year integer
  RETURNS jsonb
  LANGUAGE plpgsql
  STABLE
+ SET jit TO 'off'
 AS $function$
 declare
   v_fy erp.fiscal_years; v_ret erp.corporate_tax_returns; v_hint jsonb; v_regime text; v_recognize boolean;

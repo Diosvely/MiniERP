@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.grant_cancel(p_grant uuid)
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare g erp.grants; ev erp.grant_events;
 begin

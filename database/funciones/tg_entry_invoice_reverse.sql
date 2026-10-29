@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.tg_entry_invoice_reverse()
  RETURNS trigger
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 begin
   if new.reversal_of is not null and exists (select 1 from erp.invoices where entry_id = new.reversal_of) then

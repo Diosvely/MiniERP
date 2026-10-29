@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.cash_flow_check(p_company uuid, p_year integer, p
  LANGUAGE plpgsql
  STABLE SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare
   v_prev   text := coalesce(nullif(current_setting('erp.simulate', true), ''), 'off');

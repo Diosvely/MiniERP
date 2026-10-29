@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.tg_entry_check_inverse()
  RETURNS trigger
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 declare
   r record;

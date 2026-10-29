@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.withholding_setup_core(p_company uuid)
  RETURNS TABLE(withholding_code text, account_role text, account_no text, status text)
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 declare
   v_digits smallint;

@@ -7,6 +7,7 @@ CREATE OR REPLACE FUNCTION erp.grade_exercise(p_key text, p_answer jsonb)
  RETURNS jsonb
  LANGUAGE plpgsql
  STABLE
+ SET jit TO 'off'
 AS $function$
 declare
   x erp.exercises; a jsonb; e jsonb; v_lines jsonb := '[]'; v_ok int := 0; v_n int := 0; v_match numeric; v_other numeric;

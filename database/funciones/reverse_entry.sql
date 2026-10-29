@@ -6,6 +6,7 @@
 CREATE OR REPLACE FUNCTION erp.reverse_entry(p_entry uuid, p_posting_date date DEFAULT NULL::date, p_reason text DEFAULT NULL::text)
  RETURNS integer
  LANGUAGE plpgsql
+ SET jit TO 'off'
 AS $function$
 declare
   v_e     erp.journal_entries;

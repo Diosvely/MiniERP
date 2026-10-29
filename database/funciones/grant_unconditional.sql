@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.grant_unconditional(p jsonb)
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare g erp.grants; v_date date := (p->>'date')::date; v_tax numeric := 0; v_entry uuid;
 begin

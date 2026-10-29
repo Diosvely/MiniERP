@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.provision_add_movement(p erp.provisions, p_kind t
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 begin
   if exists (select 1 from erp.provision_movements m where m.provision_id = p.id and m.movement_date > p_date) then

@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.set_company_demo(p_company uuid, p_demo boolean, 
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 begin
   if not (erp.is_owner() or erp.is_data_owner(p_company)) then

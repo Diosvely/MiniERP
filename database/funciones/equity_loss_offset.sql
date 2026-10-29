@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.equity_loss_offset(p jsonb)
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare v_company uuid := (p->>'company_id')::uuid; v_date date := (p->>'date')::date; v_code text; v_amt numeric; v_losses numeric; v_vol numeric; e1 uuid;
 begin

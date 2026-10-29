@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.loan_year_end(p_company uuid, p_date date)
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare pv jsonb; x jsonb; l erp.loans; v_entry uuid; v_amt numeric; v_posted int := 0;
 begin

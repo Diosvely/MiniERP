@@ -8,6 +8,7 @@ CREATE OR REPLACE FUNCTION erp.pay_payroll(p jsonb)
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
+ SET jit TO 'off'
 AS $function$
 declare
   r erp.payroll_runs; v_date date := (p->>'payment_date')::date; v_cash erp.gl_accounts; v_amt numeric; v_entry uuid; v_no int;

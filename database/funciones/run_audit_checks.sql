@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.run_audit_checks · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0037_audit_checks 0039_review_fixes 0042_assets_integration 0044_adjustments_integration 0046_asset_impairment 0048_closing_integration 0050_payroll_integration 0053_forms_integration 0061_equity_integration 0063_financing_integration 0065_grants_integration   →   la vigente es la de 0065_grants_integration
+-- Definida en: 0037_audit_checks 0039_review_fixes 0042_assets_integration 0044_adjustments_integration 0046_asset_impairment 0048_closing_integration 0050_payroll_integration 0053_forms_integration 0061_equity_integration 0063_financing_integration 0065_grants_integration 0077_large_companies   →   la vigente es la de 0077_large_companies
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.run_audit_checks(p_company uuid, p_year integer, p_to_date date DEFAULT NULL::date)
@@ -18,6 +18,7 @@ declare
   v_sign   int;
   v_err    boolean;
   v_book numeric; v_ledger numeric; v_items int; v_det jsonb;
+  v_rules  jsonb;   -- v0.52.2: reglas de las cuentas controladas de la empresa
 begin
   if v_type is null or v_to is null then return; end if;     -- empresa o ejercicio que no existe (o no se puede ver)
 
@@ -204,23 +205,39 @@ begin
 
     elsif r.code = 'controlled' then
       -- Manuales sin anular que tocan una cuenta controlada; no cuentan los vinculados a un pago (ya están conciliados)
+      -- v0.52.2: en bloque (antes, erp.entry_controlled_lines asiento por asiento: 20 s con 18.000 asientos manuales).
+      -- Las reglas de las cuentas de la empresa, en un mapa { cuenta: { modules, side } } (una búsqueda por cuenta), y
+      -- cada asiento se queda con su primera línea (por su orden) que toca una cuenta controlada por el lado que controla.
+      select coalesce(jsonb_object_agg(d.account_no, jsonb_build_object('modules', to_jsonb(x.modules), 'side', x.side)), '{}')
+      into v_rules
+      from (select g.account_no from erp.gl_accounts g where g.company_id = p_company) d
+      cross join lateral erp.control_rule_for(d.account_no) x
+      where x.account_prefix is not null and cardinality(x.modules) > 0;
+
       with m as (
         select distinct a.entry_id, a.entry_no, a.posting_date
         from erp.audit_lines(p_company, p_year, v_to) a
         where a.source = 'manual' and a.entry_id = a.k
-      ), h as (
-        select m.*, erp.entry_controlled_lines(m.entry_id) as hit
+      ), hit as (
+        select distinct on (m.entry_id) m.entry_id, m.entry_no, m.posting_date, g.account_no,
+               v_rules -> g.account_no -> 'modules' as modules
         from m
-        where not exists (select 1 from erp.journal_entries x
+        join erp.journal_lines l on l.entry_id = m.entry_id
+        join erp.gl_accounts g on g.id = l.gl_account_id
+        where v_rules ? g.account_no
+          and (v_rules -> g.account_no ->> 'side' = 'both'
+               or (v_rules -> g.account_no ->> 'side' = 'debit'  and coalesce(l.debit, 0) > 0)
+               or (v_rules -> g.account_no ->> 'side' = 'credit' and coalesce(l.credit, 0) > 0))
+          and not exists (select 1 from erp.journal_entries x
                           where x.reversal_of = m.entry_id and x.status = 'posted' and x.posting_date <= v_to)
           and not exists (select 1 from erp.payments py where py.entry_id = m.entry_id and py.linked)
+        order by m.entry_id, l.line_no
       ), n as (
-        select h.*, row_number() over (order by h.posting_date, h.entry_no) as rn
-        from h where jsonb_array_length(h.hit) > 0
+        select hit.*, row_number() over (order by hit.posting_date, hit.entry_no) as rn from hit
       )
       select count(*)::int,
              coalesce(jsonb_agg(jsonb_build_object('entry_id', n.entry_id, 'entry_no', n.entry_no, 'posting_date', n.posting_date,
-                                                   'account_no', n.hit->0->>'account_no', 'modules', n.hit->0->'modules')
+                                                   'account_no', n.account_no, 'modules', n.modules)
                                 order by n.rn) filter (where n.rn <= 50), '[]')
       into v_items, v_det
       from n;

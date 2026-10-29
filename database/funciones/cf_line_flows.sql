@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.cf_line_flows · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0066_complete_case 0074_report_simulation 0076_performance   →   la vigente es la de 0076_performance
+-- Definida en: 0066_complete_case 0074_report_simulation 0076_performance 0077_large_companies   →   la vigente es la de 0077_large_companies
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.cf_line_flows(p_company uuid, p_year integer)
@@ -11,15 +11,22 @@ CREATE OR REPLACE FUNCTION erp.cf_line_flows(p_company uuid, p_year integer)
 AS $function$
   with base as (
     select l.entry_id, g.id as acc_id, g.account_no, g.name, g.name_en, -sum(l.debit - l.credit) as flow
-    from erp.journal_lines l
-    join erp.journal_entries e on e.id = l.entry_id and erp.counts_in_reports(e.status, e.id) and e.entry_type = 'normal'
-    join erp.fiscal_years fy on fy.id = e.fiscal_year_id and fy.year = p_year
+    -- v0.52.2: primero los asientos del ejercicio (por su índice) y después sus apuntes
+    from (select e.id from erp.journal_entries e
+          where e.fiscal_year_id = (select fy.id from erp.fiscal_years fy where fy.company_id = p_company and fy.year = p_year)
+            and e.company_id = p_company and erp.counts_in_reports(e.status, e.id) and e.entry_type = 'normal'
+          offset 0) e
+    join erp.journal_lines l on l.entry_id = e.id
     join erp.gl_accounts g on g.id = l.gl_account_id
-    where e.company_id = p_company and l.company_id = p_company and g.account_no not like '57%'
+    where g.account_no not like '57%'
     group by l.entry_id, g.id, g.account_no, g.name, g.name_en
     having sum(l.debit - l.credit) <> 0),
+  -- v0.52.2: la línea de flujos de cada cuenta se busca una vez por cuenta, no una vez por asiento
+  maps as (
+    select d.account_no, m.home_line, m.adjust_line, m.direct_line
+    from (select distinct b.account_no from base b) d cross join lateral erp.cf_account_map(d.account_no) m),
   mb as (
-    select b.*, m.home_line, m.adjust_line, m.direct_line from base b cross join lateral erp.cf_account_map(b.account_no) m),
+    select b.*, m.home_line, m.adjust_line, m.direct_line from base b join maps m on m.account_no = b.account_no),
   -- a) facturas con bases de inversión o de financiación: la proporción de cada línea sobre la cuenta del tercero
   inv as (
     select i.id as invoice_id, i.entry_id, bp.gl_account_id as partner_acc

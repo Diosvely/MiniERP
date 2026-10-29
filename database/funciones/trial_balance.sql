@@ -1,17 +1,19 @@
 -- =====================================================================
 -- erp.trial_balance · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0005_reports 0021_journal_import 0074_report_simulation   →   la vigente es la de 0074_report_simulation
+-- Definida en: 0005_reports 0021_journal_import 0074_report_simulation 0077_large_companies   →   la vigente es la de 0077_large_companies
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.trial_balance(p_company uuid, p_year integer, p_level integer DEFAULT NULL::integer, p_to_date date DEFAULT NULL::date, p_drafts boolean DEFAULT false)
  RETURNS TABLE(account_no text, name text, name_en text, total_debit numeric, total_credit numeric, debit_balance numeric, credit_balance numeric)
  LANGUAGE plpgsql
- STABLE
+ STABLE SECURITY DEFINER
+ SET search_path TO 'erp', 'public'
  SET jit TO 'off'
 AS $function$
 #variable_conflict use_column
 declare v_prev text := coalesce(nullif(current_setting('erp.simulate', true), ''), 'off');
 begin
+  if not erp.can_report(p_company) then return; end if;   -- v0.52.2: el permiso, una vez (no en cada fila)
   if p_drafts then perform set_config('erp.simulate', 'on', true); end if;
   return query
   with mov as (
@@ -21,7 +23,7 @@ begin
     join erp.journal_entries e  on e.id = l.entry_id
     join erp.fiscal_years    fy on fy.id = e.fiscal_year_id
     join erp.gl_accounts     a  on a.id = l.gl_account_id
-    where e.company_id = p_company
+    where e.company_id = p_company and l.company_id = p_company
       and fy.year = p_year
       and erp.counts_in_reports(e.status, e.id)
       and e.entry_type <> 'closing'            -- sin el asiento de cierre: si no, un año cerrado sale todo a cero

@@ -2,6 +2,18 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.52.2] - 2026-10-29
+### Corregido
+- **Comprobaciones seguía tardando demasiado en empresas grandes de varios años** (migración
+  `0077_large_companies.sql`). Reproducido con una empresa importada de 6 años (108.000 asientos, 272.000 apuntes):
+  - `erp.audit_lines` calcula el origen de todos los asientos de una vez (antes, hasta 19 búsquedas por apunte);
+  - la comprobación de cuentas controladas va en bloque (antes, asiento por asiento);
+  - el balance, la PyG, sumas y saldos, el mayor y los flujos leen solo los asientos del ejercicio;
+  - el permiso se comprueba una vez por llamada (`erp.can_report`) y no en cada fila, con las mismas reglas.
+  - En local: Comprobaciones, de 9,9 s (importada) y 20 s (asientos manuales) a 1,2–1,5 s; tablero, de 3 s a 1 s.
+- Prueba de la base de datos `fase 71` (regresión con 15.000 asientos más en un ejercicio).
+
+
 ## [0.52.1] - 2026-10-28
 ### Corregido
 - **«La consulta ha tardado demasiado» en Comprobaciones y en Caso** (Supabase, con empresas grandes en la base):

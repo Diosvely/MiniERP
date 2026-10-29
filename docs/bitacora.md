@@ -1537,3 +1537,23 @@ sin el arreglo. Pruebas: 70 SQL.
 - **Un informe no debe depender del tamaño de las otras empresas.** La prueba lo comprueba con el plan de la consulta.
 - **Con la seguridad fila a fila, las condiciones deben ser simples** (`columna = valor`) para que se usen los índices.
 - **Medir dónde se va el tiempo** (`auto_explain`, `pg_stat_user_functions`) antes de tocar nada.
+
+## 2026-10-29 · v0.52.2 · Comprobaciones en empresas grandes de varios años
+
+**Qué pasó**
+- Tras la v0.52.1, Comprobaciones y Caso iban bien en empresas pequeñas, pero en empresas grandes importadas de varios
+  años seguía saliendo «La consulta ha tardado demasiado».
+
+**Causa** (reproducida con una empresa importada de 6 años: 108.000 asientos y 272.000 apuntes; Comprobaciones, 9,9 s)
+- `erp.audit_lines`, que Comprobaciones usa 7 veces, hacía hasta 19 búsquedas por apunte para saber su origen.
+- Con asientos manuales, la comprobación de cuentas controladas revisaba asiento por asiento: 20 s.
+- La seguridad fila a fila se evaluaba en cada fila leída, y algunas funciones leían el diario de todos los años.
+
+**Arreglo:** 0077 (origen de todos los asientos de una vez, cuentas controladas en bloque, solo los asientos del
+ejercicio y el permiso una vez por llamada con `erp.can_report`) y la fase 71, que falla sin el arreglo (14 s).
+Mismos resultados. Pruebas: 71 SQL.
+
+**Lo que se aprende**
+- **Probar con volumen real:** con datos pequeños todo va rápido; los problemas salen con años de historia.
+- **Pensar en conjuntos, no en filas:** calcular una vez para todos en lugar de una vez por cada uno.
+- **Las estimaciones del planificador importan:** si cree que hay una fila, puede cruzar 18.000 × 18.000.

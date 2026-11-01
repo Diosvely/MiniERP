@@ -2,6 +2,10 @@
 
 Vocabulario del proyecto en español, inglés y cómo lo llaman Business Central (BC) y SAP.
 
+El glosario completo, con la definición de cada término y sus cuentas del PGC, está en la propia aplicación (pantalla
+Glosario; `frontend/src/glossary.js`, copiado en `erp.concepts`). Este documento recoge el vocabulario básico y el de
+los tableros. Las equivalencias con BC y SAP son orientativas *(pendiente de validar por Diosvely)*.
+
 ## Estructura
 
 | Español | English (este proyecto) | Business Central | SAP |
@@ -77,3 +81,26 @@ Vocabulario del proyecto en español, inglés y cómo lo llaman Business Central
 | Patrimonio neto | equity |
 | Gasto | expense |
 | Ingreso | income |
+
+## Tableros e indicadores (v0.52.0 → v0.57.0)
+
+| Español | English | Business Central | SAP |
+|---|---|---|---|
+| Tablero | dashboard (`dashboards`) | Role Center | Fiori Overview Page |
+| Métrica / cifra clave | metric / KPI (`dash_metrics`) | Cue / KPI | KPI tile |
+| Margen bruto | gross margin | — (Account Schedule) | Gross margin |
+| EBITDA | EBITDA | — (Account Schedule) | EBITDA |
+| Margen de explotación / neto | operating / net margin | — | Operating / net margin |
+| Fondo de maniobra | working capital | — | Working capital |
+| Liquidez general · prueba ácida · disponibilidad | current ratio · quick ratio · cash ratio | — | — |
+| Periodo medio de cobro / de pago | days sales / payables outstanding (DSO / DPO) | — | DSO / DPO (Fiori) |
+| Entradas y salidas de tesorería | cash inflows / outflows | Cash Flow Forecast | Cash Position |
+| Cuotas devengadas / deducibles | output / input tax | VAT Statement | Tax Reconciliation |
+| Retenciones practicadas / soportadas | withholdings made / suffered | — | Withholding Tax |
+| Concentración de clientes | customer concentration | Top 10 Customers | Top Customers |
+| Gastos por naturaleza | expenses by nature | — | Cost elements |
+| Saldo al revés de su naturaleza | balance against its nature (`balance_rules`) | — | — |
+| Saldo «imposible» (caja acreedora…) | impossible balance (`severity = error`) | — | — |
+| Lista de control | checklist (`quality_checks`) | Cues de trabajo pendiente | Financial Close Cockpit |
+| Simulación con los asientos en edición | simulation with drafts (`p_drafts`) | — | Parked documents in reports |
+

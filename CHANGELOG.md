@@ -2,6 +2,53 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.57.1] - 2026-11-02
+### Documentación
+- **Puesta al día tras los cinco tableros.** El cierre de la v0.56.0 (paso 278) no se llegó a aplicar y, en cadena, el
+  de la v0.57.0 tampoco pudo añadir su CHANGELOG, su README ni la versión. Se recuperan:
+  - las entradas 0.56.0 y 0.57.0 del CHANGELOG y la de la v0.56.0 en la bitácora;
+  - el ADR 0056 y su captura (`32-ventas-gastos.png`);
+  - el README de la v0.57.0 y la versión de la web.
+- **README:** el número de tests de la web estaba en 289 desde la v0.52.0 (ahora 302); el modelo de datos incluye el
+  catálogo de tableros, el PGC de estudio y el esquema `bi`; la documentación enlaza también el modelo de datos, las
+  funciones, el glosario y la seguridad de Supabase; la estructura del repositorio, los nuevos ficheros de la web.
+- **`docs/modelo-datos.md`:** seguía en la v0.2.0 (10 tablas y 5 funciones). Ahora tiene las 85 tablas y 23 vistas por
+  área, con la migración que crea cada una, el esquema `bi` y las funciones principales.
+- **`docs/glosario.md`:** vocabulario de los tableros (márgenes, EBITDA, periodos medios, saldos al revés, lista de
+  control…) y enlace al glosario completo de la app.
+- **`docs/seguridad-supabase.md`:** la tarea de limpieza de las empresas temporales, el diagnóstico de Supabase y la
+  comprobación de `powerbi_reader`.
+- **`frontend/README.md`:** era la plantilla de Vite; ahora explica la web del proyecto.
+- **Repositorio:** fuera los scripts `aplicar-paso*.mjs` que se habían subido (son de un solo uso) y, en `.gitignore`,
+  para que no vuelvan a subirse.
+
+## [0.57.0] - 2026-11-01
+### Añadido
+- **Tablero «Calidad de la contabilidad»** en «Tableros ▾» (migración `0084_quality_dashboard.sql`, ADR 0057):
+  - **lista de control** a una fecha: saldos al revés, asientos en edición, meses sin cerrar (contabilidad mes a mes),
+    liquidaciones pendientes, cobros y pagos vencidos y terceros sin conciliar, cada fila con su estado (✓ ⓘ ⚠ ✗ —) y
+    el enlace a la pantalla donde se arregla (`erp.quality_checks`);
+  - las cuentas con saldo al revés de más importe, con lo que suele significar, y los clientes con más importe vencido.
+- **Aviso de saldos al revés en el Balance:** franja arriba, ⚠ en cada partida que contiene alguna cuenta al revés y,
+  al desplegarla, la nota de la cuenta (`erp.fs_line_anomalies`). El ERP no compensa: avisa.
+- Prueba de la base de datos `fase 78`.
+
+Con esta versión termina el plan de los cinco tableros (v0.53.0 a v0.57.0).
+
+## [0.56.0] - 2026-11-01
+### Añadido
+- **Tablero «Ventas y gastos»** en «Tableros ▾» (migración `0083_sales_expenses_dashboard.sql`, ADR 0056):
+  - cifras clave: cifra de negocios, aprovisionamientos, personal y otros gastos de explotación;
+  - ventas acumuladas frente al año anterior, y ventas y gastos de cada mes;
+  - los 10 clientes con más ventas y los 10 proveedores con más compras, con la concentración;
+  - gastos por naturaleza (subgrupos del grupo 6) con su peso sobre las ventas.
+- Tipo de tarjeta **«ranking»**, calculado desde la contabilidad por subcuenta (también en las empresas importadas,
+  sin facturas): ventas sin impuestos de cada cliente, compras, gastos e inversiones de cada proveedor y subgrupos del
+  grupo 6, con el «Resto», lo que no tiene tercero y el año anterior (`erp.dash_ranking`, `erp.dash_ranking_card`).
+- En la web, la tarjeta de ranking: barras horizontales con importe y %, enlace al libro mayor de cada subcuenta,
+  «Ver como tabla», Excel y móvil.
+- Prueba de la base de datos `fase 77`.
+
 ## [0.55.0] - 2026-11-01
 ### Añadido
 - **Tablero «Impuestos»** en «Tableros ▾» (migración `0082_tax_dashboard.sql`, ADR 0055):

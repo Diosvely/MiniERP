@@ -17,9 +17,18 @@ cada cambio de seguridad y, como mínimo, una vez al trimestre.
 ## Base de datos
 - [ ] **Database → Extensions:** `pg_cron` activado, y la tarea de limpieza en marcha:
   ```sql
-  select jobname, schedule, active from cron.job;   -- erp-cleanup-guests · 30 3 * * * · true
+  select jobname, schedule, active from cron.job;
+  -- erp-cleanup-guests · 30 3 * * *    · true   (invitados de la demo)
+  -- erp-temp-cleanup   · */15 * * * *  · true   (empresas temporales, v0.49.0)
   ```
 - [ ] Todas las migraciones aplicadas, hasta la última de `database/migrations/`.
+- [ ] **`database/diagnostico-supabase.sql`** pasado en el SQL Editor después de cada versión: sin filas = la base de
+  datos tiene todas las tablas y funciones del repositorio (v0.40.0).
+- [ ] **Power BI (v0.50.0):** el usuario `powerbi_reader` solo lee el schema `bi` y su contraseña solo está en
+  Supabase:
+  ```sql
+  select has_schema_privilege('powerbi_reader', 'erp', 'usage') as ve_erp;   -- debe ser false
+  ```
 - [ ] **Advisors → Security Advisor:** sin avisos de nivel **ERROR** (RLS desactivada, funciones expuestas…).
 - [ ] **Advisors → Performance Advisor:** sin *unindexed foreign keys* (la prueba de la fase 23 lo vigila en el código).
 

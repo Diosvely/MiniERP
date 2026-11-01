@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import es from '../src/i18n/es.js'
 import en from '../src/i18n/en.js'
-import { dashPath, fmtMetric, change, zoneStatus, axis, hasData, seriesRows, textOf, periods, periodLabel, taxName, tableLink, hasZones } from '../src/dashboards.js'
+import { dashPath, fmtMetric, change, zoneStatus, axis, hasData, seriesRows, textOf, periods, periodLabel, taxName, tableLink, hasZones, rankingRows } from '../src/dashboards.js'
 
 describe('tableros · formato y comparación', () => {
   it('la dirección de un tablero', () => {
@@ -89,6 +89,32 @@ describe('tableros · gráficos', () => {
     expect(tableLink([{}])).toBe('ratios')
     expect(hasZones([{ ref_min: null, ref_max: null }])).toBe(false)
     expect(hasZones([{ ref_min: null, ref_max: 60 }])).toBe(true)
+  })
+  it('ranking: los primeros, el resto y lo que no tiene tercero, con su % (v0.56.0)', () => {
+    const lab = { rest: (n) => `Resto (${n})`, none: 'Sin cliente' }
+    const r = {
+      source: 'customers', base: 'total',
+      rows: [{ key: '43000001', label: 'Cliente General SL', value: 118000, prev: 90000 }],
+      rest: { count: 1, value: 2000, prev: 1000 }, none: { value: 0, prev: 0 },
+      total: { value: 120000, prev: 91000 }, sales: { value: 120000, prev: 91000 },
+    }
+    const rows = rankingRows(r, lab)
+    expect(rows.map((x) => x.kind)).toEqual(['row', 'rest'])   // sin «Sin cliente»: no hay importe
+    expect(rows[0].share).toBeCloseTo(118000 / 120000)
+    expect(rows[1]).toMatchObject({ label: 'Resto (1)', value: 2000, prev: 1000 })
+    const g = rankingRows({ ...r, source: 'expense_groups', base: 'sales', rest: { count: 0 }, none: { value: 50, prev: null },
+      total: { value: 60000 }, sales: { value: 120000 } }, lab)
+    expect(g.map((x) => x.kind)).toEqual(['row', 'none'])
+    expect(g[0].share).toBeCloseTo(118000 / 120000)          // gastos: sobre las ventas
+    expect(rankingRows({ ...r, total: { value: 0 } }, lab)[0].share).toBeNull()
+    expect(rankingRows(null, lab)).toEqual([])
+  })
+  it('los textos del ranking en los dos idiomas (v0.56.0)', () => {
+    for (const lang of [es, en]) {
+      for (const src of ['customers', 'suppliers', 'expense_groups']) expect(lang.dash.rank.none[src]).toBeTruthy()
+      expect(lang.dash.rank.rest).toContain('{n}')
+      expect(lang.dash.rank.top).toContain('{p}')
+    }
   })
   it('el impuesto de la empresa en cada idioma (v0.55.0)', () => {
     expect(taxName('VAT', 'es')).toBe('IVA')

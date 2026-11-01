@@ -88,3 +88,22 @@ export function tableLink(items) {
   return items.some((it) => it.link === 'ratios') ? 'ratios' : items.find((it) => it.link)?.link ?? 'ratios'
 }
 export const hasZones = (items) => items.some((it) => it.ref_min != null || it.ref_max != null)
+
+// Filas de una tarjeta de ranking (v0.56.0), en el orden en que se enseñan: los N primeros, el «Resto» (si queda
+// alguno) y lo que no tiene tercero (si hay importe). share: el % sobre el total del ranking (clientes y proveedores) o
+// sobre la cifra de negocios (gastos por naturaleza); null si la base es 0.
+//   labels: { rest: (n) => texto, none: texto }
+export function rankingRows(r, labels) {
+  if (!r) return []
+  const base = Number(r.base === 'sales' ? r.sales?.value : r.total?.value)
+  const share = (v) => (base && v != null ? Number(v) / base : null)
+  const rows = (r.rows ?? []).map((x) => ({ kind: 'row', key: x.key, label: x.label, value: x.value, prev: x.prev, share: share(x.value) }))
+  if (Number(r.rest?.count) > 0) {
+    rows.push({ kind: 'rest', key: null, label: labels.rest(r.rest.count), value: r.rest.value, prev: r.rest.prev, share: share(r.rest.value) })
+  }
+  if (Math.abs(Number(r.none?.value ?? 0)) >= 0.005 || Math.abs(Number(r.none?.prev ?? 0)) >= 0.005) {
+    rows.push({ kind: 'none', key: null, label: labels.none, value: r.none.value, prev: r.none.prev, share: share(r.none.value) })
+  }
+  return rows
+}
+

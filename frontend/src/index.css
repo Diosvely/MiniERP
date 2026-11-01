@@ -1209,6 +1209,25 @@ button.enlace.pgc-ir { display: inline; align-self: auto; font: inherit; text-de
 .leyenda-grafico:not(.una-serie) .muestra.anterior.serie-1 { border-top-color: var(--alerta); }
 .leyenda-grafico:not(.una-serie) .muestra.anterior.serie-2 { border-top-color: var(--serie-2); }
 .tablero-salud td small { display: block; }
+/* v0.56.0 · tarjetas de ranking: nombre, barra horizontal e importe con su %; en el móvil, la barra debajo del nombre */
+.rk-resumen { margin: 0 0 8px; font-size: .9rem; }
+.rk-lista { list-style: none; margin: 0; padding: 0; }
+.rk-fila { display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 3fr) 12.5rem; gap: 4px 12px; align-items: center;
+           padding: 6px 0; border-bottom: 1px solid var(--borde); flex-direction: initial; }
+.rk-fila:last-child { border-bottom: none; }
+.rk-nombre { overflow-wrap: anywhere; color: var(--texto); font-size: .95rem; }
+.rk-cuenta { color: var(--suave); }
+.rk-barra { height: 10px; background: var(--fondo); border-radius: 5px; overflow: hidden; }
+.rk-barra i { display: block; height: 100%; background: var(--primario); border-radius: 5px; }
+.rk-barra i.negativa { background: var(--alerta); }
+.rk-importe { text-align: right; font-variant-numeric: tabular-nums; font-size: .9rem; color: var(--texto); white-space: nowrap; }
+.rk-importe small { display: block; color: var(--suave); }
+.rk-otra .rk-nombre, .informe tr.rk-otra td:first-child { color: var(--suave); font-style: italic; }
+.rk-otra .rk-barra i { background: var(--suave); }
+@media (max-width: 600px) {
+  .rk-fila { grid-template-columns: minmax(0, 1fr) auto; }
+  .rk-barra { grid-column: 1 / -1; grid-row: 2; }
+}
 @media print {
   .barra-superior, .tablero-filtros .rejilla-tres, .leyenda-grafico + .ayuda { display: none !important; }
   .tablero { display: block; }

@@ -1551,6 +1551,16 @@ export default {
             payments: 'Ver cobros y pagos', cashflow: 'Ver el estado de flujos',   // v0.54.0
             settlement: 'Ver la liquidación', withholdings: 'Ver las retenciones' },   // v0.55.0
     taxType: 'Impuesto de la empresa: {t} (el de su territorio, el mismo que la liquidación).',
+    rank: {   // v0.56.0 · tarjetas de ranking
+      rest: 'Resto ({n})',
+      none: { customers: 'Sin cliente', suppliers: 'Sin proveedor', expense_groups: 'Sin clasificar' },
+      total: 'Total',
+      top: 'Los {n} primeros suponen el {p} del total.',
+      onSales: 'En total, el {p} de la cifra de negocios.',
+      name: 'Nombre',
+      share: '% del total',
+      shareSales: '% s/ ventas',
+    },
   },
   mm: {
     help: 'Mes abierto: solo se contabiliza en él. Al cerrarlo, pasas al siguiente.',

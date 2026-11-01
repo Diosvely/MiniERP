@@ -1552,6 +1552,16 @@ export default {
             payments: 'See receipts and payments', cashflow: 'See the cash flow statement',   // v0.54.0
             settlement: 'See the tax return', withholdings: 'See withholdings' },   // v0.55.0
     taxType: 'Company tax: {t} (the one of its territory, the same as the tax return).',
+    rank: {   // v0.56.0 · ranking cards
+      rest: 'Others ({n})',
+      none: { customers: 'No customer', suppliers: 'No supplier', expense_groups: 'Unclassified' },
+      total: 'Total',
+      top: 'The top {n} make up {p} of the total.',
+      onSales: 'In total, {p} of revenue.',
+      name: 'Name',
+      share: '% of total',
+      shareSales: '% of sales',
+    },
   },
   mm: {
     help: 'Open month: entries are posted only in it. When you close it, you move to the next one.',

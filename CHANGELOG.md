@@ -2,6 +2,17 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.52.4] - 2026-11-01
+### Corregido
+- **Comprobaciones, aún lenta la primera vez en Supabase** (migración `0079_checks_relevant_lines.sql`). Con la 0078
+  bajó a 2,3 s con la memoria caliente, pero en frío la web aún podía pasar del límite de 8 s.
+  - Comprobaciones lee solo los apuntes que usa (cuentas 47, con código de impuesto y asientos manuales) con
+    `erp.audit_lines_checks`: en Empresa 1, el 24 % de los apuntes del ejercicio. `erp.audit_lines` sigue igual.
+  - Índice parcial de los apuntes con código de impuesto.
+  - En local: de 0,8 s a 0,4 s en caliente y de 0,9 s a 0,56 s en frío.
+- Prueba de la base de datos `fase 73`.
+
+
 ## [0.52.3] - 2026-11-01
 ### Corregido
 - **Comprobaciones seguía superando el límite en Supabase** con varias empresas grandes en la base (migración

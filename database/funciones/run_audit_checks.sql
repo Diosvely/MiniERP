@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.run_audit_checks · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0037_audit_checks 0039_review_fixes 0042_assets_integration 0044_adjustments_integration 0046_asset_impairment 0048_closing_integration 0050_payroll_integration 0053_forms_integration 0061_equity_integration 0063_financing_integration 0065_grants_integration 0077_large_companies 0078_company_isolation   →   la vigente es la de 0078_company_isolation
+-- Definida en: 0037_audit_checks 0039_review_fixes 0042_assets_integration 0044_adjustments_integration 0046_asset_impairment 0048_closing_integration 0050_payroll_integration 0053_forms_integration 0061_equity_integration 0063_financing_integration 0065_grants_integration 0077_large_companies 0078_company_isolation 0079_checks_relevant_lines   →   la vigente es la de 0079_checks_relevant_lines
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.run_audit_checks(p_company uuid, p_year integer, p_to_date date DEFAULT NULL::date)
@@ -26,7 +26,8 @@ begin
   -- todas las consultas de abajo filtran por la empresa
   if not erp.can_report(p_company) then return; end if;
   if v_type is null or v_to is null then return; end if;
-  select array_agg(x) into v_al from erp.audit_lines(p_company, p_year, v_to) x;
+  -- v0.52.4: solo los apuntes que usan las comprobaciones (cuentas 47, con impuesto y asientos manuales)
+  select array_agg(x) into v_al from erp.audit_lines_checks(p_company, p_year, v_to) x;
   v_al := coalesce(v_al, '{}');     -- empresa o ejercicio que no existe (o no se puede ver)
 
   for r in select * from erp.audit_checks c order by c.sort loop

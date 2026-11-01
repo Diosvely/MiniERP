@@ -1578,3 +1578,20 @@ vez) y la fase 72, que falla sin el arreglo (97 ms → 870 ms al crecer otra emp
 - **Una consulta de una empresa no debe depender de las demás:** filtrar por la empresa también en las tablas grandes
   (los apuntes), no solo en la principal.
 - **Probar con varias empresas a la vez**, como en producción.
+
+## 2026-11-01 · v0.52.4 · Comprobaciones lee solo los apuntes que necesita
+
+**Qué pasó**
+- Con la 0078, Comprobaciones tardaba 2,3 s en Supabase con la memoria caliente, pero la primera vez la web aún daba
+  «La consulta ha tardado demasiado».
+
+**Causa:** en Supabase todo va entre 6 y 15 veces más lento que en local, y con la memoria fría lo que cuesta es leer
+del disco. Comprobaciones leía todos los apuntes del ejercicio (43.564 en Empresa 1) y solo usa los de las cuentas 47,
+los que llevan impuesto y los de asientos manuales (10.508).
+
+**Arreglo:** 0079 (`erp.audit_lines_checks` lee solo esos, con un índice parcial) y la fase 73. Mismos resultados.
+Pruebas: 73 SQL.
+
+**Lo que se aprende**
+- **En caliente y en frío no es lo mismo:** la primera consulta del día lee del disco; medir las dos.
+- **Leer solo lo que se usa** es la optimización más segura: menos datos, mismo resultado.

@@ -1,5 +1,5 @@
 -- =====================================================================
--- DIAGNÓSTICO DE SUPABASE · migraciones 0001 … 0078 (GENERADO por scripts/generar-diagnostico.sh: no editar)
+-- DIAGNÓSTICO DE SUPABASE · migraciones 0001 … 0079 (GENERADO por scripts/generar-diagnostico.sh: no editar)
 -- ---------------------------------------------------------------------
 -- Pégalo en el SQL Editor de Supabase y pulsa Run. SOLO LEE: no cambia nada.
 -- Devuelve una fila por cada diferencia con el repositorio. Ninguna fila («No rows returned») = todo al día.
@@ -38,6 +38,7 @@ f(sig, hash) as (values
   ('erp.asset_result_account(uuid,text,numeric)', 'ac4a6e8a5ed55e3965ef64d6c3fd839d'),
   ('erp.asset_tranche_at(integer,date,date,numeric,numeric,date)', '6074b3448707a1447ac8a7df95025c74'),
   ('erp.audit_lines(uuid,integer,date)', 'dfc55f435ac620b4a507e71e1ff909ee'),
+  ('erp.audit_lines_checks(uuid,integer,date)', '7c37d791270bd85bca754baa092a8674'),
   ('erp.balance_anomalies(uuid,integer,integer,date,boolean)', '6c1e0f22000565db3ead24538fd5271a'),
   ('erp.balance_nature(text)', '603c017acceda478a91af5ea4e7c4455'),
   ('erp.can_read(uuid)', '18ac296a51b0301e7c16f62a547a0593'),
@@ -267,7 +268,7 @@ f(sig, hash) as (values
   ('erp.reverse_impairment(uuid,date)', 'de9ecc969d920a3242d72733ca86364a'),
   ('erp.revise_provision(jsonb)', '9a6c130742dfc9b7b69a5aa827dffc50'),
   ('erp.revoke_company_access(uuid,uuid)', '7f79cfbe751469cdb313030cff3ace8d'),
-  ('erp.run_audit_checks(uuid,integer,date)', '2625408a63101d1e14969cf81bb9d96f'),
+  ('erp.run_audit_checks(uuid,integer,date)', '2d4a356989395f9711a98c88d192b484'),
   ('erp.run_payroll(jsonb)', 'ebe4a6d202cfab34f704c18907b95355'),
   ('erp.save_draft(jsonb)', '9d9890314b43b226a226681a9ec2fddd'),
   ('erp.save_employee(jsonb)', '18eb3d4e095bd39f669b45caedc64280'),

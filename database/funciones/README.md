@@ -1,6 +1,6 @@
 # Funciones del esquema erp (versión vigente)
 
-Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0078`.
+Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0079`.
 No se edita a mano: el código fuente son las migraciones. Esto es para **estudiar** cada función en su forma
 actual sin rastrear sus redefiniciones.
 
@@ -9,7 +9,7 @@ actual sin rastrear sus redefiniciones.
 - **Tipo:** *invoker* (se ejecuta con los permisos de quien llama: manda la RLS), *security definer* (con los del
   dueño: comprueba ella misma los permisos) o *trigger*.
 
-337 funciones.
+338 funciones.
 
 | Función | Versiones | Vigente en | Tipo |
 |---|---|---|---|
@@ -42,6 +42,7 @@ actual sin rastrear sus redefiniciones.
 | [`asset_result_account`](asset_result_account.sql) | 1 | 0041_fixed_assets | security definer |
 | [`asset_tranche_at`](asset_tranche_at.sql) | 1 | 0046_asset_impairment | invoker |
 | [`audit_lines`](audit_lines.sql) | 14 | 0078_company_isolation | security definer |
+| [`audit_lines_checks`](audit_lines_checks.sql) | 1 | 0079_checks_relevant_lines | security definer |
 | [`balance_anomalies`](balance_anomalies.sql) | 2 | 0074_report_simulation | invoker |
 | [`balance_nature`](balance_nature.sql) | 1 | 0013_balance_rules | invoker |
 | [`can_read`](can_read.sql) | 2 | 0007_demo_and_limits | security definer |
@@ -271,7 +272,7 @@ actual sin rastrear sus redefiniciones.
 | [`reverse_impairment`](reverse_impairment.sql) | 1 | 0043_year_end_adjustments | security definer |
 | [`revise_provision`](revise_provision.sql) | 1 | 0045_provisions | security definer |
 | [`revoke_company_access`](revoke_company_access.sql) | 1 | 0027_members | security definer |
-| [`run_audit_checks`](run_audit_checks.sql) | 13 | 0078_company_isolation | security definer |
+| [`run_audit_checks`](run_audit_checks.sql) | 14 | 0079_checks_relevant_lines | security definer |
 | [`run_payroll`](run_payroll.sql) | 1 | 0049_payroll | security definer |
 | [`save_draft`](save_draft.sql) | 1 | 0070_entries_screen | security definer |
 | [`save_employee`](save_employee.sql) | 1 | 0049_payroll | security definer |

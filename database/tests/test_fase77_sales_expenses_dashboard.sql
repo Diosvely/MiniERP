@@ -212,7 +212,7 @@ begin
                       'dash_widgets_source_check'), 'solo el ranking tiene fuente';
   assert public.falla($q$insert into erp.dash_widgets (dashboard, sort, kind, source, label, label_en, metrics) values ('ventas', 99, 'ranking', 'partners', 'x', 'x', '{}')$q$,
                       'dash_widgets_source_check'), 'clientes, proveedores o gastos por naturaleza';
-  assert (select count(*) from erp.dashboards) = 5, 'los cinco tableros';
+  assert (select count(*) from erp.dashboards where code in ('resumen', 'rentabilidad', 'tesoreria', 'impuestos', 'ventas')) = 5, 'los cinco tableros';   -- 0084: hay más
   assert not exists (select 1 from erp.dash_widgets w, unnest(w.metrics) m(code)
                      where not exists (select 1 from erp.dash_metrics x where x.code = m.code)), 'cada tarjeta apunta a métricas que existen';
   assert not has_function_privilege('anon', 'erp.dash_ranking(uuid, integer, date, text)', 'execute');

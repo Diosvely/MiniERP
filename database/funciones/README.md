@@ -1,6 +1,6 @@
 # Funciones del esquema erp (versión vigente)
 
-Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0082`.
+Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0084`.
 No se edita a mano: el código fuente son las migraciones. Esto es para **estudiar** cada función en su forma
 actual sin rastrear sus redefiniciones.
 
@@ -9,7 +9,7 @@ actual sin rastrear sus redefiniciones.
 - **Tipo:** *invoker* (se ejecuta con los permisos de quien llama: manda la RLS), *security definer* (con los del
   dueño: comprueba ella misma los permisos) o *trigger*.
 
-344 funciones.
+349 funciones.
 
 | Función | Versiones | Vigente en | Tipo |
 |---|---|---|---|
@@ -117,7 +117,9 @@ actual sin rastrear sus redefiniciones.
 | [`dash_metric_values`](dash_metric_values.sql) | 4 | 0082_tax_dashboard | invoker |
 | [`dash_month_ends`](dash_month_ends.sql) | 1 | 0075_dashboards | invoker |
 | [`dash_quarters`](dash_quarters.sql) | 1 | 0082_tax_dashboard | invoker |
-| [`dashboard_data`](dashboard_data.sql) | 2 | 0082_tax_dashboard | invoker |
+| [`dash_ranking`](dash_ranking.sql) | 2 | 0084_quality_dashboard | security definer |
+| [`dash_ranking_card`](dash_ranking_card.sql) | 2 | 0084_quality_dashboard | invoker |
+| [`dashboard_data`](dashboard_data.sql) | 4 | 0084_quality_dashboard | invoker |
 | [`delete_company`](delete_company.sql) | 1 | 0004_journal_entries | security definer |
 | [`delete_company_step`](delete_company_step.sql) | 12 | 0072_temporary_companies | security definer |
 | [`delete_draft`](delete_draft.sql) | 1 | 0070_entries_screen | security definer |
@@ -166,6 +168,7 @@ actual sin rastrear sus redefiniciones.
 | [`fs_classified_accounts`](fs_classified_accounts.sql) | 4 | 0075_dashboards | invoker |
 | [`fs_classified_at`](fs_classified_at.sql) | 3 | 0078_company_isolation | security definer |
 | [`fs_line_accounts`](fs_line_accounts.sql) | 2 | 0074_report_simulation | invoker |
+| [`fs_line_anomalies`](fs_line_anomalies.sql) | 1 | 0084_quality_dashboard | invoker |
 | [`general_ledger`](general_ledger.sql) | 3 | 0077_large_companies | security definer |
 | [`global_impairment_calc`](global_impairment_calc.sql) | 1 | 0043_year_end_adjustments | invoker |
 | [`grade_exercise`](grade_exercise.sql) | 2 | 0056_grader_fixes | invoker |
@@ -261,6 +264,8 @@ actual sin rastrear sus redefiniciones.
 | [`provision_post`](provision_post.sql) | 1 | 0045_provisions | security definer |
 | [`provision_prefix`](provision_prefix.sql) | 1 | 0045_provisions | invoker |
 | [`purge_company_step`](purge_company_step.sql) | 1 | 0072_temporary_companies | security definer |
+| [`quality_card`](quality_card.sql) | 1 | 0084_quality_dashboard | invoker |
+| [`quality_checks`](quality_checks.sql) | 1 | 0084_quality_dashboard | invoker |
 | [`quarter_end`](quarter_end.sql) | 1 | 0012_tax_settlement | invoker |
 | [`quarter_start`](quarter_start.sql) | 1 | 0012_tax_settlement | invoker |
 | [`ratio_parts`](ratio_parts.sql) | 2 | 0024_ai_context | security definer |

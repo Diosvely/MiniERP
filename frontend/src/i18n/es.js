@@ -1538,6 +1538,16 @@ export default {
     draft: 'Asiento en edición (aún sin número)',
   },
   // v0.52.0 · Barra superior y tableros
+  reverse: {   // v0.57.0 · saldos al revés en el Balance
+    one: '{n} cuenta con saldo al revés de su naturaleza.',
+    many: '{n} cuentas con saldo al revés de su naturaleza.',
+    errors: '({n} imposibles: errores seguros).',
+    why: 'El ERP no las compensa: las presenta en la otra masa del balance. Revisa la causa en su libro mayor.',
+    go: 'Ver en Comprobaciones',
+    line: '{n} cuentas con saldo al revés en esta partida',
+    account: 'Saldo al revés.',
+    accountError: 'Saldo imposible.',
+  },
   dash: {
     bar: 'Barra de la empresa',
     title: 'Tableros',
@@ -1551,9 +1561,14 @@ export default {
             payments: 'Ver cobros y pagos', cashflow: 'Ver el estado de flujos',   // v0.54.0
             settlement: 'Ver la liquidación', withholdings: 'Ver las retenciones' },   // v0.55.0
     taxType: 'Impuesto de la empresa: {t} (el de su territorio, el mismo que la liquidación).',
+    check: {   // v0.57.0 · lista de control
+      ok: 'bien', info: 'normal', warning: 'aviso', error: 'error', na: 'no aplica',
+      extra: { anomalies: '({x} imposibles)', drafts: '({x} con problema)', overdue_in: '({x} a más de 90 días)', overdue_out: '({x} a más de 90 días)' },
+      go: { checks: 'Ver en Comprobaciones', entries: 'Ir a Asientos', settlement: 'Ir a Liquidación', payments: 'Ir a Cobros y pagos' },
+    },
     rank: {   // v0.56.0 · tarjetas de ranking
       rest: 'Resto ({n})',
-      none: { customers: 'Sin cliente', suppliers: 'Sin proveedor', expense_groups: 'Sin clasificar' },
+      none: { customers: 'Sin cliente', suppliers: 'Sin proveedor', expense_groups: 'Sin clasificar', anomalies: 'Sin cuenta', overdue_customers: 'Sin cliente' },
       total: 'Total',
       top: 'Los {n} primeros suponen el {p} del total.',
       onSales: 'En total, el {p} de la cifra de negocios.',

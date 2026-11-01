@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.dashboard_data · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0075_dashboards 0082_tax_dashboard   →   la vigente es la de 0082_tax_dashboard
+-- Definida en: 0075_dashboards 0082_tax_dashboard 0083_sales_expenses_dashboard 0084_quality_dashboard   →   la vigente es la de 0084_quality_dashboard
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.dashboard_data(p_company uuid, p_dashboard text, p_year integer, p_to_date date DEFAULT NULL::date, p_drafts boolean DEFAULT false)
@@ -50,10 +50,18 @@ begin
   -- Cada tarjeta con sus métricas: valor, año anterior, zona de referencia y las series ya preparadas
   --   mode month: lo de cada mes = acumulado del mes − acumulado del mes anterior
   --   mode quarter (0082): lo de cada trimestre, con erp.dash_quarters
+  --   kind ranking (0083): las filas de erp.dash_ranking_card; sus métricas, vacías
+  --   kind checklist (0084): la lista de control de erp.quality_card
   select coalesce(jsonb_agg(jsonb_build_object(
            'sort', w.sort, 'kind', w.kind, 'size', w.size, 'mode', w.mode, 'label', w.label, 'label_en', w.label_en,
            'help', w.help, 'help_en', w.help_en,
-           'items', (select jsonb_agg(jsonb_build_object(
+           -- 0083: la tarjeta de ranking (los terceros o subgrupos, con el resto y el total)
+           'source', w.source, 'top_n', w.top_n,
+           'checklist', case when w.kind = 'checklist' then erp.quality_card(p_company, p_year, v_to, p_drafts) end,   -- 0084
+           'ranking', case when w.kind = 'ranking' then
+                        erp.dash_ranking_card(p_company, p_year, v_to, v_prev_to, fy0.id is not null, w.source, w.top_n,
+                                              (cur ->> 'SALES')::numeric, (prev ->> 'SALES')::numeric) end,
+           'items', (select coalesce(jsonb_agg(jsonb_build_object(
                'code', m.code, 'label', m.label, 'label_en', m.label_en, 'unit', m.unit, 'link', m.link,
                'help', m.help, 'help_en', m.help_en, 'ref_min', r.ref_min, 'ref_max', r.ref_max,
                'value', cur -> m.code, 'prev', prev -> m.code,
@@ -73,7 +81,7 @@ begin
                                         else s.v -> m.code end order by s.n)
                   from jsonb_array_elements(s_prev) with ordinality s(v, n)) end)
                order by k.n)
-             from unnest(w.metrics) with ordinality k(code, n)
+             , '[]') from unnest(w.metrics) with ordinality k(code, n)
              join erp.dash_metrics m on m.code = k.code
              left join erp.ratio_defs r on r.code = m.ratio_code))
          order by w.sort), '[]')

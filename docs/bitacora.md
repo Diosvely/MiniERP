@@ -1665,6 +1665,31 @@ la web. Pruebas: 76 SQL y 295 de la web.
 - **NULL en una restricción CHECK** no la incumple: hay que pedir `is not null` además del `in (…)`.
 - **Las pruebas viejas protegen las nuevas:** la de la v0.54.0 encontró el fallo de la v0.55.0.
 
+## 2026-11-01 · v0.56.0 · Tablero «Ventas y gastos»
+
+**Qué se hizo**
+- Cuarto de los cinco tableros nuevos, con el diseño validado antes de construir (`diseno-v0.56.0.md`): ventas frente
+  al año anterior, los 10 clientes y proveedores con más volumen y los gastos por naturaleza.
+- Tipo de tarjeta nuevo, el ranking, calculado **desde la contabilidad por subcuenta**: así funciona también en las
+  empresas importadas, que no tienen facturas en el ERP.
+
+**Decisiones de Diosvely:** volumen sin impuestos desde los asientos, inversiones en el ranking de proveedores y los
+10 primeros con el «Resto».
+
+**Lo que salió al construir**
+- Con el «grupo 7» del diseño, las ventas a un cliente podían recoger ingresos que no son ventas; con las cuentas 700 a
+  709 (las de la partida 1 de la PyG), el total es exactamente la cifra de negocios.
+- Al dibujarlo, las barras no quedaban alineadas porque la columna del importe cambiaba de ancho en cada fila.
+
+**Pruebas:** fase 77 (falla si el volumen se midiera por lo que se mueve en la cuenta del cliente) y dos tests de la
+web. Pruebas: 77 SQL y 297 de la web.
+
+**Lo que se aprende**
+- **Una venta es un abono en la 70; el cliente lo dice la subcuenta del mismo asiento.** Un cobro no es una venta.
+- **La concentración de clientes** es un riesgo que se ve en una línea.
+- **Diseñar para los datos que hay:** las facturas son la fuente más precisa, pero las empresas importadas solo traen
+  asientos.
+
 ## 2026-11-01 · v0.57.0 · Tablero «Calidad de la contabilidad» y aviso en el Balance
 
 **Qué se hizo**
@@ -1687,3 +1712,24 @@ contabilidad mes a mes) y cuatro tests de la web. Pruebas: 78 SQL y 302 de la we
 - **«Imposible» no es lo mismo que «dudoso»:** una caja acreedora es un error; un proveedor deudor, una pregunta.
 - **Cinco tableros, un catálogo:** cada uno añadió un tipo (signo, movimiento, trimestre, ranking, lista de control) que
   sirve a los siguientes.
+
+## 2026-11-02 · v0.57.1 · Documentación al día
+
+**Qué pasó**
+- Al revisar el README, la hoja de ruta acababa en la v0.55.0. Causa: el cierre de la v0.56.0 (paso 278) no se ejecutó
+  antes del commit, y el de la v0.57.0 buscaba los textos de la v0.56.0 para colocar los suyos: no los encontró y se
+  saltó el CHANGELOG, el README y la versión (sí aplicó su ADR, su captura y la bitácora).
+- Además, los scripts `aplicar-paso*.mjs` se habían subido al repositorio.
+
+**Qué se hizo (análisis de toda la documentación del repositorio)**
+- Recuperado lo de la v0.56.0 y la v0.57.0, y la versión 0.57.1.
+- `modelo-datos.md`, que seguía en la v0.2.0, ahora describe las 85 tablas y 23 vistas por área.
+- README (tests, modelo, documentación, estructura), glosario (tableros), seguridad de Supabase (tareas de pg_cron,
+  diagnóstico y `powerbi_reader`) y el README de la web, que era la plantilla de Vite.
+- `aplicar-paso*.mjs` fuera del repositorio y en `.gitignore`.
+
+**Lo que se aprende**
+- **Cada script de cierre depende del anterior:** si uno no se aplica, el siguiente avisa («no encuentro…»). Leer los
+  avisos antes de hacer el commit.
+- **La documentación también envejece:** un documento sin fecha de revisión (el modelo de datos) puede quedarse 55
+  versiones atrás sin que nada avise.

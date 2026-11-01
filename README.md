@@ -39,7 +39,7 @@ Proyecto de aprendizaje en evolución.
 | **Balance (modo oscuro) con el glosario** | **Modo auditor de una empresa importada** |
 | ![Balance con el globo del glosario](docs/capturas/04-balance-oscuro.png) | ![Recorrido del auditor](docs/capturas/05-modo-auditor.png) |
 
-Más capturas: [pantalla de entrada](docs/capturas/01-entrada.png) · [errores en lenguaje claro](docs/capturas/06-errores-claros.png) · [Inicio en el móvil](docs/capturas/07-inicio-movil.png) · [cascada del EFE](docs/capturas/08-efe-cascada.png) · [Balance comparativo](docs/capturas/09-balance-comparativo.png) · [libro mayor en el móvil](docs/capturas/10-mayor-movil.png) · [cobros y pagos](docs/capturas/11-cobros-pagos.png) · [comprobaciones](docs/capturas/12-comprobaciones.png) · [inmovilizado](docs/capturas/13-inmovilizado.png) · [ajustes de cierre](docs/capturas/14-ajustes-cierre.png) · [asistente de cierre](docs/capturas/15-asistente-cierre.png) · [nóminas](docs/capturas/16-nominas.png) · [modelos y fuentes](docs/capturas/17-modelos.png) · [practicar](docs/capturas/18-practicar.png) · [impuesto sobre sociedades](docs/capturas/19-impuesto-sociedades.png) · [panel de IA](docs/capturas/20-panel-ia.png) · [operaciones societarias](docs/capturas/21-operaciones-societarias.png) · [financiación](docs/capturas/22-financiacion.png) · [ECPN](docs/capturas/23-ecpn.png) · [caso completo](docs/capturas/24-casos.png) · [asientos](docs/capturas/25-asientos.png) · [PGC de estudio](docs/capturas/26-pgc.png) · [empresa temporal](docs/capturas/27-empresa-temporal.png) · [tablero de dirección](docs/capturas/28-tableros.png) · [tablero de rentabilidad](docs/capturas/29-rentabilidad.png) · [tablero de tesorería](docs/capturas/30-tesoreria.png) · [tablero de impuestos](docs/capturas/31-impuestos.png)
+Más capturas: [pantalla de entrada](docs/capturas/01-entrada.png) · [errores en lenguaje claro](docs/capturas/06-errores-claros.png) · [Inicio en el móvil](docs/capturas/07-inicio-movil.png) · [cascada del EFE](docs/capturas/08-efe-cascada.png) · [Balance comparativo](docs/capturas/09-balance-comparativo.png) · [libro mayor en el móvil](docs/capturas/10-mayor-movil.png) · [cobros y pagos](docs/capturas/11-cobros-pagos.png) · [comprobaciones](docs/capturas/12-comprobaciones.png) · [inmovilizado](docs/capturas/13-inmovilizado.png) · [ajustes de cierre](docs/capturas/14-ajustes-cierre.png) · [asistente de cierre](docs/capturas/15-asistente-cierre.png) · [nóminas](docs/capturas/16-nominas.png) · [modelos y fuentes](docs/capturas/17-modelos.png) · [practicar](docs/capturas/18-practicar.png) · [impuesto sobre sociedades](docs/capturas/19-impuesto-sociedades.png) · [panel de IA](docs/capturas/20-panel-ia.png) · [operaciones societarias](docs/capturas/21-operaciones-societarias.png) · [financiación](docs/capturas/22-financiacion.png) · [ECPN](docs/capturas/23-ecpn.png) · [caso completo](docs/capturas/24-casos.png) · [asientos](docs/capturas/25-asientos.png) · [PGC de estudio](docs/capturas/26-pgc.png) · [empresa temporal](docs/capturas/27-empresa-temporal.png) · [tablero de dirección](docs/capturas/28-tableros.png) · [tablero de rentabilidad](docs/capturas/29-rentabilidad.png) · [tablero de tesorería](docs/capturas/30-tesoreria.png) · [tablero de impuestos](docs/capturas/31-impuestos.png) · [tablero de ventas y gastos](docs/capturas/32-ventas-gastos.png) · [calidad de la contabilidad](docs/capturas/33-calidad.png)
 
 ---
 
@@ -50,7 +50,7 @@ española y el funcionamiento real de un ERP. Los ERP comerciales son caros y di
 propia, así que decidí **construir uno**. Diseñar la tabla de asientos obliga a entender *por qué* un ERP impone
 cada regla. Además, todo el código está en inglés para practicar el vocabulario técnico de BC y SAP.
 
-## ¿Qué hace hoy? (v0.55.0)
+## ¿Qué hace hoy? (v0.57.1)
 
 **Primeros pasos y navegación**
 - **Pantalla de Inicio** en cada empresa:
@@ -189,7 +189,10 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
   EBITDA y resultado, los márgenes a lo largo del año y la estructura de costes sobre las ventas) y **«Tesorería y
   circulante»** (tesorería, clientes, proveedores y fondo de maniobra; entradas y salidas de cada mes; liquidez y
   periodos medios de cobro y de pago) e **«Impuestos»** (IVA / IGIC devengado y deducible, resultado y retenciones de
-  cada trimestre, igual que la liquidación). Las cifras salen de
+  cada trimestre, igual que la liquidación) y **«Ventas y gastos»** (ventas frente al año anterior, los 10 clientes y
+  proveedores con más volumen y los gastos por naturaleza) y **«Calidad de la contabilidad»** (una lista de control a
+  una fecha: saldos al revés, borradores, meses sin cerrar, liquidaciones pendientes, vencidos y terceros sin
+  conciliar). Las cifras salen de
   un **catálogo en la base de datos** con las mismas reglas que el Balance y la PyG, así que cuadran al céntimo.
 - **Exportar a Excel** (importes como números y fechas como fechas, listos para una tabla dinámica o Power BI) e
   **imprimir / guardar en PDF** el Balance, la PyG, el EFE, sumas y saldos, el mayor y el diario.
@@ -260,7 +263,7 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
 | Web | **React + Vite** | Componentes por pantalla, i18n propio (es/en), rutas con almohadilla, iconos `lucide-react` |
 | IA | **Cloudflare Workers AI** + Pages Functions | `/api/ai` (Mistral Small 3.1) y `/api/tutor` (gpt-oss-120b); la clave nunca llega al navegador |
 | Despliegue | **Cloudflare Pages** | Despliegue automático desde `main`, dirección de prueba por rama y cabeceras de seguridad (`_headers`) |
-| Calidad | **GitHub Actions** + **Vitest** + Dependabot | 76 pruebas SQL, 295 tests de la web, lint, build y auditoría de dependencias en cada Pull Request |
+| Calidad | **GitHub Actions** + **Vitest** + Dependabot | 78 pruebas SQL, 302 tests de la web, lint, build y auditoría de dependencias en cada Pull Request |
 | Versionado | Git + GitHub | Ramas, Pull Requests, `main` protegida, versiones etiquetadas y decisiones documentadas (ADR) |
 
 **Principio clave:** la web nunca es la única barrera. Aunque alguien manipule el navegador, PostgreSQL rechaza:
@@ -287,6 +290,9 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
 | `cf_lines` / `cf_mapping` | Financial Reports (Cash Flow) | Cash Flow Statement (FS item mapping) |
 | `ratio_defs` | Analysis Views / KPIs | Financial Statement Version · KPIs |
 | `balance_rules` | — | — (regla de auditoría: naturaleza del saldo) |
+| `dash_metrics` / `dashboards` / `dash_widgets` / `quality_check_defs` | Role Center: cues, charts y KPIs · Account Schedules | Fiori Overview Pages · KPI tiles (CDS views) |
+| `pgc_accounts` / `pgc_cards` / `pgc_valuation_rules` | — (consulta del plan contable) | — |
+| esquema `bi` (`fact_saldos_mes`, `dim_cuenta`…) | Power BI · Business Central APIs | SAP Analytics Cloud · CDS views |
 | `company_users` / `app_profiles` / `ai_feedback` | Permission Sets · User Setup | Roles (PFCG) |
 
 Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español ↔ inglés ↔ BC ↔ SAP en
@@ -298,6 +304,12 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 - [Decisiones (ADR)](docs/decisiones/): por qué se eligió cada cosa.
 - [Guía de Git del proyecto](docs/guia-git.md): plantilla para crear ramas, hacer Pull Requests y versionar.
 - [CHANGELOG](CHANGELOG.md): cambios de cada versión.
+- [Modelo de datos](docs/modelo-datos.md): las tablas por área, con su equivalente en BC y SAP, y las funciones
+  principales.
+- [Funciones de la base de datos](database/funciones/README.md): la versión vigente de cada una, para estudiarla
+  (generado).
+- [Glosario](docs/glosario.md): vocabulario español ↔ inglés ↔ BC ↔ SAP (el completo, en la propia app).
+- [Seguridad de Supabase](docs/seguridad-supabase.md): lista de ajustes del panel que no están en el código.
 - [Guía de Power BI](docs/powerbi/GUIA.md): conectar Power BI al esquema `bi` y construir el informe con Claude Code.
 
 ## Estructura del repositorio
@@ -311,19 +323,19 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 ├── scripts/volcar-funciones.sh  genera database/funciones/ (versión vigente de cada función)
 ├── scripts/generar-diagnostico.sh  genera database/diagnostico-supabase.sql (¿le falta algo a tu Supabase?)
 ├── database/
-│   ├── migrations/            0001 → 0082, se ejecutan en orden en Supabase
+│   ├── migrations/            0001 → 0084, se ejecutan en orden en Supabase
 │   ├── funciones/             versión vigente de cada función, para estudiarla (generado)
 │   ├── diagnostico-supabase.sql  consulta de solo lectura: qué le falta a tu Supabase (generado)
 │   ├── reset/                 reset del schema antiguo (solo histórico)
 │   ├── seed/                  datos de ejemplo (opcional)
-│   └── tests/                 pruebas automáticas en SQL (fases 1 → 76) y simulador de Supabase
+│   └── tests/                 pruebas automáticas en SQL (fases 1 → 78) y simulador de Supabase
 ├── frontend/                  web React + Vite
 │   ├── .env.example           variables de entorno (sin valores reales)
 │   ├── public/_headers        cabeceras de seguridad (CSP…) que aplica Cloudflare Pages
 │   ├── functions/api/         Pages Functions: ai.js (Analista IA) y tutor.js (Tutor de asientos)
 │   ├── tests/                 tests de la web con Vitest (npm test)
 │   └── src/
-│       ├── components/        Inicio, empresas, menú, asientos, diario, facturas, impuestos, informes, IA…
+│       ├── components/        Inicio, empresas, menú, asientos, diario, facturas, impuestos, informes, tableros, IA…
 │       ├── i18n/              diccionarios es.js / en.js y motor de idioma
 │       ├── router.js          rutas #/empresa/<id>/<pantalla> (y …/asiento/<año>/<nº>, …/reports/mayor/<cuenta>/<año>)
 │       ├── workDate.js        fecha de trabajo de cada empresa
@@ -331,6 +343,9 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 │       ├── deleteCompany.js   borrar una empresa por tandas
 │       ├── chart.js           marcas de los ejes y tramos de la cascada (gráficos en SVG, sin librerías)
 │       ├── compare.js         análisis horizontal: variación frente al año anterior
+│       ├── reportPeriod.js    «hasta» con mes rápido y simulación con los asientos en edición
+│       ├── dashboards.js      tableros: formato de cada unidad, ejes, trimestres, rankings y lista de control
+│       ├── anomalies.js       saldos al revés: el ⚠ de cada partida del Balance
 │       ├── exportXlsx.js      exportar los informes a Excel
 │       ├── activity.js        aviso "Cargando…" global
 │       ├── errors.js          errores de la base de datos en lenguaje claro
@@ -348,19 +363,22 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
     ├── modelo-datos.md        tablas, funciones, vistas
     ├── glosario.md            vocabulario contable bilingüe
     ├── seguridad-supabase.md  lista de ajustes de seguridad del panel de Supabase
+    ├── powerbi/GUIA.md        guía para conectar Power BI al esquema bi
     ├── capturas/              capturas de la app para el README
-    └── decisiones/            ADR 0001 → 0055
+    └── decisiones/            ADR 0001 → 0057
 ```
 
 ## Calidad
 
 - **Integración continua** (GitHub Actions) en cada Pull Request:
-  - las 76 pruebas de la base de datos sobre PostgreSQL 16, cada una en una base limpia con todas las migraciones
+  - las 78 pruebas de la base de datos sobre PostgreSQL 16, cada una en una base limpia con todas las migraciones
     (la fase 23 vigila también que toda clave foránea tenga índice; la 34 lanza unas 300 operaciones al azar por
-    empresa y exige nueve invariantes contables; la 35 compara al céntimo cinco supuestos calculados desde la norma);
-  - **289 tests de la web con Vitest**: formatos, rutas, importadores, errores, idiomas (español e inglés con las
+    empresa y exige nueve invariantes contables; la 35 compara al céntimo cinco supuestos calculados desde la norma;
+    de la 69 a la 78, cada tablero cuadra al céntimo con su informe: PyG, Balance, Ratios y liquidación);
+  - **302 tests de la web con Vitest**: formatos, rutas, importadores, errores, idiomas (español e inglés con las
     mismas claves), glosario, plantillas, la defensa de las funciones de IA, la lectura por páginas, el borrado por
-    tandas, la fecha de trabajo, los gráficos, el análisis horizontal y la exportación a Excel;
+    tandas, la fecha de trabajo, los gráficos, el análisis horizontal, la exportación a Excel y los tableros (unidades,
+    trimestres, rankings, lista de control y saldos al revés);
   - lint, build y auditoría de dependencias de la web.
 - **Accesibilidad** comprobada con axe-core (WCAG 2 A/AA) en las pantallas principales, en modo claro y oscuro.
 - **Rendimiento** probado en local con una contabilidad de 120.000 apuntes antes de cada entrega.
@@ -370,7 +388,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 
 1. **Base de datos.** En un proyecto de Supabase:
    - activa **`pg_cron`** en *Database → Extensions* (para la limpieza de invitados y de las empresas temporales);
-   - en el *SQL Editor*, ejecuta en orden `database/migrations/0001` … `0082`.
+   - en el *SQL Editor*, ejecuta en orden `database/migrations/0001` … `0084`.
    - comprueba que no falta nada: pega `database/diagnostico-supabase.sql` (solo lee) en el *SQL Editor*. Si no
      devuelve ninguna fila, tu base de datos coincide con el repositorio.
 2. **API.** En *Project Settings → Data API → Exposed schemas*, añade `erp`.
@@ -421,7 +439,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 Con PostgreSQL instalado (Linux, WSL o Git Bash):
 
 ```bash
-bash scripts/test-db.sh            # las 76 pruebas, cada una en una base limpia
+bash scripts/test-db.sh            # las 78 pruebas, cada una en una base limpia
 bash scripts/test-db.sh fase25     # solo las que contienen "fase25"
 ```
 
@@ -497,8 +515,10 @@ cuadrados. El ERP también lee directamente los diarios de Sage (Excel) y Busine
 - [x] **v0.53.0**: tablero «Rentabilidad y márgenes»
 - [x] **v0.54.0**: tablero «Tesorería y circulante»
 - [x] **v0.55.0**: tablero «Impuestos»
-- [ ] Más tableros (ventas y gastos, calidad de la contabilidad) y más botones en
-  la barra superior
+- [x] **v0.56.0**: tablero «Ventas y gastos»
+- [x] **v0.57.0**: tablero «Calidad de la contabilidad» y aviso de saldos al revés en el Balance
+- [x] **v0.57.1**: documentación al día (modelo de datos, glosario, seguridad, README de la web)
+- [ ] Más botones en la barra superior
 - [ ] Ontología contable y chat con la IA (consulta, nunca calcula)
 - [ ] Más informes en Power BI e incrustarlos en el ERP con RLS por empresa
 - [ ] Contabilidad analítica y presupuesto frente a real

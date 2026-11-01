@@ -10,3 +10,5 @@ dist/
 .DS_Store
 Thumbs.db
 *.log
+# Scripts de un solo uso que aplican cada paso (se ejecutan en local; no van al repositorio)
+aplicar-paso*.mjs

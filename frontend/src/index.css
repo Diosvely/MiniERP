@@ -1224,7 +1224,32 @@ button.enlace.pgc-ir { display: inline; align-self: auto; font: inherit; text-de
 .rk-importe small { display: block; color: var(--suave); }
 .rk-otra .rk-nombre, .informe tr.rk-otra td:first-child { color: var(--suave); font-style: italic; }
 .rk-otra .rk-barra i { background: var(--suave); }
+.rk-nota { display: block; color: var(--suave); font-size: .8rem; font-style: normal; }
+.rk-fila .rk-nota { grid-column: 1 / -1; }   /* en la lista, a todo el ancho debajo de la fila */
+/* v0.57.0 · lista de control: icono, texto y cifra; el estado también en texto (nunca solo el color) */
+.lista-control { list-style: none; margin: 0; padding: 0; }
+.lista-control li.control { display: grid; grid-template-columns: 1.6rem minmax(0, 1fr) auto; gap: 4px 12px; align-items: start;
+                            padding: 10px 0; border-bottom: 1px solid var(--borde); flex-direction: initial; }
+.lista-control li.control:last-child { border-bottom: none; }
+.control-icono { font-size: 1.15rem; line-height: 1.4; text-align: center; color: var(--suave); }
+.control.ok .control-icono { color: var(--exito); }
+.control.warning .control-icono { color: var(--alerta); }
+.control.error .control-icono { color: var(--error); }
+.control-texto { color: var(--texto); }
+.control-texto strong { font-weight: 600; }
+.control-texto .control-estado { color: var(--suave); font-size: .9rem; }
+.control-texto small { display: block; color: var(--suave); font-size: .85rem; }
+.control-cifra { text-align: right; font-variant-numeric: tabular-nums; color: var(--texto); display: flex; flex-direction: column; gap: 2px; align-items: flex-end; }
+.control-cifra .enlace { font-size: .85rem; }
+.control.na { opacity: .75; }
+/* v0.57.0 · aviso de saldos al revés en el Balance */
+.aviso-reves { margin: 8px 0; padding: 10px 12px; border-radius: 8px; border: 1px solid var(--alerta); background: var(--tarjeta); color: var(--texto); }
+.marca-reves { color: var(--alerta); font-weight: 600; white-space: nowrap; }
+.marca-reves.error, .nota-reves.error { color: var(--error); }
+.nota-reves { display: block; color: var(--alerta); font-size: .85rem; }
 @media (max-width: 600px) {
+  .lista-control li.control { grid-template-columns: 1.6rem minmax(0, 1fr); }
+  .control-cifra { grid-column: 2; align-items: flex-start; text-align: left; }
   .rk-fila { grid-template-columns: minmax(0, 1fr) auto; }
   .rk-barra { grid-column: 1 / -1; grid-row: 2; }
 }

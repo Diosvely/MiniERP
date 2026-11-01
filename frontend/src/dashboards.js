@@ -95,9 +95,10 @@ export const hasZones = (items) => items.some((it) => it.ref_min != null || it.r
 //   labels: { rest: (n) => texto, none: texto }
 export function rankingRows(r, labels) {
   if (!r) return []
-  const base = Number(r.base === 'sales' ? r.sales?.value : r.total?.value)
+  const base = r.base === 'none' ? 0 : Number(r.base === 'sales' ? r.sales?.value : r.total?.value)   // none: sin % (v0.57.0)
   const share = (v) => (base && v != null ? Number(v) / base : null)
-  const rows = (r.rows ?? []).map((x) => ({ kind: 'row', key: x.key, label: x.label, value: x.value, prev: x.prev, share: share(x.value) }))
+  const rows = (r.rows ?? []).map((x) => ({ kind: 'row', key: x.key, label: x.label, value: x.value, prev: x.prev, share: share(x.value),
+    note: x.note, note_en: x.note_en }))
   if (Number(r.rest?.count) > 0) {
     rows.push({ kind: 'rest', key: null, label: labels.rest(r.rest.count), value: r.rest.value, prev: r.rest.prev, share: share(r.rest.value) })
   }
@@ -105,5 +106,17 @@ export function rankingRows(r, labels) {
     rows.push({ kind: 'none', key: null, label: labels.none, value: r.none.value, prev: r.none.prev, share: share(r.none.value) })
   }
   return rows
+}
+
+// Lista de control (v0.57.0): el icono de cada gravedad (siempre acompañado de su texto) y la cifra de cada fila
+export const CHECK_ICON = { ok: '✓', info: 'ⓘ', warning: '⚠', error: '✗', na: '—' }
+
+export function checkDetail(r, language, t) {
+  if (r.severity === 'na' || r.value == null) return t('dash.check.na')
+  const main = r.unit === 'eur' ? fmtMetric(r.value, 'eur', language) : Number(r.value).toLocaleString(language === 'en' ? 'en-GB' : 'es-ES')
+  const extra = Number(r.extra ?? 0)
+  const tpl = extra > 0 ? t(`dash.check.extra.${r.code}`) : ''
+  if (!tpl || tpl === `dash.check.extra.${r.code}`) return main
+  return `${main} ${tpl.replace('{x}', r.unit === 'eur' ? fmtMetric(extra, 'eur', language) : extra.toLocaleString(language === 'en' ? 'en-GB' : 'es-ES'))}`
 }
 

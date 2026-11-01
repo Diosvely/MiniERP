@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import es from '../src/i18n/es.js'
 import en from '../src/i18n/en.js'
-import { dashPath, fmtMetric, change, zoneStatus, axis, hasData, seriesRows, textOf, periods, periodLabel, taxName, tableLink, hasZones, rankingRows } from '../src/dashboards.js'
+import { dashPath, fmtMetric, change, zoneStatus, axis, hasData, seriesRows, textOf, periods, periodLabel, taxName, tableLink, hasZones, rankingRows, checkDetail, CHECK_ICON } from '../src/dashboards.js'
 
 describe('tableros · formato y comparación', () => {
   it('la dirección de un tablero', () => {
@@ -115,6 +115,33 @@ describe('tableros · gráficos', () => {
       expect(lang.dash.rank.rest).toContain('{n}')
       expect(lang.dash.rank.top).toContain('{p}')
     }
+  })
+  it('lista de control: icono y texto de cada gravedad, y la cifra de cada fila (v0.57.0)', () => {
+    const t = (k) => k.split('.').reduce((o, x) => o?.[x], es) ?? k
+    for (const sev of ['ok', 'info', 'warning', 'error', 'na']) {
+      expect(CHECK_ICON[sev]).toBeTruthy()
+      expect(es.dash.check[sev]).toBeTruthy()
+      expect(en.dash.check[sev]).toBeTruthy()
+    }
+    for (const link of ['checks', 'entries', 'settlement', 'payments']) {
+      expect(es.dash.check.go[link]).toBeTruthy()
+      expect(en.dash.check.go[link]).toBeTruthy()
+    }
+    expect(checkDetail({ code: 'anomalies', unit: 'count', value: 3, extra: 1, severity: 'error' }, 'es', t)).toBe('3 (1 imposibles)')
+    expect(checkDetail({ code: 'anomalies', unit: 'count', value: 2, extra: 0, severity: 'warning' }, 'es', t)).toBe('2')
+    expect(checkDetail({ code: 'overdue_in', unit: 'eur', value: 23540, extra: 2140, severity: 'error' }, 'es', t))
+      .toBe('23.540,00 € (2.140,00 € a más de 90 días)')
+    expect(checkDetail({ code: 'settlements', unit: 'count', value: 1, extra: null, severity: 'error' }, 'es', t)).toBe('1')
+    expect(checkDetail({ code: 'overdue_in', unit: 'eur', value: null, severity: 'na' }, 'es', t)).toBe('no aplica')
+  })
+  it('ranking sin %: las cuentas con saldo al revés, con su nota (v0.57.0)', () => {
+    const r = { source: 'anomalies', base: 'none', rows: [{ key: '11300001', label: 'Reservas voluntarias', value: 850, note: 'Saldo acreedor.' }],
+      rest: { count: 0 }, none: { value: 0 }, total: { value: 850 }, sales: { value: 120000 } }
+    const rows = rankingRows(r, { rest: () => '', none: '' })
+    expect(rows).toHaveLength(1)
+    expect(rows[0].share).toBeNull()
+    expect(rows[0].note).toBe('Saldo acreedor.')
+    for (const lang of [es, en]) for (const src of ['anomalies', 'overdue_customers']) expect(lang.dash.rank.none[src]).toBeTruthy()
   })
   it('el impuesto de la empresa en cada idioma (v0.55.0)', () => {
     expect(taxName('VAT', 'es')).toBe('IVA')

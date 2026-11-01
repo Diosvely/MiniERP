@@ -22,13 +22,15 @@ export default function DashRanking({ company, data, widget }) {
   const eur = (v) => fmtMetric(v, 'eur', language)
   const pct = (v) => fmtMetric(v, 'pct', language)
   const ledger = r.source !== 'expense_groups'
+  // v0.57.0: la nota de la fila (qué suele significar un saldo al revés, o «más de 90 días»)
+  const noteOf = (x) => (language === 'en' ? x.note_en || x.note : x.note)
   const top = rows.filter((x) => x.kind === 'row')
   // concentración: cuánto suponen los primeros sobre el total (clientes y proveedores) · gastos: sobre las ventas
   const topShare = r.base === 'total' && Number(r.total.value) !== 0
     ? top.reduce((s, x) => s + Number(x.value), 0) / Number(r.total.value) : null
   const summary = r.base === 'total'
     ? (topShare != null ? t('dash.rank.top').replace('{n}', top.length).replace('{p}', pct(topShare)) : '')
-    : (r.sales?.value ? t('dash.rank.onSales').replace('{p}', pct(Number(r.total.value) / Number(r.sales.value))) : '')
+    : (r.base === 'sales' && r.sales?.value ? t('dash.rank.onSales').replace('{p}', pct(Number(r.total.value) / Number(r.sales.value))) : '')
   const name = (x) => (ledger && x.kind === 'row'
     ? <Link to={companyPath(company.id, `reports/mayor/${x.key}/${year}`)} className="enlace">{x.label}</Link>
     : <>{x.label}{x.kind === 'row' && r.source === 'expense_groups' && <small className="rk-cuenta"> {x.key}</small>}</>)
@@ -55,7 +57,7 @@ export default function DashRanking({ company, data, widget }) {
             <tbody>
               {rows.map((x) => (
                 <tr key={`${x.kind}${x.key ?? ''}`} className={x.kind === 'row' ? '' : 'rk-otra'}>
-                  <td>{name(x)}</td>
+                  <td>{name(x)}{noteOf(x) && <small className="rk-nota">{noteOf(x)}</small>}</td>
                   <td className="num">{eur(x.value)}</td>
                   <td className="num">{x.share == null ? '—' : pct(x.share)}</td>
                   {data.has_prev && <td className="num anterior">{eur(x.prev)}</td>}
@@ -78,6 +80,7 @@ export default function DashRanking({ company, data, widget }) {
                 <strong>{eur(x.value)}</strong>{x.share != null && <> · {pct(x.share)}</>}
                 {data.has_prev && <small>{prevYear}: {eur(x.prev)}</small>}
               </span>
+              {noteOf(x) && <small className="rk-nota">{noteOf(x)}</small>}
             </li>
           ))}
         </ol>

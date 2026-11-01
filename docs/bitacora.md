@@ -1664,3 +1664,26 @@ la web. Pruebas: 76 SQL y 295 de la web.
 - **Una regla, un sitio:** si dos pantallas tienen que cuadrar, deben leer la misma función, no dos copias.
 - **NULL en una restricción CHECK** no la incumple: hay que pedir `is not null` además del `in (…)`.
 - **Las pruebas viejas protegen las nuevas:** la de la v0.54.0 encontró el fallo de la v0.55.0.
+
+## 2026-11-01 · v0.57.0 · Tablero «Calidad de la contabilidad» y aviso en el Balance
+
+**Qué se hizo**
+- Último de los cinco tableros, con el diseño validado antes de construir (`diseno-v0.57.0.md`): una lista de control
+  a una fecha (saldos al revés, borradores, meses sin cerrar, liquidaciones pendientes, vencidos y terceros sin
+  conciliar) y dos rankings (cuentas al revés y clientes con vencido).
+- El aviso de saldos al revés en el propio Balance: franja, ⚠ en la partida y nota en la cuenta. Cierra la duda de la
+  400 deudora: sigue en Existencias (sin compensar) y ahora se ve el aviso sin ir a Comprobaciones.
+
+**Lo que salió al construir**
+- El caso trae un saldo al revés real: Reservas voluntarias deudora por los gastos de la ampliación de capital.
+- Una caja acreedora no se puede contabilizar (el ERP la bloquea); en la prueba entra como en una importación.
+- La web no puede llamar a `draft_problem`: se usa `draft_ready`.
+
+**Pruebas:** fase 78 (cada problema provocado uno a uno; falla si los meses sin cerrar se contaran fuera de la
+contabilidad mes a mes) y cuatro tests de la web. Pruebas: 78 SQL y 302 de la web.
+
+**Lo que se aprende**
+- **No compensar y avisar:** el ERP no sabe si un saldo al revés es un anticipo o un error; dice dónde mirar.
+- **«Imposible» no es lo mismo que «dudoso»:** una caja acreedora es un error; un proveedor deudor, una pregunta.
+- **Cinco tableros, un catálogo:** cada uno añadió un tipo (signo, movimiento, trimestre, ranking, lista de control) que
+  sirve a los siguientes.

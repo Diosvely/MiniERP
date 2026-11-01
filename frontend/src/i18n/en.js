@@ -1539,6 +1539,16 @@ export default {
     draft: 'Entry being edited (no number yet)',
   },
   // v0.52.0 · Top bar and dashboards
+  reverse: {   // v0.57.0 · balances against their nature in the balance sheet
+    one: '{n} account with a balance against its nature.',
+    many: '{n} accounts with a balance against their nature.',
+    errors: '({n} impossible: certain errors).',
+    why: 'The ERP does not offset them: it presents them on the other side of the balance sheet. Check the cause in their ledger.',
+    go: 'See in Checks',
+    line: '{n} accounts against their nature in this line',
+    account: 'Balance against its nature.',
+    accountError: 'Impossible balance.',
+  },
   dash: {
     bar: 'Company bar',
     title: 'Dashboards',
@@ -1552,9 +1562,14 @@ export default {
             payments: 'See receipts and payments', cashflow: 'See the cash flow statement',   // v0.54.0
             settlement: 'See the tax return', withholdings: 'See withholdings' },   // v0.55.0
     taxType: 'Company tax: {t} (the one of its territory, the same as the tax return).',
+    check: {   // v0.57.0 · checklist
+      ok: 'fine', info: 'normal', warning: 'warning', error: 'error', na: 'not applicable',
+      extra: { anomalies: '({x} impossible)', drafts: '({x} with a problem)', overdue_in: '({x} over 90 days)', overdue_out: '({x} over 90 days)' },
+      go: { checks: 'See in Checks', entries: 'Go to Entries', settlement: 'Go to Tax return', payments: 'Go to Receipts and payments' },
+    },
     rank: {   // v0.56.0 · ranking cards
       rest: 'Others ({n})',
-      none: { customers: 'No customer', suppliers: 'No supplier', expense_groups: 'Unclassified' },
+      none: { customers: 'No customer', suppliers: 'No supplier', expense_groups: 'Unclassified', anomalies: 'No account', overdue_customers: 'No customer' },
       total: 'Total',
       top: 'The top {n} make up {p} of the total.',
       onSales: 'In total, {p} of revenue.',

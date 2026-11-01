@@ -11,6 +11,9 @@ import DateField from './DateField'
 import MonthPicker from './MonthPicker'
 import SimulationToggle, { SimulationBanner } from './SimulationToggle'
 import { moveToYear, reportBase, simTitle } from '../reportPeriod'
+import { anomalyByAccount, anomalyCounts } from '../anomalies'
+import { companyPath } from '../router'
+import Link from './Link'
 
 // Balance de situación y Cuenta de Pérdidas y Ganancias (modelo PYMES del PGC)
 //   statement: 'balance' | 'pyg' · columnas ejercicio actual y anterior, como en las cuentas anuales
@@ -19,6 +22,8 @@ import { moveToYear, reportBase, simTitle } from '../reportPeriod'
 // Balance con el cierre del ejercicio anterior (NIC 34). La variación no lleva color: que suba un gasto o un ingreso
 // no es "bueno" o "malo" por sí solo; el signo y el % bastan para ver dónde mirar.
 // v0.51.0 · «hasta» con la fecha rápida y los botones de mes, y la simulación con los asientos en edición (ADR 0051).
+// v0.57.0 · SALDOS AL REVÉS (ADR 0057): el ERP no compensa; en el Balance avisa con una franja, un ⚠ en cada partida
+// que contiene alguna cuenta al revés y, al desplegarla, el ⚠ y la nota de la cuenta (erp.fs_line_anomalies).
 export default function FinancialStatements({ company, statement }) {
   const { t, language } = useI18n()
   const [years, setYears] = useState([])
@@ -29,6 +34,7 @@ export default function FinancialStatements({ company, statement }) {
   const [rows, setRows] = useState([])
   const [open, setOpen] = useState({})           // partida → cuentas que la forman (drill-down)
   const [error, setError] = useState('')
+  const [anomalies, setAnomalies] = useState([])  // v0.57.0: cuentas con saldo al revés y su partida
 
   useEffect(() => {
     supabase.from('fiscal_years').select('year').eq('company_id', company.id).order('year')
@@ -44,6 +50,9 @@ export default function FinancialStatements({ company, statement }) {
     supabase.rpc('financial_statement', {
       p_company: company.id, p_year: Number(year), p_statement: statement, p_to_date: toDate || null, p_drafts: sim,
     }).then(({ data, error }) => (error ? setError(error.message) : (setError(''), setRows(data))))
+    if (statement !== 'balance') return   // solo el Balance lleva el aviso (abajo, «shown»)
+    supabase.rpc('fs_line_anomalies', { p_company: company.id, p_year: Number(year), p_to: toDate || null, p_drafts: sim })
+      .then(({ data, error }) => setAnomalies(error ? [] : data ?? []))   // el aviso no debe impedir ver el Balance
   }, [company.id, year, toDate, statement, sim])
 
   // Las cuentas anuales muestran los negativos entre paréntesis: (1.234,00)
@@ -102,6 +111,10 @@ export default function FinancialStatements({ company, statement }) {
 
   const amount = (code) => Number(rows.find((r) => r.code === code)?.amount ?? 0)
   const difference = statement === 'balance' ? amount('ACT') - amount('PNP') : 0
+  const shown = statement === 'balance' ? anomalies : []
+  const marks = anomalyCounts(rows, shown)
+  const byAccount = anomalyByAccount(shown)
+  const errors = shown.filter((a) => a.severity === 'error').length
   const visible = rows.filter((r) => !hideZero || r.is_total || Number(r.amount) !== 0 || Number(r.amount_prev) !== 0)
 
   return (
@@ -140,6 +153,15 @@ export default function FinancialStatements({ company, statement }) {
         </div>
       )}
 
+      {shown.length > 0 && (
+        <p className="aviso-reves" role="note">
+          ⚠ {t(shown.length === 1 ? 'reverse.one' : 'reverse.many').replace('{n}', shown.length)}
+          {errors > 0 && <strong> {t('reverse.errors').replace('{n}', errors)}</strong>}
+          {' '}{t('reverse.why')}{' '}
+          <Link to={companyPath(company.id, 'checks')} className="enlace">{t('reverse.go')}</Link>
+        </p>
+      )}
+
       {/* En el móvil la tabla se desplaza en horizontal: con tabindex se puede mover también con el teclado */}
       <div className="tabla-ancha" tabIndex={0} role="region"
            aria-label={statement === 'balance' ? t('balanceSheet') : t('incomeStatement')}>
@@ -164,6 +186,12 @@ export default function FinancialStatements({ company, statement }) {
                     onClick={() => !r.is_total && toggle(r.code)}>
                   <td style={{ paddingLeft: `${8 + r.level * 14}px` }}>
                     {!r.is_total && <span className="desplegar">{open[r.code] ? '▾' : '▸'}</span>} {label(r)}
+                    {marks[r.code] && (
+                      <span className={`marca-reves${marks[r.code].errors ? ' error' : ''}`}
+                            title={t('reverse.line').replace('{n}', marks[r.code].n)}>
+                        {' '}⚠ {marks[r.code].n}<span className="oculto"> {t('reverse.line').replace('{n}', marks[r.code].n)}</span>
+                      </span>
+                    )}
                   </td>
                   <td className="num">{m(r.amount)}</td>
                   {hasPrev && <>
@@ -177,6 +205,12 @@ export default function FinancialStatements({ company, statement }) {
                     <td style={{ paddingLeft: `${28 + r.level * 14}px` }}>
                       <span className="codigo">{a.account_no}</span>
                       {language === 'en' ? a.account_name_en || a.account_name : a.account_name}
+                      {byAccount.get(a.account_no) && (
+                        <small className={`nota-reves${byAccount.get(a.account_no).severity === 'error' ? ' error' : ''}`}>
+                          ⚠ {t(byAccount.get(a.account_no).severity === 'error' ? 'reverse.accountError' : 'reverse.account')}
+                          {' '}{language === 'en' ? byAccount.get(a.account_no).note_en || byAccount.get(a.account_no).note : byAccount.get(a.account_no).note}
+                        </small>
+                      )}
                     </td>
                     <td className="num">{m(a.amount)}</td>
                     {hasPrev && <>

@@ -3,7 +3,7 @@ import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import { workDate, workYear } from '../workDate'
 import { companyPath } from '../router'
-import { change, fmtMetric, hasZones, periodLabel, rankingRows, seriesRows, tableLink, taxName, textOf, zoneStatus } from '../dashboards'
+import { change, checkDetail, fmtMetric, hasZones, periodLabel, rankingRows, seriesRows, tableLink, taxName, textOf, zoneStatus } from '../dashboards'
 import { monthNames, moveToYear, reportBase, simTitle } from '../reportPeriod'
 import { downloadXlsx, fileName } from '../exportXlsx'
 import DateField from './DateField'
@@ -15,6 +15,7 @@ import Loading from './Loading'
 import Link from './Link'
 import DashChart from './DashChart'
 import DashRanking from './DashRanking'
+import DashChecklist from './DashChecklist'
 
 // UN TABLERO (v0.52.0 · ADR 0052): la web dibuja lo que dice el catálogo de la base de datos (0075). Una sola llamada,
 // erp.dashboard_data, trae cada cifra con el año anterior a la misma fecha y las series de cada fin de mes, calculadas
@@ -61,7 +62,13 @@ export default function Dashboard({ company, code }) {
     const rows = []
     for (const w of data.widgets) {
       rows.push({ a: textOf(w, 'label', language).toUpperCase() })
-      if (w.kind === 'ranking') {
+      if (w.kind === 'checklist') {
+        // v0.57.0: cada fila con su estado y su cifra (en texto, como en pantalla)
+        for (const r of w.checklist ?? []) {
+          rows.push({ a: `${textOf(r, 'label', language)} · ${t(`dash.check.${r.severity}`)} · ${checkDetail(r, language, t)}`,
+            b: r.value == null ? null : Number(r.value), c: null })
+        }
+      } else if (w.kind === 'ranking') {
         // v0.56.0: cada tercero o subgrupo con su importe y el del año anterior, y el total
         const lab = { rest: (n) => t('dash.rank.rest').replace('{n}', n), none: t(`dash.rank.none.${w.ranking.source}`) }
         for (const x of rankingRows(w.ranking, lab)) {
@@ -134,6 +141,7 @@ export default function Dashboard({ company, code }) {
               {(w.kind === 'bars' || w.kind === 'lines') && <DashChart data={data} widget={w} />}
               {w.kind === 'table' && <Health company={company} data={data} widget={w} />}
               {w.kind === 'ranking' && <DashRanking company={company} data={data} widget={w} />}
+              {w.kind === 'checklist' && <DashChecklist company={company} widget={w} />}
             </section>
           ))}
         </div>

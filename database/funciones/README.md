@@ -1,6 +1,6 @@
 # Funciones del esquema erp (versión vigente)
 
-Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0081`.
+Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0082`.
 No se edita a mano: el código fuente son las migraciones. Esto es para **estudiar** cada función en su forma
 actual sin rastrear sus redefiniciones.
 
@@ -9,12 +9,13 @@ actual sin rastrear sus redefiniciones.
 - **Tipo:** *invoker* (se ejecuta con los permisos de quien llama: manda la RLS), *security definer* (con los del
   dueño: comprueba ella misma los permisos) o *trigger*.
 
-339 funciones.
+344 funciones.
 
 | Función | Versiones | Vigente en | Tipo |
 |---|---|---|---|
 | [`account_balance_in_year`](account_balance_in_year.sql) | 1 | 0047_inventory_closing | invoker |
 | [`account_matches`](account_matches.sql) | 1 | 0056_grader_fixes | invoker |
+| [`account_moves_at`](account_moves_at.sql) | 1 | 0082_tax_dashboard | security definer |
 | [`accrual_elapsed`](accrual_elapsed.sql) | 1 | 0043_year_end_adjustments | invoker |
 | [`adjust_account`](adjust_account.sql) | 1 | 0043_year_end_adjustments | security definer |
 | [`adjust_finish`](adjust_finish.sql) | 1 | 0043_year_end_adjustments | security definer |
@@ -87,6 +88,7 @@ actual sin rastrear sus redefiniciones.
 | [`close_month`](close_month.sql) | 1 | 0069_monthly_accounting | security definer |
 | [`closing_checklist`](closing_checklist.sql) | 5 | 0065_grants_integration | invoker |
 | [`company_access`](company_access.sql) | 1 | 0027_members | security definer |
+| [`company_tax_type`](company_tax_type.sql) | 1 | 0082_tax_dashboard | invoker |
 | [`concepts_for_account`](concepts_for_account.sql) | 1 | 0038_concepts | invoker |
 | [`control_rule_for`](control_rule_for.sql) | 1 | 0036_controlled_accounts | invoker |
 | [`controlled_lines`](controlled_lines.sql) | 1 | 0036_controlled_accounts | invoker |
@@ -112,9 +114,10 @@ actual sin rastrear sus redefiniciones.
 | [`create_partner`](create_partner.sql) | 1 | 0009_partners | invoker |
 | [`create_posting_account`](create_posting_account.sql) | 1 | 0002_chart_of_accounts | invoker |
 | [`create_provision`](create_provision.sql) | 1 | 0045_provisions | security definer |
-| [`dash_metric_values`](dash_metric_values.sql) | 3 | 0081_treasury_dashboard | invoker |
+| [`dash_metric_values`](dash_metric_values.sql) | 4 | 0082_tax_dashboard | invoker |
 | [`dash_month_ends`](dash_month_ends.sql) | 1 | 0075_dashboards | invoker |
-| [`dashboard_data`](dashboard_data.sql) | 1 | 0075_dashboards | invoker |
+| [`dash_quarters`](dash_quarters.sql) | 1 | 0082_tax_dashboard | invoker |
+| [`dashboard_data`](dashboard_data.sql) | 2 | 0082_tax_dashboard | invoker |
 | [`delete_company`](delete_company.sql) | 1 | 0004_journal_entries | security definer |
 | [`delete_company_step`](delete_company_step.sql) | 12 | 0072_temporary_companies | security definer |
 | [`delete_draft`](delete_draft.sql) | 1 | 0070_entries_screen | security definer |
@@ -288,10 +291,12 @@ actual sin rastrear sus redefiniciones.
 | [`special_tax_account`](special_tax_account.sql) | 1 | 0019_reverse_charge_surcharge | invoker |
 | [`start_accounting`](start_accounting.sql) | 1 | 0069_monthly_accounting | security definer |
 | [`submit_exercise`](submit_exercise.sql) | 2 | 0055_practice_integration | security definer |
+| [`tax_accounts`](tax_accounts.sql) | 1 | 0082_tax_dashboard | invoker |
 | [`tax_form_boxes`](tax_form_boxes.sql) | 1 | 0051_tax_forms | invoker |
 | [`tax_form_lines`](tax_form_lines.sql) | 1 | 0051_tax_forms | invoker |
+| [`tax_moves_at`](tax_moves_at.sql) | 1 | 0082_tax_dashboard | security definer |
 | [`tax_rate_text`](tax_rate_text.sql) | 1 | 0010_tax_setup | invoker |
-| [`tax_settlement_calc`](tax_settlement_calc.sql) | 4 | 0039_review_fixes | invoker |
+| [`tax_settlement_calc`](tax_settlement_calc.sql) | 5 | 0082_tax_dashboard | invoker |
 | [`temp_capacity`](temp_capacity.sql) | 1 | 0072_temporary_companies | security definer |
 | [`temp_cleanup`](temp_cleanup.sql) | 1 | 0072_temporary_companies | security definer |
 | [`temp_expired`](temp_expired.sql) | 1 | 0072_temporary_companies | invoker |

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { useI18n } from '../i18n'
-import { axis, fmtMetric, hasData, seriesRows, textOf } from '../dashboards'
+import { axis, fmtMetric, hasData, periodLabel, periods, seriesRows, textOf } from '../dashboards'
 import { monthNames } from '../reportPeriod'
 
 // GRÁFICO DE UNA TARJETA DE TABLERO (v0.52.0): barras (lo de cada mes) o líneas (a fin de mes, frente al año anterior).
@@ -28,8 +28,9 @@ export default function DashChart({ data, widget }) {
 
   const locale = language === 'en' ? 'en-GB' : 'es-ES'
   const names = monthNames(language)
-  const months = data.months ?? []
-  const mName = (d) => names[Number(String(d).slice(5, 7)) - 1]
+  // v0.55.0: los periodos son los meses o, en las barras por trimestre, 1T a 4T
+  const months = periods(data, widget)
+  const mName = (p) => periodLabel(p, language, names)
   const lines = widget.kind === 'lines'
   const withPrev = lines && data.has_prev
   const items = widget.items
@@ -85,8 +86,8 @@ export default function DashChart({ data, widget }) {
             </thead>
             <tbody>
               {rows.map((r) => (
-                <tr key={r.month}>
-                  <td>{names[Number(r.month.slice(5, 7)) - 1]}</td>
+                <tr key={r.period}>
+                  <td>{mName(r.period)}</td>
                   {items.map((it) => <td key={it.code} className="num">{fmtMetric(r[it.code], it.unit, language)}</td>)}
                   {data.has_prev && items.map((it) => <td key={`${it.code}p`} className="num anterior">
                     {fmtMetric(r[`${it.code}_prev`], it.unit, language)}</td>)}
@@ -102,7 +103,7 @@ export default function DashChart({ data, widget }) {
             <line className="cero" x1={PAD.l} x2={W - PAD.r} y1={y(0)} y2={y(0)} />
             <g className="eje">
               {ticks.map((v) => <text key={v} x={PAD.l - 8} y={y(v) + 4} textAnchor="end">{short(v)}</text>)}
-              {months.map((m, i) => (i % every === 0) && <text key={m} x={cx(i)} y={H - 6} textAnchor="middle">{mName(m)}</text>)}
+              {months.map((m, i) => (i % every === 0) && <text key={String(m)} x={cx(i)} y={H - 6} textAnchor="middle">{mName(m)}</text>)}
             </g>
             {lines ? items.map((it, k) => (
               <g key={it.code}>

@@ -2,6 +2,26 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.55.0] - 2026-11-01
+### Añadido
+- **Tablero «Impuestos»** en «Tableros ▾» (migración `0082_tax_dashboard.sql`, ADR 0055):
+  - cifras clave: cuotas devengadas, deducibles, resultado y retenciones practicadas, frente al año anterior;
+  - devengado y deducible, resultado y retenciones de cada trimestre (1T a 4T);
+  - resumen del año con el tipo medio repercutido.
+- Cada trimestre coincide con la liquidación del ERP: la lista de cuentas de impuesto de la liquidación pasa a
+  `erp.tax_accounts`, que usan la liquidación (calcula lo mismo) y el tablero.
+- Tipos de métrica **«impuesto»** (devengado y deducible del territorio de la empresa, sin liquidaciones ni cierre) y
+  **«movimiento de cuenta»** (cargos o abonos de una cuenta: retenciones de la 4751 y la 473).
+- Series **por trimestre** en las barras de los tableros.
+- En la web: el eje 1T a 4T (también en la tabla y el Excel), el impuesto de la empresa y los enlaces a Liquidación y
+  Retenciones.
+- Prueba de la base de datos `fase 76`.
+
+### Corregido
+- La restricción del catálogo aceptaba un movimiento de tesorería sin sentido (`flow in (…)` con NULL da NULL, y una
+  restricción con NULL se da por buena).
+- La tabla de una tarjeta enlazaba siempre a Ratios y enseñaba la columna de zona aunque estuviera vacía.
+
 ## [0.54.0] - 2026-11-01
 ### Añadido
 - **Tablero «Tesorería y circulante»** en «Tableros ▾» (migración `0081_treasury_dashboard.sql`, ADR 0054):

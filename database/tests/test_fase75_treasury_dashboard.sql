@@ -186,7 +186,7 @@ begin
   assert public.falla($q$insert into erp.dash_metrics (code, sort, label, label_en, unit, kind) values ('X', 999, 'x', 'x', 'eur', 'cash')$q$,
                       'dash_metrics_check'), 'un movimiento de tesorería necesita su sentido';
   assert public.falla($q$insert into erp.dash_metrics (code, sort, label, label_en, unit, kind, flow) values ('X', 999, 'x', 'x', 'eur', 'cash', 'both')$q$,
-                      'dash_metrics_flow_check'), 'entradas o salidas, nada más';
+                      'dash_metrics_'), 'entradas o salidas, nada más';   -- 0082: lo rechazan dash_metrics_check y dash_metrics_flow_check
   assert (select count(*) from erp.dashboards where code in ('resumen', 'rentabilidad', 'tesoreria')) = 3, 'los tres tableros';
   assert not exists (select 1 from erp.dash_widgets w, unnest(w.metrics) m(code)
                      where not exists (select 1 from erp.dash_metrics x where x.code = m.code)), 'cada tarjeta apunta a métricas que existen';

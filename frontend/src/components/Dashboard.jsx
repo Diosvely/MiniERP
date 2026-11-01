@@ -3,7 +3,7 @@ import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import { workDate, workYear } from '../workDate'
 import { companyPath } from '../router'
-import { change, fmtMetric, seriesRows, textOf, zoneStatus } from '../dashboards'
+import { change, fmtMetric, hasZones, periodLabel, seriesRows, tableLink, taxName, textOf, zoneStatus } from '../dashboards'
 import { monthNames, moveToYear, reportBase, simTitle } from '../reportPeriod'
 import { downloadXlsx, fileName } from '../exportXlsx'
 import DateField from './DateField'
@@ -63,7 +63,7 @@ export default function Dashboard({ company, code }) {
       if (w.kind === 'bars' || w.kind === 'lines') {
         for (const it of w.items) {
           for (const r of seriesRows(data, w)) {
-            rows.push({ a: `${textOf(it, 'label', language)} · ${names[Number(r.month.slice(5, 7)) - 1]}`,
+            rows.push({ a: `${textOf(it, 'label', language)} · ${periodLabel(r.period, language, names)}`,
               b: r[it.code] == null ? null : Number(r[it.code]), c: r[`${it.code}_prev`] == null ? null : Number(r[`${it.code}_prev`]) })
           }
         }
@@ -94,6 +94,8 @@ export default function Dashboard({ company, code }) {
           {data && <ReportActions onExcel={exportExcel} info={`${sim ? `${t('sim.prefix')} · ` : ''}${company.name ?? ''} · ${filters}`} />}
         </div>
         {data && textOf(data, 'description', language) && <p className="ayuda">{textOf(data, 'description', language)}</p>}
+        {data?.tax_type && data.widgets.some((w) => w.items?.some((it) => it.link === 'settlement')) && (
+          <p className="ayuda">{t('dash.taxType').replace('{t}', taxName(data.tax_type, language))}</p>)}
         <div className="rejilla-tres">
           <label>{t('year')}
             <select value={year} onChange={(e) => { setYear(e.target.value); setToDate(moveToYear(toDate, e.target.value)) }}>
@@ -161,8 +163,12 @@ function Kpis({ company, data, widget }) {
 }
 
 // Salud financiera: los ratios con la zona de referencia de la pantalla Ratios
+// v0.55.0: enlaza a la pantalla de sus métricas y la columna de zona sale solo si hay zona (tableLink, hasZones)
+
 function Health({ company, data, widget }) {
   const { t, language } = useI18n()
+  const link = tableLink(widget.items)
+  const zones = hasZones(widget.items)
   const zone = (it) => {
     const f = (v) => fmtMetric(v, it.unit, language)
     if (it.ref_min != null && it.ref_max != null) return `${f(it.ref_min)} – ${f(it.ref_max)}`
@@ -174,13 +180,13 @@ function Health({ company, data, widget }) {
     <>
       <div className="grafico-cabecera">
         <h3>{textOf(widget, 'label', language)}</h3>
-        <Link to={companyPath(company.id, 'ratios')} className="enlace">{t('dash.link.ratios')}</Link>
+        <Link to={companyPath(company.id, link)} className="enlace">{t(`dash.link.${link}`)}</Link>
       </div>
       <div className="tabla-ancha" tabIndex={0} role="region" aria-label={textOf(widget, 'label', language)}>
         <table className="informe tablero-salud">
           <thead>
             <tr><th /><th className="num">{data.year}</th>{data.has_prev && <th className="num">{Number(data.year) - 1}</th>}
-              <th className="num">{t('dash.zone')}</th></tr>
+              {zones && <th className="num">{t('dash.zone')}</th>}</tr>
           </thead>
           <tbody>
             {widget.items.map((it) => {
@@ -193,7 +199,7 @@ function Health({ company, data, widget }) {
                     {st && <span className={`ratio-estado ${st}`} title={t(`ratioStatus.${st}`)}> {BADGE[st]} <span className="oculto">{t(`ratioStatus.${st}`)}</span></span>}
                   </td>
                   {data.has_prev && <td className="num anterior">{fmtMetric(it.prev, it.unit, language)}</td>}
-                  <td className="num">{zone(it)}</td>
+                  {zones && <td className="num">{zone(it)}</td>}
                 </tr>
               )
             })}

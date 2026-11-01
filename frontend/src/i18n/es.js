@@ -1547,7 +1547,8 @@ export default {
     noPrev: 'Cifras a {d}. No hay ejercicio anterior con el que comparar.',
     empty: 'En {y} todavía no hay movimientos hasta la fecha elegida.',
     zone: 'Zona de referencia',
-    link: { pyg: 'Ver la cuenta de resultados', balance: 'Ver el balance', ratios: 'Ver los ratios' },
+    link: { pyg: 'Ver la cuenta de resultados', balance: 'Ver el balance', ratios: 'Ver los ratios',
+            payments: 'Ver cobros y pagos', cashflow: 'Ver el estado de flujos' },   // v0.54.0
   },
   mm: {
     help: 'Mes abierto: solo se contabiliza en él. Al cerrarlo, pasas al siguiente.',

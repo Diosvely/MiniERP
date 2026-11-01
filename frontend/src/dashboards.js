@@ -7,12 +7,16 @@ import { niceTicks } from './chart'
 // Dirección de un tablero: #/empresa/<id>/tableros/<código>
 export const dashPath = (companyId, code) => companyPath(companyId, `tableros/${code}`)
 
-// Una cifra según su unidad: 184.264,69 € · 7,6 % · 1,32
+// Una cifra según su unidad: 184.264,69 € · 7,6 % · 1,32 · 65 días (v0.54.0: los periodos medios, sin decimales)
 export function fmtMetric(v, unit, language) {
   if (v == null || Number.isNaN(Number(v))) return '—'
   const n = Number(v)
   const locale = language === 'en' ? 'en-GB' : 'es-ES'
   if (unit === 'eur') return `${money(n, language)} €`
+  if (unit === 'days') {
+    const d = Math.round(n)
+    return `${d.toLocaleString(locale)} ${language === 'en' ? (d === 1 ? 'day' : 'days') : (d === 1 ? 'día' : 'días')}`
+  }
   if (unit === 'pct') return `${(n * 100).toLocaleString(locale, { minimumFractionDigits: 1, maximumFractionDigits: 1 })} %`
   return n.toLocaleString(locale, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 }

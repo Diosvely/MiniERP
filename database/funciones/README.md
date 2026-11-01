@@ -1,6 +1,6 @@
 # Funciones del esquema erp (versión vigente)
 
-Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0080`.
+Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0081`.
 No se edita a mano: el código fuente son las migraciones. Esto es para **estudiar** cada función en su forma
 actual sin rastrear sus redefiniciones.
 
@@ -9,7 +9,7 @@ actual sin rastrear sus redefiniciones.
 - **Tipo:** *invoker* (se ejecuta con los permisos de quien llama: manda la RLS), *security definer* (con los del
   dueño: comprueba ella misma los permisos) o *trigger*.
 
-338 funciones.
+339 funciones.
 
 | Función | Versiones | Vigente en | Tipo |
 |---|---|---|---|
@@ -70,6 +70,7 @@ actual sin rastrear sus redefiniciones.
 | [`case_progress`](case_progress.sql) | 1 | 0067_case_screen | invoker |
 | [`cash_flow_check`](cash_flow_check.sql) | 3 | 0074_report_simulation | security definer |
 | [`cash_flow_statement`](cash_flow_statement.sql) | 2 | 0074_report_simulation | security definer |
+| [`cash_moves_at`](cash_moves_at.sql) | 1 | 0081_treasury_dashboard | security definer |
 | [`cf_account_flows`](cf_account_flows.sql) | 2 | 0066_complete_case | security definer |
 | [`cf_account_map`](cf_account_map.sql) | 1 | 0022_cash_flow | invoker |
 | [`cf_cash`](cf_cash.sql) | 5 | 0078_company_isolation | security definer |
@@ -111,7 +112,7 @@ actual sin rastrear sus redefiniciones.
 | [`create_partner`](create_partner.sql) | 1 | 0009_partners | invoker |
 | [`create_posting_account`](create_posting_account.sql) | 1 | 0002_chart_of_accounts | invoker |
 | [`create_provision`](create_provision.sql) | 1 | 0045_provisions | security definer |
-| [`dash_metric_values`](dash_metric_values.sql) | 2 | 0080_profitability_dashboard | invoker |
+| [`dash_metric_values`](dash_metric_values.sql) | 3 | 0081_treasury_dashboard | invoker |
 | [`dash_month_ends`](dash_month_ends.sql) | 1 | 0075_dashboards | invoker |
 | [`dashboard_data`](dashboard_data.sql) | 1 | 0075_dashboards | invoker |
 | [`delete_company`](delete_company.sql) | 1 | 0004_journal_entries | security definer |

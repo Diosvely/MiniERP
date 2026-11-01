@@ -2,6 +2,20 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.54.0] - 2026-11-01
+### Añadido
+- **Tablero «Tesorería y circulante»** en «Tableros ▾» (migración `0081_treasury_dashboard.sql`, ADR 0054):
+  - cifras clave: tesorería, clientes pendientes de cobro, proveedores pendientes de pago y fondo de maniobra;
+  - entradas y salidas de tesorería de cada mes;
+  - tesorería y fondo de maniobra a fin de mes, frente al año anterior;
+  - liquidez y plazos: liquidez general, prueba ácida, disponibilidad y periodos medios de cobro y de pago, con la zona
+    de Ratios.
+- Tipo de métrica **«movimiento de tesorería»**: lo que entra o sale de las cuentas 57, asiento a asiento (sin los
+  traspasos entre cuentas de tesorería), calculado en una pasada para todas las fechas (`erp.cash_moves_at`).
+- Tipo de métrica **«días»**: los periodos medios con los días transcurridos del ejercicio; al cierre, los de Ratios.
+- En la web, la unidad «días» y los enlaces a Cobros y pagos y al estado de flujos.
+- Prueba de la base de datos `fase 75`.
+
 ## [0.53.0] - 2026-11-01
 ### Añadido
 - **Tablero «Rentabilidad y márgenes»** en «Tableros ▾» (migración `0080_profitability_dashboard.sql`, ADR 0053),

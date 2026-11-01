@@ -1,4 +1,6 @@
 import { describe, it, expect } from 'vitest'
+import es from '../src/i18n/es.js'
+import en from '../src/i18n/en.js'
 import { dashPath, fmtMetric, change, zoneStatus, axis, hasData, seriesRows, textOf } from '../src/dashboards.js'
 
 describe('tableros · formato y comparación', () => {
@@ -11,6 +13,19 @@ describe('tableros · formato y comparación', () => {
     expect(fmtMetric(4.1654, 'ratio', 'es')).toBe('4,17')
     expect(fmtMetric(4.1654, 'ratio', 'en')).toBe('4.17')
     expect(fmtMetric(null, 'eur', 'es')).toBe('—')
+  })
+  it('los periodos medios, en días enteros (v0.54.0)', () => {
+    expect(fmtMetric(65.0917, 'days', 'es')).toBe('65 días')
+    expect(fmtMetric(158.3311, 'days', 'en')).toBe('158 days')
+    expect(fmtMetric(1.2, 'days', 'es')).toBe('1 día')
+    expect(fmtMetric(1500, 'days', 'es')).toBe('1500 días')   // en español, sin punto hasta 5 cifras
+    expect(fmtMetric(null, 'days', 'es')).toBe('—')
+  })
+  it('cada enlace del catálogo tiene su texto en los dos idiomas (v0.54.0)', () => {
+    for (const link of ['pyg', 'balance', 'ratios', 'payments', 'cashflow']) {
+      expect(es.dash.link[link]).toBeTruthy()
+      expect(en.dash.link[link]).toBeTruthy()
+    }
   })
   it('variación frente al año anterior, sin % si el anterior era 0', () => {
     expect(change(150, 100)).toEqual({ diff: 50, pct: 0.5, dir: 'up' })

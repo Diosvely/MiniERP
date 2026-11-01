@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.home_kpis · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0031_home_kpis   →   la vigente es la de 0031_home_kpis
+-- Definida en: 0031_home_kpis 0078_company_isolation   →   la vigente es la de 0078_company_isolation
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.home_kpis(p_company uuid, p_date date)
@@ -33,7 +33,7 @@ begin
            sum(case when e.entry_type = 'opening' then l.debit - l.credit else 0 end) as opening,
            count(distinct e.id) as entries
     from erp.journal_entries e
-    join erp.journal_lines   l on l.entry_id = e.id
+    join erp.journal_lines   l on l.entry_id = e.id and l.company_id = p_company   -- v0.52.3
     join erp.gl_accounts     a on a.id = l.gl_account_id
     where e.company_id = p_company and e.fiscal_year_id = fy.id and e.status = 'posted'
       and e.posting_date <= p_date and e.entry_type not in ('closing_pl', 'closing')
@@ -71,7 +71,7 @@ begin
   with q as (
     select e.id as entry_id, a.account_no, l.debit, l.credit
     from erp.journal_entries e
-    join erp.journal_lines   l on l.entry_id = e.id
+    join erp.journal_lines   l on l.entry_id = e.id and l.company_id = p_company   -- v0.52.3
     join erp.gl_accounts     a on a.id = l.gl_account_id
     where e.company_id = p_company and e.fiscal_year_id = fy.id and e.status = 'posted'
       and e.posting_date between q_start and p_date and e.entry_type not in ('closing_pl', 'closing')
@@ -92,7 +92,7 @@ begin
     v_out := v_out || jsonb_build_object('result_prev', (
       select coalesce(sum(l.credit - l.debit), 0)
       from erp.journal_entries e
-      join erp.journal_lines   l on l.entry_id = e.id
+      join erp.journal_lines   l on l.entry_id = e.id and l.company_id = p_company   -- v0.52.3
       join erp.gl_accounts     a on a.id = l.gl_account_id
       where e.company_id = p_company and e.fiscal_year_id = prev.id and e.status = 'posted'
         and e.entry_type not in ('closing_pl', 'closing') and left(a.account_no, 1) in ('6', '7')));

@@ -2,6 +2,32 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.52.4] - 2026-11-01
+### Corregido
+- **Comprobaciones, aún lenta la primera vez en Supabase** (migración `0079_checks_relevant_lines.sql`). Con la 0078
+  bajó a 2,3 s con la memoria caliente, pero en frío la web aún podía pasar del límite de 8 s.
+  - Comprobaciones lee solo los apuntes que usa (cuentas 47, con código de impuesto y asientos manuales) con
+    `erp.audit_lines_checks`: en Empresa 1, el 24 % de los apuntes del ejercicio. `erp.audit_lines` sigue igual.
+  - Índice parcial de los apuntes con código de impuesto.
+  - En local: de 0,8 s a 0,4 s en caliente y de 0,9 s a 0,56 s en frío.
+- Prueba de la base de datos `fase 73`.
+
+
+## [0.52.3] - 2026-11-01
+### Corregido
+- **Comprobaciones seguía superando el límite en Supabase** con varias empresas grandes en la base (migración
+  `0078_company_isolation.sql`). Medido en Supabase pieza a pieza: `erp.audit_lines` tardaba 2,4 s (70 ms en local) y
+  Comprobaciones la usa 7 veces. Causa: varias consultas recorrían los apuntes y asientos de **toda la base**, también
+  los de las demás empresas.
+  - `erp.audit_lines` lee los apuntes asiento a asiento (por su índice) y el origen «importado» sin cruzar con todos
+    los asientos; Comprobaciones la calcula una sola vez y comprueba el permiso una vez (`erp.can_report`).
+  - Balance y PyG, flujos, ratios, tablero, Inicio, comprobaciones de integridad y antigüedad de saldos filtran también
+    los apuntes por la empresa.
+  - En local, con PostgreSQL 17.6 (el de Supabase) y Empresa 1 junto a otras dos empresas grandes: Comprobaciones, de
+    2,5 s a 0,8 s. Una empresa pequeña tarda lo mismo aunque otra de la base tenga 300.000 apuntes.
+- Prueba de la base de datos `fase 72` (regresión: el tiempo de una empresa no depende del tamaño de las demás).
+
+
 ## [0.52.2] - 2026-10-29
 ### Corregido
 - **Comprobaciones seguía tardando demasiado en empresas grandes de varios años** (migración

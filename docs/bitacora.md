@@ -1557,3 +1557,41 @@ Mismos resultados. Pruebas: 71 SQL.
 - **Probar con volumen real:** con datos pequeños todo va rápido; los problemas salen con años de historia.
 - **Pensar en conjuntos, no en filas:** calcular una vez para todos en lugar de una vez por cada uno.
 - **Las estimaciones del planificador importan:** si cree que hay una fila, puede cruzar 18.000 × 18.000.
+
+## 2026-11-01 · v0.52.3 · Cada empresa, independiente del tamaño de las demás
+
+**Qué pasó**
+- Con la 0077 aplicada, Comprobaciones de «Empresa 1 SAGE» seguía tardando 12–20 s en Supabase; en local, 0,7 s con
+  los mismos datos.
+
+**Cómo se encontró**
+- Una consulta de medición en el SQL Editor de Supabase, pieza a pieza: `audit_lines` 2,4 s (70 ms en local); contar
+  los asientos de un ejercicio con la seguridad fila a fila, 929 ms (63 ms en local).
+- En local, PostgreSQL 17.6 (el de Supabase) y las tres empresas de Sage en la misma base: Comprobaciones de Empresa 1
+  pasaba de 0,9 s a 2,1 s sin cambiar sus datos. Varias consultas recorrían los apuntes de **toda la base**.
+
+**Arreglo:** 0078 (apuntes asiento a asiento o filtrados por la empresa, `audit_lines` una sola vez y el permiso una
+vez) y la fase 72, que falla sin el arreglo (97 ms → 870 ms al crecer otra empresa). Mismos resultados. Pruebas: 72 SQL.
+
+**Lo que se aprende**
+- **Medir donde falla, no donde funciona:** en local iba bien; la medición en Supabase señaló la pieza exacta.
+- **Una consulta de una empresa no debe depender de las demás:** filtrar por la empresa también en las tablas grandes
+  (los apuntes), no solo en la principal.
+- **Probar con varias empresas a la vez**, como en producción.
+
+## 2026-11-01 · v0.52.4 · Comprobaciones lee solo los apuntes que necesita
+
+**Qué pasó**
+- Con la 0078, Comprobaciones tardaba 2,3 s en Supabase con la memoria caliente, pero la primera vez la web aún daba
+  «La consulta ha tardado demasiado».
+
+**Causa:** en Supabase todo va entre 6 y 15 veces más lento que en local, y con la memoria fría lo que cuesta es leer
+del disco. Comprobaciones leía todos los apuntes del ejercicio (43.564 en Empresa 1) y solo usa los de las cuentas 47,
+los que llevan impuesto y los de asientos manuales (10.508).
+
+**Arreglo:** 0079 (`erp.audit_lines_checks` lee solo esos, con un índice parcial) y la fase 73. Mismos resultados.
+Pruebas: 73 SQL.
+
+**Lo que se aprende**
+- **En caliente y en frío no es lo mismo:** la primera consulta del día lee del disco; medir las dos.
+- **Leer solo lo que se usa** es la optimización más segura: menos datos, mismo resultado.

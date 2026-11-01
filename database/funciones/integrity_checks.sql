@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.integrity_checks · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0040_integrity_checks 0059_corporate_tax_integration   →   la vigente es la de 0059_corporate_tax_integration
+-- Definida en: 0040_integrity_checks 0059_corporate_tax_integration 0078_company_isolation   →   la vigente es la de 0078_company_isolation
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.integrity_checks(p_company uuid, p_year integer)
@@ -155,7 +155,7 @@ begin
   else
     select coalesce(sum(l.debit - l.credit), 0) into v_a
     from erp.journal_lines l join erp.journal_entries e on e.id = l.entry_id join erp.gl_accounts g on g.id = l.gl_account_id
-    where e.company_id = p_company and e.fiscal_year_id = v_fy.id and e.status = 'posted'
+    where e.company_id = p_company and l.company_id = p_company and e.fiscal_year_id = v_fy.id and e.status = 'posted'
       and e.entry_type not in ('closing_pl', 'closing') and g.account_no like '630%';
     status := case when v_a = v_c then 'ok' else 'fail' end; expected := v_c; actual := v_a;
     detail := jsonb_build_object('ledger_630', v_a, 'return_tax_expense', v_c);

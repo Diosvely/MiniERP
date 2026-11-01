@@ -1617,3 +1617,27 @@ Pruebas: 73 SQL.
   amortizar y lo que queda para el socio.
 - **Comprobar con los datos, no solo con las pruebas:** el eje en % no lo detectaba ninguna prueba; dibujarlo, sí.
 - **El catálogo cumple:** un tablero nuevo han sido filas y dos detalles de código que ya sirven para los siguientes.
+
+## 2026-11-01 · v0.54.0 · Tablero «Tesorería y circulante»
+
+**Qué se hizo**
+- Segundo de los cinco tableros nuevos, con el diseño validado antes de construir (`diseno-v0.54.0.md`): tesorería,
+  clientes, proveedores y fondo de maniobra; entradas y salidas de cada mes; tesorería y fondo de maniobra a fin de mes;
+  y liquidez y plazos con la zona de Ratios.
+- Dos tipos de métrica nuevos en el catálogo (0081): el movimiento de tesorería y los días. En la web, solo la unidad
+  «días» y dos textos de enlace.
+
+**Decisiones de Diosvely:** todas las entradas y salidas (no solo las de explotación), periodos medios con los días
+transcurridos y el vencido para la v0.57.0.
+
+**Pruebas:** fase 75 y dos tests de la web, que fallan sin el cambio:
+- si se suman los apuntes de las 57 uno a uno, «el traspaso no es una entrada: 500»;
+- con 365 días siempre, el periodo de cobro a mitad de año sale mal.
+Pruebas: 75 SQL y 292 de la web.
+
+**Lo que se aprende**
+- **Tesorería no es resultado:** el caso gana 64.276 € y tiene 129.860 € en el banco, pero paga a 158 días; el tablero
+  lo enseña de un vistazo.
+- **El asiento es la unidad del movimiento de caja:** dentro de un asiento, un traspaso entre cuentas 57 suma cero.
+- **Un ratio a mitad de año necesita su periodo:** comparar un saldo con las ventas de medio año como si fueran de uno
+  entero da la mitad (o el doble) de lo real.

@@ -1,5 +1,5 @@
 -- =====================================================================
--- DIAGNÓSTICO DE SUPABASE · migraciones 0001 … 0080 (GENERADO por scripts/generar-diagnostico.sh: no editar)
+-- DIAGNÓSTICO DE SUPABASE · migraciones 0001 … 0081 (GENERADO por scripts/generar-diagnostico.sh: no editar)
 -- ---------------------------------------------------------------------
 -- Pégalo en el SQL Editor de Supabase y pulsa Run. SOLO LEE: no cambia nada.
 -- Devuelve una fila por cada diferencia con el repositorio. Ninguna fila («No rows returned») = todo al día.
@@ -66,6 +66,7 @@ f(sig, hash) as (values
   ('erp.case_progress(uuid)', 'de9020f60e76d9af25ede35fc6349699'),
   ('erp.cash_flow_check(uuid,integer,boolean)', '02e888b54efbfb1ab7d2dd8f51c41402'),
   ('erp.cash_flow_statement(uuid,integer,text,boolean)', '670c6dd40e393706cca0156fcd2c42c2'),
+  ('erp.cash_moves_at(uuid,integer,date[])', '1ae57844b62764af9169952b035af2dc'),
   ('erp.cf_account_flows(uuid,integer)', '48429048ec2a08f717ca85d6ada61245'),
   ('erp.cf_account_map(text)', 'c52a335c06406f207b27533c43ddc157'),
   ('erp.cf_cash(uuid,integer)', '7df34bb47835c3c2c533875382e11b4d'),
@@ -107,7 +108,7 @@ f(sig, hash) as (values
   ('erp.create_partner(uuid,text,text,text,text,text,text)', '16885750ce264813b13659d6b3e1bdcb'),
   ('erp.create_posting_account(uuid,text,text,text)', '33e3e8b95715a5f133551e4aff7c404b'),
   ('erp.create_provision(jsonb)', '3fe0f1f04393e9e294b5ffdc6a0a6c07'),
-  ('erp.dash_metric_values(uuid,integer,date[])', '373143e16669fd6a9033f1eb0285a598'),
+  ('erp.dash_metric_values(uuid,integer,date[])', 'd07082e8eb7334ce977c56b50cf61d62'),
   ('erp.dash_month_ends(date,date)', 'fe7e5da493b86b482aee20c89def51e0'),
   ('erp.dashboard_data(uuid,text,integer,date,boolean)', 'f5df651a88717265c294e7dfff079b21'),
   ('erp.delete_company(uuid)', 'b8909d45c67d75b34080e784cb423291'),

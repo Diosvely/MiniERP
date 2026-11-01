@@ -37,6 +37,18 @@ describe('tableros · gráficos', () => {
     expect(tk[tk.length - 1]).toBeGreaterThanOrEqual(23000)
     expect(tk).toContain(0)
   })
+  it('márgenes en %: marcas redondas en % que abarcan los valores (v0.53.0)', () => {
+    const tk = axis([0.6917, 0.7, null, 0.5356], 'pct')
+    expect(tk[0]).toBe(0)
+    expect(tk[tk.length - 1]).toBeGreaterThanOrEqual(0.7)
+    expect(tk[tk.length - 1]).toBeLessThanOrEqual(1)   // en %, no en unidades
+    expect(tk.length).toBeGreaterThan(2)   // antes: [0, 50, 100] y los márgenes aplastados contra el cero
+    expect(tk.every((v) => Number.isInteger(Math.round(v * 1e6) / 1e4))).toBe(true)
+    const neg = axis([-0.12, 0.08], 'pct')
+    expect(neg[0]).toBeLessThanOrEqual(-0.12)
+    expect(neg).toContain(0)
+    expect(axis([0, 0], 'pct')).toEqual([0, 0.5, 1])
+  })
   it('todo a cero: eje limpio y aviso de que no hay movimientos', () => {
     expect(axis([0, 0, null])).toEqual([0, 50, 100])
     expect(hasData({ items: [{ series: [0, 0, null] }, { series: [0, null] }] })).toBe(false)

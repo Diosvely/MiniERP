@@ -1191,14 +1191,23 @@ button.enlace.pgc-ir { display: inline; align-self: auto; font: inherit; text-de
 .grafico .serie-linea.anterior { stroke-width: 1.5; stroke-dasharray: 5 4; opacity: .8; }
 .serie-0 { stroke: var(--primario); fill: var(--primario); }
 .serie-1 { stroke: var(--alerta); fill: var(--alerta); }
-.grafico .serie-linea.anterior.serie-0 { stroke: var(--suave); }
+/* v0.53.0: tercera serie (los tres márgenes de Rentabilidad). Magenta: se distingue del azul y del ocre y no se confunde
+   con el verde y el rojo de «bien» y «mal»; la leyenda nombra siempre cada serie */
+:root { --serie-2: #b0177a; }
+@media (prefers-color-scheme: dark) { :root { --serie-2: #ec6cb9; } }
+.serie-2 { stroke: var(--serie-2); fill: var(--serie-2); }
+.grafico.una-serie .serie-linea.anterior { stroke: var(--suave); }
 .grafico .serie-barra.activa { opacity: .75; }
 .grafico .serie-punto { stroke: var(--tarjeta); stroke-width: 2; }
 .leyenda-grafico { display: flex; flex-wrap: wrap; gap: 4px 14px; margin: 6px 0 0; font-size: .85rem; color: var(--suave); }
 .leyenda-grafico .muestra { display: inline-block; width: 14px; height: 10px; border-radius: 2px; vertical-align: middle; background: currentColor; }
 .leyenda-grafico .muestra.serie-0 { background: var(--primario); }
 .leyenda-grafico .muestra.serie-1 { background: var(--alerta); }
+.leyenda-grafico .muestra.serie-2 { background: var(--serie-2); }
 .leyenda-grafico .muestra.anterior { height: 0; border-top: 2px dashed var(--suave); background: none; border-radius: 0; }
+.leyenda-grafico:not(.una-serie) .muestra.anterior.serie-0 { border-top-color: var(--primario); }
+.leyenda-grafico:not(.una-serie) .muestra.anterior.serie-1 { border-top-color: var(--alerta); }
+.leyenda-grafico:not(.una-serie) .muestra.anterior.serie-2 { border-top-color: var(--serie-2); }
 .tablero-salud td small { display: block; }
 @media print {
   .barra-superior, .tablero-filtros .rejilla-tres, .leyenda-grafico + .ayuda { display: none !important; }

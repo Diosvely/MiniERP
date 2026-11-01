@@ -6,6 +6,8 @@ import { monthNames } from '../reportPeriod'
 // GRÁFICO DE UNA TARJETA DE TABLERO (v0.52.0): barras (lo de cada mes) o líneas (a fin de mes, frente al año anterior).
 // Dibujado a mano en SVG como los de Inicio: sin librerías ni cambios en la CSP. Cada serie lleva su nombre en la
 // leyenda (nunca solo color) y «Ver como tabla» enseña los números con el año anterior.
+// v0.53.0: hasta tres series (tres colores) y ejes en % para los márgenes. Con una sola serie, el año anterior va en
+// gris; con varias, cada uno en el color de su serie y discontinuo.
 //   data: la respuesta de erp.dashboard_data · widget: la tarjeta (kind 'bars' | 'lines')
 const PAD = { l: 56, r: 12, t: 12, b: 26 }
 
@@ -33,15 +35,17 @@ export default function DashChart({ data, widget }) {
   const items = widget.items
   const unit = items[0]?.unit
   const all = items.flatMap((it) => [...(it.series ?? []), ...(withPrev ? it.series_prev ?? [] : [])])
-  const ticks = axis(all)
+  const ticks = axis(all, unit)
+  const single = items.length === 1
   const lo = ticks[0], hi = ticks[ticks.length - 1]
   const W = width, H = W < 500 ? 200 : 230
   const n = Math.max(months.length, 1)
   const slot = (W - PAD.l - PAD.r) / n
   const cx = (i) => PAD.l + slot * (i + 0.5)
   const y = (v) => PAD.t + ((hi - Number(v)) * (H - PAD.t - PAD.b)) / (hi - lo || 1)
-  const short = (v) => (Math.abs(hi) >= 10000 || Math.abs(lo) >= 10000
-    ? `${(v / 1000).toLocaleString(locale)} ${t('kpi.thousand')}` : Number(v).toLocaleString(locale))
+  const short = (v) => (unit === 'pct' ? `${(Number(v) * 100).toLocaleString(locale, { maximumFractionDigits: 1 })} %`
+    : Math.abs(hi) >= 10000 || Math.abs(lo) >= 10000
+      ? `${(v / 1000).toLocaleString(locale)} ${t('kpi.thousand')}` : Number(v).toLocaleString(locale))
   const every = W < 500 && n > 6 ? 2 : 1
   const year = data.year, prevYear = Number(data.year) - 1
   const label = (it) => textOf(it, 'label', language)
@@ -92,7 +96,7 @@ export default function DashChart({ data, widget }) {
           </table>
         </div>
       ) : (
-        <div className="grafico" ref={box}>
+        <div className={`grafico${single ? ' una-serie' : ''}`} ref={box}>
           <svg viewBox={`0 0 ${W} ${H}`} width={W} height={H} role="img" aria-label={summary}>
             <g className="rejilla">{ticks.map((v) => <line key={v} x1={PAD.l} x2={W - PAD.r} y1={y(v)} y2={y(v)} />)}</g>
             <line className="cero" x1={PAD.l} x2={W - PAD.r} y1={y(0)} y2={y(0)} />
@@ -127,7 +131,7 @@ export default function DashChart({ data, widget }) {
           )}
         </div>
       )}
-      <p className="leyenda-grafico">
+      <p className={`leyenda-grafico${single ? ' una-serie' : ''}`}>
         {items.map((it, k) => <span key={it.code}><i className={`muestra serie-${k}`} aria-hidden="true" /> {label(it)} {year}</span>)}
         {withPrev && items.map((it, k) => <span key={`${it.code}p`}><i className={`muestra anterior serie-${k}`} aria-hidden="true" /> {label(it)} {prevYear}</span>)}
       </p>

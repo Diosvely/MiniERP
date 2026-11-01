@@ -1,6 +1,6 @@
 # Funciones del esquema erp (versión vigente)
 
-Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0079`.
+Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0080`.
 No se edita a mano: el código fuente son las migraciones. Esto es para **estudiar** cada función en su forma
 actual sin rastrear sus redefiniciones.
 
@@ -111,7 +111,7 @@ actual sin rastrear sus redefiniciones.
 | [`create_partner`](create_partner.sql) | 1 | 0009_partners | invoker |
 | [`create_posting_account`](create_posting_account.sql) | 1 | 0002_chart_of_accounts | invoker |
 | [`create_provision`](create_provision.sql) | 1 | 0045_provisions | security definer |
-| [`dash_metric_values`](dash_metric_values.sql) | 1 | 0075_dashboards | invoker |
+| [`dash_metric_values`](dash_metric_values.sql) | 2 | 0080_profitability_dashboard | invoker |
 | [`dash_month_ends`](dash_month_ends.sql) | 1 | 0075_dashboards | invoker |
 | [`dashboard_data`](dashboard_data.sql) | 1 | 0075_dashboards | invoker |
 | [`delete_company`](delete_company.sql) | 1 | 0004_journal_entries | security definer |

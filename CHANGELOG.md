@@ -2,6 +2,25 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.53.0] - 2026-11-01
+### Añadido
+- **Tablero «Rentabilidad y márgenes»** en «Tableros ▾» (migración `0080_profitability_dashboard.sql`, ADR 0053),
+  el primero de los cinco tableros nuevos (`plan-tableros.md`):
+  - cifras clave: cifra de negocios, margen bruto, EBITDA y resultado, frente al año anterior a la misma fecha;
+  - márgenes a lo largo del año (bruto, EBITDA y neto, acumulados a cada fin de mes);
+  - ventas y margen bruto de cada mes;
+  - estructura de costes: aprovisionamientos, personal, otros gastos y amortización sobre las ventas, margen de
+    explotación y neto.
+- 13 métricas nuevas en el catálogo, sacadas de las partidas de la PyG del ERP. El EBITDA, el margen de explotación y
+  el neto son los de la pantalla Ratios.
+- Una métrica de partida puede llevar signo: los gastos se ven en positivo.
+- Gráficos de los tableros: tercera serie (magenta) y el año anterior en el color de cada serie.
+- Prueba de la base de datos `fase 74`.
+
+### Corregido
+- En los gráficos de los tableros, el eje de los porcentajes salía en unidades (0, 50, 100) y los márgenes quedaban
+  aplastados contra el cero. Ahora se redondea en %.
+
 ## [0.52.4] - 2026-11-01
 ### Corregido
 - **Comprobaciones, aún lenta la primera vez en Supabase** (migración `0079_checks_relevant_lines.sql`). Con la 0078

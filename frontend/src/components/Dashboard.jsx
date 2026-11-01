@@ -3,7 +3,7 @@ import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import { workDate, workYear } from '../workDate'
 import { companyPath } from '../router'
-import { change, fmtMetric, hasZones, periodLabel, seriesRows, tableLink, taxName, textOf, zoneStatus } from '../dashboards'
+import { change, fmtMetric, hasZones, periodLabel, rankingRows, seriesRows, tableLink, taxName, textOf, zoneStatus } from '../dashboards'
 import { monthNames, moveToYear, reportBase, simTitle } from '../reportPeriod'
 import { downloadXlsx, fileName } from '../exportXlsx'
 import DateField from './DateField'
@@ -14,6 +14,7 @@ import ErrorBox from './ErrorBox'
 import Loading from './Loading'
 import Link from './Link'
 import DashChart from './DashChart'
+import DashRanking from './DashRanking'
 
 // UN TABLERO (v0.52.0 · ADR 0052): la web dibuja lo que dice el catálogo de la base de datos (0075). Una sola llamada,
 // erp.dashboard_data, trae cada cifra con el año anterior a la misma fecha y las series de cada fin de mes, calculadas
@@ -60,7 +61,15 @@ export default function Dashboard({ company, code }) {
     const rows = []
     for (const w of data.widgets) {
       rows.push({ a: textOf(w, 'label', language).toUpperCase() })
-      if (w.kind === 'bars' || w.kind === 'lines') {
+      if (w.kind === 'ranking') {
+        // v0.56.0: cada tercero o subgrupo con su importe y el del año anterior, y el total
+        const lab = { rest: (n) => t('dash.rank.rest').replace('{n}', n), none: t(`dash.rank.none.${w.ranking.source}`) }
+        for (const x of rankingRows(w.ranking, lab)) {
+          rows.push({ a: x.kind === 'row' && w.ranking.source !== 'expense_groups' ? `${x.key} ${x.label}` : x.label,
+            b: x.value == null ? null : Number(x.value), c: x.prev == null ? null : Number(x.prev) })
+        }
+        rows.push({ a: t('dash.rank.total'), b: Number(w.ranking.total.value), c: w.ranking.total.prev == null ? null : Number(w.ranking.total.prev) })
+      } else if (w.kind === 'bars' || w.kind === 'lines') {
         for (const it of w.items) {
           for (const r of seriesRows(data, w)) {
             rows.push({ a: `${textOf(it, 'label', language)} · ${periodLabel(r.period, language, names)}`,
@@ -124,6 +133,7 @@ export default function Dashboard({ company, code }) {
               {w.kind === 'kpis' && <Kpis company={company} data={data} widget={w} />}
               {(w.kind === 'bars' || w.kind === 'lines') && <DashChart data={data} widget={w} />}
               {w.kind === 'table' && <Health company={company} data={data} widget={w} />}
+              {w.kind === 'ranking' && <DashRanking company={company} data={data} widget={w} />}
             </section>
           ))}
         </div>

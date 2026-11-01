@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.dashboard_data · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0075_dashboards   →   la vigente es la de 0075_dashboards
+-- Definida en: 0075_dashboards 0082_tax_dashboard   →   la vigente es la de 0082_tax_dashboard
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.dashboard_data(p_company uuid, p_dashboard text, p_year integer, p_to_date date DEFAULT NULL::date, p_drafts boolean DEFAULT false)
@@ -48,7 +48,8 @@ begin
   end if;
 
   -- Cada tarjeta con sus métricas: valor, año anterior, zona de referencia y las series ya preparadas
-  -- (mode month: lo de cada mes = acumulado del mes − acumulado del mes anterior)
+  --   mode month: lo de cada mes = acumulado del mes − acumulado del mes anterior
+  --   mode quarter (0082): lo de cada trimestre, con erp.dash_quarters
   select coalesce(jsonb_agg(jsonb_build_object(
            'sort', w.sort, 'kind', w.kind, 'size', w.size, 'mode', w.mode, 'label', w.label, 'label_en', w.label_en,
            'help', w.help, 'help_en', w.help_en,
@@ -56,13 +57,17 @@ begin
                'code', m.code, 'label', m.label, 'label_en', m.label_en, 'unit', m.unit, 'link', m.link,
                'help', m.help, 'help_en', m.help_en, 'ref_min', r.ref_min, 'ref_max', r.ref_max,
                'value', cur -> m.code, 'prev', prev -> m.code,
-               'series', case when w.kind in ('bars', 'lines') then (
+               'series', case when w.kind in ('bars', 'lines') and w.mode = 'quarter' then
+                                erp.dash_quarters(ends, s_cur, cur, v_to, m.code)
+                              when w.kind in ('bars', 'lines') then (
                   select jsonb_agg(case when s.v is null or s.v = 'null'::jsonb then null
                                         when w.mode = 'month' then to_jsonb((s.v ->> m.code)::numeric
                                              - case when s.n = 1 then 0 else coalesce((s_cur -> (s.n::int - 2) ->> m.code)::numeric, 0) end)
                                         else s.v -> m.code end order by s.n)
                   from jsonb_array_elements(s_cur) with ordinality s(v, n)) end,
-               'series_prev', case when w.kind in ('bars', 'lines') and fy0.id is not null then (
+               'series_prev', case when w.kind in ('bars', 'lines') and fy0.id is not null and w.mode = 'quarter' then
+                                erp.dash_quarters(ends0, s_prev, null, null, m.code)
+                              when w.kind in ('bars', 'lines') and fy0.id is not null then (
                   select jsonb_agg(case when w.mode = 'month' then to_jsonb((s.v ->> m.code)::numeric
                                              - case when s.n = 1 then 0 else coalesce((s_prev -> (s.n::int - 2) ->> m.code)::numeric, 0) end)
                                         else s.v -> m.code end order by s.n)
@@ -79,6 +84,7 @@ begin
   return jsonb_build_object(
     'code', d.code, 'label', d.label, 'label_en', d.label_en, 'description', d.description, 'description_en', d.description_en,
     'year', p_year, 'to', v_to, 'prev_to', case when fy0.id is not null then v_prev_to end, 'has_prev', fy0.id is not null,
-    'simulation', p_drafts, 'months', to_jsonb(ends), 'months_prev', to_jsonb(ends0), 'widgets', widgets);
+    'simulation', p_drafts, 'months', to_jsonb(ends), 'months_prev', to_jsonb(ends0), 'widgets', widgets,
+    'tax_type', erp.company_tax_type(p_company));   -- 0082: VAT o IGIC, para los títulos
 end $function$
 ;

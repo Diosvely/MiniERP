@@ -1,5 +1,5 @@
 -- =====================================================================
--- DIAGNÓSTICO DE SUPABASE · migraciones 0001 … 0081 (GENERADO por scripts/generar-diagnostico.sh: no editar)
+-- DIAGNÓSTICO DE SUPABASE · migraciones 0001 … 0082 (GENERADO por scripts/generar-diagnostico.sh: no editar)
 -- ---------------------------------------------------------------------
 -- Pégalo en el SQL Editor de Supabase y pulsa Run. SOLO LEE: no cambia nada.
 -- Devuelve una fila por cada diferencia con el repositorio. Ninguna fila («No rows returned») = todo al día.
@@ -11,6 +11,7 @@ r(name, kind) as (values ('accounting_periods', 'tabla'), ('accruals', 'tabla'),
 f(sig, hash) as (values
   ('erp.account_balance_in_year(uuid,uuid,date)', '2e57240eaf505397ff79987708d47b9b'),
   ('erp.account_matches(text,text)', '39cf5188fc0722bd209e89462f735921'),
+  ('erp.account_moves_at(uuid,integer,date[],text[])', 'd8b022467fadacdf27bd962861c2deea'),
   ('erp.accrual_elapsed(numeric,date,integer,date)', 'b8e80807168d728717fe94e7d4d516ba'),
   ('erp.adjust_account(uuid,text,text)', '84c302d740b46e6261e59a64e56bfa4e'),
   ('erp.adjust_finish(uuid)', '35c28f61c02dc24fd373423f4da79a94'),
@@ -83,6 +84,7 @@ f(sig, hash) as (values
   ('erp.close_month(uuid,boolean)', '57517566fe80507388516df0675147a6'),
   ('erp.closing_checklist(uuid,integer)', 'cf249dfafdec763b82a1eedb216e070f'),
   ('erp.company_access(uuid)', 'ef8e329cfd281bf62ff055fde1dd136d'),
+  ('erp.company_tax_type(uuid)', 'a3d91e4e0fa648637c3a1c773e841b5f'),
   ('erp.concepts_for_account(text)', '99dc792450f9ce388d0422c3eaccc87d'),
   ('erp.control_rule_for(text)', 'c001109796e787fc4f0492d69dfbd72a'),
   ('erp.controlled_lines(jsonb)', '90cfc32f2636622abfe982ad023fbef6'),
@@ -108,9 +110,10 @@ f(sig, hash) as (values
   ('erp.create_partner(uuid,text,text,text,text,text,text)', '16885750ce264813b13659d6b3e1bdcb'),
   ('erp.create_posting_account(uuid,text,text,text)', '33e3e8b95715a5f133551e4aff7c404b'),
   ('erp.create_provision(jsonb)', '3fe0f1f04393e9e294b5ffdc6a0a6c07'),
-  ('erp.dash_metric_values(uuid,integer,date[])', 'd07082e8eb7334ce977c56b50cf61d62'),
+  ('erp.dash_metric_values(uuid,integer,date[])', 'd8d0f53eec917b6bf2a6d924ff3f7a27'),
   ('erp.dash_month_ends(date,date)', 'fe7e5da493b86b482aee20c89def51e0'),
-  ('erp.dashboard_data(uuid,text,integer,date,boolean)', 'f5df651a88717265c294e7dfff079b21'),
+  ('erp.dash_quarters(date[],jsonb,jsonb,date,text)', '2b819c8c6337de32b22fc3eadf3438cd'),
+  ('erp.dashboard_data(uuid,text,integer,date,boolean)', 'e5ed38c4d00d513c6090e6422080f893'),
   ('erp.delete_company(uuid)', 'b8909d45c67d75b34080e784cb423291'),
   ('erp.delete_company_step(uuid,integer)', 'acac93b47ec194cc249ce6b60011e079'),
   ('erp.delete_draft(uuid)', 'c4b82bcb8f533c8c1072c4f2592a82c0'),
@@ -284,10 +287,12 @@ f(sig, hash) as (values
   ('erp.special_tax_account(uuid,text,text,text,numeric,text,text)', '0f3224ea96fc25bedf47caf3a42af09c'),
   ('erp.start_accounting(uuid,date,boolean)', '48b8f41bd3ca0695f7e540e9a524eb5f'),
   ('erp.submit_exercise(text,jsonb,text,text)', '549e1d431096ce88460eb7a1ee3c76b1'),
+  ('erp.tax_accounts(uuid,text)', 'a319a0ca51b53c4172ef0ecde66ab832'),
   ('erp.tax_form_boxes(uuid,integer,integer)', '55e5d183ece5fc014a8545998ea7c75e'),
   ('erp.tax_form_lines(uuid,text,date,date)', '0059857b55f2acc1f3705f20fdf73de5'),
+  ('erp.tax_moves_at(uuid,integer,date[])', 'c818db57d7f60b55bde66345ef80d5c3'),
   ('erp.tax_rate_text(numeric)', 'e1a569fb792d1d6b7d9a2e94ddd577b6'),
-  ('erp.tax_settlement_calc(uuid,text,integer,integer,boolean)', '4dcd3a7eb36cb6c1d203b01ac043a63a'),
+  ('erp.tax_settlement_calc(uuid,text,integer,integer,boolean)', '8ea3c864a3e0cab05e84b5833fa2113b'),
   ('erp.temp_capacity()', '260b1f068d09477783c7d09a3b56ef8c'),
   ('erp.temp_cleanup(integer)', '58a0356d4237bfdad2e12db356a5edb9'),
   ('erp.temp_expired(timestamp with time zone,timestamp with time zone)', 'd2843f21c96bc3a10533f2f5a225cb56'),

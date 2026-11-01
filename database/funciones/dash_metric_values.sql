@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.dash_metric_values · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0075_dashboards 0080_profitability_dashboard 0081_treasury_dashboard   →   la vigente es la de 0081_treasury_dashboard
+-- Definida en: 0075_dashboards 0080_profitability_dashboard 0081_treasury_dashboard 0082_tax_dashboard   →   la vigente es la de 0082_tax_dashboard
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.dash_metric_values(p_company uuid, p_year integer, p_dates date[])
@@ -11,8 +11,8 @@ CREATE OR REPLACE FUNCTION erp.dash_metric_values(p_company uuid, p_year integer
 AS $function$
 #variable_conflict use_column
 declare
-  bal jsonb; pyg jsonb; grp jsonb; csh jsonb; vals jsonb; m erp.dash_metrics; x numeric; va numeric; vb numeric; d date;
-  v_start date; v_end date; days int;
+  bal jsonb; pyg jsonb; grp jsonb; csh jsonb; tax jsonb; mov jsonb; vals jsonb; m erp.dash_metrics;
+  x numeric; va numeric; vb numeric; d date; v_start date; v_end date; days int; prefixes text[];
 begin
   select fy.starting_date, fy.ending_date into v_start, v_end from erp.fiscal_years fy where fy.company_id = p_company and fy.year = p_year;
   -- { fecha: { partida: importe } } del Balance y de la PyG, y { fecha: { cuenta: saldo } } de la PyG (los grupos)
@@ -22,11 +22,22 @@ begin
   from (select f.at, jsonb_object_agg(f.code, f.amount) m from erp.fs_amounts_at(p_company, p_year, 'pyg', p_dates) f group by f.at) z;
   select coalesce(jsonb_object_agg(coalesce(z.at::text, '-'), z.m), '{}') into grp
   from (select c.at, jsonb_object_agg(c.account_no, c.balance) m from erp.fs_classified_at(p_company, p_year, 'pyg', p_dates) c group by c.at) z;
-  -- 0081: { fecha: { in, out } } de la tesorería, solo si alguna métrica la usa
-  csh := '{}';
+  -- 0081: { fecha: { in, out } } de la tesorería; 0082: { fecha: { output, input } } del impuesto y
+  -- { fecha: { prefijo: { debit, credit } } } de las cuentas. Cada uno, solo si alguna métrica lo usa.
+  csh := '{}'; tax := '{}'; mov := '{}';
   if exists (select 1 from erp.dash_metrics where kind = 'cash') then
     select coalesce(jsonb_object_agg(coalesce(c.at::text, '-'), jsonb_build_object('in', c.cash_in, 'out', c.cash_out)), '{}') into csh
     from erp.cash_moves_at(p_company, p_year, p_dates) c;
+  end if;
+  if exists (select 1 from erp.dash_metrics where kind = 'tax') then
+    select coalesce(jsonb_object_agg(coalesce(t.at::text, '-'), jsonb_build_object('output', t.output_tax, 'input', t.input_tax)), '{}') into tax
+    from erp.tax_moves_at(p_company, p_year, p_dates) t;
+  end if;
+  select array_agg(distinct account_prefix) into prefixes from erp.dash_metrics where kind = 'move';
+  if prefixes is not null then
+    select coalesce(jsonb_object_agg(z.at, z.m), '{}') into mov
+    from (select coalesce(a.at::text, '-') as at, jsonb_object_agg(a.prefix, jsonb_build_object('debit', a.debit, 'credit', a.credit)) m
+          from erp.account_moves_at(p_company, p_year, p_dates, prefixes) a group by a.at) z;
   end if;
 
   foreach d in array (select array_agg(distinct x) from unnest(p_dates) x) loop
@@ -43,6 +54,10 @@ begin
         from jsonb_each_text(coalesce(grp -> coalesce(d::text, '-'), '{}')) e where e.key like m.account_prefix || '%';
       elsif m.kind = 'cash' then
         x := coalesce((csh -> coalesce(d::text, '-') ->> m.flow)::numeric, 0);
+      elsif m.kind = 'tax' then
+        x := coalesce((tax -> coalesce(d::text, '-') ->> m.flow)::numeric, 0);
+      elsif m.kind = 'move' then
+        x := coalesce((mov -> coalesce(d::text, '-') -> m.account_prefix ->> m.flow)::numeric, 0);
       else
         va := (vals ->> m.a)::numeric; vb := (vals ->> m.b)::numeric;
         x := case m.kind when 'sum' then va + vb when 'diff' then va - vb

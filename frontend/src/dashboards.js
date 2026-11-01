@@ -51,11 +51,25 @@ export function axis(values, unit) {
 // ¿Hay algo que dibujar este ejercicio? (todo a cero o sin dato → se avisa en vez de enseñar un gráfico vacío)
 export const hasData = (widget) => widget.items.some((it) => (it.series ?? []).some((v) => v != null && Math.abs(Number(v)) >= 0.005))
 
-// Filas «mes a mes» de una tarjeta con gráfico (para «Ver como tabla» y el Excel):
-//   [{ month, <código>: valor, <código>_prev: valor del año anterior }]
+// Los periodos de una tarjeta con gráfico: los fines de mes del ejercicio o, con mode 'quarter' (v0.55.0), los cuatro
+// trimestres (1, 2, 3, 4)
+export const periods = (data, widget) => (widget?.mode === 'quarter' ? [1, 2, 3, 4] : data.months ?? [])
+
+// El nombre de un periodo: el mes («Ene») o el trimestre («1T»; «Q1» en inglés)
+export function periodLabel(p, language, monthNames) {
+  if (typeof p === 'number') return language === 'en' ? `Q${p}` : `${p}T`
+  return monthNames[Number(String(p).slice(5, 7)) - 1]
+}
+
+// El impuesto de la empresa, como se dice en cada idioma (VAT → IVA en español; IGIC igual en los dos)
+export const taxName = (taxType, language) => (taxType === 'VAT' ? (language === 'en' ? 'VAT' : 'IVA') : taxType ?? '')
+
+// Filas «periodo a periodo» de una tarjeta con gráfico (para «Ver como tabla» y el Excel):
+//   [{ period, month (o null), quarter (o null), <código>: valor, <código>_prev: valor del año anterior }]
 export function seriesRows(data, widget) {
-  return (data.months ?? []).map((month, i) => {
-    const row = { month }
+  const quarter = widget?.mode === 'quarter'
+  return periods(data, widget).map((p, i) => {
+    const row = { period: p, month: quarter ? null : p, quarter: quarter ? p : null }
     for (const it of widget.items) {
       row[it.code] = it.series?.[i] ?? null
       row[`${it.code}_prev`] = it.series_prev?.[i] ?? null
@@ -66,3 +80,11 @@ export function seriesRows(data, widget) {
 
 // La tarjeta: su texto en el idioma
 export const textOf = (o, field, language) => (language === 'en' ? o?.[`${field}_en`] || o?.[field] : o?.[field]) ?? ''
+
+// Tabla de una tarjeta (v0.55.0): enlaza a la pantalla de sus métricas (Ratios si alguna es un ratio; si no, la de la
+// primera), y la columna «Zona de referencia» sale solo si alguna métrica tiene zona (la del Resumen del año de
+// Impuestos no tiene)
+export function tableLink(items) {
+  return items.some((it) => it.link === 'ratios') ? 'ratios' : items.find((it) => it.link)?.link ?? 'ratios'
+}
+export const hasZones = (items) => items.some((it) => it.ref_min != null || it.ref_max != null)

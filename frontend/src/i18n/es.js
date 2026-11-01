@@ -1548,7 +1548,9 @@ export default {
     empty: 'En {y} todavía no hay movimientos hasta la fecha elegida.',
     zone: 'Zona de referencia',
     link: { pyg: 'Ver la cuenta de resultados', balance: 'Ver el balance', ratios: 'Ver los ratios',
-            payments: 'Ver cobros y pagos', cashflow: 'Ver el estado de flujos' },   // v0.54.0
+            payments: 'Ver cobros y pagos', cashflow: 'Ver el estado de flujos',   // v0.54.0
+            settlement: 'Ver la liquidación', withholdings: 'Ver las retenciones' },   // v0.55.0
+    taxType: 'Impuesto de la empresa: {t} (el de su territorio, el mismo que la liquidación).',
   },
   mm: {
     help: 'Mes abierto: solo se contabiliza en él. Al cerrarlo, pasas al siguiente.',

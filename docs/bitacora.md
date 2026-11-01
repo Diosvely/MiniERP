@@ -1641,3 +1641,26 @@ Pruebas: 75 SQL y 292 de la web.
 - **El asiento es la unidad del movimiento de caja:** dentro de un asiento, un traspaso entre cuentas 57 suma cero.
 - **Un ratio a mitad de año necesita su periodo:** comparar un saldo con las ventas de medio año como si fueran de uno
   entero da la mitad (o el doble) de lo real.
+
+## 2026-11-01 · v0.55.0 · Tablero «Impuestos»
+
+**Qué se hizo**
+- Tercero de los cinco tableros nuevos, con el diseño validado antes de construir (`diseno-v0.55.0.md`): el IVA / IGIC
+  devengado y deducible de cada trimestre, el resultado, las retenciones y un resumen del año.
+- La lista de cuentas de impuesto de la liquidación pasa a una función compartida (`erp.tax_accounts`), sacada con un
+  script para no reescribir a mano una función crítica. La liquidación y el tablero leen lo mismo.
+- Dos tipos de métrica nuevos (impuesto y movimiento de cuenta) y las series por trimestre.
+
+**Lo que salió al probar**
+- **Fase 75:** la nueva restricción del catálogo aceptaba un sentido vacío. `flow in (…)` con NULL da NULL, y
+  PostgreSQL da por buena una restricción que da NULL. Ahora se exige `flow is not null`, con su regresión.
+- **Al dibujar el tablero:** la tabla «Resumen del año» enlazaba a Ratios y tenía una columna de zona vacía; ahora
+  enlaza a la Liquidación y la columna solo sale si hay zona.
+
+**Pruebas:** fase 76 (cada trimestre = su liquidación; falla si contaran los asientos de liquidación) y cinco tests de
+la web. Pruebas: 76 SQL y 295 de la web.
+
+**Lo que se aprende**
+- **Una regla, un sitio:** si dos pantallas tienen que cuadrar, deben leer la misma función, no dos copias.
+- **NULL en una restricción CHECK** no la incumple: hay que pedir `is not null` además del `in (…)`.
+- **Las pruebas viejas protegen las nuevas:** la de la v0.54.0 encontró el fallo de la v0.55.0.

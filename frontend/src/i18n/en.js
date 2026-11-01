@@ -1549,7 +1549,9 @@ export default {
     empty: 'In {y} there are no movements yet up to the chosen date.',
     zone: 'Reference range',
     link: { pyg: 'See the income statement', balance: 'See the balance sheet', ratios: 'See the ratios',
-            payments: 'See receipts and payments', cashflow: 'See the cash flow statement' },   // v0.54.0
+            payments: 'See receipts and payments', cashflow: 'See the cash flow statement',   // v0.54.0
+            settlement: 'See the tax return', withholdings: 'See withholdings' },   // v0.55.0
+    taxType: 'Company tax: {t} (the one of its territory, the same as the tax return).',
   },
   mm: {
     help: 'Open month: entries are posted only in it. When you close it, you move to the next one.',

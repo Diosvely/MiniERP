@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import es from '../src/i18n/es.js'
 import en from '../src/i18n/en.js'
-import { dashPath, fmtMetric, change, zoneStatus, axis, hasData, seriesRows, textOf } from '../src/dashboards.js'
+import { dashPath, fmtMetric, change, zoneStatus, axis, hasData, seriesRows, textOf, periods, periodLabel, taxName, tableLink, hasZones } from '../src/dashboards.js'
 
 describe('tableros · formato y comparación', () => {
   it('la dirección de un tablero', () => {
@@ -22,7 +22,7 @@ describe('tableros · formato y comparación', () => {
     expect(fmtMetric(null, 'days', 'es')).toBe('—')
   })
   it('cada enlace del catálogo tiene su texto en los dos idiomas (v0.54.0)', () => {
-    for (const link of ['pyg', 'balance', 'ratios', 'payments', 'cashflow']) {
+    for (const link of ['pyg', 'balance', 'ratios', 'payments', 'cashflow', 'settlement', 'withholdings']) {
       expect(es.dash.link[link]).toBeTruthy()
       expect(en.dash.link[link]).toBeTruthy()
     }
@@ -70,14 +70,41 @@ describe('tableros · gráficos', () => {
     expect(hasData({ items: [{ series: [0, 0.01] }] })).toBe(true)
     expect(hasData({ items: [{ series: null }] })).toBe(false)
   })
+  it('barras por trimestre: 1T a 4T, en la tabla y el Excel (v0.55.0)', () => {
+    const data = { months: ['2026-01-31', '2026-02-28', '2026-03-31'] }
+    const w = { mode: 'quarter', items: [{ code: 'TAX_RES', series: [938, 308, null, null], series_prev: [1, 2, 3, 4] }] }
+    expect(periods(data, w)).toEqual([1, 2, 3, 4])
+    expect(periods(data, { mode: 'month' })).toEqual(data.months)
+    const rows = seriesRows(data, w)
+    expect(rows).toHaveLength(4)
+    expect(rows[1]).toMatchObject({ period: 2, quarter: 2, month: null, TAX_RES: 308, TAX_RES_prev: 2 })
+    expect(rows[2].TAX_RES).toBeNull()
+    expect(periodLabel(1, 'es', [])).toBe('1T')
+    expect(periodLabel(4, 'en', [])).toBe('Q4')
+    expect(periodLabel('2026-02-28', 'es', ['Ene', 'Feb'])).toBe('Feb')
+  })
+  it('la tabla enlaza a la pantalla de sus métricas y enseña la zona solo si la hay (v0.55.0)', () => {
+    expect(tableLink([{ link: 'pyg' }, { link: 'ratios' }])).toBe('ratios')
+    expect(tableLink([{ link: 'settlement' }, { link: 'withholdings' }])).toBe('settlement')
+    expect(tableLink([{}])).toBe('ratios')
+    expect(hasZones([{ ref_min: null, ref_max: null }])).toBe(false)
+    expect(hasZones([{ ref_min: null, ref_max: 60 }])).toBe(true)
+  })
+  it('el impuesto de la empresa en cada idioma (v0.55.0)', () => {
+    expect(taxName('VAT', 'es')).toBe('IVA')
+    expect(taxName('VAT', 'en')).toBe('VAT')
+    expect(taxName('IGIC', 'es')).toBe('IGIC')
+    expect(es.dash.taxType).toContain('{t}')
+    expect(en.dash.taxType).toContain('{t}')
+  })
   it('filas mes a mes con el año anterior, para la tabla y el Excel', () => {
     const data = { months: ['2027-01-31', '2027-02-28'] }
     const w = { items: [{ code: 'CASH', series: [10, null], series_prev: [7, 8] }] }
     expect(seriesRows(data, w)).toEqual([
-      { month: '2027-01-31', CASH: 10, CASH_prev: 7 },
-      { month: '2027-02-28', CASH: null, CASH_prev: 8 },
+      { period: '2027-01-31', month: '2027-01-31', quarter: null, CASH: 10, CASH_prev: 7 },
+      { period: '2027-02-28', month: '2027-02-28', quarter: null, CASH: null, CASH_prev: 8 },
     ])
-    expect(seriesRows(data, { items: [{ code: 'X', series: [1, 2], series_prev: null }] })[1]).toEqual({ month: '2027-02-28', X: 2, X_prev: null })
+    expect(seriesRows(data, { items: [{ code: 'X', series: [1, 2], series_prev: null }] })[1]).toEqual({ period: '2027-02-28', month: '2027-02-28', quarter: null, X: 2, X_prev: null })
   })
   it('los textos del catálogo en los dos idiomas', () => {
     const o = { label: 'Tesorería', label_en: 'Cash' }

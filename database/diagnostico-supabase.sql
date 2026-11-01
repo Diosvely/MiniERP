@@ -1,5 +1,5 @@
 -- =====================================================================
--- DIAGNÓSTICO DE SUPABASE · migraciones 0001 … 0079 (GENERADO por scripts/generar-diagnostico.sh: no editar)
+-- DIAGNÓSTICO DE SUPABASE · migraciones 0001 … 0080 (GENERADO por scripts/generar-diagnostico.sh: no editar)
 -- ---------------------------------------------------------------------
 -- Pégalo en el SQL Editor de Supabase y pulsa Run. SOLO LEE: no cambia nada.
 -- Devuelve una fila por cada diferencia con el repositorio. Ninguna fila («No rows returned») = todo al día.
@@ -107,7 +107,7 @@ f(sig, hash) as (values
   ('erp.create_partner(uuid,text,text,text,text,text,text)', '16885750ce264813b13659d6b3e1bdcb'),
   ('erp.create_posting_account(uuid,text,text,text)', '33e3e8b95715a5f133551e4aff7c404b'),
   ('erp.create_provision(jsonb)', '3fe0f1f04393e9e294b5ffdc6a0a6c07'),
-  ('erp.dash_metric_values(uuid,integer,date[])', '83bd9f1439769391f32ce3612104e253'),
+  ('erp.dash_metric_values(uuid,integer,date[])', '373143e16669fd6a9033f1eb0285a598'),
   ('erp.dash_month_ends(date,date)', 'fe7e5da493b86b482aee20c89def51e0'),
   ('erp.dashboard_data(uuid,text,integer,date,boolean)', 'f5df651a88717265c294e7dfff079b21'),
   ('erp.delete_company(uuid)', 'b8909d45c67d75b34080e784cb423291'),

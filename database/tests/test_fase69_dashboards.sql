@@ -146,7 +146,7 @@ do $$
 begin
   assert public.falla(format('select erp.dashboard_data(%L, %L, 2027)', (select e from public.ctx where k = 'c'), 'resumen'), 'Not allowed'),
          'otra empresa no ve nada';
-  assert (select count(*) from erp.dashboards) = 1, 'el catálogo sí se lee';
+  assert (select count(*) from erp.dashboards where code = 'resumen') = 1, 'el catálogo sí se lee';   -- 0080: hay más tableros
   raise notice 'OK  · otra empresa no ve el tablero';
 end $$;
 reset role;

@@ -34,11 +34,14 @@ export function zoneStatus(v, min, max) {
 }
 
 // Eje de un gráfico: marcas redondas que incluyen el 0 (las barras y las líneas parten de él)
-export function axis(values) {
-  const v = values.filter((x) => x != null).map(Number)
+//   unit 'pct' (v0.53.0): los márgenes llegan como 0,6917; las marcas se redondean en % (0 %, 20 %, 40 %…) y no en
+//   unidades, que dejaban todos los márgenes aplastados contra el cero
+export function axis(values, unit) {
+  const k = unit === 'pct' ? 100 : 1
+  const v = values.filter((x) => x != null).map((x) => Number(x) * k)
   const lo = Math.min(0, ...v), hi = Math.max(0, ...v)
-  if (hi - lo < 1) return [0, 50, 100]   // todo a cero: un eje limpio, sin «0,5 €»
-  return niceTicks(lo, hi)
+  if (hi - lo < 1) return [0, 50, 100].map((x) => x / k)   // todo a cero: un eje limpio, sin «0,5 €»
+  return niceTicks(lo, hi).map((x) => x / k)
 }
 
 // ¿Hay algo que dibujar este ejercicio? (todo a cero o sin dato → se avisa en vez de enseñar un gráfico vacío)

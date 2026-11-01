@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.dash_metric_values · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0075_dashboards   →   la vigente es la de 0075_dashboards
+-- Definida en: 0075_dashboards 0080_profitability_dashboard   →   la vigente es la de 0080_profitability_dashboard
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.dash_metric_values(p_company uuid, p_year integer, p_dates date[])
@@ -25,7 +25,9 @@ begin
     vals := '{}';
     for m in select * from erp.dash_metrics order by sort loop
       if m.kind = 'line' then
-        x := coalesce(((case m.statement when 'balance' then bal else pyg end) -> coalesce(d::text, '-') ->> m.line_code)::numeric, 0);
+        -- 0080: con signo (-1 = el gasto en positivo)
+        x := coalesce(m.sign, 1)
+             * coalesce(((case m.statement when 'balance' then bal else pyg end) -> coalesce(d::text, '-') ->> m.line_code)::numeric, 0);
       elsif m.kind = 'group' then
         select m.sign * coalesce(sum(e.value::numeric), 0) into x
         from jsonb_each_text(coalesce(grp -> coalesce(d::text, '-'), '{}')) e where e.key like m.account_prefix || '%';

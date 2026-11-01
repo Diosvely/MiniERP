@@ -1595,3 +1595,25 @@ Pruebas: 73 SQL.
 **Lo que se aprende**
 - **En caliente y en frío no es lo mismo:** la primera consulta del día lee del disco; medir las dos.
 - **Leer solo lo que se usa** es la optimización más segura: menos datos, mismo resultado.
+
+## 2026-11-01 · v0.53.0 · Tablero «Rentabilidad y márgenes»
+
+**Qué se hizo**
+- Primero de los cinco tableros nuevos que pidió Diosvely (`plan-tableros.md`), con el diseño validado antes de
+  construir: ventas, margen bruto, EBITDA y resultado; los márgenes a lo largo del año; ventas y margen bruto de cada
+  mes; y la estructura de costes sobre las ventas.
+- Casi todo son filas del catálogo (0080): 13 métricas, el tablero y sus 4 tarjetas. Solo se programó el signo de las
+  métricas de partida (los gastos en positivo) y, en la web, el eje en % y la tercera serie.
+
+**Lo que salió al probar**
+- Sin el signo, los aprovisionamientos salían en −37.000 y el margen bruto, mayor que las ventas (la fase 74 lo vigila).
+- Al dibujar los márgenes, el eje salía de 0 a 100 en unidades: los márgenes (entre 0 y 1) quedaban pegados al cero.
+  Se vio dibujando el tablero con los datos del caso antes de entregarlo.
+
+**Arreglo y pruebas:** 0080, fase 74 y un test de la web, que fallan sin el arreglo. Pruebas: 74 SQL y 290 de la web.
+
+**Lo que se aprende**
+- **Margen bruto, EBITDA y margen neto** cuentan la misma historia por capas: el negocio, la explotación antes de
+  amortizar y lo que queda para el socio.
+- **Comprobar con los datos, no solo con las pruebas:** el eje en % no lo detectaba ninguna prueba; dibujarlo, sí.
+- **El catálogo cumple:** un tablero nuevo han sido filas y dos detalles de código que ya sirven para los siguientes.

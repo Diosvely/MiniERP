@@ -1,12 +1,13 @@
 -- =====================================================================
 -- erp.run_audit_checks · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0037_audit_checks 0039_review_fixes 0042_assets_integration 0044_adjustments_integration 0046_asset_impairment 0048_closing_integration 0050_payroll_integration 0053_forms_integration 0061_equity_integration 0063_financing_integration 0065_grants_integration 0077_large_companies   →   la vigente es la de 0077_large_companies
+-- Definida en: 0037_audit_checks 0039_review_fixes 0042_assets_integration 0044_adjustments_integration 0046_asset_impairment 0048_closing_integration 0050_payroll_integration 0053_forms_integration 0061_equity_integration 0063_financing_integration 0065_grants_integration 0077_large_companies 0078_company_isolation   →   la vigente es la de 0078_company_isolation
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.run_audit_checks(p_company uuid, p_year integer, p_to_date date DEFAULT NULL::date)
  RETURNS TABLE(code text, sort integer, area text, status text, title text, title_en text, why text, why_en text, fix text, fix_en text, screen text, book numeric, ledger numeric, difference numeric, items integer, details jsonb)
  LANGUAGE plpgsql
- STABLE
+ STABLE SECURITY DEFINER
+ SET search_path TO 'erp', 'public'
  SET jit TO 'off'
 AS $function$
 declare
@@ -18,9 +19,15 @@ declare
   v_sign   int;
   v_err    boolean;
   v_book numeric; v_ledger numeric; v_items int; v_det jsonb;
+  v_al     erp.audit_line[];   -- v0.52.3: los apuntes del ejercicio con su origen, calculados UNA vez para todas
   v_rules  jsonb;   -- v0.52.2: reglas de las cuentas controladas de la empresa
 begin
-  if v_type is null or v_to is null then return; end if;     -- empresa o ejercicio que no existe (o no se puede ver)
+  -- v0.52.3: el permiso, una vez (erp.can_report, como la seguridad fila a fila) y no en cada fila de cada consulta;
+  -- todas las consultas de abajo filtran por la empresa
+  if not erp.can_report(p_company) then return; end if;
+  if v_type is null or v_to is null then return; end if;
+  select array_agg(x) into v_al from erp.audit_lines(p_company, p_year, v_to) x;
+  v_al := coalesce(v_al, '{}');     -- empresa o ejercicio que no existe (o no se puede ver)
 
   for r in select * from erp.audit_checks c order by c.sort loop
     v_book := null; v_ledger := null; v_items := 0; v_det := '[]'; v_sev := r.severity;
@@ -32,12 +39,12 @@ begin
       select coalesce(sum(v_sign * (a.debit - a.credit)) filter (where a.source = 'invoice'), 0),
              coalesce(sum(v_sign * (a.debit - a.credit)), 0)
       into v_book, v_ledger
-      from erp.audit_lines(p_company, p_year, v_to) a
+      from unnest(v_al) a
       where a.account_no like v_prefix || '%' and a.source not in ('settlement', 'pro_rata');
       -- Detalle: asientos manuales o importados (cada uno junto con su contraasiento: si se anularon, no salen)
       with g as (
         select a.k, a.source, min(a.account_no) as account_no, sum(v_sign * (a.debit - a.credit)) as amount
-        from erp.audit_lines(p_company, p_year, v_to) a
+        from unnest(v_al) a
         where a.account_no like v_prefix || '%' and a.source in ('manual', 'import')
         group by a.k, a.source having sum(a.debit - a.credit) <> 0
       ), n as (
@@ -65,6 +72,7 @@ begin
         join erp.gl_accounts g on g.id = l.gl_account_id
         join erp.tax_codes c on c.code = l.tax_code
         where e.company_id = p_company and fy.year = p_year and e.status = 'posted' and e.entry_type = 'normal'
+          and l.company_id = p_company and g.company_id = p_company and fy.company_id = p_company   -- v0.52.3
           and e.posting_date <= v_to and e.reversal_of is null
           and not exists (select 1 from erp.journal_entries rv
                           where rv.reversal_of = e.id and rv.status = 'posted' and rv.posting_date <= v_to)
@@ -101,7 +109,7 @@ begin
         select a.k, a.source, min(a.account_no) as account_no, sum(a.credit - a.debit) as amount,
                (select sum(l.credit - l.debit) from erp.journal_lines l join erp.gl_accounts ga on ga.id = l.gl_account_id
                 where l.entry_id = a.k and ga.account_no like '4751%' and ga.account_no not like '47512%') as original
-        from erp.audit_lines(p_company, p_year, v_to) a
+        from unnest(v_al) a
         where a.account_no like '4751%' and a.account_no not like '47512%'   -- v0.42.0: la 47512 (dividendos) va al modelo 123
         group by a.k, a.source
       ), n as (
@@ -187,7 +195,7 @@ begin
     elsif r.code = 'tax_territory' then
       with g as (
         select a.k, a.source, min(a.account_no) as account_no, min(a.tax_code) as tax_code, sum(a.debit - a.credit) as amount
-        from erp.audit_lines(p_company, p_year, v_to) a join erp.tax_codes c on c.code = a.tax_code
+        from unnest(v_al) a join erp.tax_codes c on c.code = a.tax_code
         where c.tax_type <> v_type
         group by a.k, a.source
         having count(*) filter (where a.entry_id = a.k) > count(*) filter (where a.entry_id <> a.k)  -- sin anular
@@ -216,7 +224,7 @@ begin
 
       with m as (
         select distinct a.entry_id, a.entry_no, a.posting_date
-        from erp.audit_lines(p_company, p_year, v_to) a
+        from unnest(v_al) a
         where a.source = 'manual' and a.entry_id = a.k
       ), hit as (
         select distinct on (m.entry_id) m.entry_id, m.entry_no, m.posting_date, g.account_no,
@@ -270,6 +278,7 @@ begin
         from erp.journal_lines jl join erp.journal_entries e on e.id = jl.entry_id
         join erp.gl_accounts g on g.id = jl.gl_account_id
         where e.company_id = p_company and e.status = 'posted' and e.posting_date <= v_to and e.entry_type <> 'closing'
+          and jl.company_id = p_company and g.company_id = p_company   -- v0.52.3: solo las cuentas y apuntes de la empresa
           and not exists (select 1 from erp.year_closings yc where yc.opening_entry_id = e.id)
           and (left(g.account_no, 2) in ('20', '21', '22', '28') or left(g.account_no, 3) in ('290', '291', '292'))
           and left(g.account_no, 3) not in ('210', '220')
@@ -330,6 +339,7 @@ begin
         from erp.journal_lines jl join erp.journal_entries e on e.id = jl.entry_id
         join erp.gl_accounts g on g.id = jl.gl_account_id
         where e.company_id = p_company and e.status = 'posted' and e.posting_date <= v_to and e.entry_type <> 'closing'
+          and jl.company_id = p_company and g.company_id = p_company   -- v0.52.3: solo las cuentas y apuntes de la empresa
           and not exists (select 1 from erp.year_closings yc where yc.opening_entry_id = e.id)
           and (g.account_no like '480%' or g.account_no like '485%' or g.account_no like '4009%'
                or g.account_no like '4309%' or g.account_no like '490%')
@@ -380,6 +390,7 @@ begin
         from erp.journal_lines jl join erp.journal_entries e on e.id = jl.entry_id
         join erp.gl_accounts g on g.id = jl.gl_account_id
         where e.company_id = p_company and e.status = 'posted' and e.posting_date <= v_to and e.entry_type <> 'closing'
+          and jl.company_id = p_company and g.company_id = p_company   -- v0.52.3: solo las cuentas y apuntes de la empresa
           and not exists (select 1 from erp.year_closings yc where yc.opening_entry_id = e.id)
           and case r.code when 'provisions_ledger' then g.account_no ~ '^(141|142|5292|5293|499)'
                           when 'payroll_ledger' then g.account_no ~ '^(465|476)'   -- v0.38.0

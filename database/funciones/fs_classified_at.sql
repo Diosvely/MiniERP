@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.fs_classified_at · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0075_dashboards 0077_large_companies   →   la vigente es la de 0077_large_companies
+-- Definida en: 0075_dashboards 0077_large_companies 0078_company_isolation   →   la vigente es la de 0078_company_isolation
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.fs_classified_at(p_company uuid, p_year integer, p_statement text, p_dates date[])
@@ -21,7 +21,7 @@ AS $function$
   ), mov as (
     select g.account_no, g.name, g.name_en, e.posting_date, sum(l.debit - l.credit) as amt
     from ent e
-    join erp.journal_lines l on l.entry_id = e.id
+    join erp.journal_lines l on l.entry_id = e.id and l.company_id = p_company   -- v0.52.3: solo los de la empresa
     join erp.gl_accounts g   on g.id = l.gl_account_id
     where (p_statement = 'balance' or left(g.account_no, 1) in ('6', '7'))
     group by g.account_no, g.name, g.name_en, e.posting_date

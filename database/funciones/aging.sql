@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.aging · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0035_payments   →   la vigente es la de 0035_payments
+-- Definida en: 0035_payments 0078_company_isolation   →   la vigente es la de 0078_company_isolation
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.aging(p_company uuid, p_type text, p_date date DEFAULT NULL::date)
@@ -22,6 +22,7 @@ AS $function$
     join erp.journal_lines l on l.gl_account_id = pt.gl_account_id
     join erp.journal_entries e on e.id = l.entry_id
     where e.status = 'posted' and e.posting_date <= d.d and e.entry_type <> 'closing'
+      and l.company_id = p_company and e.company_id = p_company   -- v0.52.3: solo los apuntes de la empresa
       and not exists (select 1 from erp.year_closings yc where yc.opening_entry_id = e.id)
     group by pt.id
   )

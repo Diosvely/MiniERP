@@ -1,6 +1,6 @@
 # Funciones del esquema erp (versión vigente)
 
-Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0077`.
+Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0078`.
 No se edita a mano: el código fuente son las migraciones. Esto es para **estudiar** cada función en su forma
 actual sin rastrear sus redefiniciones.
 
@@ -21,7 +21,7 @@ actual sin rastrear sus redefiniciones.
 | [`adjust_fiscal_year`](adjust_fiscal_year.sql) | 1 | 0043_year_end_adjustments | invoker |
 | [`adjust_post`](adjust_post.sql) | 1 | 0043_year_end_adjustments | security definer |
 | [`adjust_reverse`](adjust_reverse.sql) | 1 | 0043_year_end_adjustments | security definer |
-| [`aging`](aging.sql) | 1 | 0035_payments | invoker |
+| [`aging`](aging.sql) | 2 | 0078_company_isolation | invoker |
 | [`ai_allowed`](ai_allowed.sql) | 2 | 0072_temporary_companies | security definer |
 | [`ai_consume`](ai_consume.sql) | 2 | 0072_temporary_companies | security definer |
 | [`ai_context`](ai_context.sql) | 2 | 0027_members | security definer |
@@ -41,7 +41,7 @@ actual sin rastrear sus redefiniciones.
 | [`asset_posted`](asset_posted.sql) | 1 | 0041_fixed_assets | invoker |
 | [`asset_result_account`](asset_result_account.sql) | 1 | 0041_fixed_assets | security definer |
 | [`asset_tranche_at`](asset_tranche_at.sql) | 1 | 0046_asset_impairment | invoker |
-| [`audit_lines`](audit_lines.sql) | 13 | 0077_large_companies | security definer |
+| [`audit_lines`](audit_lines.sql) | 14 | 0078_company_isolation | security definer |
 | [`balance_anomalies`](balance_anomalies.sql) | 2 | 0074_report_simulation | invoker |
 | [`balance_nature`](balance_nature.sql) | 1 | 0013_balance_rules | invoker |
 | [`can_read`](can_read.sql) | 2 | 0007_demo_and_limits | security definer |
@@ -71,13 +71,13 @@ actual sin rastrear sus redefiniciones.
 | [`cash_flow_statement`](cash_flow_statement.sql) | 2 | 0074_report_simulation | security definer |
 | [`cf_account_flows`](cf_account_flows.sql) | 2 | 0066_complete_case | security definer |
 | [`cf_account_map`](cf_account_map.sql) | 1 | 0022_cash_flow | invoker |
-| [`cf_cash`](cf_cash.sql) | 4 | 0077_large_companies | security definer |
+| [`cf_cash`](cf_cash.sql) | 5 | 0078_company_isolation | security definer |
 | [`cf_detail`](cf_detail.sql) | 1 | 0022_cash_flow | security definer |
 | [`cf_direct_detail`](cf_direct_detail.sql) | 2 | 0066_complete_case | security definer |
-| [`cf_entry_cash`](cf_entry_cash.sql) | 4 | 0077_large_companies | security definer |
+| [`cf_entry_cash`](cf_entry_cash.sql) | 5 | 0078_company_isolation | security definer |
 | [`cf_indirect_detail`](cf_indirect_detail.sql) | 1 | 0022_cash_flow | security definer |
 | [`cf_line_accounts`](cf_line_accounts.sql) | 2 | 0074_report_simulation | security definer |
-| [`cf_line_flows`](cf_line_flows.sql) | 4 | 0077_large_companies | security definer |
+| [`cf_line_flows`](cf_line_flows.sql) | 5 | 0078_company_isolation | security definer |
 | [`check_payment_applications`](check_payment_applications.sql) | 1 | 0035_payments | invoker |
 | [`check_tax_account`](check_tax_account.sql) | 1 | 0010_tax_setup | invoker |
 | [`cleanup_guests`](cleanup_guests.sql) | 2 | 0034_web_usage | security definer |
@@ -159,7 +159,7 @@ actual sin rastrear sus redefiniciones.
 | [`fs_amounts`](fs_amounts.sql) | 2 | 0075_dashboards | invoker |
 | [`fs_amounts_at`](fs_amounts_at.sql) | 1 | 0075_dashboards | invoker |
 | [`fs_classified_accounts`](fs_classified_accounts.sql) | 4 | 0075_dashboards | invoker |
-| [`fs_classified_at`](fs_classified_at.sql) | 2 | 0077_large_companies | security definer |
+| [`fs_classified_at`](fs_classified_at.sql) | 3 | 0078_company_isolation | security definer |
 | [`fs_line_accounts`](fs_line_accounts.sql) | 2 | 0074_report_simulation | invoker |
 | [`general_ledger`](general_ledger.sql) | 3 | 0077_large_companies | security definer |
 | [`global_impairment_calc`](global_impairment_calc.sql) | 1 | 0043_year_end_adjustments | invoker |
@@ -176,7 +176,7 @@ actual sin rastrear sus redefiniciones.
 | [`grant_unconditional`](grant_unconditional.sql) | 1 | 0064_grants | security definer |
 | [`grant_year_end`](grant_year_end.sql) | 1 | 0064_grants | security definer |
 | [`grant_year_end_preview`](grant_year_end_preview.sql) | 1 | 0064_grants | security definer |
-| [`home_kpis`](home_kpis.sql) | 1 | 0031_home_kpis | security definer |
+| [`home_kpis`](home_kpis.sql) | 2 | 0078_company_isolation | security definer |
 | [`impair_asset`](impair_asset.sql) | 1 | 0046_asset_impairment | security definer |
 | [`impair_receivable`](impair_receivable.sql) | 1 | 0043_year_end_adjustments | security definer |
 | [`impair_receivables_global`](impair_receivables_global.sql) | 1 | 0043_year_end_adjustments | security definer |
@@ -190,7 +190,7 @@ actual sin rastrear sus redefiniciones.
 | [`import_prepare`](import_prepare.sql) | 1 | 0021_journal_import | security definer |
 | [`import_preview`](import_preview.sql) | 1 | 0021_journal_import | security definer |
 | [`import_start`](import_start.sql) | 2 | 0072_temporary_companies | invoker |
-| [`integrity_checks`](integrity_checks.sql) | 2 | 0059_corporate_tax_integration | invoker |
+| [`integrity_checks`](integrity_checks.sql) | 3 | 0078_company_isolation | invoker |
 | [`intra_eu_lines`](intra_eu_lines.sql) | 1 | 0052_forms_347_349 | invoker |
 | [`inventory_account`](inventory_account.sql) | 1 | 0047_inventory_closing | security definer |
 | [`inventory_preview`](inventory_preview.sql) | 1 | 0047_inventory_closing | invoker |
@@ -271,7 +271,7 @@ actual sin rastrear sus redefiniciones.
 | [`reverse_impairment`](reverse_impairment.sql) | 1 | 0043_year_end_adjustments | security definer |
 | [`revise_provision`](revise_provision.sql) | 1 | 0045_provisions | security definer |
 | [`revoke_company_access`](revoke_company_access.sql) | 1 | 0027_members | security definer |
-| [`run_audit_checks`](run_audit_checks.sql) | 12 | 0077_large_companies | invoker |
+| [`run_audit_checks`](run_audit_checks.sql) | 13 | 0078_company_isolation | security definer |
 | [`run_payroll`](run_payroll.sql) | 1 | 0049_payroll | security definer |
 | [`save_draft`](save_draft.sql) | 1 | 0070_entries_screen | security definer |
 | [`save_employee`](save_employee.sql) | 1 | 0049_payroll | security definer |

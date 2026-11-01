@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.audit_lines · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0037_audit_checks 0041_fixed_assets 0043_year_end_adjustments 0045_provisions 0046_asset_impairment 0047_inventory_closing 0049_payroll 0058_corporate_tax_posting 0060_equity_operations 0062_loans 0064_grants 0076_performance 0077_large_companies   →   la vigente es la de 0077_large_companies
+-- Definida en: 0037_audit_checks 0041_fixed_assets 0043_year_end_adjustments 0045_provisions 0046_asset_impairment 0047_inventory_closing 0049_payroll 0058_corporate_tax_posting 0060_equity_operations 0062_loans 0064_grants 0076_performance 0077_large_companies 0078_company_isolation   →   la vigente es la de 0078_company_isolation
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.audit_lines(p_company uuid, p_year integer, p_to_date date DEFAULT NULL::date)
@@ -36,17 +36,22 @@ AS $function$
     select d.k, (array_agg(d.s order by d.p))[1] as s from docs d where d.k is not null group by d.k
   )
   select e.id, e.entry_no, e.posting_date, coalesce(e.reversal_of, e.id),
-         coalesce(src.s, case when o.import_batch_id is not null then 'import' else 'manual' end),
-         g.account_no, g.name, l.debit, l.credit, l.tax_code
-  -- primero los asientos del ejercicio (por su índice) y después sus apuntes
+         coalesce(src.s, case when (case when e.reversal_of is null then e.import_batch_id
+                                         else (select o.import_batch_id from erp.journal_entries o where o.id = e.reversal_of) end)
+                                   is not null then 'import' else 'manual' end),
+         l.account_no, l.name, l.debit, l.credit, l.tax_code
+  -- primero los asientos del ejercicio (por su índice) y después los apuntes de cada asiento (por su índice):
+  -- v0.52.3 · así no se recorren los apuntes ni los asientos de toda la base, que crecen con las demás empresas
   from (select e.* from erp.journal_entries e
         where e.fiscal_year_id = (select fy.id from erp.fiscal_years fy where fy.company_id = p_company and fy.year = p_year)
           and e.company_id = p_company and e.status = 'posted' and e.entry_type = 'normal'
           and (p_to_date is null or e.posting_date <= p_to_date) and erp.can_report(p_company)
         offset 0) e
-  join erp.journal_entries o on o.id = coalesce(e.reversal_of, e.id)
   left join src on src.k = coalesce(e.reversal_of, e.id)
-  join erp.journal_lines l on l.entry_id = e.id
-  join erp.gl_accounts g on g.id = l.gl_account_id;
+  cross join lateral (
+    select g.account_no, g.name, jl.debit, jl.credit, jl.tax_code
+    from erp.journal_lines jl join erp.gl_accounts g on g.id = jl.gl_account_id
+    where jl.entry_id = e.id
+    offset 0) l
 $function$
 ;

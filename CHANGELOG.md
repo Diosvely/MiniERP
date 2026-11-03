@@ -2,6 +2,32 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.59.0] - 2026-11-03
+### Añadido
+- **Empresas sintéticas con semilla** (migración `0086_synthetic_companies.sql`, ADR 0059). Con un número (la
+  semilla), un perfil y los meses, el ERP genera una contabilidad ficticia completa, y cualquiera obtiene **exactamente
+  la misma**.
+  - `erp.create_synthetic_company`: la llena con las funciones de cada módulo, en orden de fecha, con un azar
+    determinista (`md5`, nunca `random()`). Trae facturas, cobros y pagos, nóminas, inmovilizado, préstamo,
+    liquidaciones y pagos de los modelos.
+  - **Perfiles:**
+    - servicios (IVA, 111 y 115);
+    - comercio (mayorista con clientes en recargo de equivalencia);
+    - taller (Canarias, IGIC);
+    - incidencias (el taller con un proveedor deudor, un vencido de más de 90 días, un borrador descuadrado y el 2T
+      sin liquidar).
+  - **Huella** de la contabilidad (`erp.company_fingerprint`, `g1-XXXXXXXX`).
+  - Se crea como al importar: temporal para un registrado y permanente para un miembro. No se publica como demo.
+- **Web:**
+  - tarjeta «Empresa sintética con semilla» en la lista de empresas;
+  - insignia 🎲 con la semilla;
+  - «Copiar datos para informar de un error» en la cabecera (versión, semilla, perfil, meses, huella, pantalla y
+    fecha de trabajo, sin nada personal).
+- **`docs/casos-sinteticos.md`:** cómo informar de un error con una semilla y las semillas de la comunidad.
+- **Prueba fase 81:** la misma semilla da la misma huella; cada perfil cuadra con sus invariantes, Balance,
+  liquidaciones, tablero y PyG; y la lista de control sale limpia o con exactamente lo sembrado.
+- Captura `35-empresa-sintetica.png`.
+
 ## [0.58.0] - 2026-11-03
 ### Cambiado
 - **Permisos: «lo tuyo, todo; lo de otro, nada»** (migración `0085_permissions_ownership.sql`, ADR 0058). El ERP es

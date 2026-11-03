@@ -1142,6 +1142,13 @@ button.enlace.pgc-ir { display: inline; align-self: auto; font: inherit; text-de
 
 /* v0.49.0 · Empresas temporales de los registrados */
 .insignia.insignia-temporal { background: color-mix(in srgb, var(--alerta) 16%, var(--tarjeta)); color: var(--texto); }
+/* v0.59.0 · Empresas sintéticas con semilla */
+.insignia.insignia-sintetica { background: color-mix(in srgb, var(--primario) 14%, var(--tarjeta)); color: var(--texto); letter-spacing: 0; }
+.sintetica-cabecera { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 14px; margin: 0 0 10px; grid-column: 1 / -1; }
+.sintetica-cabecera .insignia { font-size: .8rem; text-transform: none; }
+.sintetica .fila input { flex: 1; min-width: 0; }
+.sintetica .fila button { flex: 0 0 auto; width: auto; }
+.sintetica-informe { width: 100%; font-family: ui-monospace, monospace; font-size: .85rem; }
 .aviso-temporal { margin: 6px 0 10px; padding: 8px 12px; border-radius: 8px; line-height: 1.45; font-size: .9rem;
   background: color-mix(in srgb, var(--alerta) 12%, var(--tarjeta)); color: var(--texto); border-left: 3px solid var(--alerta); }
 .cabecera-temporal { margin: 0 0 12px; grid-column: 1 / -1; }

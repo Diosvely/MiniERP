@@ -14,6 +14,7 @@ import DateField from './DateField'
 import { defaultStart } from '../monthly'
 import { todayIso } from '../workDate'
 import { TEMP_CHANGED, idleText, importCard, shortDateTime } from '../temporary'
+import SyntheticCompany from './SyntheticCompany'
 
 const emptyForm = () => ({ name: '', vat_registration_no: '', industry: 'services', tax_territory: 'canary_islands', control_mode: 'strict',
   start_date: defaultStart(todayIso()), monthly: true })   // v0.47.0 · fecha de inicio y mes a mes
@@ -57,6 +58,13 @@ export default function Companies({ session }) {
   async function imported(companyId) {
     setImporting(false)
     window.dispatchEvent(new Event(TEMP_CHANGED))   // v0.49.0 · el latido empieza a contar con la temporal nueva
+    await load()
+    navigate(companyPath(companyId))
+  }
+
+  // v0.59.0 · Al crear una empresa sintética se abre (y, si es temporal, el latido empieza a contar)
+  async function synthesized(companyId) {
+    window.dispatchEvent(new Event(TEMP_CHANGED))
     await load()
     navigate(companyPath(companyId))
   }
@@ -121,7 +129,7 @@ export default function Companies({ session }) {
         key={`${selected.id}-${readOnly}`}
         company={selected}
         readOnly={readOnly}
-        canPublish={(isOwner && selected.my_role === 'admin') || selected.is_data_owner}
+        canPublish={((isOwner && selected.my_role === 'admin') || selected.is_data_owner) && !selected.synthetic_seed}
         isOwner={isOwner}
         onChanged={changed}
         onBack={() => { navigate('/'); load() }}
@@ -147,6 +155,7 @@ export default function Companies({ session }) {
         <strong>
           {c.name} {c.is_demo && <span className="insignia">{t('demoBadge')}</span>}
           {c.temporary && <span className="insignia insignia-temporal">⏳ {t('tmp.badge')}</span>}
+          {c.synthetic_seed && <span className="insignia insignia-sintetica">🎲 {c.synthetic_seed}</span>}
         </strong>
         <span>
           {c.vat_registration_no} · {t(`industry.${c.industry}`)} · {t(`territory.${c.tax_territory}`)}
@@ -242,6 +251,8 @@ export default function Companies({ session }) {
             </div>))}
         </section>
       )}
+
+      {!isGuest && <SyntheticCompany card={imp} temp={temp} onCreated={synthesized} onError={setError} />}
 
       {isGuest ? null : canCreate ? (
         <form onSubmit={create} className="tarjeta">

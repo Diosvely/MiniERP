@@ -104,3 +104,15 @@ los tableros. Las equivalencias con BC y SAP son orientativas *(pendiente de val
 | Lista de control | checklist (`quality_checks`) | Cues de trabajo pendiente | Financial Close Cockpit |
 | Simulación con los asientos en edición | simulation with drafts (`p_drafts`) | — | Parked documents in reports |
 
+
+## Permisos (v0.58.0)
+
+| Español | English | Business Central | SAP |
+|---|---|---|---|
+| Separación de funciones | segregation of duties (SoD) | SoD (Permission Sets en conflicto) | SAP GRC Access Control |
+| Aislamiento entre usuarios (cada empresa, de quien la crea) | tenant isolation | Company | Client / company code |
+| Rol de una empresa (administrador, contable, lectura) | company role (`company_users.role`) | Permission Set | Role (PFCG) |
+| Titular de los datos | data owner (`company_users.data_owner`) | — | — |
+| Mínimo privilegio | least privilege | — | — |
+| Seguridad fila a fila | row level security (RLS) | Security filter | Authorization object |
+| Prueba guardiana | guardian test (fase 80) | — | — |

@@ -45,9 +45,10 @@ begin
   assert public.falla(format($q$update erp.company_users set data_owner = true
                                 where company_id = %L and user_id = auth.uid()$q$, e_curioso), 'only the application owner');
   assert not erp.is_data_owner(e_curioso), 'no es titular';
-  assert not erp.ai_allowed(e_curioso), 'sin IA';
+  -- v0.58.0 (0085): quien administra su empresa sí usa la IA en ella («lo tuyo, todo»)
+  assert erp.ai_allowed(e_curioso), 'con IA en su empresa (v0.58.0)';
   assert public.falla(format($q$select erp.set_company_demo(%L, true, 'spam')$q$, e_curioso), 'only the application owner or the data owner');
-  raise notice 'OK  · un admin no puede nombrarse titular, ni usar la IA, ni publicar su empresa como demo';
+  raise notice 'OK  · un admin no puede nombrarse titular ni publicar su empresa como demo (la IA sí la usa: v0.58.0)';
 
   -- ---------- Tampoco puede crear una fila nueva como titular ----------
   assert public.falla(format($q$insert into erp.company_users (company_id, user_id, role, data_owner)

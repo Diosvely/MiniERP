@@ -5,7 +5,7 @@ import AiFeedback from './AiFeedback'
 import ErrorBox from './ErrorBox'
 
 // Analista IA (Cloudflare Workers AI, modelo open source): interpreta los estados, el EFE y los ratios ya calculados.
-// Lo ven el propietario y el titular de los datos de la empresa (erp.ai_status, con cuota diaria). La IA no cambia nada.
+// Lo ven quien administra la empresa y el titular de los datos (erp.ai_status, con cuota diaria; v0.58.0). La IA no cambia nada.
 // v0.41.2: vive en el panel de IA (inPanel); la pantalla (EFE, Ratios) le pasa el ejercicio
 export default function AiAnalyst({ company, year, inPanel = false }) {
   const { t, language } = useI18n()

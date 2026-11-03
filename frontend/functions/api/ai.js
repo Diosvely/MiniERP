@@ -3,7 +3,7 @@
 // ---------------------------------------------------------------------
 // 1. Recibe la sesión de Supabase del usuario (cabecera Authorization) y { company_id, year, language }.
 // 2. Pide a Supabase el resumen de la empresa (erp.ai_context) CON LA SESIÓN DEL USUARIO:
-//    la base de datos comprueba que es el owner y que puede leer la empresa (RLS). Aquí no hay claves secretas.
+//    la base de datos comprueba que puede usar la IA en esa empresa (erp.ai_allowed: quien la administra o el titular). Aquí no hay claves secretas.
 // 3. Se lo pasa a un modelo open source de Cloudflare Workers AI (binding "AI": sin clave de API)
 //    con instrucciones de auditor: interpretar las cifras, no recalcularlas.
 // 4. Devuelve el análisis en JSON: resumen, fortalezas, alertas, preguntas del auditor y una idea para aprender.

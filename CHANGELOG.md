@@ -2,6 +2,32 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.58.0] - 2026-11-03
+### Cambiado
+- **Permisos: «lo tuyo, todo; lo de otro, nada»** (migración `0085_permissions_ownership.sql`, ADR 0058). El ERP es
+  para aprender el ciclo completo, así que no hay separación de funciones: cada persona administra sus empresas y lo
+  hace todo en ellas, y nadie entra en la empresa de otro usuario.
+  - **La IA, también para quien administra su empresa** (y su temporal), con la cuota diaria de siempre (10 los
+    miembros, 5 los registrados).
+  - **El propietario de la aplicación, solo en sus empresas:** ver y gestionar los accesos, publicar como demo y leer
+    las opiniones sobre la IA (`erp.can_manage_access`). Antes podía hacerlo en la empresa de otro usuario.
+  - **Pantalla Accesos:** tabla «qué puede hacer cada rol» (ver, contabilizar, cerrar y configurar, IA, borrar).
+### Seguridad
+- `erp.temp_cleanup`: solo la limpieza programada, el propietario o la propia importación (antes, cualquiera con
+  sesión, también un invitado).
+- `erp.fiscal_year_company`: solo responde a quien puede leer la empresa.
+- Sin sesión (`anon`), ninguna función del ERP (eran 28, por el permiso por defecto de PostgreSQL); las funciones de
+  disparador, a nadie.
+### Añadido
+- **Prueba de la matriz de permisos** (fase 79): diez actores frente a 27 acciones, 348 intentos, con lo que se exige
+  escrito en la prueba.
+- **Prueba guardiana** (fase 80): un registrado sin acceso, un invitado y el propietario llaman a las 267 funciones
+  que puede ejecutar una sesión con los identificadores de las empresas de otro usuario. Hay fuga si escriben, si ven
+  un identificador ajeno o si la respuesta es distinta de la de una empresa que no existe. Una función nueva entra sola.
+- **`docs/permisos.md`**, generado desde la prueba con `scripts/generar-permisos.mjs`. Un test de la web comprueba que
+  la tabla de la pantalla Accesos dice lo mismo.
+- Captura `34-accesos-roles.png`.
+
 ## [0.57.1] - 2026-11-02
 ### Documentación
 - **Puesta al día tras los cinco tableros.** El cierre de la v0.56.0 (paso 278) no se llegó a aplicar y, en cadena, el

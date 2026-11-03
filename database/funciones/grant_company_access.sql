@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.grant_company_access · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0027_members   →   la vigente es la de 0027_members
+-- Definida en: 0027_members 0085_permissions_ownership   →   la vigente es la de 0085_permissions_ownership
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.grant_company_access(p_company uuid, p_email text, p_role text, p_data_owner boolean DEFAULT false)
@@ -12,7 +12,9 @@ CREATE OR REPLACE FUNCTION erp.grant_company_access(p_company uuid, p_email text
 AS $function$
 declare v_user uuid;
 begin
-  if not erp.is_owner() then raise exception 'Only the application owner can manage access'; end if;
+  if not erp.can_manage_access(p_company) then
+    raise exception 'Only the application owner can manage access, and only in the companies they administer';
+  end if;
   if p_role not in ('admin', 'accountant', 'viewer') then raise exception 'Unknown role: %', p_role; end if;
   select id into v_user from auth.users where lower(email) = lower(trim(p_email));
   if v_user is null then raise exception 'No registered user with email %', p_email; end if;

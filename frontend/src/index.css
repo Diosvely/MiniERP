@@ -78,6 +78,7 @@ td { padding: 4px; border-bottom: 1px solid var(--borde); vertical-align: top; }
 .boton-archivo { flex: 1; display: flex; align-items: center; justify-content: center; cursor: pointer;
                  background: var(--primario); color: var(--sobre-color); border-radius: 8px; padding: 10px 12px; font-size: 1rem; }
 .tabla-scroll { max-height: 50vh; overflow: auto; }
+.roles .rol-celda { text-align: center; }   /* v0.58.0 · qué puede hacer cada rol */
 tr.estado-insert td:last-child strong { color: var(--exito); }
 tr.estado-update td:last-child strong { color: var(--alerta); }
 tr.estado-error td:last-child strong { color: var(--aviso); }

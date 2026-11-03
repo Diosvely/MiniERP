@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.temp_cleanup · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0072_temporary_companies   →   la vigente es la de 0072_temporary_companies
+-- Definida en: 0072_temporary_companies 0085_permissions_ownership   →   la vigente es la de 0085_permissions_ownership
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.temp_cleanup(p_rows integer DEFAULT 50000)
@@ -8,7 +8,6 @@ CREATE OR REPLACE FUNCTION erp.temp_cleanup(p_rows integer DEFAULT 50000)
  LANGUAGE plpgsql
  SECURITY DEFINER
  SET search_path TO 'erp', 'public'
- SET jit TO 'off'
 AS $function$
 declare
   v_c     uuid;
@@ -16,6 +15,10 @@ declare
   v_left  int;
   v_rows  int := least(greatest(p_rows, 0), 50000);
 begin
+  if auth.uid() is not null and not erp.is_owner()
+     and coalesce(current_setting('erp.import_cleanup', true), '') <> 'on' then
+    raise exception 'Only the application owner or the scheduled cleanup can clean temporary companies';
+  end if;
   for v_c in select id from erp.companies where temporary and erp.temp_expired(expires_at, last_seen_at) order by expires_at loop
     exit when v_rows <= 0;
     loop

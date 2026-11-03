@@ -11,7 +11,7 @@ import { addMessage, sendsOnKey, updateMessage } from '../aiPanel'
 // Tutor de asientos con IA: describes la operación, la IA propone el asiento, el ERP lo comprueba y tú decides.
 // v0.41.2: es una conversación dentro del panel de IA (abajo a la derecha). «Pasar al asiento» crea las subcuentas
 // nuevas que hagan falta y lleva las líneas al formulario de Nuevo asiento: nada se contabiliza sin que lo revises.
-// Lo ven el propietario y el titular de los datos (erp.ai_status, con cuota diaria). La conversación no se guarda.
+// Lo ven quien administra la empresa y el titular de los datos (erp.ai_status, con cuota diaria; v0.58.0). La conversación no se guarda.
 export default function EntryTutor({ company, onLoad }) {
   const { t, language } = useI18n()
   const [allowed, setAllowed] = useState(false)

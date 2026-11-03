@@ -2,7 +2,7 @@
 // TUTOR DE ASIENTOS · Cloudflare Pages Function  →  POST /api/tutor
 // ---------------------------------------------------------------------
 // El usuario describe una operación y la IA propone el asiento. La IA PROPONE, el ERP COMPRUEBA, el usuario DECIDE.
-// 1. Pide a Supabase erp.entry_tutor_context CON LA SESIÓN DEL USUARIO (solo el owner; PGC, impuestos vigentes, NRV).
+// 1. Pide a Supabase erp.entry_tutor_context CON LA SESIÓN DEL USUARIO (erp.ai_allowed; PGC, impuestos vigentes, NRV).
 // 2. El modelo de Workers AI propone el asiento en JSON (cuentas del PGC, impuestos por su código, NRV de la lista).
 // 3. erp.validate_proposed_entry lo comprueba: subcuentas reales, cuota del impuesto, retención (0033), Debe = Haber…
 // 4. Si hay errores, se le devuelven al modelo UNA vez para que lo corrija (la "segunda vuelta").

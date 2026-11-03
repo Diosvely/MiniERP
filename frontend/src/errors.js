@@ -263,6 +263,12 @@ const RULES = [
   [/^Too many lines for a temporary import: (\d+) \(maximum (\d+)\)$/, 'tmpTooMany'],
   [/^Registered users import into a temporary company$/, 'tmpOnlyTemp'],
   [/^A temporary company cannot be made permanent or extended$/, 'tmpPermanent'],
+  // v0.59.0 · Empresas sintéticas
+  [/^The seed must be a number from 1 to 999999$/, 'synSeed'],
+  [/^Unknown synthetic profile/, 'synProfile'],
+  [/^The months must be from 1 to 12$/, 'synMonths'],
+  [/^The (\S+) profile needs at least (\d+) months$/, 'synMinMonths'],
+  [/^A synthetic company cannot be published as demo$/, 'synDemo'],
   [/^Import cancelled: (\d+) row\(s\) with errors/, 'importRowsErrors'],
 
   // Inicio de sesión (Supabase Auth)

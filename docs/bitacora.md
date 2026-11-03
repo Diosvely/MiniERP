@@ -1766,3 +1766,29 @@ contabilidad mes a mes) y cuatro tests de la web. Pruebas: 78 SQL y 302 de la we
 - **El NULL vuelve:** `true and NULL` es NULL y `if not NULL` no entra. Toda comprobación de permiso necesita su
   `coalesce`.
 - **El propietario también es «otro»** para las empresas de los demás.
+
+## 2026-11-03 · v0.59.0 · Empresas sintéticas con semilla
+
+**Qué pasó**
+- **Paso 286 · el generador:** `erp.create_synthetic_company` llena una empresa con las funciones de cada módulo. Salió a
+  la primera (460 asientos en 3 segundos), pero la lista de control encontró **mi propio error**: pagaba el 111 y el 115
+  juntos en la primera subcuenta 4751, que quedaba deudora. Y el proveedor «deudor» de las incidencias no lo era,
+  porque aún debía facturas.
+- **El orden de fecha importa:** el ERP bloquea un banco en negativo en cualquier fecha. Planificar todo primero y
+  ejecutarlo en orden de fecha lo evita y, además, da siempre los mismos números de asiento.
+- **Paso 287 · la web:** la tarjeta con semilla, perfil y meses, la insignia 🎲 y «Copiar datos para informar de un
+  error», probados en un navegador.
+- **Paso 288:** `docs/casos-sinteticos.md` con las semillas de la comunidad, y el ADR 0059.
+
+**Pruebas:** fase 81 y diez tests de la web. Las mismas huellas en dos bases de datos distintas, y un barrido de 12
+semillas por perfil. Pruebas: 81 SQL y 316 de la web.
+
+**Lo que se aprende**
+- **Una semilla es una receta:** una línea («4817, taller, 12 meses») reproduce 463 asientos sin compartir datos de
+  nadie.
+- **Determinista no es lo mismo que fijo:** `random()` con `setseed` depende del orden de todo lo demás; un hash de la
+  semilla y un contador, no.
+- **Generar con los caminos del usuario** prueba el ERP de paso. Las reglas que me pararon (el banco en negativo, el
+  saldo al revés) son las que protegen a quien lo usa.
+- **Una SL no puede estar en recargo de equivalencia:** el perfil de comercio tuvo que ser el mayorista que vende a
+  tiendas en recargo.

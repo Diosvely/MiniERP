@@ -116,3 +116,14 @@ los tableros. Las equivalencias con BC y SAP son orientativas *(pendiente de val
 | Mínimo privilegio | least privilege | — | — |
 | Seguridad fila a fila | row level security (RLS) | Security filter | Authorization object |
 | Prueba guardiana | guardian test (fase 80) | — | — |
+
+## Empresas sintéticas (v0.59.0)
+
+| Español | English | Business Central | SAP |
+|---|---|---|---|
+| Empresa sintética | synthetic company (`create_synthetic_company`) | Demo company (CRONUS) | Model company |
+| Semilla | seed (`synthetic_seed`) | — | — |
+| Perfil | profile (`synthetic_profile`) | Demo data (Contoso) | Best Practices test data |
+| Azar determinista (pseudoaleatorio) | deterministic pseudo-random (`syn_rand`) | — | — |
+| Huella de la contabilidad | fingerprint (`company_fingerprint`) | — | — |
+| Versión del generador | generator version (`g1`) | — | — |

@@ -26,6 +26,7 @@ import EquityStatement from './EquityStatement'
 import CaseStudy from './CaseStudy'
 import MonthBar from './MonthBar'
 import TempBadge from './TempBadge'
+import SyntheticInfo from './SyntheticInfo'
 import TopBar from './TopBar'
 import Dashboard from './Dashboard'
 import Entries from './Entries'
@@ -238,6 +239,8 @@ export default function CompanyView({ company: base, readOnly, canPublish, isOwn
       </div>
       {/* v0.49.0 · Empresa temporal de un registrado: cuándo se borra */}
       {company.temporary && <TempBadge company={company} />}
+      {/* v0.59.0 · Empresa sintética: su semilla y «Copiar datos para informar de un error» */}
+      {company.synthetic_seed && <SyntheticInfo company={company} />}
       {/* v0.52.0 · Barra superior: de momento, «Tableros» (el menú lateral sigue igual) */}
       <TopBar company={company} active={section === 'tableros' ? (params[0] ?? 'resumen') : null} />
 

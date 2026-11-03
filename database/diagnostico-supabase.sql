@@ -1,5 +1,5 @@
 -- =====================================================================
--- DIAGNÓSTICO DE SUPABASE · migraciones 0001 … 0085 (GENERADO por scripts/generar-diagnostico.sh: no editar)
+-- DIAGNÓSTICO DE SUPABASE · migraciones 0001 … 0086 (GENERADO por scripts/generar-diagnostico.sh: no editar)
 -- ---------------------------------------------------------------------
 -- Pégalo en el SQL Editor de Supabase y pulsa Run. SOLO LEE: no cambia nada.
 -- Devuelve una fila por cada diferencia con el repositorio. Ninguna fila («No rows returned») = todo al día.
@@ -85,6 +85,7 @@ f(sig, hash) as (values
   ('erp.close_month(uuid,boolean)', '57517566fe80507388516df0675147a6'),
   ('erp.closing_checklist(uuid,integer)', 'cf249dfafdec763b82a1eedb216e070f'),
   ('erp.company_access(uuid)', '1618039de7501ec273b28b023e698f48'),
+  ('erp.company_fingerprint(uuid)', '61f8a52138c375ecf1c037c1b234e86f'),
   ('erp.company_tax_type(uuid)', 'a3d91e4e0fa648637c3a1c773e841b5f'),
   ('erp.concepts_for_account(text)', '99dc792450f9ce388d0422c3eaccc87d'),
   ('erp.control_rule_for(text)', 'c001109796e787fc4f0492d69dfbd72a'),
@@ -111,6 +112,7 @@ f(sig, hash) as (values
   ('erp.create_partner(uuid,text,text,text,text,text,text)', '16885750ce264813b13659d6b3e1bdcb'),
   ('erp.create_posting_account(uuid,text,text,text)', '33e3e8b95715a5f133551e4aff7c404b'),
   ('erp.create_provision(jsonb)', '3fe0f1f04393e9e294b5ffdc6a0a6c07'),
+  ('erp.create_synthetic_company(integer,text,integer)', 'fb5b1050829184f95becedfc3b95437a'),
   ('erp.dash_metric_values(uuid,integer,date[])', 'd8d0f53eec917b6bf2a6d924ff3f7a27'),
   ('erp.dash_month_ends(date,date)', 'fe7e5da493b86b482aee20c89def51e0'),
   ('erp.dash_quarters(date[],jsonb,jsonb,date,text)', '2b819c8c6337de32b22fc3eadf3438cd'),
@@ -211,6 +213,7 @@ f(sig, hash) as (values
   ('erp.legal_form_from_tax_id(text)', 'a6a1ab669eabe542e450c655983f9011'),
   ('erp.link_payment(jsonb)', 'b790db78bf3ef4a4a6d4a290fa2c2fd7'),
   ('erp.load_case(uuid,text,text)', 'a4bb12b5a23989c2842bf5aed5ccdff2'),
+  ('erp.load_synthetic(uuid,integer,text,integer)', '316731fec19a6a938dc90d36d7ae1279'),
   ('erp.loan_account(uuid,text,text,text,text)', 'a2ae95181a46b92ec82dd0facc9c4625'),
   ('erp.loan_accrual_amount(uuid,date)', '7890bea18dcf6f03a50da7418c28623c'),
   ('erp.loan_calc(jsonb)', '7bd28ee3e937443ca9edb2e73199a516'),
@@ -282,7 +285,7 @@ f(sig, hash) as (values
   ('erp.run_payroll(jsonb)', 'ebe4a6d202cfab34f704c18907b95355'),
   ('erp.save_draft(jsonb)', '9d9890314b43b226a226681a9ec2fddd'),
   ('erp.save_employee(jsonb)', '18eb3d4e095bd39f669b45caedc64280'),
-  ('erp.set_company_demo(uuid,boolean,text)', '65db0159d540bfe999ccb3e44cf88b38'),
+  ('erp.set_company_demo(uuid,boolean,text)', '80cbfa2149ffe0d8b12f9b2927d56ece'),
   ('erp.set_control_mode(uuid,text)', '04dea6e83445d4240ddc133d83ffa14c'),
   ('erp.set_legal_form(uuid,text)', '24eaa8aea7644491c6da13dd310e449f'),
   ('erp.set_pro_rata(uuid,text,integer,numeric)', '5b10e74cc3c456a64e64344fc29281d1'),
@@ -293,6 +296,13 @@ f(sig, hash) as (values
   ('erp.special_tax_account(uuid,text,text,text,numeric,text,text)', '0f3224ea96fc25bedf47caf3a42af09c'),
   ('erp.start_accounting(uuid,date,boolean)', '48b8f41bd3ca0695f7e540e9a524eb5f'),
   ('erp.submit_exercise(text,jsonb,text,text)', '549e1d431096ce88460eb7a1ee3c76b1'),
+  ('erp.syn_amount(integer,integer,numeric,numeric)', 'c33b4936677f9df525a30019066399cd'),
+  ('erp.syn_cif(text,integer)', 'a4c302c3b56fdc5c41e5ef765f660922'),
+  ('erp.syn_int(integer,integer,integer,integer)', '48263f6d1a46c862fd32c60dad04f1bd'),
+  ('erp.syn_nif(integer)', '37c199846c7194b9e630051d28666755'),
+  ('erp.syn_rand(integer,integer)', '387006d532c94662f31553ad0be542aa'),
+  ('erp.synthetic_profiles()', 'b74f4b96b24f45f6c601e8176c55fdcf'),
+  ('erp.synthetic_version()', '0b66bc013c979e1ed36604a21cd67a57'),
   ('erp.tax_accounts(uuid,text)', 'a319a0ca51b53c4172ef0ecde66ab832'),
   ('erp.tax_form_boxes(uuid,integer,integer)', '55e5d183ece5fc014a8545998ea7c75e'),
   ('erp.tax_form_lines(uuid,text,date,date)', '0059857b55f2acc1f3705f20fdf73de5'),

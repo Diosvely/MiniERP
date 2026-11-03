@@ -39,7 +39,7 @@ Proyecto de aprendizaje en evolución.
 | **Balance (modo oscuro) con el glosario** | **Modo auditor de una empresa importada** |
 | ![Balance con el globo del glosario](docs/capturas/04-balance-oscuro.png) | ![Recorrido del auditor](docs/capturas/05-modo-auditor.png) |
 
-Más capturas: [pantalla de entrada](docs/capturas/01-entrada.png) · [errores en lenguaje claro](docs/capturas/06-errores-claros.png) · [Inicio en el móvil](docs/capturas/07-inicio-movil.png) · [cascada del EFE](docs/capturas/08-efe-cascada.png) · [Balance comparativo](docs/capturas/09-balance-comparativo.png) · [libro mayor en el móvil](docs/capturas/10-mayor-movil.png) · [cobros y pagos](docs/capturas/11-cobros-pagos.png) · [comprobaciones](docs/capturas/12-comprobaciones.png) · [inmovilizado](docs/capturas/13-inmovilizado.png) · [ajustes de cierre](docs/capturas/14-ajustes-cierre.png) · [asistente de cierre](docs/capturas/15-asistente-cierre.png) · [nóminas](docs/capturas/16-nominas.png) · [modelos y fuentes](docs/capturas/17-modelos.png) · [practicar](docs/capturas/18-practicar.png) · [impuesto sobre sociedades](docs/capturas/19-impuesto-sociedades.png) · [panel de IA](docs/capturas/20-panel-ia.png) · [operaciones societarias](docs/capturas/21-operaciones-societarias.png) · [financiación](docs/capturas/22-financiacion.png) · [ECPN](docs/capturas/23-ecpn.png) · [caso completo](docs/capturas/24-casos.png) · [asientos](docs/capturas/25-asientos.png) · [PGC de estudio](docs/capturas/26-pgc.png) · [empresa temporal](docs/capturas/27-empresa-temporal.png) · [tablero de dirección](docs/capturas/28-tableros.png) · [tablero de rentabilidad](docs/capturas/29-rentabilidad.png) · [tablero de tesorería](docs/capturas/30-tesoreria.png) · [tablero de impuestos](docs/capturas/31-impuestos.png) · [tablero de ventas y gastos](docs/capturas/32-ventas-gastos.png) · [calidad de la contabilidad](docs/capturas/33-calidad.png)
+Más capturas: [pantalla de entrada](docs/capturas/01-entrada.png) · [errores en lenguaje claro](docs/capturas/06-errores-claros.png) · [Inicio en el móvil](docs/capturas/07-inicio-movil.png) · [cascada del EFE](docs/capturas/08-efe-cascada.png) · [Balance comparativo](docs/capturas/09-balance-comparativo.png) · [libro mayor en el móvil](docs/capturas/10-mayor-movil.png) · [cobros y pagos](docs/capturas/11-cobros-pagos.png) · [comprobaciones](docs/capturas/12-comprobaciones.png) · [inmovilizado](docs/capturas/13-inmovilizado.png) · [ajustes de cierre](docs/capturas/14-ajustes-cierre.png) · [asistente de cierre](docs/capturas/15-asistente-cierre.png) · [nóminas](docs/capturas/16-nominas.png) · [modelos y fuentes](docs/capturas/17-modelos.png) · [practicar](docs/capturas/18-practicar.png) · [impuesto sobre sociedades](docs/capturas/19-impuesto-sociedades.png) · [panel de IA](docs/capturas/20-panel-ia.png) · [operaciones societarias](docs/capturas/21-operaciones-societarias.png) · [financiación](docs/capturas/22-financiacion.png) · [ECPN](docs/capturas/23-ecpn.png) · [caso completo](docs/capturas/24-casos.png) · [asientos](docs/capturas/25-asientos.png) · [PGC de estudio](docs/capturas/26-pgc.png) · [empresa temporal](docs/capturas/27-empresa-temporal.png) · [tablero de dirección](docs/capturas/28-tableros.png) · [tablero de rentabilidad](docs/capturas/29-rentabilidad.png) · [tablero de tesorería](docs/capturas/30-tesoreria.png) · [tablero de impuestos](docs/capturas/31-impuestos.png) · [tablero de ventas y gastos](docs/capturas/32-ventas-gastos.png) · [calidad de la contabilidad](docs/capturas/33-calidad.png) · [accesos y qué puede hacer cada rol](docs/capturas/34-accesos-roles.png)
 
 ---
 
@@ -50,7 +50,7 @@ española y el funcionamiento real de un ERP. Los ERP comerciales son caros y di
 propia, así que decidí **construir uno**. Diseñar la tabla de asientos obliga a entender *por qué* un ERP impone
 cada regla. Además, todo el código está en inglés para practicar el vocabulario técnico de BC y SAP.
 
-## ¿Qué hace hoy? (v0.57.1)
+## ¿Qué hace hoy? (v0.58.0)
 
 **Primeros pasos y navegación**
 - **Pantalla de Inicio** en cada empresa:
@@ -228,17 +228,23 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
     defecto) manda, y el ERP calcula la retención y lo que queda a pagar (1.000 + 70 − 150 = 920). La IA clasifica;
     la base de datos contabiliza.
   - **Tú decides** si cargarlo en el formulario.
-- Cuota diaria por usuario y **opiniones sobre cada respuesta** para mejorar la IA.
+- La usa **quien administra la empresa** (también su empresa temporal) y el titular de los datos, con **cuota diaria
+  por usuario**, y **opiniones sobre cada respuesta** para mejorar la IA.
 
 **Plataforma**
 - **Roles al estilo Microsoft:**
   - **Administrador** (el propietario);
   - **Miembro**: el titular de los datos de una empresa importada, que trabaja en ella, usa la IA con cuota y
     decide si se publica como demo;
-  - **Colaborador**: se registra y lleva su empresa; además puede **importar su diario en una empresa temporal**,
-    con IA (5 consultas al día), que se borra sola tras 2 h sin uso o a las 48 h (topes en `erp.temp_settings`);
+  - **Colaborador**: se registra y lleva su empresa, con IA (5 consultas al día); además puede **importar su diario en
+    una empresa temporal**, que se borra sola tras 2 h sin uso o a las 48 h (topes en `erp.temp_settings`);
   - **Visor**: los invitados que ven las demos.
 - **Multiusuario y multiempresa** con roles por empresa (admin, contable, lectura) mediante *Row Level Security*.
+- **Lo tuyo, todo; lo de otro, nada** (v0.58.0): el ERP es para aprender el ciclo completo, así que cada persona es
+  la administradora de sus empresas y lo hace todo en ellas, sin separación de funciones; nadie entra en la empresa de
+  otro usuario, tampoco el propietario de la aplicación. Los roles contable y lectura solo sirven para compartir una
+  empresa, y la pantalla Accesos explica qué puede hacer cada uno. La matriz completa, generada desde la prueba, está
+  en [`docs/permisos.md`](docs/permisos.md).
 - **Empresas DEMO** de solo lectura y **acceso como invitado sin registro**.
 - **Español / inglés** con selector de bandera, en móvil y en ordenador.
 - **Uso de la web** solo para el propietario: visitantes de la demo, registros y activos por día, sin datos personales.
@@ -250,6 +256,9 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
   solos** cada noche (`pg_cron`).
 - Las funciones de IA validan cada petición (UUID y tamaño) y nunca devuelven errores internos al navegador.
 - La web solo usa la clave **publicable** de Supabase; quién puede ver o hacer cada cosa lo decide PostgreSQL (RLS).
+- **Prueba guardiana** (v0.58.0): un registrado sin acceso, un invitado y el propietario de la aplicación intentan
+  entrar en las empresas de otro usuario con **todas** las funciones de la base de datos; una función nueva entra sola
+  en la prueba. Sin sesión no se ejecuta ninguna función.
 - Solo el propietario nombra **titulares de los datos** (trigger en la base de datos, v0.29.1).
 - **Dependabot** vigila las dependencias, y los fallos de seguridad se avisan en privado ([SECURITY.md](SECURITY.md)).
   La lista de ajustes del panel de Supabase está en [`docs/seguridad-supabase.md`](docs/seguridad-supabase.md).
@@ -263,7 +272,7 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
 | Web | **React + Vite** | Componentes por pantalla, i18n propio (es/en), rutas con almohadilla, iconos `lucide-react` |
 | IA | **Cloudflare Workers AI** + Pages Functions | `/api/ai` (Mistral Small 3.1) y `/api/tutor` (gpt-oss-120b); la clave nunca llega al navegador |
 | Despliegue | **Cloudflare Pages** | Despliegue automático desde `main`, dirección de prueba por rama y cabeceras de seguridad (`_headers`) |
-| Calidad | **GitHub Actions** + **Vitest** + Dependabot | 78 pruebas SQL, 302 tests de la web, lint, build y auditoría de dependencias en cada Pull Request |
+| Calidad | **GitHub Actions** + **Vitest** + Dependabot | 80 pruebas SQL, 306 tests de la web, lint, build y auditoría de dependencias en cada Pull Request |
 | Versionado | Git + GitHub | Ramas, Pull Requests, `main` protegida, versiones etiquetadas y decisiones documentadas (ADR) |
 
 **Principio clave:** la web nunca es la única barrera. Aunque alguien manipule el navegador, PostgreSQL rechaza:
@@ -309,6 +318,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 - [Funciones de la base de datos](database/funciones/README.md): la versión vigente de cada una, para estudiarla
   (generado).
 - [Glosario](docs/glosario.md): vocabulario español ↔ inglés ↔ BC ↔ SAP (el completo, en la propia app).
+- [Permisos](docs/permisos.md): quién puede hacer qué, generado desde la prueba de permisos.
 - [Seguridad de Supabase](docs/seguridad-supabase.md): lista de ajustes del panel que no están en el código.
 - [Guía de Power BI](docs/powerbi/GUIA.md): conectar Power BI al esquema `bi` y construir el informe con Claude Code.
 
@@ -322,13 +332,14 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 ├── scripts/test-db.sh         ejecuta todas las pruebas SQL, cada una en una base limpia
 ├── scripts/volcar-funciones.sh  genera database/funciones/ (versión vigente de cada función)
 ├── scripts/generar-diagnostico.sh  genera database/diagnostico-supabase.sql (¿le falta algo a tu Supabase?)
+├── scripts/generar-permisos.mjs    genera docs/permisos.md desde la prueba de permisos (fase 79)
 ├── database/
-│   ├── migrations/            0001 → 0084, se ejecutan en orden en Supabase
+│   ├── migrations/            0001 → 0085, se ejecutan en orden en Supabase
 │   ├── funciones/             versión vigente de cada función, para estudiarla (generado)
 │   ├── diagnostico-supabase.sql  consulta de solo lectura: qué le falta a tu Supabase (generado)
 │   ├── reset/                 reset del schema antiguo (solo histórico)
 │   ├── seed/                  datos de ejemplo (opcional)
-│   └── tests/                 pruebas automáticas en SQL (fases 1 → 78) y simulador de Supabase
+│   └── tests/                 pruebas automáticas en SQL (fases 1 → 80) y simulador de Supabase
 ├── frontend/                  web React + Vite
 │   ├── .env.example           variables de entorno (sin valores reales)
 │   ├── public/_headers        cabeceras de seguridad (CSP…) que aplica Cloudflare Pages
@@ -362,23 +373,26 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
     ├── guia-git.md            guía de Git (plantilla)
     ├── modelo-datos.md        tablas, funciones, vistas
     ├── glosario.md            vocabulario contable bilingüe
+    ├── permisos.md            quién puede hacer qué (generado desde la prueba)
     ├── seguridad-supabase.md  lista de ajustes de seguridad del panel de Supabase
     ├── powerbi/GUIA.md        guía para conectar Power BI al esquema bi
     ├── capturas/              capturas de la app para el README
-    └── decisiones/            ADR 0001 → 0057
+    └── decisiones/            ADR 0001 → 0058
 ```
 
 ## Calidad
 
 - **Integración continua** (GitHub Actions) en cada Pull Request:
-  - las 78 pruebas de la base de datos sobre PostgreSQL 16, cada una en una base limpia con todas las migraciones
+  - las 80 pruebas de la base de datos sobre PostgreSQL 16, cada una en una base limpia con todas las migraciones
     (la fase 23 vigila también que toda clave foránea tenga índice; la 34 lanza unas 300 operaciones al azar por
     empresa y exige nueve invariantes contables; la 35 compara al céntimo cinco supuestos calculados desde la norma;
-    de la 69 a la 78, cada tablero cuadra al céntimo con su informe: PyG, Balance, Ratios y liquidación);
-  - **302 tests de la web con Vitest**: formatos, rutas, importadores, errores, idiomas (español e inglés con las
+    de la 69 a la 78, cada tablero cuadra al céntimo con su informe: PyG, Balance, Ratios y liquidación; la 79 exige la
+    matriz de permisos y la 80, la guardiana, prueba todas las funciones contra las empresas de otro usuario);
+  - **306 tests de la web con Vitest**: formatos, rutas, importadores, errores, idiomas (español e inglés con las
     mismas claves), glosario, plantillas, la defensa de las funciones de IA, la lectura por páginas, el borrado por
     tandas, la fecha de trabajo, los gráficos, el análisis horizontal, la exportación a Excel y los tableros (unidades,
-    trimestres, rankings, lista de control y saldos al revés);
+    trimestres, rankings, lista de control y saldos al revés) y que la tabla de roles dice lo mismo que la matriz de
+    permisos;
   - lint, build y auditoría de dependencias de la web.
 - **Accesibilidad** comprobada con axe-core (WCAG 2 A/AA) en las pantallas principales, en modo claro y oscuro.
 - **Rendimiento** probado en local con una contabilidad de 120.000 apuntes antes de cada entrega.
@@ -439,7 +453,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 Con PostgreSQL instalado (Linux, WSL o Git Bash):
 
 ```bash
-bash scripts/test-db.sh            # las 78 pruebas, cada una en una base limpia
+bash scripts/test-db.sh            # las 80 pruebas, cada una en una base limpia
 bash scripts/test-db.sh fase25     # solo las que contienen "fase25"
 ```
 
@@ -518,6 +532,7 @@ cuadrados. El ERP también lee directamente los diarios de Sage (Excel) y Busine
 - [x] **v0.56.0**: tablero «Ventas y gastos»
 - [x] **v0.57.0**: tablero «Calidad de la contabilidad» y aviso de saldos al revés en el Balance
 - [x] **v0.57.1**: documentación al día (modelo de datos, glosario, seguridad, README de la web)
+- [x] **v0.58.0**: permisos «lo tuyo, todo; lo de otro, nada», con la matriz y la prueba guardiana
 - [ ] Más botones en la barra superior
 - [ ] Ontología contable y chat con la IA (consulta, nunca calcula)
 - [ ] Más informes en Power BI e incrustarlos en el ERP con RLS por empresa

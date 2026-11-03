@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.set_company_demo · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0027_members   →   la vigente es la de 0027_members
+-- Definida en: 0027_members 0085_permissions_ownership   →   la vigente es la de 0085_permissions_ownership
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.set_company_demo(p_company uuid, p_demo boolean, p_credit text DEFAULT NULL::text)
@@ -11,7 +11,7 @@ CREATE OR REPLACE FUNCTION erp.set_company_demo(p_company uuid, p_demo boolean, 
  SET jit TO 'off'
 AS $function$
 begin
-  if not (erp.is_owner() or erp.is_data_owner(p_company)) then
+  if not (erp.can_manage_access(p_company) or erp.is_data_owner(p_company)) then
     raise exception 'Only the application owner or the data owner can publish a company as demo';
   end if;
   update erp.companies

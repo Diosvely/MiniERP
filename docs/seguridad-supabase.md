@@ -29,6 +29,14 @@ cada cambio de seguridad y, como mínimo, una vez al trimestre.
   ```sql
   select has_schema_privilege('powerbi_reader', 'erp', 'usage') as ve_erp;   -- debe ser false
   ```
+- [ ] **Permisos (v0.58.0):** sin sesión (`anon`) no se ejecuta ninguna función del ERP. En Supabase, los permisos
+  por defecto pueden dar alguno que en las pruebas locales no aparece:
+  ```sql
+  select p.oid::regprocedure from pg_proc p join pg_namespace n on n.oid = p.pronamespace
+  where n.nspname in ('erp', 'bi') and has_function_privilege('anon', p.oid, 'execute');   -- sin filas
+  ```
+  Si sale alguna, vuelve a ejecutar la migración 0085 (su último apartado los quita todos). Lo que puede hacer cada
+  rol está en [`permisos.md`](permisos.md).
 - [ ] **Advisors → Security Advisor:** sin avisos de nivel **ERROR** (RLS desactivada, funciones expuestas…).
 - [ ] **Advisors → Performance Advisor:** sin *unindexed foreign keys* (la prueba de la fase 23 lo vigila en el código).
 

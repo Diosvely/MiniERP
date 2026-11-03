@@ -3,6 +3,7 @@ import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
 import { money } from '../format'
 import ErrorBox from './ErrorBox'
+import { ROLE_ACTIONS, ROLE_CAPS } from '../roles'
 
 // ACCESOS (solo el propietario de la aplicación): quién entra en esta empresa y con qué rol,
 // quién es el TITULAR DE LOS DATOS (Miembro) y las opiniones sobre la IA que han dejado.
@@ -91,6 +92,27 @@ export default function CompanyAccess({ company }) {
           <button type="submit" disabled={busy || !form.email.trim()}>{t('accessAdd')}</button>
         </form>
         <p className="ayuda">{t('accessHowTo')}</p>
+
+        <h3>{t('accessRolesTitle')}</h3>
+        <p className="ayuda">{t('accessRolesIntro')}</p>
+        <div className="tabla-scroll">
+          <table className="informe roles">
+            <thead>
+              <tr><th>{t('accessRole')}</th>{ROLE_ACTIONS.map((a) => <th key={a}>{t(`accessCan.${a}`)}</th>)}</tr>
+            </thead>
+            <tbody>
+              {Object.entries(ROLE_CAPS).map(([role, caps]) => (
+                <tr key={role}>
+                  <td>{role === 'data_owner' ? t('accessDataOwnerRole') : t(`companyRole.${role}`)}</td>
+                  {ROLE_ACTIONS.map((a) => (
+                    <td key={a} className="rol-celda" aria-label={caps[a] ? t('accessYes') : t('accessNo')}>{caps[a] ? '✓' : '✗'}</td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <p className="ayuda">{t('accessRolesRules')}</p>
         <ErrorBox error={error} company={company} />
         {message && <p className="exito">✓ {message}</p>}
       </section>

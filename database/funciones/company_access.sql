@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.company_access · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0027_members   →   la vigente es la de 0027_members
+-- Definida en: 0027_members 0085_permissions_ownership   →   la vigente es la de 0085_permissions_ownership
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.company_access(p_company uuid)
@@ -11,7 +11,9 @@ CREATE OR REPLACE FUNCTION erp.company_access(p_company uuid)
  SET jit TO 'off'
 AS $function$
 begin
-  if not erp.is_owner() then raise exception 'Only the application owner can manage access'; end if;
+  if not erp.can_manage_access(p_company) then
+    raise exception 'Only the application owner can manage access, and only in the companies they administer';
+  end if;
   return query
   select cu.user_id, u.email::text, cu.role, cu.data_owner, cu.created_at,
          coalesce((select a.calls from erp.ai_usage a where a.user_id = cu.user_id and a.used_on = current_date), 0)

@@ -1733,3 +1733,36 @@ contabilidad mes a mes) y cuatro tests de la web. Pruebas: 78 SQL y 302 de la we
   avisos antes de hacer el commit.
 - **La documentación también envejece:** un documento sin fecha de revisión (el modelo de datos) puede quedarse 55
   versiones atrás sin que nada avise.
+
+## 2026-11-03 · v0.58.0 · Permisos: «lo tuyo, todo; lo de otro, nada»
+
+**De dónde viene**
+- Un comentario en LinkedIn al anuncio del Mini ERP: «que cada rol vea y modifique solo lo previsto, también al
+  importar datos y consultar la IA». Antes de hacer nada, la pregunta fue si servía al objetivo. Sí: la seguridad entre
+  usuarios importa antes de abrir más el ERP.
+
+**Qué pasó**
+- **Paso 283, medir sin cambiar nada:** diez actores frente a 27 acciones. Salieron cosas bien (sin sesión no se ve
+  nada, el lector solo lee) y cosas que arreglar (la limpieza de temporales abierta a cualquiera, 28 funciones
+  ejecutables sin sesión).
+- **La medición proponía preguntas de empresa real** (¿puede el contable cerrar? ¿y pagar lo que contabiliza?).
+  Diosvely las paró: es un ERP para aprender, y separar funciones impediría ver el ciclo completo. Criterio: cada
+  persona es dueña absoluta de su información y nadie entra en la de otro.
+- **Paso 284, fijar y arreglar:** la IA para quien administra su empresa; la matriz pasa a ser lo que se exige; y la
+  **guardiana**, que prueba todas las funciones comparando la respuesta con la de una empresa que no existe.
+- **La guardiana encontró lo que la matriz no veía:** el propietario podía ver los accesos de la empresa de otro, darse
+  acceso con otra cuenta, publicarla como demo y leer sus opiniones sobre la IA. Y encontró un NULL en mi primer
+  arreglo.
+- **Paso 285:** `docs/permisos.md` generado desde la prueba, la tabla de roles en Accesos con un test que la ata al
+  documento, y el ADR 0058.
+
+**Pruebas:** fases 79 y 80 (y cambian la 24 y la 66) y seis tests de la web. Pruebas: 80 SQL y 306 de la web.
+
+**Lo que se aprende**
+- **Antes de construir por un comentario, preguntar si sirve al objetivo.** Y luego medir antes de cambiar.
+- **Las buenas prácticas dependen del propósito:** la separación de funciones protege una empresa real; aquí
+  estorbaría el aprendizaje. Lo que sí vale siempre es el aislamiento entre usuarios.
+- **Probar contra «algo que no existe»** evita clasificar 267 funciones a mano y vigila también las que vengan.
+- **El NULL vuelve:** `true and NULL` es NULL y `if not NULL` no entra. Toda comprobación de permiso necesita su
+  `coalesce`.
+- **El propietario también es «otro»** para las empresas de los demás.

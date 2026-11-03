@@ -119,11 +119,11 @@ do $$
 declare e uuid := (select c.e from public.ctx c where c.k = 'temp'); p uuid := (select id from erp.companies where name = 'Mi empresa SL');
 begin
   assert erp.ai_allowed(e), 'IA en su temporal';
-  assert not erp.ai_allowed(p), 'no en su empresa permanente (como antes)';
+  assert erp.ai_allowed(p), 'también en su empresa permanente, que administra (v0.58.0)';
   assert (erp.ai_status(e)->>'limit')::int = 5, '5 al día';
   for i in 1..5 loop perform erp.ai_consume(e); end loop;
   assert public.falla(format('select erp.ai_consume(%L)', e), 'Daily AI limit reached (5 per day)'), 'la sexta, no';
-  raise notice 'OK  · el registrado tiene IA en su temporal, con 5 al día';
+  raise notice 'OK  · el registrado tiene IA en su temporal y en su permanente (v0.58.0), con 5 al día';
 end $$;
 select public.como('d4');
 do $$

@@ -2,6 +2,23 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.59.1] - 2026-11-04
+### Corregido
+- **La empresa sintética no se creaba en Supabase:** generar un año de una vez superaba el límite de ~8 s de las
+  llamadas de la web y se deshacía todo. Ahora se genera **por tandas** (migración `0087_synthetic_batches.sql`,
+  ADR 0060):
+  - la base de datos crea, prepara y guarda el plan (`erp.synthetic_plan`);
+  - la web pide tandas de 25 (`synthetic_step`) con una barra de progreso, y si una se corta la repite con la mitad;
+  - si se interrumpe, se continúa desde la cabecera («Continuar la generación»).
+
+  Las huellas son las mismas que en la v0.59.0.
+### Añadido
+- **Cuadro de diálogo de confirmación** al crear una empresa (nueva, caso, sintética o importación de un diario): si
+  sale bien, qué se ha creado; si sale mal, el error en lenguaje claro. Las demás acciones de crear o contabilizar se
+  irán pasando al diálogo poco a poco.
+- **Toda caja de error se desplaza sola a la vista** al aparecer. Antes, un error abajo de la página podía pasar
+  desapercibido.
+
 ## [0.59.0] - 2026-11-03
 ### Añadido
 - **Empresas sintéticas con semilla** (migración `0086_synthetic_companies.sql`, ADR 0059). Con un número (la

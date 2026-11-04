@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from './supabase'
 import { I18nProvider, useI18n } from './i18n'
+import { NoticeProvider } from './components/Notice'
 import Companies from './components/Companies'
 import BusyBar from './components/BusyBar'
 import Landing from './components/Landing'
@@ -27,7 +28,9 @@ export default function App() {
 
   return (
     <I18nProvider session={session}>
-      <Layout session={session} />
+      <NoticeProvider>
+        <Layout session={session} />
+      </NoticeProvider>
     </I18nProvider>
   )
 }

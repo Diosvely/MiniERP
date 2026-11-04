@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react'
 import { useI18n } from '../i18n'
 import { friendlyError } from '../errors'
 import { companyPath } from '../router'
@@ -8,14 +9,18 @@ import { ICON } from '../icons'
 // Caja de error comprensible: qué ha pasado, qué hacer, botón a la pantalla donde se arregla
 // y, plegado, el mensaje técnico original (útil para el auditor y para avisar de un fallo).
 //   <ErrorBox error={error} company={company} />   (error vacío → no pinta nada)
+// v0.59.1 · Al aparecer, la pantalla se desplaza hasta la caja: un error abajo del todo ya no pasa desapercibido.
 export default function ErrorBox({ error, company }) {
   const { t, language } = useI18n()
+  const ref = useRef(null)
   const f = friendlyError(error, t, language)
+  const key = f?.technical ?? f?.title ?? ''
+  useEffect(() => { if (key) ref.current?.scrollIntoView?.({ behavior: 'smooth', block: 'center' }) }, [key])
   if (!f) return null
   const tax = company?.tax_territory === 'canary_islands' ? 'IGIC' : 'IVA'
   const screen = f.to ? t(`nav.${f.to}.label`).replace('{tax}', tax) : ''
   return (
-    <div className="caja-error" role="alert">
+    <div className="caja-error" role="alert" ref={ref}>
       <p className="caja-error-titulo"><AlertTriangle {...ICON} /> {f.title}</p>
       {f.hint && <p className="caja-error-pista">{f.hint}</p>}
       {f.to && company && (

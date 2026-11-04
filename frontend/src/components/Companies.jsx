@@ -15,6 +15,7 @@ import { defaultStart } from '../monthly'
 import { todayIso } from '../workDate'
 import { TEMP_CHANGED, idleText, importCard, shortDateTime } from '../temporary'
 import SyntheticCompany from './SyntheticCompany'
+import { useNotice } from '../notice'
 
 const emptyForm = () => ({ name: '', vat_registration_no: '', industry: 'services', tax_territory: 'canary_islands', control_mode: 'strict',
   start_date: defaultStart(todayIso()), monthly: true })   // v0.47.0 · fecha de inicio y mes a mes
@@ -22,6 +23,7 @@ const emptyForm = () => ({ name: '', vat_registration_no: '', industry: 'service
 // Lista de empresas: las mías + las de demostración (solo lectura) + alta de empresa
 export default function Companies({ session }) {
   const { t, language } = useI18n()
+  const notice = useNotice()   // v0.59.1 · confirmación de lo que se crea (éxito o error), en un cuadro de diálogo
   const [companies, setCompanies] = useState([])
   const [profile, setProfile] = useState(null)   // { app_role, max_companies, companies_created }
   const [form, setForm] = useState(emptyForm)
@@ -58,15 +60,24 @@ export default function Companies({ session }) {
   async function imported(companyId) {
     setImporting(false)
     window.dispatchEvent(new Event(TEMP_CHANGED))   // v0.49.0 · el latido empieza a contar con la temporal nueva
-    await load()
+    const list = await load()
     navigate(companyPath(companyId))
+    notice.success({ title: t('notice.journalImported'), lines: [list?.find((c) => c.id === companyId)?.name] })
   }
 
-  // v0.59.0 · Al crear una empresa sintética se abre (y, si es temporal, el latido empieza a contar)
-  async function synthesized(companyId) {
+  // v0.59.0 · Empresa sintética creada (si es temporal, el latido empieza a contar). v0.59.1 · Se confirma con un diálogo
+  // y queda en «Mis empresas»; «Abrir la empresa» la abre.
+  async function synthesized(r) {
     window.dispatchEvent(new Event(TEMP_CHANGED))
     await load()
-    navigate(companyPath(companyId))
+    notice.success({ title: t('notice.syntheticCreated'),
+      lines: [r.name, t('notice.entries').replace('{n}', r.entries), t('notice.fingerprint').replace('{f}', r.fingerprint)],
+      action: { label: t('notice.open'), onClick: () => navigate(companyPath(r.company_id)) } })
+  }
+  // Si una tanda falla: la empresa ya existe (se ve en la lista) y se continúa desde su cabecera
+  async function synthesisFailed(error, made) {
+    if (made) { window.dispatchEvent(new Event(TEMP_CHANGED)); await load() }
+    notice.error(error, made ? { before: t('notice.syntheticPartial').replace('{name}', made.name) } : {})
   }
 
   // Cambios hechos dentro de la empresa (publicar demo, impuestos…): se actualiza su fila de la lista
@@ -84,18 +95,21 @@ export default function Companies({ session }) {
       .insert({ ...fields, created_by: session.user.id })
       .select('id')
       .single()
-    if (error) return setError(error.message)
+    if (error) return notice.error(error)
 
     // 2) v0.47.0 · Inicio de la contabilidad: el ejercicio de la fecha de inicio con sus 12 periodos y, mes a mes,
     //    los meses anteriores cerrados. Sin la migración 0069, el ejercicio del año en curso, como antes.
     const { error: e2 } = await supabase.rpc('start_accounting', { p_company: data.id, p_start: start, p_monthly: monthly })
     if (e2?.code === 'PGRST202') {
       const { error: e3 } = await supabase.rpc('create_fiscal_year', { p_company: data.id, p_year: new Date().getFullYear() })
-      if (e3) return setError(e3.message)
-    } else if (e2) return setError(e2.message)
+      if (e3) return notice.error(e3)
+    } else if (e2) return notice.error(e2)
 
+    const name = form.name
     setForm(emptyForm())
-    load()
+    await load()
+    notice.success({ title: t('notice.companyCreated'), lines: [name],
+      action: { label: t('notice.open'), onClick: () => navigate(companyPath(data.id)) } })
   }
 
   const change = (field) => (e) => setForm({ ...form, [field]: e.target.value })
@@ -107,9 +121,10 @@ export default function Companies({ session }) {
     setLoadingCase(`${key}/${mode}`)
     const { data, error } = await supabase.rpc('create_case_company', { p_case: key, p_mode: mode })
     setLoadingCase(null)
-    if (error) return setError(error.message)
+    if (error) return notice.error(error)
     await load()
     navigate(companyPath(data.company_id, 'case'))
+    notice.success({ title: t('notice.caseLoaded'), lines: [data.name, t('notice.entries').replace('{n}', data.entries)] })
   }
 
   const mine = companies.filter((c) => c.my_role)
@@ -156,6 +171,7 @@ export default function Companies({ session }) {
           {c.name} {c.is_demo && <span className="insignia">{t('demoBadge')}</span>}
           {c.temporary && <span className="insignia insignia-temporal">⏳ {t('tmp.badge')}</span>}
           {c.synthetic_seed && <span className="insignia insignia-sintetica">🎲 {c.synthetic_seed}</span>}
+          {c.synthetic_left > 0 && <span className="insignia insignia-temporal">⏳ {t('syn.unfinished')}</span>}
         </strong>
         <span>
           {c.vat_registration_no} · {t(`industry.${c.industry}`)} · {t(`territory.${c.tax_territory}`)}
@@ -252,7 +268,7 @@ export default function Companies({ session }) {
         </section>
       )}
 
-      {!isGuest && <SyntheticCompany card={imp} temp={temp} onCreated={synthesized} onError={setError} />}
+      {!isGuest && <SyntheticCompany card={imp} temp={temp} onCreated={synthesized} onFailed={synthesisFailed} />}
 
       {isGuest ? null : canCreate ? (
         <form onSubmit={create} className="tarjeta">

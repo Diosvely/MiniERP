@@ -1,9 +1,9 @@
 -- =====================================================================
--- erp.load_synthetic · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0086_synthetic_companies   →   la vigente es la de 0086_synthetic_companies
+-- erp.synthetic_prepare · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
+-- Definida en: 0087_synthetic_batches   →   la vigente es la de 0087_synthetic_batches
 -- =====================================================================
 
-CREATE OR REPLACE FUNCTION erp.load_synthetic(p_company uuid, p_seed integer, p_profile text, p_months integer)
+CREATE OR REPLACE FUNCTION erp.synthetic_prepare(p_company uuid, p_seed integer, p_profile text, p_months integer)
  RETURNS jsonb
  LANGUAGE plpgsql
  SET search_path TO 'erp', 'public'
@@ -93,11 +93,11 @@ begin
     ev := ev || jsonb_build_object('d', make_date(2026, m, 15), 'o', 5, 'k', 'loan_pay');
   end loop;
   n := n + 1;
-  ev := ev || jsonb_build_object('d', '2026-01-20', 'o', 2, 'k', 'asset',
+  ev := ev || jsonb_build_object('d', '2026-01-20', 'o', 2, 'k', 'asset', 'pid', v_asset_vendor,
     'amount', case when p_profile = 'services' then erp.syn_amount(p_seed, n, 3000, 9000) else erp.syn_amount(p_seed, n, 15000, 40000) end);
   for m in 1..p_months loop
     -- alquiler del local (con retención del 19 %, modelo 115) y su pago, el día 1
-    ev := ev || jsonb_build_object('d', make_date(2026, m, 1), 'o', 1, 'k', 'rent', 'ref', 'R' || m);
+    ev := ev || jsonb_build_object('d', make_date(2026, m, 1), 'o', 1, 'k', 'rent', 'ref', 'R' || m, 'pid', v_rent);
     ev := ev || jsonb_build_object('d', make_date(2026, m, 3), 'o', 6, 'k', 'pay', 'ref', 'R' || m);
     -- ventas: de 6 a 10 en el mes, en días crecientes; el cobro, de 5 a 28 días después (antes de vencer)
     n := n + 1;
@@ -107,7 +107,7 @@ begin
       n := n + 1; v_amt := case when p_profile = 'trade' then erp.syn_amount(p_seed, n, 400, 3500) else erp.syn_amount(p_seed, n, 600, 4500) end;
       n := n + 1;
       ev := ev || jsonb_build_object('d', d, 'o', 3, 'k', 'sale', 'ref', 'S' || m || '-' || i,
-        'p', erp.syn_int(p_seed, n, 1, array_length(cust, 1)), 'amount', v_amt,
+        'pid', cust[erp.syn_int(p_seed, n, 1, array_length(cust, 1))], 'amount', v_amt,
         'code', case when erp.syn_rand(p_seed, n + 1000000) < 0.85 then v_gen else v_red end);
       n := n + 1;
       d2 := d + erp.syn_int(p_seed, n, 5, 28);
@@ -120,7 +120,7 @@ begin
       d := make_date(2026, m, 1) + ((i * 26) / (k + 1)) + 1;
       n := n + 1; q := erp.syn_int(p_seed, n, 1, 4);
       n := n + 1;
-      ev := ev || jsonb_build_object('d', d, 'o', 2, 'k', 'purchase', 'ref', 'P' || m || '-' || i, 'p', q,
+      ev := ev || jsonb_build_object('d', d, 'o', 2, 'k', 'purchase', 'ref', 'P' || m || '-' || i, 'pid', vend[q],
         'acc', v_exp_acc[q], 'amount', case when p_profile = 'services' then erp.syn_amount(p_seed, n, 80, 900)
                                             else erp.syn_amount(p_seed, n, 300, 2600) end, 'code', v_gen);
       n := n + 1;
@@ -129,7 +129,7 @@ begin
     end loop;
     -- la asesoría del mes (profesional con IRPF, modelo 111), pagada a los 10 días
     n := n + 1;
-    ev := ev || jsonb_build_object('d', make_date(2026, m, 25), 'o', 2, 'k', 'advisor', 'ref', 'A' || m,
+    ev := ev || jsonb_build_object('d', make_date(2026, m, 25), 'o', 2, 'k', 'advisor', 'ref', 'A' || m, 'pid', v_adv,
       'amount', erp.syn_amount(p_seed, n, 150, 450));
     if make_date(2026, m, 25) + 10 <= v_end then
       ev := ev || jsonb_build_object('d', make_date(2026, m, 25) + 10, 'o', 6, 'k', 'pay', 'ref', 'A' || m);
@@ -149,101 +149,17 @@ begin
   end loop;
   -- incidencias sembradas (perfil «incidencias»)
   if p_profile = 'incidents' then
-    ev := ev || jsonb_build_object('d', '2026-02-10', 'o', 3, 'k', 'bad_sale');             -- nunca se cobra
-    ev := ev || jsonb_build_object('d', make_date(2026, 5, 18), 'o', 6, 'k', 'double_pay');  -- se paga otra vez la máquina
+    ev := ev || jsonb_build_object('d', '2026-02-10', 'o', 3, 'k', 'bad_sale', 'pid', v_moroso);   -- nunca se cobra
+    ev := ev || jsonb_build_object('d', make_date(2026, 5, 18), 'o', 6, 'k', 'double_pay', 'pid', v_asset_vendor);  -- la máquina, otra vez
     ev := ev || jsonb_build_object('d', v_end, 'o', 10, 'k', 'bad_draft');                  -- un borrador descuadrado
   end if;
 
-  -- 3. Ejecutar el plan en orden de fecha, con las funciones de cada módulo
-  for x in select v from jsonb_array_elements(ev) v
-           order by (v->>'d')::date, (v->>'o')::int, v->>'k', v->>'ref' loop
-    d := (x->>'d')::date;
-    case x->>'k'
-    when 'sale' then
-      inv := inv || jsonb_build_object(x->>'ref', erp.case_invoice(e, 'sale', cust[(x->>'p')::int], d, null, 'Venta',
-        jsonb_build_array(jsonb_build_object('account_no', v_sale_acc, 'amount', (x->>'amount')::numeric, 'tax_code', x->>'code'))));
-    when 'purchase' then
-      inv := inv || jsonb_build_object(x->>'ref', erp.case_invoice(e, 'purchase', vend[(x->>'p')::int], d, x->>'ref',
-        case when x->>'acc' = '60000001' then 'Compra de mercaderías' else 'Gasto del mes' end,
-        jsonb_build_array(jsonb_build_object('account_no', x->>'acc', 'amount', (x->>'amount')::numeric, 'tax_code', x->>'code'))));
-    when 'rent' then
-      inv := inv || jsonb_build_object(x->>'ref', erp.case_invoice(e, 'purchase', v_rent, d, x->>'ref', 'Alquiler del local',
-        jsonb_build_array(jsonb_build_object('account_no', '62100001', 'amount', 1200, 'tax_code', v_gen)), 'IRPF19'));
-    when 'advisor' then
-      inv := inv || jsonb_build_object(x->>'ref', erp.case_invoice(e, 'purchase', v_adv, d, x->>'ref', 'Asesoría del mes',
-        jsonb_build_array(jsonb_build_object('account_no', '62300001', 'amount', (x->>'amount')::numeric, 'tax_code', v_gen)), 'IRPF15'));
-    when 'collect' then
-      perform erp.case_payment(e, 'collection', (select partner_id from erp.invoices where id = (inv->>(x->>'ref'))::uuid), d,
-                               (inv->>(x->>'ref'))::uuid);
-    when 'pay' then
-      perform erp.case_payment(e, 'payment', (select partner_id from erp.invoices where id = (inv->>(x->>'ref'))::uuid), d,
-                               (inv->>(x->>'ref'))::uuid);
-    when 'asset' then
-      v_id := erp.case_invoice(e, 'purchase', v_asset_vendor, d, 'INV-1',
-        case when p_profile = 'services' then 'Equipos informáticos' else 'Máquina para el taller' end,
-        jsonb_build_array(jsonb_build_object('account_no', case when p_profile = 'services' then '21700001' else '21300001' end,
-                                             'amount', (x->>'amount')::numeric, 'tax_code', v_gen)));
-      perform erp.create_fixed_asset(jsonb_build_object('company_id', e,
-        'name', case when p_profile = 'services' then 'Equipos informáticos' else 'Máquina para el taller' end,
-        'asset_account_no', case when p_profile = 'services' then '21700001' else '21300001' end,
-        'cost', (x->>'amount')::numeric, 'useful_life_months', case when p_profile = 'services' then 48 else 120 end,
-        'start_date', d, 'acquisition_date', d, 'invoice_id', v_id));
-      perform erp.case_payment(e, 'payment', v_asset_vendor, d, v_id);
-    when 'loan' then
-      perform erp.loan_create(jsonb_build_object('company_id', e, 'description', 'Préstamo para circulante', 'lender', 'Banco Ficticio',
-        'principal', (x->>'amount')::numeric, 'rate', 5, 'periods', 36, 'frequency', 12, 'start_date', d,
-        'bank_account_no', '57200001'));
-      select id into v_loan from erp.loans where company_id = e;
-    when 'loan_pay' then
-      perform erp.loan_payment(jsonb_build_object('loan_id', v_loan, 'date', d, 'bank_account_no', '57200001'));
-    when 'payroll' then
-      select run_id into v_id from erp.run_payroll(jsonb_build_object('company_id', e, 'period', d));
-      v_run := v_run || jsonb_build_object(x->>'m', v_id);
-      perform erp.pay_payroll(jsonb_build_object('run_id', v_id, 'what', 'net', 'payment_date', d, 'cash_account_no', '57200001'));
-    when 'pay_ss' then
-      perform erp.pay_payroll(jsonb_build_object('run_id', (v_run->>(x->>'m'))::uuid, 'what', 'social_security',
-        'payment_date', d, 'cash_account_no', '57200001'));
-    when 'quarter' then
-      begin
-        perform erp.post_depreciation(e, d);
-      exception when others then if sqlerrm not like 'Nothing to depreciate%' then raise; end if;
-      end;
-      -- incidencias: el 2T se queda sin liquidar
-      if not (p_profile = 'incidents' and (x->>'q')::int = 2) then
-        perform erp.post_tax_settlement(e, v_tax, 2026, (x->>'q')::int);
-      end if;
-    when 'pay_taxes' then
-      -- el resultado de la liquidación (4750) y las retenciones del trimestre (4751: modelo 111 y modelo 115), cada
-      -- subcuenta con su pago
-      for r in select g.account_no, erp.case_balance(e, g.account_no, d) as due from erp.gl_accounts g
-               where g.company_id = e and g.account_type = 'posting' and (g.account_no like '4750%' or g.account_no like '4751%')
-               order by g.account_no loop
-        if r.due > 0 then
-          perform erp.case_entry(e, d, case when r.account_no like '4750%' then 'Pago de la liquidación del '
-                                            else 'Pago de las retenciones del ' end || (x->>'q') || 'T',
-            jsonb_build_array(jsonb_build_array(r.account_no, r.due, 0), jsonb_build_array('57200001', 0, r.due)));
-        end if;
-      end loop;
-    when 'bad_sale' then
-      perform erp.case_invoice(e, 'sale', v_moroso, d, null, 'Venta que no se cobra',
-        jsonb_build_array(jsonb_build_object('account_no', v_sale_acc, 'amount', 2500, 'tax_code', v_gen)));
-    when 'double_pay' then
-      perform erp.case_entry(e, d, 'Pago duplicado a un proveedor',
-        jsonb_build_array(jsonb_build_array((select account_no from erp.v_partners where id = v_asset_vendor), 1500, 0),
-                          jsonb_build_array('57200001', 0, 1500)));
-    when 'bad_draft' then
-      insert into erp.journal_entries (company_id, fiscal_year_id, posting_date, description)
-      values (e, (select id from erp.fiscal_years where company_id = e and year = 2026), d, 'Borrador descuadrado')
-      returning id into v_id;
-      insert into erp.journal_lines (entry_id, company_id, line_no, gl_account_id, debit, credit) values
-        (v_id, e, 1, (select id from erp.gl_accounts where company_id = e and account_no = '62900001'), 100, 0),
-        (v_id, e, 2, (select id from erp.gl_accounts where company_id = e and account_no = '57200001'), 0, 70);
-    end case;
-  end loop;
-
-  select count(*) into v_entries from erp.journal_entries j where j.company_id = e;
+  -- 3. El plan se guarda en orden de fecha: las tandas lo ejecutan en ese orden (los mismos asientos con los mismos números)
+  insert into erp.synthetic_plan (company_id, seq, d, k, ref, data)
+  select e, row_number() over (order by (v->>'d')::date, (v->>'o')::int, v->>'k', v->>'ref'), (v->>'d')::date, v->>'k', v->>'ref', v
+  from jsonb_array_elements(ev) v;
   update erp.companies set synthetic_seed = p_seed, synthetic_profile = p_profile, synthetic_months = p_months where id = e;
-  return jsonb_build_object('company_id', e, 'seed', p_seed, 'profile', p_profile, 'months', p_months, 'entries', v_entries,
-    'fingerprint', erp.company_fingerprint(e));
+  return jsonb_build_object('company_id', e, 'seed', p_seed, 'profile', p_profile, 'months', p_months,
+    'total', (select count(*) from erp.synthetic_plan where company_id = e));
 end $function$
 ;

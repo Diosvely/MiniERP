@@ -1,5 +1,5 @@
 -- =====================================================================
--- PRUEBAS FASE 81 · Empresas sintéticas con semilla (v0.59.0, paso 286 · migración 0086)
+-- PRUEBAS FASE 81 · Empresas sintéticas con semilla (v0.59.0, paso 286 · migración 0086; v0.59.1, paso 289 · 0087)
 -- ---------------------------------------------------------------------
 -- Diseño validado por Diosvely (diseno-v0.59.0.md, 03-11-2026). Se comprueba:
 --   · la misma semilla da la misma huella (con todos los identificadores internos distintos); otra semilla, otro
@@ -9,6 +9,9 @@
 --   · la lista de control: nada en los perfiles limpios y exactamente lo sembrado en «incidencias»;
 --   · quién la crea y dónde (como al importar), sus límites, que no se publica como demo y que otro no ve su huella;
 --   · rapidez.
+-- v0.59.1 · por tandas (en Supabase, de una vez superaba el límite de ~8 s de la web y se deshacía todo):
+--   · las huellas son las de la v0.59.0 (por tandas sale exactamente lo mismo);
+--   · con un límite de tiempo, de una vez se corta y por tandas no; una tanda que falla deja las anteriores y se continúa.
 -- =====================================================================
 \set ON_ERROR_STOP 1
 \set QUIET 1
@@ -47,6 +50,15 @@ create or replace function public.item(t jsonb, metric text) returns jsonb langu
 $$;
 grant execute on function public.item(jsonb, text) to authenticated;
 
+-- Crear y generar todas las tandas seguidas (aquí no hay límite de tiempo; la web pide tandas de 25)
+create or replace function public.sintetica(p_seed int, p_profile text, p_months int) returns jsonb language plpgsql as $$
+declare j jsonb;
+begin
+  j := erp.create_synthetic_company(p_seed, p_profile, p_months);
+  return j || erp.synthetic_run((j ->> 'company_id')::uuid);
+end $$;
+grant execute on function public.sintetica(int, text, int) to authenticated;
+
 set role authenticated;
 call public.como('00000000-0000-0000-0000-0000000000b1');
 
@@ -56,7 +68,7 @@ declare j jsonb; p text; t0 timestamptz; ms int;
 begin
   foreach p in array array['services', 'trade', 'workshop', 'incidents'] loop
     t0 := clock_timestamp();
-    j := erp.create_synthetic_company(4817, p, 12);
+    j := public.sintetica(4817, p, 12);
     ms := extract(epoch from clock_timestamp() - t0) * 1000;
     insert into public.ctx values (p, (j ->> 'company_id')::uuid, j ->> 'fingerprint');
     raise notice 'OK  · semilla 4817 · % · 12 meses: % asientos, huella %, % ms', p, j ->> 'entries', j ->> 'fingerprint', ms;
@@ -64,20 +76,25 @@ begin
     assert (j ->> 'entries')::int between 300 and 600, format('unas 25 operaciones al mes: %s asientos', j ->> 'entries');
   end loop;
   -- otra vez la misma: todos los identificadores internos son otros, la contabilidad es la misma
-  j := erp.create_synthetic_company(4817, 'workshop', 12);
+  j := public.sintetica(4817, 'workshop', 12);
   insert into public.ctx values ('workshop_otra', (j ->> 'company_id')::uuid, j ->> 'fingerprint');
   assert j ->> 'fingerprint' = (select huella from public.ctx where k = 'workshop'), 'la misma semilla, la misma huella';
   assert j ->> 'name' = 'Sintética 4817 · Taller SL (2)', 'el nombre no se repite: ' || (j ->> 'name');
   assert (select count(*) from erp.journal_entries where company_id = (j ->> 'company_id')::uuid)
        = (select count(*) from erp.journal_entries where company_id = (select e from public.ctx where k = 'workshop')), 'los mismos asientos';
   -- otra semilla, otros meses u otro perfil: otra huella
-  assert (erp.create_synthetic_company(4818, 'workshop', 12) ->> 'fingerprint') <> (select huella from public.ctx where k = 'workshop'),
+  assert (public.sintetica(4818, 'workshop', 12) ->> 'fingerprint') <> (select huella from public.ctx where k = 'workshop'),
     'otra semilla, otra huella';
-  assert (erp.create_synthetic_company(4817, 'workshop', 6) ->> 'fingerprint') <> (select huella from public.ctx where k = 'workshop'),
+  assert (public.sintetica(4817, 'workshop', 6) ->> 'fingerprint') <> (select huella from public.ctx where k = 'workshop'),
     'otros meses, otra huella';
   assert (select count(distinct huella) from public.ctx where k in ('services', 'trade', 'workshop', 'incidents')) = 4, 'otro perfil, otra huella';
-  assert (erp.create_synthetic_company(4817, 'services', 1) ->> 'entries')::int > 10, 'un solo mes también';
+  assert (public.sintetica(4817, 'services', 1) ->> 'entries')::int > 10, 'un solo mes también';
+  -- regresión de la v0.59.1: por tandas sale exactamente lo de la v0.59.0 (las huellas publicadas en docs/casos-sinteticos.md)
+  assert (select string_agg(k || '=' || huella, ' ' order by k) from public.ctx where k in ('services', 'trade', 'workshop', 'incidents'))
+       = 'incidents=g1-E0B8EF25 services=g1-A7A35B0D trade=g1-ECFE0570 workshop=g1-2C3AD24C',
+    'las huellas de la v0.59.0: ' || (select string_agg(k || '=' || huella, ' ' order by k) from public.ctx where k in ('services', 'trade', 'workshop', 'incidents'));
   raise notice 'OK  · la misma semilla da la misma huella; otra semilla, otros meses u otro perfil, otra';
+  raise notice 'OK  · por tandas, las mismas huellas que la v0.59.0 (g1-2C3AD24C en 4817 · taller · 12 meses)';
 end $$;
 
 -- la huella cambia si cambia un céntimo (y no depende de los identificadores ni de las horas)
@@ -205,6 +222,75 @@ end $$;
 reset role;
 do $$ begin
   assert not has_function_privilege('anon', 'erp.create_synthetic_company(int, text, int)', 'execute'), 'sin sesión, no';
+end $$;
+
+-- ---------- 5. v0.59.1 · Por tandas: el límite de tiempo de la web ----------
+set role authenticated;
+call public.como('00000000-0000-0000-0000-0000000000b1');
+select (erp.create_synthetic_company(4817, 'workshop', 12) ->> 'company_id') as tandas \gset
+do $$
+declare c uuid := (select id from erp.companies where synthetic_seed = 4817 and synthetic_profile = 'workshop' order by created_at desc limit 1);
+begin
+  assert erp.synthetic_progress(c) ->> 'done' = '0' and (erp.synthetic_progress(c) ->> 'left')::int > 400, 'creada: preparada, con su plan';
+  assert (select synthetic_left from erp.v_my_companies where id = c) > 400, 'la web ve lo que falta';
+  assert (select count(*) from erp.journal_entries where company_id = c and description not like 'Constitución%') = 0
+     and not exists (select 1 from erp.invoices where company_id = c), 'solo la constitución (sus tres asientos)';
+end $$;
+-- de una vez, con un límite de 1,5 s, se corta (y no queda nada a medias: el plan sigue entero)
+set statement_timeout = '1500ms';
+do $$
+declare c uuid := (select id from erp.companies where synthetic_seed = 4817 and synthetic_profile = 'workshop' order by created_at desc limit 1);
+begin
+  perform erp.synthetic_run(c);
+  raise exception 'De una vez tenía que cortarse';
+exception when query_canceled then
+  raise notice 'OK  · de una vez, con un límite de 1,5 s, se corta (lo que pasaba en Supabase con ~8 s)';
+end $$;
+reset statement_timeout;
+do $$ begin
+  assert (erp.synthetic_progress((select id from erp.companies where synthetic_seed = 4817 and synthetic_profile = 'workshop'
+          order by created_at desc limit 1)) ->> 'done') = '0', 'lo cortado se deshace: el plan sigue entero';
+end $$;
+-- por tandas de 25, cada una con el mismo límite (cada llamada de la web es su propia transacción)
+set statement_timeout = '1500ms';
+select format('select erp.synthetic_step(%L, 25)', :'tandas') from generate_series(1, 25) \gexec
+reset statement_timeout;
+do $$
+declare c uuid := (select id from erp.companies where synthetic_seed = 4817 and synthetic_profile = 'workshop' order by created_at desc limit 1);
+begin
+  assert (erp.synthetic_progress(c) ->> 'left') = '0', 'por tandas, terminada';
+  assert erp.company_fingerprint(c) = 'g1-2C3AD24C', 'por tandas, la misma huella: ' || erp.company_fingerprint(c);
+  assert (select synthetic_left from erp.v_my_companies where id = c) = 0, 'la web la ve terminada';
+  assert (erp.synthetic_step(c, 25) ->> 'left') = '0', 'una tanda de más no hace nada';
+  raise notice 'OK  · por tandas de 25, cada una con el límite de 1,5 s, termina con la misma huella';
+end $$;
+-- una tanda que falla deja las anteriores y se puede continuar
+do $$
+declare c uuid; j jsonb; antes int;
+begin
+  c := (erp.create_synthetic_company(4817, 'services', 3) ->> 'company_id')::uuid;
+  j := erp.synthetic_step(c, 30);
+  antes := (j ->> 'done')::int;
+  begin
+    perform erp.synthetic_step(c, 30);
+    raise exception 'FALLO_SIMULADO';
+  exception when others then
+    if sqlerrm <> 'FALLO_SIMULADO' then raise; end if;
+  end;
+  assert (erp.synthetic_progress(c) ->> 'done')::int = antes, 'la tanda que falla se deshace; las anteriores quedan';
+  j := erp.synthetic_run(c);
+  assert (j ->> 'left') = '0' and j ->> 'fingerprint' = (public.sintetica(4817, 'services', 3) ->> 'fingerprint'),
+    'se continúa y sale lo mismo que de un tirón';
+  raise notice 'OK  · una tanda que falla no deja nada a medias; al continuar sale lo mismo';
+end $$;
+-- otro usuario no puede generar ni ver el progreso de la de otro
+call public.como('00000000-0000-0000-0000-0000000000c1');
+do $$
+declare c uuid := (select e from public.ctx where k = 'workshop');   -- la del miembro (el registrado no la ve: RLS)
+begin
+  assert public.falla(format('select erp.synthetic_step(%L, 25)', c), 'only the company admin');
+  assert public.falla(format('select erp.synthetic_progress(%L)', c), 'Not allowed');
+  raise notice 'OK  · otro usuario no genera ni ve el progreso de la de otro';
 end $$;
 
 \echo 'FASE 81 OK'

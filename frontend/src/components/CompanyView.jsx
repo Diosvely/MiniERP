@@ -240,7 +240,8 @@ export default function CompanyView({ company: base, readOnly, canPublish, isOwn
       {/* v0.49.0 · Empresa temporal de un registrado: cuándo se borra */}
       {company.temporary && <TempBadge company={company} />}
       {/* v0.59.0 · Empresa sintética: su semilla y «Copiar datos para informar de un error» */}
-      {company.synthetic_seed && <SyntheticInfo company={company} />}
+      {company.synthetic_seed && (
+        <SyntheticInfo company={company} onDone={() => { onChanged({ id: company.id, synthetic_left: 0 }); setRefreshKey((k) => k + 1) }} />)}
       {/* v0.52.0 · Barra superior: de momento, «Tableros» (el menú lateral sigue igual) */}
       <TopBar company={company} active={section === 'tableros' ? (params[0] ?? 'resumen') : null} />
 

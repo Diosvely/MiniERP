@@ -12,7 +12,14 @@ datos para las pruebas (ADR 0059).
   - Un registrado sin perfil la tiene en una **empresa temporal**, que se borra sola.
   - Un miembro o el propietario la tiene **permanente**, y cuenta en su límite de empresas.
   - Un invitado no puede crearla.
-- **En SQL** (con sesión): `select erp.create_synthetic_company(4817, 'workshop', 12);`
+- **Por tandas** (v0.59.1): Supabase corta cada llamada de la web a los ~8 s. Por eso la base de datos crea y prepara
+  la empresa y guarda su plan, y la web genera las operaciones en tandas de 25, con una barra de progreso. Si se
+  interrumpe, la empresa sale en la lista con «⏳ a medias» y se termina desde su cabecera («Continuar la
+  generación»). El resultado es el mismo que de una vez.
+- **En SQL** (con sesión; en el SQL Editor no está el límite de la web):
+  ```sql
+  select erp.synthetic_run((erp.create_synthetic_company(4817, 'workshop', 12) ->> 'company_id')::uuid);
+  ```
 
 | Perfil | Territorio | Qué trae | Meses |
 |---|---|---|---|

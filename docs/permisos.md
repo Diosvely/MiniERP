@@ -82,7 +82,7 @@ Solo lee el esquema `bi`, que enseña las empresas demo.
 - **Fase 79 (esta matriz):** cada actor intenta cada acción y la prueba exige el resultado de `public.esperado`.
 - **Fase 80 (la guardiana):** tres atacantes (un registrado sin acceso, un invitado y el propietario de la aplicación)
   llaman a **todas** las funciones del ERP que puede ejecutar una sesión con los identificadores de las empresas de otro
-  usuario (277 funciones; 1630 llamadas, contando las de control). Hay fuga si cambia algo de esas
+  usuario (280 funciones; 1651 llamadas, contando las de control). Hay fuga si cambia algo de esas
   empresas, si enseña un identificador suyo que no se le dio o si responde con datos distintos de los que daría ante
   identificadores que no existen. Como control, la víctima hace las mismas llamadas y ve o cambia lo suyo. Una función
   nueva entra sola en la prueba.

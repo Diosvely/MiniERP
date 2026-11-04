@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.create_synthetic_company · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0086_synthetic_companies   →   la vigente es la de 0086_synthetic_companies
+-- Definida en: 0086_synthetic_companies 0087_synthetic_batches   →   la vigente es la de 0087_synthetic_batches
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.create_synthetic_company(p_seed integer, p_profile text, p_months integer DEFAULT 12)
@@ -27,6 +27,6 @@ begin
   values (v_name, case p_profile when 'services' then 'services' else 'retail' end, v_p.territory, 'sl', auth.uid(),
           not erp.is_trusted())
   returning id into e;
-  return erp.load_synthetic(e, p_seed, p_profile, p_months) || jsonb_build_object('name', v_name);
+  return erp.synthetic_prepare(e, p_seed, p_profile, p_months) || jsonb_build_object('name', v_name);
 end $function$
 ;

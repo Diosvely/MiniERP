@@ -1792,3 +1792,30 @@ semillas por perfil. Pruebas: 81 SQL y 316 de la web.
   saldo al revés) son las que protegen a quien lo usa.
 - **Una SL no puede estar en recargo de equivalencia:** el perfil de comercio tuvo que ser el mayorista que vende a
   tiendas en recargo.
+
+## 2026-11-04 · v0.59.1 · Por tandas, y confirmar lo que se crea
+
+**Qué pasó**
+- En Supabase, la empresa sintética «empezaba» pero no aparecía. El error estaba **abajo del todo de la página**
+  («La consulta ha tardado demasiado… statement timeout»): generar un año de una vez pasaba de los ~8 s de Supabase y
+  se deshacía todo. En local tardaba 3 s, y yo no lo medí contra ese límite, aunque ya estaba documentado en la 0029.
+- **Diosvely:** «das crear y el sistema no notifica si se hizo o no». De ahí la regla: todo lo que se crea se confirma
+  con un cuadro de diálogo.
+
+**Qué se hizo**
+- **Por tandas (0087):** preparar y guardar el plan, y después tandas de 25 desde la web, con progreso y «Continuar la
+  generación». Las huellas, idénticas a la v0.59.0.
+- **El diálogo común** en las cuatro formas de crear empresa, y la caja de error que se desplaza sola en todas las
+  pantallas. Las 28 pantallas restantes se migran poco a poco (lista en el Project).
+
+**Pruebas:** 81 SQL y 321 de la web.
+- La fase 81 corta «de una vez» con un límite de 1,5 s y termina por tandas con la misma huella.
+- En la web, las tandas se adaptan si se cortan.
+- Se probó en un navegador.
+
+**Lo que se aprende**
+- **Medir contra el límite real, no contra el equipo de pruebas:** 3 s en local no dicen nada si el servidor corta a
+  los 8 y es varias veces más lento.
+- **Atomicidad:** lo cortado se deshace entero. Por eso no quedaba nada, ni siquiera la empresa.
+- **Un error que no se ve no existe para quien usa el programa:** confirmar en un diálogo lo importante y llevar a la
+  vista lo que falla.

@@ -1705,6 +1705,25 @@ export default {
     copyReport: 'Copiar datos para informar de un error',
     copied: 'Copiado. Pégalo junto a lo que has visto.',
     report: { seed: 'Semilla', profile: 'Perfil', months: 'Meses', fingerprint: 'Huella', screen: 'Pantalla', workDate: 'Fecha de trabajo', language: 'Idioma' },
+    // v0.59.1 · por tandas
+    progress: 'Generando… {month} · {done} de {total} operaciones ({pct} %). No cierres la pestaña.',
+    left: 'Faltan {n} operaciones por generar.',
+    continue: 'Continuar la generación',
+    unfinished: 'a medias',
+  },
+  // v0.59.1 · Confirmación de lo que se crea (cuadro de diálogo)
+  notice: {
+    ok: 'Aceptar',
+    open: 'Abrir la empresa',
+    errorTitle: 'No se ha podido hacer',
+    companyCreated: 'Empresa creada',
+    caseLoaded: 'Caso cargado',
+    journalImported: 'Diario importado',
+    syntheticCreated: 'Empresa sintética creada',
+    syntheticDone: 'Generación terminada',
+    syntheticPartial: 'La empresa «{name}» está creada, pero falta generar una parte. Ábrela y pulsa «Continuar la generación».',
+    entries: '{n} asientos',
+    fingerprint: 'Huella: {f}',
   },
   tmp: {
     badge: 'Temporal',

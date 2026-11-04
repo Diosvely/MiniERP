@@ -50,7 +50,7 @@ española y el funcionamiento real de un ERP. Los ERP comerciales son caros y di
 propia, así que decidí **construir uno**. Diseñar la tabla de asientos obliga a entender *por qué* un ERP impone
 cada regla. Además, todo el código está en inglés para practicar el vocabulario técnico de BC y SAP.
 
-## ¿Qué hace hoy? (v0.59.0)
+## ¿Qué hace hoy? (v0.59.1)
 
 **Primeros pasos y navegación**
 - **Pantalla de Inicio** en cada empresa:
@@ -69,6 +69,8 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
   asiento si es histórica o importada. De ella salen el año de los informes, el trimestre de las liquidaciones, el
   "Desde" del diario y la fecha de los asientos y facturas nuevos.
 - Estados vacíos con la **siguiente acción** ("Configurar impuestos", "Hacer un asiento") y aviso de carga.
+- **Confirmación de lo que se crea** (v0.59.1): al crear una empresa, un cuadro de diálogo dice si se hizo y qué se
+  creó, o el error en lenguaje claro. Toda caja de error se desplaza sola a la vista.
 - **Errores en lenguaje claro:** cuando la base de datos rechaza algo, se explica qué ha pasado, qué hacer y se ofrece
   un botón para ir a la pantalla donde se arregla ("El asiento no cuadra: falta 210,00; pulsa =").
 - **Pantalla de entrada** con la demo destacada, y acceso y registro accesibles.
@@ -158,7 +160,7 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
 - **Empresas sintéticas con semilla** (v0.59.0): con un número, un perfil (servicios, comercio, taller o incidencias)
   y los meses, el ERP genera una contabilidad ficticia completa, y cualquiera obtiene **exactamente la misma**
   (con su huella). Sirve para practicar y para **informar de un error sin compartir datos reales**: «Copiar datos para
-  informar de un error» copia la semilla, la huella y la pantalla. Guía y semillas de la comunidad en
+  informar de un error» copia la semilla, la huella y la pantalla. Se genera por tandas, con su progreso (v0.59.1). Guía y semillas de la comunidad en
   [`docs/casos-sinteticos.md`](docs/casos-sinteticos.md).
 - **Caso completo** «Taller Atlántico SL»: un ejercicio entero de una SL canaria, de la constitución a las cuentas
   anuales, que el motor carga con cada módulo y compara al céntimo con el cálculo a mano (97 cifras). Desde la lista de
@@ -277,7 +279,7 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
 | Web | **React + Vite** | Componentes por pantalla, i18n propio (es/en), rutas con almohadilla, iconos `lucide-react` |
 | IA | **Cloudflare Workers AI** + Pages Functions | `/api/ai` (Mistral Small 3.1) y `/api/tutor` (gpt-oss-120b); la clave nunca llega al navegador |
 | Despliegue | **Cloudflare Pages** | Despliegue automático desde `main`, dirección de prueba por rama y cabeceras de seguridad (`_headers`) |
-| Calidad | **GitHub Actions** + **Vitest** + Dependabot | 81 pruebas SQL, 316 tests de la web, lint, build y auditoría de dependencias en cada Pull Request |
+| Calidad | **GitHub Actions** + **Vitest** + Dependabot | 81 pruebas SQL, 321 tests de la web, lint, build y auditoría de dependencias en cada Pull Request |
 | Versionado | Git + GitHub | Ramas, Pull Requests, `main` protegida, versiones etiquetadas y decisiones documentadas (ADR) |
 
 **Principio clave:** la web nunca es la única barrera. Aunque alguien manipule el navegador, PostgreSQL rechaza:
@@ -341,7 +343,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 ├── scripts/generar-diagnostico.sh  genera database/diagnostico-supabase.sql (¿le falta algo a tu Supabase?)
 ├── scripts/generar-permisos.mjs    genera docs/permisos.md desde la prueba de permisos (fase 79)
 ├── database/
-│   ├── migrations/            0001 → 0086, se ejecutan en orden en Supabase
+│   ├── migrations/            0001 → 0087, se ejecutan en orden en Supabase
 │   ├── funciones/             versión vigente de cada función, para estudiarla (generado)
 │   ├── diagnostico-supabase.sql  consulta de solo lectura: qué le falta a tu Supabase (generado)
 │   ├── reset/                 reset del schema antiguo (solo histórico)
@@ -385,7 +387,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
     ├── seguridad-supabase.md  lista de ajustes de seguridad del panel de Supabase
     ├── powerbi/GUIA.md        guía para conectar Power BI al esquema bi
     ├── capturas/              capturas de la app para el README
-    └── decisiones/            ADR 0001 → 0059
+    └── decisiones/            ADR 0001 → 0060
 ```
 
 ## Calidad
@@ -397,7 +399,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
     de la 69 a la 78, cada tablero cuadra al céntimo con su informe: PyG, Balance, Ratios y liquidación; la 79 exige la
     matriz de permisos y la 80, la guardiana, prueba todas las funciones contra las empresas de otro usuario; la 81,
     que la misma semilla da la misma contabilidad y que cada empresa sintética cuadra);
-  - **316 tests de la web con Vitest**: formatos, rutas, importadores, errores, idiomas (español e inglés con las
+  - **321 tests de la web con Vitest**: formatos, rutas, importadores, errores, idiomas (español e inglés con las
     mismas claves), glosario, plantillas, la defensa de las funciones de IA, la lectura por páginas, el borrado por
     tandas, la fecha de trabajo, los gráficos, el análisis horizontal, la exportación a Excel y los tableros (unidades,
     trimestres, rankings, lista de control y saldos al revés) y que la tabla de roles dice lo mismo que la matriz de
@@ -543,6 +545,7 @@ cuadrados. El ERP también lee directamente los diarios de Sage (Excel) y Busine
 - [x] **v0.57.1**: documentación al día (modelo de datos, glosario, seguridad, README de la web)
 - [x] **v0.58.0**: permisos «lo tuyo, todo; lo de otro, nada», con la matriz y la prueba guardiana
 - [x] **v0.59.0**: empresas sintéticas con semilla (la misma contabilidad para todos, con su huella)
+- [x] **v0.59.1**: la sintética por tandas (límite de Supabase) y diálogo de confirmación al crear
 - [ ] Más botones en la barra superior
 - [ ] Ontología contable y chat con la IA (consulta, nunca calcula)
 - [ ] Más informes en Power BI e incrustarlos en el ERP con RLS por empresa

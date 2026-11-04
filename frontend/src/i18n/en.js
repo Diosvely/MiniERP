@@ -1706,6 +1706,25 @@ export default {
     copyReport: 'Copy details to report a bug',
     copied: 'Copied. Paste it together with what you saw.',
     report: { seed: 'Seed', profile: 'Profile', months: 'Months', fingerprint: 'Fingerprint', screen: 'Screen', workDate: 'Work date', language: 'Language' },
+    // v0.59.1 · in batches
+    progress: 'Generating… {month} · {done} of {total} operations ({pct} %). Do not close the tab.',
+    left: '{n} operations still to generate.',
+    continue: 'Continue the generation',
+    unfinished: 'unfinished',
+  },
+  // v0.59.1 · Confirmation of what is created (dialog)
+  notice: {
+    ok: 'OK',
+    open: 'Open the company',
+    errorTitle: 'It could not be done',
+    companyCreated: 'Company created',
+    caseLoaded: 'Case loaded',
+    journalImported: 'Journal imported',
+    syntheticCreated: 'Synthetic company created',
+    syntheticDone: 'Generation finished',
+    syntheticPartial: 'The company «{name}» has been created, but part of it is still to be generated. Open it and press «Continue the generation».',
+    entries: '{n} entries',
+    fingerprint: 'Fingerprint: {f}',
   },
   tmp: {
     badge: 'Temporary',

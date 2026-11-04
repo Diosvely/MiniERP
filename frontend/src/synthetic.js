@@ -47,3 +47,27 @@ export function reportText({ company, fingerprint, route, language = 'es', t }) 
     `${t('syn.report.language')}: ${language}`,
   ].join('\n')
 }
+
+// v0.59.1 · Generar por tandas. Supabase corta cada llamada de la web a los ~8 s, así que la base de datos prepara la
+// empresa y su plan (create_synthetic_company) y la web pide las operaciones en tandas (synthetic_step). Si una tanda
+// se corta por tiempo, se repite con la mitad (hasta BATCH_MIN). step(companyId, n) → { data, error } de la tanda.
+export const BATCH = 25
+export const BATCH_MIN = 5
+export const isTimeout = (error) => /statement timeout|canceling statement|57014/i.test(`${error?.message ?? ''} ${error?.code ?? ''}`)
+
+export async function runSteps(step, companyId, { batch = BATCH, onProgress = () => {}, maxCalls = 2000 } = {}) {
+  let n = batch
+  for (let calls = 0; calls < maxCalls; calls++) {
+    const { data, error } = await step(companyId, n)
+    if (error) {
+      if (isTimeout(error) && n > BATCH_MIN) { n = Math.max(BATCH_MIN, Math.floor(n / 2)); continue }
+      return { error }
+    }
+    onProgress(data)
+    if (data.left === 0) return { data }
+  }
+  return { error: { message: 'The generation did not finish' } }
+}
+
+// El porcentaje hecho (0-100) de una respuesta de synthetic_step / synthetic_progress
+export const progressPct = (p) => (p?.total ? Math.floor((100 * p.done) / p.total) : 0)

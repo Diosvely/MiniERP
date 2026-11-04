@@ -42,6 +42,7 @@ Todo lo demás (inmovilizado, nóminas, préstamos, liquidaciones, cierre…) ge
 | Tabla | Qué guarda | Business Central | SAP | Migración |
 |---|---|---|---|---|
 | `companies` | Sociedad, sector, territorio fiscal, forma jurídica, modo de control, mes a mes, demo o temporal; semilla, perfil y meses si es sintética (0086) | Company | Company Code (T001) | 0001 |
+| `synthetic_plan` | Plan de operaciones de una empresa sintética, que se ejecuta por tandas en orden de fecha (v0.59.1) | — | — | 0087 |
 | `company_users` | Acceso a cada empresa con su rol | User Permissions | Authorizations (PFCG) | 0001 |
 | `app_profiles` | Perfil de la app: propietario o miembro, y cuántas empresas puede tener | User Setup | Roles | 0007 |
 | `user_settings` | Idioma de la interfaz | User Settings | User Parameters | 0001 |
@@ -131,7 +132,7 @@ Desde la web, con `supabase.rpc(...)`. La lista completa está en
 | Auditoría | `run_audit_checks`, `integrity_checks` |
 | Tableros | `dashboard_data` (todo un tablero en una llamada), `quality_checks`, `fs_line_anomalies` |
 | Casos | `create_case_company`, `case_compare` |
-| Empresas sintéticas | `create_synthetic_company`, `company_fingerprint`, `synthetic_profiles` |
+| Empresas sintéticas | `create_synthetic_company`, `synthetic_step` (por tandas), `synthetic_progress`, `synthetic_run`, `company_fingerprint`, `synthetic_profiles` |
 
 **Una sola regla por cifra:** los tableros leen las mismas funciones que los informes (`fs_classified_at`,
 `cf_entry_cash`, `tax_accounts`…), así que cuadran al céntimo. Lo comprueban las pruebas de las fases 69 a 78.

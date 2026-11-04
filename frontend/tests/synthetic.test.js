@@ -88,3 +88,54 @@ describe('empresas sintéticas · textos y errores', () => {
     expect(friendlyError('The incidents profile needs at least 6 months', tEs, 'es').title).toBe('Ese perfil necesita al menos 6 meses')
   })
 })
+
+// v0.59.1 · Por tandas: Supabase corta cada llamada de la web a los ~8 s
+import { BATCH, BATCH_MIN, isTimeout, progressPct, runSteps } from '../src/synthetic'
+describe('empresas sintéticas · por tandas (v0.59.1)', () => {
+  // una base de datos de mentira: total operaciones; corta las tandas de más de «limit»
+  const fakeDb = (total, limit = Infinity, failAt = null) => {
+    let done = 0
+    const calls = []
+    const step = async (id, n) => {
+      calls.push(n)
+      if (n > limit) return { error: { message: 'canceling statement due to statement timeout', code: '57014' } }
+      if (failAt !== null && done >= failAt) return { error: { message: 'Something else failed' } }
+      done = Math.min(total, done + n)
+      return { data: { company_id: id, done, total, left: total - done, date: '2026-04-15', entries: done + 3,
+        fingerprint: done === total ? 'g1-2C3AD24C' : null } }
+    }
+    return { step, calls }
+  }
+  it('pide tandas de 25 hasta terminar y avisa del progreso', async () => {
+    const db = fakeDb(437)
+    const seen = []
+    const r = await runSteps(db.step, 'c1', { onProgress: (p) => seen.push(p.done) })
+    expect(r.data.left).toBe(0)
+    expect(r.data.fingerprint).toBe('g1-2C3AD24C')
+    expect(db.calls.every((n) => n === BATCH)).toBe(true)
+    expect(seen.length).toBe(Math.ceil(437 / 25))
+    expect(seen.at(-1)).toBe(437)
+  })
+  it('si una tanda se corta por tiempo, la repite con la mitad (25 → 12 → 6)', async () => {
+    const db = fakeDb(100, 8)
+    const r = await runSteps(db.step, 'c1')
+    expect(r.data.left).toBe(0)
+    expect(db.calls.slice(0, 3)).toEqual([25, 12, 6])
+  })
+  it('si ni la tanda mínima cabe, o falla otra cosa, devuelve el error (la empresa queda para continuar)', async () => {
+    expect((await runSteps(fakeDb(100, 2).step, 'c1')).error.message).toMatch(/statement timeout/)
+    expect(BATCH_MIN).toBe(5)
+    expect((await runSteps(fakeDb(100, Infinity, 50).step, 'c1')).error.message).toBe('Something else failed')
+  })
+  it('reconoce el corte por tiempo y calcula el porcentaje', () => {
+    expect(isTimeout({ message: 'canceling statement due to statement timeout' })).toBe(true)
+    expect(isTimeout({ code: '57014' })).toBe(true)
+    expect(isTimeout({ message: 'Not allowed' })).toBe(false)
+    expect(progressPct({ done: 109, total: 437 })).toBe(24)
+    expect(progressPct(null)).toBe(0)
+  })
+  it('textos del diálogo de confirmación en los dos idiomas', () => {
+    expect(Object.keys(en.notice).sort()).toEqual(Object.keys(es.notice).sort())
+    for (const k of ['progress', 'left', 'continue', 'unfinished']) expect(en.syn[k] && es.syn[k], k).toBeTruthy()
+  })
+})

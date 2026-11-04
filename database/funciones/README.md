@@ -1,6 +1,6 @@
 # Funciones del esquema erp (versión vigente)
 
-Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0086`.
+Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0087`.
 No se edita a mano: el código fuente son las migraciones. Esto es para **estudiar** cada función en su forma
 actual sin rastrear sus redefiniciones.
 
@@ -9,7 +9,7 @@ actual sin rastrear sus redefiniciones.
 - **Tipo:** *invoker* (se ejecuta con los permisos de quien llama: manda la RLS), *security definer* (con los del
   dueño: comprueba ella misma los permisos) o *trigger*.
 
-360 funciones.
+363 funciones.
 
 | Función | Versiones | Vigente en | Tipo |
 |---|---|---|---|
@@ -116,7 +116,7 @@ actual sin rastrear sus redefiniciones.
 | [`create_partner`](create_partner.sql) | 1 | 0009_partners | invoker |
 | [`create_posting_account`](create_posting_account.sql) | 1 | 0002_chart_of_accounts | invoker |
 | [`create_provision`](create_provision.sql) | 1 | 0045_provisions | security definer |
-| [`create_synthetic_company`](create_synthetic_company.sql) | 1 | 0086_synthetic_companies | invoker |
+| [`create_synthetic_company`](create_synthetic_company.sql) | 2 | 0087_synthetic_batches | invoker |
 | [`dash_metric_values`](dash_metric_values.sql) | 4 | 0082_tax_dashboard | invoker |
 | [`dash_month_ends`](dash_month_ends.sql) | 1 | 0075_dashboards | invoker |
 | [`dash_quarters`](dash_quarters.sql) | 1 | 0082_tax_dashboard | invoker |
@@ -217,7 +217,6 @@ actual sin rastrear sus redefiniciones.
 | [`legal_form_from_tax_id`](legal_form_from_tax_id.sql) | 1 | 0033_withholding_rules | invoker |
 | [`link_payment`](link_payment.sql) | 1 | 0035_payments | security definer |
 | [`load_case`](load_case.sql) | 2 | 0067_case_screen | invoker |
-| [`load_synthetic`](load_synthetic.sql) | 1 | 0086_synthetic_companies | invoker |
 | [`loan_account`](loan_account.sql) | 1 | 0062_loans | security definer |
 | [`loan_accrual_amount`](loan_accrual_amount.sql) | 1 | 0062_loans | security definer |
 | [`loan_calc`](loan_calc.sql) | 1 | 0062_loans | invoker |
@@ -305,7 +304,11 @@ actual sin rastrear sus redefiniciones.
 | [`syn_int`](syn_int.sql) | 1 | 0086_synthetic_companies | invoker |
 | [`syn_nif`](syn_nif.sql) | 1 | 0086_synthetic_companies | invoker |
 | [`syn_rand`](syn_rand.sql) | 1 | 0086_synthetic_companies | invoker |
+| [`synthetic_prepare`](synthetic_prepare.sql) | 1 | 0087_synthetic_batches | invoker |
 | [`synthetic_profiles`](synthetic_profiles.sql) | 1 | 0086_synthetic_companies | invoker |
+| [`synthetic_progress`](synthetic_progress.sql) | 1 | 0087_synthetic_batches | invoker |
+| [`synthetic_run`](synthetic_run.sql) | 1 | 0087_synthetic_batches | invoker |
+| [`synthetic_step`](synthetic_step.sql) | 1 | 0087_synthetic_batches | invoker |
 | [`synthetic_version`](synthetic_version.sql) | 1 | 0086_synthetic_companies | invoker |
 | [`tax_accounts`](tax_accounts.sql) | 1 | 0082_tax_dashboard | invoker |
 | [`tax_form_boxes`](tax_form_boxes.sql) | 1 | 0051_tax_forms | invoker |

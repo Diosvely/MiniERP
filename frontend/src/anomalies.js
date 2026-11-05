@@ -20,3 +20,10 @@ export function anomalyCounts(rows, anomalies) {
 
 // Las cuentas con saldo al revés, por número de cuenta (para marcarlas al desplegar una partida)
 export const anomalyByAccount = (anomalies) => new Map((anomalies ?? []).map((a) => [a.account_no, a]))
+
+// v0.59.2 · Al desplegar una partida que tiene sublíneas (II. Deudas a corto plazo), sus cuentas salen todas juntas:
+// a cada una se le dice en qué sublínea se presenta (1. Deudas con entidades de crédito). null si es la misma partida.
+export function accountSubLine(account, lineCode, rows) {
+  if (!account?.line_code || account.line_code === lineCode) return null
+  return rows.find((r) => r.code === account.line_code) ?? null
+}

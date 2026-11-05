@@ -224,6 +224,7 @@ button.pequeno { align-self: flex-start; padding: 6px 10px; font-size: .85rem; m
 .estado tr.total-estado.nivel-0 td { border-top: 2px solid var(--texto); }
 .estado td.anterior { color: var(--suave); }
 .estado tr.cuenta-partida td { font-size: .8rem; color: var(--suave); border-bottom: none; }
+.estado tr.cuenta-partida .sublinea { font-style: italic; }   /* v0.59.2 · a qué sublínea va la cuenta */
 .desplegar { display: inline-block; width: 12px; color: var(--primario); }
 
 /* --- M: cierre del ejercicio --- */

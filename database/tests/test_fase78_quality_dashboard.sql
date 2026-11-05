@@ -120,15 +120,18 @@ do $$
 declare c uuid := (select e from public.ctx where k = 'abierta'); ai numeric; prov numeric; a uuid; n0 int;
 begin
   n0 := (public.q(c, 2026, 'anomalies') ->> 'value')::int;
-  ai := (select x.amount from erp.financial_statement(c, 2026, 'balance', null) x where x.code = 'AC.I');
+  ai := (select x.amount from erp.financial_statement(c, 2026, 'balance', null) x where x.code = 'AC.II.3');
   prov := (select x.amount from erp.financial_statement(c, 2026, 'balance', null) x where x.code = 'PC.IV.1');
   -- 1) un proveedor con saldo deudor (pago de más a Maquinaria Atlántica): aviso, y además sin conciliar
   perform public.asiento(c, '2026-12-15', 'Pago duplicado', '40000002', '57200001', 5000);
   assert (public.q(c, 2026, 'anomalies') ->> 'value')::int = n0 + 1 and public.q(c, 2026, 'anomalies') ->> 'severity' = 'warning', 'proveedor deudor: aviso';
-  assert exists (select 1 from erp.fs_line_anomalies(c, 2026) a where a.account_no = '40000002' and a.line_code like 'AC.I%'),
-         'su ⚠ cae en Existencias (como un anticipo, 407)';
+  -- v0.59.2 (0088): en Otros deudores, como la 410 deudora (antes, en Existencias como si fuera la 407)
+  assert exists (select 1 from erp.fs_line_anomalies(c, 2026) a where a.account_no = '40000002' and a.line_code = 'AC.II.3'),
+         'su ⚠ cae en Otros deudores (un derecho de cobro)';
   -- regresión de la 400: no se compensa con los proveedores acreedores
-  assert (select x.amount from erp.financial_statement(c, 2026, 'balance', null) x where x.code = 'AC.I') = ai + 5000, 'Existencias + 5.000';
+  assert (select x.amount from erp.financial_statement(c, 2026, 'balance', null) x where x.code = 'AC.II.3') = ai + 5000, 'Otros deudores + 5.000';
+  assert (select note from erp.fs_line_anomalies(c, 2026) a where a.account_no = '40000002') like '%si es un anticipo, llévalo a la 407%',
+         'la nota dice qué revisar (anticipo → 407; pago duplicado → derecho de cobro)';
   assert (select x.amount from erp.financial_statement(c, 2026, 'balance', null) x where x.code = 'PC.IV.1') = prov, 'Proveedores no cambia: no se compensa';
   assert (public.q(c, 2026, 'unreconciled') ->> 'value')::int >= 1, 'el proveedor no cuadra con sus facturas';
   -- 3) un borrador descuadrado
@@ -139,7 +142,29 @@ begin
   assert public.q(c, 2026, 'drafts') @> '{"value": 1, "extra": 1, "severity": "warning"}'::jsonb, 'un borrador con problema';
   delete from erp.journal_lines where entry_id = a;
   delete from erp.journal_entries where id = a;
-  raise notice 'OK  · proveedor deudor (Existencias, sin compensar), borrador descuadrado';
+  raise notice 'OK  · proveedor deudor (Otros deudores, sin compensar), borrador descuadrado';
+end $$;
+
+-- v0.59.2 (0088) · Las dos subcuentas de la 40 con su propio sitio en el modelo de balance del PGC (se deshace al terminar)
+do $$
+declare c uuid := (select e from public.ctx where k = 'abierta');
+begin
+  begin
+    perform erp.create_posting_account(c, '40700001', 'Anticipo a un proveedor');
+    perform erp.create_posting_account(c, '40600001', 'Envases a devolver');
+    perform public.asiento(c, '2026-12-10', 'Anticipo', '40700001', '57200001', 300);
+    perform public.asiento(c, '2026-12-11', 'Envases a devolver', '40600001', '57200001', 40);
+    assert exists (select 1 from erp.fs_line_accounts(c, 2026, 'balance', 'AC.I') x where x.account_no = '40700001'),
+           'la 407 (anticipo de verdad) sigue en Existencias';
+    assert exists (select 1 from erp.fs_line_accounts(c, 2026, 'balance', 'PC.IV.1') x where x.account_no = '40600001' and x.amount = -40),
+           'la 406 resta en Proveedores';
+    assert exists (select 1 from erp.fs_line_accounts(c, 2026, 'balance', 'AC.II.3') x where x.account_no = '40000002'),
+           'y la 400 deudora, en Otros deudores';
+    raise exception 'DESHACER';
+  exception when others then
+    if sqlerrm <> 'DESHACER' then raise; end if;
+  end;
+  raise notice 'OK  · la 407 sigue en Existencias y la 406 resta en Proveedores; la 400 deudora, en Otros deudores';
 end $$;
 
 -- 2) una caja acreedora: el ERP no deja contabilizarla (está bloqueada para saldos al revés), pero puede llegar en un

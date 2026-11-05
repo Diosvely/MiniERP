@@ -11,7 +11,7 @@ import DateField from './DateField'
 import MonthPicker from './MonthPicker'
 import SimulationToggle, { SimulationBanner } from './SimulationToggle'
 import { moveToYear, reportBase, simTitle } from '../reportPeriod'
-import { anomalyByAccount, anomalyCounts } from '../anomalies'
+import { accountSubLine, anomalyByAccount, anomalyCounts } from '../anomalies'
 import { companyPath } from '../router'
 import Link from './Link'
 
@@ -205,6 +205,9 @@ export default function FinancialStatements({ company, statement }) {
                     <td style={{ paddingLeft: `${28 + r.level * 14}px` }}>
                       <span className="codigo">{a.account_no}</span>
                       {language === 'en' ? a.account_name_en || a.account_name : a.account_name}
+                      {accountSubLine(a, r.code, rows) && (
+                        <small className="sublinea"> → {label(accountSubLine(a, r.code, rows))}</small>
+                      )}
                       {byAccount.get(a.account_no) && (
                         <small className={`nota-reves${byAccount.get(a.account_no).severity === 'error' ? ' error' : ''}`}>
                           ⚠ {t(byAccount.get(a.account_no).severity === 'error' ? 'reverse.accountError' : 'reverse.account')}

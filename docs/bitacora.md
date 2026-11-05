@@ -1819,3 +1819,28 @@ semillas por perfil. Pruebas: 81 SQL y 316 de la web.
 - **Atomicidad:** lo cortado se deshace entero. Por eso no quedaba nada, ni siquiera la empresa.
 - **Un error que no se ve no existe para quien usa el programa:** confirmar en un diálogo lo importante y llevar a la
   vista lo que falla.
+
+## 2026-11-05 · v0.59.2 · El proveedor deudor, en Deudores
+
+**De dónde viene:** del chat de estudio. Diosvely probó en su empresa un proveedor con saldo deudor y un banco en
+descubierto. El ERP no compensaba y avisaba, pero llevaba la 400 deudora a Existencias (como la 407), mientras la 410
+deudora iba a Otros deudores: dos criterios para el mismo caso. Además, la nota de la 400 se contradecía («pago
+duplicado…; al cierre a la 407»).
+
+**Decisión de Diosvely:** una cuenta con el saldo al revés se presenta en la partida de ese saldo, sin compensar y con
+su aviso.
+
+**Qué se hizo (0088):**
+- la 400–409 deudora, a Otros deudores (salvo la 407, que sigue en Existencias, y la 406, que resta en Proveedores);
+- notas nuevas para la 400 y el banco;
+- en el Balance, cada cuenta de una partida desplegada dice su sublínea.
+
+**Pruebas:** las fases 11 y 78 cambian la partida esperada y comprueban la 407 y la 406; las dos fallan sin la 0088.
+Pruebas: 81 SQL y 323 de la web.
+
+**Lo que se aprende**
+- **Presentar no es corregir:**
+  - el banco en descubierto está bien en el mayor; solo se presenta en el pasivo, y si se hace el asiento se revierte;
+  - el proveedor deudor suele ser algo que corregir, con un asiento definitivo.
+- **El estudio encuentra lo que las pruebas no:** las pruebas comprobaban lo que el ERP hacía, no si era el mejor
+  criterio.

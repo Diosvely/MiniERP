@@ -30,3 +30,16 @@ describe('saldos al revés en el Balance', () => {
     expect(by.get('57200001')).toBeUndefined()
   })
 })
+
+// v0.59.2 · Al desplegar una partida con sublíneas, cada cuenta dice en cuál se presenta
+import { accountSubLine } from '../src/anomalies'
+describe('cuentas de una partida con sublíneas (v0.59.2)', () => {
+  const rows = [{ code: 'PC.II', label: 'II. Deudas a corto plazo' }, { code: 'PC.II.1', label: '1. Deudas con entidades de crédito' }]
+  it('el banco en descubierto, desplegando «II. Deudas a corto plazo», va a «1. Deudas con entidades de crédito»', () => {
+    expect(accountSubLine({ account_no: '57200000', line_code: 'PC.II.1' }, 'PC.II', rows).label).toBe('1. Deudas con entidades de crédito')
+  })
+  it('desplegando su propia sublínea, no se repite', () => {
+    expect(accountSubLine({ account_no: '57200000', line_code: 'PC.II.1' }, 'PC.II.1', rows)).toBeNull()
+    expect(accountSubLine({ account_no: 'x' }, 'PC.II', rows)).toBeNull()
+  })
+})

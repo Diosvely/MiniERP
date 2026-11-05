@@ -2,6 +2,20 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.59.2] - 2026-11-05
+### Cambiado
+- **El proveedor con saldo deudor se presenta en Otros deudores**, como la 410 deudora, y ya no en Existencias, donde
+  se presentaba como si fuera un anticipo (migración `0088_vendor_debit_presentation.sql`, ADR 0061). Sigue sin
+  compensarse y con su aviso ⚠.
+  - La **407** (anticipos a proveedores) sigue en Existencias.
+  - La **406** (envases a devolver) resta en Proveedores, como en el modelo de balance del PGC.
+- **Notas del aviso más claras:**
+  - la 400 deudora: si es un anticipo, a la 407; si es un pago duplicado o un abono pendiente, es un derecho de cobro;
+  - el banco acreedor: el balance ya lo presenta en el pasivo, y el asiento a la 5201, si se hace, se revierte al abrir
+    el ejercicio siguiente.
+- **Balance:** al desplegar una partida con sublíneas, cada cuenta dice en cuál se presenta (por ejemplo, el banco en
+  descubierto → «1. Deudas con entidades de crédito»).
+
 ## [0.59.1] - 2026-11-04
 ### Corregido
 - **La empresa sintética no se creaba en Supabase:** generar un año de una vez superaba el límite de ~8 s de las

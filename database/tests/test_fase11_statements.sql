@@ -89,9 +89,10 @@ begin
   -- ---------- Balance ----------
   assert public.partida(e, 2026, 'balance', 'ACT') = public.partida(e, 2026, 'balance', 'PNP'), 'el balance cuadra';
   assert public.partida(e, 2026, 'balance', 'ANC.II') = 2900, 'mobiliario 3.000 − amortización acumulada 100';
-  assert public.partida(e, 2026, 'balance', 'AC.I') = 50,      'proveedor B deudor = anticipo (en existencias)';
+  -- v0.59.2 (0088): el proveedor deudor es un derecho de cobro → Otros deudores (antes, Existencias como si fuera la 407)
+  assert public.partida(e, 2026, 'balance', 'AC.I') = 0,       'proveedor B deudor: ya no en Existencias';
   assert public.partida(e, 2026, 'balance', 'AC.II.1') = 8025, 'cliente A deudor';
-  assert public.partida(e, 2026, 'balance', 'AC.II.3') = 273,  'IGIC soportado 280 − 7';
+  assert public.partida(e, 2026, 'balance', 'AC.II.3') = 273 + 50, 'IGIC soportado 280 − 7 + proveedor B deudor 50';
   assert public.partida(e, 2026, 'balance', 'AC.VI') = 8220,   'banco 1 (7.970) + caja (250)';
   assert public.partida(e, 2026, 'balance', 'PC.II.1') = 2373, 'banco 2 en descubierto → deudas con entidades de crédito';
   assert public.partida(e, 2026, 'balance', 'PC.IV.1') = 0,    'proveedor A pagado';

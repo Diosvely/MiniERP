@@ -2,7 +2,7 @@
 
 - **Fecha:** 2026-11-01
 - **Versión:** v0.57.0
-- **Estado:** aceptada
+- **Estado:** aceptada. La presentación de la 400 deudora la cambia el ADR 0061: pasa de Existencias a Otros deudores
 
 ## Contexto
 

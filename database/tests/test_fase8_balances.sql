@@ -81,7 +81,8 @@ begin
   select * into r from erp.balance_anomalies(e, 2026) where account_no = '43000001';
   assert r.balance = -200 and r.reclass_to = '438';
   select * into r from erp.balance_anomalies(e, 2026) where account_no = '40000001';
-  assert r.balance = 50 and r.reclass_to = '407';
+  -- v0.59.2 (0088): sin cuenta de destino fija (anticipo → 407; pago duplicado o abono → derecho de cobro); la nota lo dice
+  assert r.balance = 50 and r.reclass_to is null and r.note like '%Otros deudores%407%', r::text;
   raise notice 'OK  · anomalías: banco −300 → 5201 · cliente −200 → 438 · proveedor +50 → 407';
 
   -- A nivel de cuenta (3 dígitos) también se detectan; a nivel de grupo no se analiza

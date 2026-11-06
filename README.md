@@ -50,7 +50,7 @@ española y el funcionamiento real de un ERP. Los ERP comerciales son caros y di
 propia, así que decidí **construir uno**. Diseñar la tabla de asientos obliga a entender *por qué* un ERP impone
 cada regla. Además, todo el código está en inglés para practicar el vocabulario técnico de BC y SAP.
 
-## ¿Qué hace hoy? (v0.59.2)
+## ¿Qué hace hoy? (v0.59.3)
 
 **Primeros pasos y navegación**
 - **Pantalla de Inicio** en cada empresa:
@@ -547,6 +547,7 @@ cuadrados. El ERP también lee directamente los diarios de Sage (Excel) y Busine
 - [x] **v0.59.0**: empresas sintéticas con semilla (la misma contabilidad para todos, con su huella)
 - [x] **v0.59.1**: la sintética por tandas (límite de Supabase) y diálogo de confirmación al crear
 - [x] **v0.59.2**: el proveedor con saldo deudor, en Otros deudores (sin compensar y con su aviso)
+- [x] **v0.59.3**: portada nueva (lema, captura real con datos ficticios, funciones y enlaces del autor)
 - [ ] Más botones en la barra superior
 - [ ] Ontología contable y chat con la IA (consulta, nunca calcula)
 - [ ] Más informes en Power BI e incrustarlos en el ERP con RLS por empresa

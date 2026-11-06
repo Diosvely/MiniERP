@@ -2,6 +2,21 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.59.3] - 2026-11-05
+### Cambiado
+- **Nueva portada** (pantalla de entrada sin sesión), más moderna y con el lema «Tu aliado en la contabilidad y el
+  análisis financiero»:
+  - cabecera con el lema «Aprende · Analiza · Gestiona» y un botón «Iniciar sesión» que lleva al formulario;
+  - portada con la demo arriba, «Conocer más» y una **captura real** del tablero «Resumen de dirección» de la empresa
+    sintética 4817 · taller, presentada como **datos ficticios** (en modo claro y oscuro);
+  - 6 funciones, «¿Por qué MiniERP?» junto al acceso, una banda final con la demo y un pie con GitHub, LinkedIn y
+    YouTube.
+- **Crear cuenta y entrar como invitado se confirman en el cuadro de diálogo** (v0.59.1): el alta dice que la cuenta
+  está creada y que falta confirmar el correo; un error al crearla o al entrar como invitado sale en el diálogo. El
+  error de «Iniciar sesión» sigue debajo del formulario.
+- La lógica de entrar, crear cuenta, invitado y CAPTCHA no cambia. Solo fuentes del sistema e imágenes propias
+  (`public/portada-tablero-*.webp`), como pide la CSP.
+
 ## [0.59.2] - 2026-11-05
 ### Cambiado
 - **El proveedor con saldo deudor se presenta en Otros deudores**, como la 410 deudora, y ya no en Existencias, donde

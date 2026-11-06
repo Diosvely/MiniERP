@@ -448,13 +448,22 @@ export default {
   menuPyg: 'Income statement',
   balanceSheet: 'Balance sheet',
   incomeStatement: 'Income statement (profit and loss)',
-  balanceSheetHelp: 'Spanish GAAP SME model. Each posting account is classified by its own balance: an overdrawn bank goes to bank borrowings and a customer advance to other payables. Click a line to see its accounts.',
+  balanceSheetHelp: 'Each posting account is classified by its own balance: an overdrawn bank goes to bank borrowings and a customer advance to liabilities. Click a line to see its accounts.',
+  fsModel: {
+    label: 'Model:',
+    pymes: 'SMEs', abreviado: 'Abridged', normal: 'Full',
+    norm: {
+      pymes: 'SME chart of accounts model (Royal Decree 1515/2007). The ERP uses it by default.',
+      abreviado: 'Abridged model of the PGC (Royal Decree 1514/2007). Same accounts and same total as the SME model: it adds «Non-current assets held for sale» and «Valuation adjustments», which is why the numbering changes.',
+      normal: 'Full model of the PGC (Royal Decree 1514/2007). Same accounts and same total as the SME model, in more detail: for example, Inventories are «II» and split into six lines.',
+    },
+  },
   incomeStatementHelp: 'Spanish GAAP SME model: income positive, expenses in brackets. Click a line to see its accounts.',
   hideZeroLines: 'Hide lines without amount',
   totalAssets: 'Total assets',
   totalEquityLiabilities: 'Total equity and liabilities',
   noAccountsInLine: 'No accounts with balance in this line.',
-  statementsNote: 'The result of groups 6 and 7 is shown in "VII. Profit (loss) for the year". Income statement closing and closing entries are left out: the report is the same before and after closing. Learning project based on the Spanish GAAP SME model (RD 1515/2007).',
+  statementsNote: 'The result of groups 6 and 7 is shown in "VII. Profit (loss) for the year". Income statement closing and closing entries are left out: the report is the same before and after closing. Learning project: the balance sheet in the PGC models (Royal Decrees 1514/2007 and 1515/2007) and the income statement in the SME model.',
 
 // Year-end closing
   menuYearClosing: 'Year-end closing',

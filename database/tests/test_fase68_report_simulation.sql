@@ -164,8 +164,8 @@ reset role;
 -- ---------- Permisos ----------
 do $$
 begin
-  assert not has_function_privilege('anon', 'erp.financial_statement(uuid, integer, text, date, boolean)', 'execute');
-  assert has_function_privilege('authenticated', 'erp.financial_statement(uuid, integer, text, date, boolean)', 'execute');
+  assert not has_function_privilege('anon', 'erp.financial_statement(uuid, integer, text, date, boolean, text)', 'execute');
+  assert has_function_privilege('authenticated', 'erp.financial_statement(uuid, integer, text, date, boolean, text)', 'execute');
   assert has_function_privilege('authenticated', 'erp.report_drafts(uuid, integer, date)', 'execute');
   assert not has_function_privilege('authenticated', 'erp.draft_problem(uuid)', 'execute'), 'draft_problem sigue cerrada';
   assert not exists (select 1 from pg_proc p join pg_namespace n on n.oid = p.pronamespace

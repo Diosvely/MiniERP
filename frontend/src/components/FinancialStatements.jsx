@@ -14,6 +14,8 @@ import { moveToYear, reportBase, simTitle } from '../reportPeriod'
 import { accountSubLine, anomalyByAccount, anomalyCounts } from '../anomalies'
 import { companyPath } from '../router'
 import Link from './Link'
+import Sources from './Sources'
+import { BALANCE_MODELS, modelFor, modelSource, readModel, saveModel } from '../balanceModels'
 
 // Balance de situación y Cuenta de Pérdidas y Ganancias (modelo PYMES del PGC)
 //   statement: 'balance' | 'pyg' · columnas ejercicio actual y anterior, como en las cuentas anuales
@@ -24,6 +26,8 @@ import Link from './Link'
 // v0.51.0 · «hasta» con la fecha rápida y los botones de mes, y la simulación con los asientos en edición (ADR 0051).
 // v0.57.0 · SALDOS AL REVÉS (ADR 0057): el ERP no compensa; en el Balance avisa con una franja, un ⚠ en cada partida
 // que contiene alguna cuenta al revés y, al desplegarla, el ⚠ y la nota de la cuenta (erp.fs_line_anomalies).
+// v0.60.0 · MODELOS (ADR 0062): el Balance en el modelo PYMES (por defecto), abreviado o normal del PGC. Es el mismo
+// balance: las mismas cuentas con el mismo saldo, recolocadas en las partidas de cada modelo. La PyG, solo en PYMES.
 export default function FinancialStatements({ company, statement }) {
   const { t, language } = useI18n()
   const [years, setYears] = useState([])
@@ -35,6 +39,9 @@ export default function FinancialStatements({ company, statement }) {
   const [open, setOpen] = useState({})           // partida → cuentas que la forman (drill-down)
   const [error, setError] = useState('')
   const [anomalies, setAnomalies] = useState([])  // v0.57.0: cuentas con saldo al revés y su partida
+  const [chosen, setChosen] = useState(readModel)  // v0.60.0: modelo del Balance (se recuerda en el navegador)
+  const model = modelFor(statement, chosen)
+  const chooseModel = (code) => { setChosen(code); saveModel(code) }
 
   useEffect(() => {
     supabase.from('fiscal_years').select('year').eq('company_id', company.id).order('year')
@@ -49,11 +56,14 @@ export default function FinancialStatements({ company, statement }) {
     setOpen({})
     supabase.rpc('financial_statement', {
       p_company: company.id, p_year: Number(year), p_statement: statement, p_to_date: toDate || null, p_drafts: sim,
+      p_model: model,
     }).then(({ data, error }) => (error ? setError(error.message) : (setError(''), setRows(data))))
     if (statement !== 'balance') return   // solo el Balance lleva el aviso (abajo, «shown»)
-    supabase.rpc('fs_line_anomalies', { p_company: company.id, p_year: Number(year), p_to: toDate || null, p_drafts: sim })
+    supabase.rpc('fs_line_anomalies', {
+      p_company: company.id, p_year: Number(year), p_to: toDate || null, p_drafts: sim, p_model: model,
+    })
       .then(({ data, error }) => setAnomalies(error ? [] : data ?? []))   // el aviso no debe impedir ver el Balance
-  }, [company.id, year, toDate, statement, sim])
+  }, [company.id, year, toDate, statement, sim, model])
 
   // Las cuentas anuales muestran los negativos entre paréntesis: (1.234,00)
   const m = (v) => (Number(v) < 0 ? `(${money(-v, language)})` : money(v, language))
@@ -68,7 +78,7 @@ export default function FinancialStatements({ company, statement }) {
   async function toggle(code) {
     if (open[code]) return setOpen({ ...open, [code]: null })
     const ask = (y, d) => supabase.rpc('fs_line_accounts', {
-      p_company: company.id, p_year: y, p_statement: statement, p_code: code, p_to_date: d, p_drafts: sim,
+      p_company: company.id, p_year: y, p_statement: statement, p_code: code, p_to_date: d, p_drafts: sim, p_model: model,
     })
     const [now, before] = await Promise.all([ask(Number(year), toDate || null),
       hasPrev ? ask(Number(year) - 1, prevDate) : Promise.resolve({ data: [] })])
@@ -90,7 +100,8 @@ export default function FinancialStatements({ company, statement }) {
 
   // Excel: las partidas visibles con su sangría, los dos ejercicios y la variación (números, no texto)
   const title = simTitle(statement === 'balance' ? t('balanceSheet') : t('incomeStatement'), sim, t('sim.prefix'))
-  const filters = `${t('year')} ${year}${toDate ? ` · ${t('fsAt').replace('{d}', shortDate(toDate))}` : ''}`
+  const modelName = statement === 'balance' ? ` · ${t('fsModel.label')} ${t(`fsModel.${model}`)}` : ''
+  const filters = `${t('year')} ${year}${toDate ? ` · ${t('fsAt').replace('{d}', shortDate(toDate))}` : ''}${modelName}`
   const exportExcel = () => downloadXlsx({
     title: `${title} · ${company.name ?? ''}`, subtitle: filters, sheet: title,
     file: fileName(title, company.name, year, toDate),
@@ -123,6 +134,20 @@ export default function FinancialStatements({ company, statement }) {
         <h2>{statement === 'balance' ? t('balanceSheet') : t('incomeStatement')}</h2>
         {rows.length > 0 && <ReportActions onExcel={exportExcel} info={`${sim ? `${t('sim.prefix')} · ` : ''}${company.name} · ${filters}`} />}
       </div>
+      {statement === 'balance' && (
+        <div className="modelo-balance">
+          <div className="pestanas-modelo" role="radiogroup" aria-label={t('fsModel.label')}>
+            <span>{t('fsModel.label')}</span>
+            {BALANCE_MODELS.map(({ code }) => (
+              <button key={code} type="button" role="radio" aria-checked={model === code}
+                      className={model === code ? 'activa' : 'secundario'} onClick={() => chooseModel(code)}>
+                {t(`fsModel.${code}`)}
+              </button>
+            ))}
+          </div>
+          <p className="ayuda norma-modelo">{t(`fsModel.norm.${model}`)} <Sources ids={[modelSource(model)]} /></p>
+        </div>
+      )}
       <p className="ayuda">{statement === 'balance' ? t('balanceSheetHelp') : t('incomeStatementHelp')}</p>
       <div className="rejilla-tres">
         <label>{t('year')}

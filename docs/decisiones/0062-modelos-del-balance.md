@@ -1,0 +1,75 @@
+# ADR 0062 · El Balance en los tres modelos del PGC: PYMES, abreviado y normal
+
+- **Fecha:** 2026-11-06
+- **Versión:** v0.60.0
+- **Estado:** aceptada (diseño validado por Diosvely, `diseno-v0.60.0.md`).
+
+## Contexto
+
+Diosvely comparó el Balance del ERP con el modelo de balance del BOE y vio que en el ERP las Existencias son «I» y en
+el BOE «II». No era un error. El ERP presentaba el Balance con el modelo del **PGC de PYMES** (RD 1515/2007, ADR 0011),
+y lo que él miraba era el modelo **normal** del **PGC general** (RD 1514/2007). El modelo normal empieza el activo
+corriente por «I. Activos no corrientes mantenidos para la venta», una partida que el de PYMES no tiene, y por eso todo
+lo que sigue sube un número.
+
+Su próximo vídeo trata del Balance, y quería enseñar esa diferencia con el ERP.
+
+## Decisión
+
+1. **El mismo Balance en tres modelos:** PYMES (por defecto), abreviado y normal, con un selector en la pantalla. La web
+   recuerda el último modelo elegido en el navegador. Las adaptaciones sectoriales quedan fuera: traen cuentas propias
+   y las empresas de práctica son pymes.
+2. **PYMES no cambia.** Sigue en `erp.fs_lines` y `erp.fs_mapping`, y es la clasificación que usan los ratios, los
+   tableros, Power BI, el caso y el ECPN. Con `p_model = 'pymes'` (el valor por defecto), las funciones ejecutan el
+   mismo código de antes.
+3. **El abreviado y el normal solo recolocan** (migración 0089). El saldo de cada cuenta se calcula una sola vez
+   (`erp.fs_classified_at`), y cada modelo lo coloca en su partida con sus tablas (`erp.fs_models`,
+   `erp.fs_model_lines` y `erp.fs_model_mapping`). Se sigue la regla de siempre: cada subcuenta por su propio saldo,
+   sin compensar. Así el total no puede cambiar de un modelo a otro.
+4. **Partidas y cuentas del normal:** se copiaron de la columna «Núm. cuentas» del BOE consolidado (Diosvely,
+   06-11-2026). Las cuentas que el BOE no nombra van a la partida «otros» de su grupo, en el mismo lado que en PYMES.
+   Las cuentas al revés siguen la regla de la v0.59.2: en el normal, el proveedor deudor va a «Deudores varios», el
+   cliente acreedor a «Anticipos de clientes» y el banco en descubierto a «Deudas con entidades de crédito».
+5. **El abreviado agrupa las partidas del normal** (`erp.fs_abridged_line`). Así no puede contradecirlo.
+6. **Solo el Balance.** La PyG sigue en el modelo PYMES (decisión 4 del diseño).
+7. **Fuentes en la pantalla:** botón 📘 con el RD 1515/2007 o el RD 1514/2007, según el modelo.
+
+## Alternativas descartadas
+
+- **Una columna «modelo» en `fs_lines` y `fs_mapping`.** Habría que tocar todas las funciones que las leen (ratios,
+  tableros, Power BI, cierre…), y el riesgo era cambiar sin querer las cifras de PYMES.
+- **Un mapeo del normal escrito a mano y otro del abreviado.** Dos listas de casi 200 prefijos que podrían
+  contradecirse. Por eso el abreviado se deriva del normal.
+- **Las adaptaciones sectoriales:** se descartan por el motivo del punto 1.
+
+## Consecuencias
+
+- **Pruebas:** 82 de 82 en la base de datos y 337 tests de la web.
+  - **Fase 82** comprueba:
+    - cobertura: 2.848 casos (cada cuenta del PGC de estudio × saldo deudor y acreedor × modelo), todos con partida
+      y en la misma masa que en PYMES. Solo cambian de masa la 1034 y la 1044 (capital pendiente de inscripción), que
+      el BOE pone en el pasivo corriente;
+    - las cuatro sintéticas a tres fechas: mismas masas, cuadra, cada cuenta una vez y cada partida es la suma de sus
+      líneas;
+    - los casos del BOE;
+    - que PYMES es igual que antes y que otro usuario no ve nada.
+  - Regresión: si el banco acreedor se deja en el activo, la prueba falla.
+- **La nota del proveedor deudor** nombra también la partida del normal («Deudores varios»).
+- **Lo que no sabe el ERP:** qué modelo le corresponde a cada empresa por su tamaño. Queda en `ideas-pendientes.md`.
+
+## Cómo explicarlo
+
+- **Un balance, tres formatos:** las cuentas y los saldos son los mismos. Cambian la numeración, el desglose y dos
+  partidas que solo existen en el PGC general:
+  - «Activos no corrientes mantenidos para la venta» (580–584, con sus pasivos vinculados 585–589);
+  - «A-2) Ajustes por cambios de valor» (133, 1340, 137). Por eso las subvenciones son A-2 en PYMES y A-3 en el general.
+- **Por qué las Existencias son I o II:** el PGC de PYMES no tiene la partida de activos mantenidos para la venta, y todo
+  el activo corriente sube un número. Lo mismo pasa con el pasivo corriente.
+- **Quién usa cada modelo** (pendiente de validar por Diosvely: art. 257 de la LSC y art. 2 del RD 1515/2007):
+  - el de PYMES y el abreviado, las empresas que no superan dos de tres límites (activo, cifra de negocios y plantilla
+    media);
+  - el normal, las demás.
+- **Fuentes:**
+  - RD 1514/2007, tercera parte: modelos normales y abreviados;
+  - RD 1515/2007, tercera parte: modelos de PYMES.
+  *(Pendiente de validar por Diosvely: el texto exacto del modelo abreviado con el BOE, como se hizo con el normal.)*

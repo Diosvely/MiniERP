@@ -1,6 +1,6 @@
 # Funciones del esquema erp (versión vigente)
 
-Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0088`.
+Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0089`.
 No se edita a mano: el código fuente son las migraciones. Esto es para **estudiar** cada función en su forma
 actual sin rastrear sus redefiniciones.
 
@@ -9,7 +9,7 @@ actual sin rastrear sus redefiniciones.
 - **Tipo:** *invoker* (se ejecuta con los permisos de quien llama: manda la RLS), *security definer* (con los del
   dueño: comprueba ella misma los permisos) o *trigger*.
 
-363 funciones.
+368 funciones.
 
 | Función | Versiones | Vigente en | Tipo |
 |---|---|---|---|
@@ -161,17 +161,22 @@ actual sin rastrear sus redefiniciones.
 | [`equity_statement_lines`](equity_statement_lines.sql) | 1 | 0065_grants_integration | security definer |
 | [`equity_status`](equity_status.sql) | 1 | 0060_equity_operations | security definer |
 | [`financial_ratios`](financial_ratios.sql) | 2 | 0074_report_simulation | security definer |
-| [`financial_statement`](financial_statement.sql) | 3 | 0074_report_simulation | invoker |
+| [`financial_statement`](financial_statement.sql) | 4 | 0089_balance_models | invoker |
 | [`fiscal_year_company`](fiscal_year_company.sql) | 2 | 0085_permissions_ownership | security definer |
 | [`form_347`](form_347.sql) | 1 | 0052_forms_347_349 | invoker |
 | [`form_349`](form_349.sql) | 1 | 0052_forms_347_349 | invoker |
 | [`form_349_period`](form_349_period.sql) | 1 | 0052_forms_347_349 | invoker |
+| [`fs_abridged_line`](fs_abridged_line.sql) | 1 | 0089_balance_models | invoker |
 | [`fs_amounts`](fs_amounts.sql) | 2 | 0075_dashboards | invoker |
 | [`fs_amounts_at`](fs_amounts_at.sql) | 1 | 0075_dashboards | invoker |
+| [`fs_check_model`](fs_check_model.sql) | 1 | 0089_balance_models | invoker |
 | [`fs_classified_accounts`](fs_classified_accounts.sql) | 4 | 0075_dashboards | invoker |
 | [`fs_classified_at`](fs_classified_at.sql) | 3 | 0078_company_isolation | security definer |
-| [`fs_line_accounts`](fs_line_accounts.sql) | 2 | 0074_report_simulation | invoker |
-| [`fs_line_anomalies`](fs_line_anomalies.sql) | 1 | 0084_quality_dashboard | invoker |
+| [`fs_line_accounts`](fs_line_accounts.sql) | 3 | 0089_balance_models | invoker |
+| [`fs_line_anomalies`](fs_line_anomalies.sql) | 2 | 0089_balance_models | invoker |
+| [`fs_model_amounts`](fs_model_amounts.sql) | 1 | 0089_balance_models | invoker |
+| [`fs_model_classified_at`](fs_model_classified_at.sql) | 1 | 0089_balance_models | invoker |
+| [`fs_model_line_set`](fs_model_line_set.sql) | 1 | 0089_balance_models | invoker |
 | [`general_ledger`](general_ledger.sql) | 3 | 0077_large_companies | security definer |
 | [`global_impairment_calc`](global_impairment_calc.sql) | 1 | 0043_year_end_adjustments | invoker |
 | [`grade_exercise`](grade_exercise.sql) | 2 | 0056_grader_fixes | invoker |

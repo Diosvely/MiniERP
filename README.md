@@ -50,7 +50,7 @@ española y el funcionamiento real de un ERP. Los ERP comerciales son caros y di
 propia, así que decidí **construir uno**. Diseñar la tabla de asientos obliga a entender *por qué* un ERP impone
 cada regla. Además, todo el código está en inglés para practicar el vocabulario técnico de BC y SAP.
 
-## ¿Qué hace hoy? (v0.59.3)
+## ¿Qué hace hoy? (v0.60.0)
 
 **Primeros pasos y navegación**
 - **Pantalla de Inicio** en cada empresa:
@@ -393,7 +393,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 ## Calidad
 
 - **Integración continua** (GitHub Actions) en cada Pull Request:
-  - las 81 pruebas de la base de datos sobre PostgreSQL 16, cada una en una base limpia con todas las migraciones
+  - las 82 pruebas de la base de datos sobre PostgreSQL 16, cada una en una base limpia con todas las migraciones
     (la fase 23 vigila también que toda clave foránea tenga índice; la 34 lanza unas 300 operaciones al azar por
     empresa y exige nueve invariantes contables; la 35 compara al céntimo cinco supuestos calculados desde la norma;
     de la 69 a la 78, cada tablero cuadra al céntimo con su informe: PyG, Balance, Ratios y liquidación; la 79 exige la
@@ -548,6 +548,7 @@ cuadrados. El ERP también lee directamente los diarios de Sage (Excel) y Busine
 - [x] **v0.59.1**: la sintética por tandas (límite de Supabase) y diálogo de confirmación al crear
 - [x] **v0.59.2**: el proveedor con saldo deudor, en Otros deudores (sin compensar y con su aviso)
 - [x] **v0.59.3**: portada nueva (lema, captura real con datos ficticios, funciones y enlaces del autor)
+- [x] **v0.60.0**: el Balance en los tres modelos del PGC (PYMES, abreviado y normal)
 - [ ] Más botones en la barra superior
 - [ ] Ontología contable y chat con la IA (consulta, nunca calcula)
 - [ ] Más informes en Power BI e incrustarlos en el ERP con RLS por empresa

@@ -1868,3 +1868,24 @@ oscuro e inglés.
 **Lo que se aprende**
 - **Una captura real enseña más que un dibujo:** quien llega ve lo que va a encontrar, y no promete nada que no exista.
 
+## 2026-11-06 · v0.60.0 · El Balance en los tres modelos del PGC
+
+**De dónde viene:** Diosvely comparó el Balance del ERP con una foto del BOE: en el ERP las Existencias son «I» y en el
+BOE «II». No era un error. El ERP usa el modelo de PYMES (RD 1515/2007) y la foto era del modelo normal del PGC general
+(RD 1514/2007), que empieza el activo corriente por «Activos no corrientes mantenidos para la venta». Su próximo vídeo
+es del Balance, así que se pueden ver los tres modelos. Diseño validado (`diseno-v0.60.0.md`); Diosvely copió el
+modelo normal del BOE consolidado.
+
+**Cómo:** PYMES no cambia y sigue siendo la clasificación del ERP. El abreviado y el normal solo recolocan las cuentas
+ya calculadas (0089). El abreviado se deriva del normal, para que no puedan contradecirse.
+
+**Pruebas:** fase 82 (2.848 casos de cobertura, las cuatro sintéticas a tres fechas, casos del BOE, PYMES igual y
+permisos); 82 de 82 en la base de datos y 337 tests de la web. Tres pruebas antiguas se ajustaron porque cambia la firma
+de las funciones (fases 68 y 78) o el número de fuentes (fase 49).
+
+**Pantallas pendientes de diálogo:** ninguna; el Balance no crea nada.
+
+**Lo que se aprende**
+- **El BOE pone la 1034 y la 1044 en el pasivo:** el capital pendiente de inscripción es una deuda hasta que se
+  inscribe. Fue lo único que la prueba de cobertura encontró en otra masa.
+

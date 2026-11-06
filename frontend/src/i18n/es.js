@@ -449,13 +449,22 @@ export default {
   menuPyg: 'Pérdidas y ganancias',
   balanceSheet: 'Balance de situación',
   incomeStatement: 'Cuenta de Pérdidas y Ganancias',
-  balanceSheetHelp: 'Modelo PYMES del PGC. Cada subcuenta se clasifica por su saldo: un banco en descubierto va a deudas con entidades de crédito y un cliente con anticipo, a otros acreedores. Pulsa una partida para ver sus cuentas.',
+  balanceSheetHelp: 'Cada subcuenta se clasifica por su saldo: un banco en descubierto va a deudas con entidades de crédito y un cliente con anticipo, al pasivo. Pulsa una partida para ver sus cuentas.',
+  fsModel: {
+    label: 'Modelo:',
+    pymes: 'PYMES', abreviado: 'Abreviado', normal: 'Normal',
+    norm: {
+      pymes: 'Modelo del PGC de PYMES (RD 1515/2007). Es el que usa el ERP por defecto.',
+      abreviado: 'Modelo abreviado del PGC (RD 1514/2007). Las mismas cuentas y el mismo total que en PYMES: añade «Activos no corrientes mantenidos para la venta» y «Ajustes por cambios de valor», y por eso cambia la numeración.',
+      normal: 'Modelo normal del PGC (RD 1514/2007). Las mismas cuentas y el mismo total que en PYMES, con más desglose: por ejemplo, las Existencias son «II» y se dividen en seis líneas.',
+    },
+  },
   incomeStatementHelp: 'Modelo PYMES del PGC: ingresos en positivo y gastos entre paréntesis. Pulsa una partida para ver sus cuentas.',
   hideZeroLines: 'Ocultar partidas sin importe',
   totalAssets: 'Total activo',
   totalEquityLiabilities: 'Total patrimonio neto y pasivo',
   noAccountsInLine: 'Sin cuentas con saldo en esta partida.',
-  statementsNote: 'El resultado de los grupos 6 y 7 aparece en "VII. Resultado del ejercicio". Los asientos de regularización y cierre no se incluyen: el informe es igual antes y después del cierre. Proyecto de estudio basado en el modelo PYMES (RD 1515/2007).',
+  statementsNote: 'El resultado de los grupos 6 y 7 aparece en "VII. Resultado del ejercicio". Los asientos de regularización y cierre no se incluyen: el informe es igual antes y después del cierre. Proyecto de estudio: el Balance en los modelos del PGC (RD 1514/2007 y RD 1515/2007) y la PyG en el de PYMES.',
 
  // Cierre del ejercicio
   menuYearClosing: 'Cierre del ejercicio',

@@ -70,6 +70,19 @@ export const SOURCES = {
     es: { title: 'Real Decreto 1514/2007, Plan General de Contabilidad', ref: 'Marco conceptual (devengo), normas de registro y valoración y cuadro de cuentas' },
     en: { title: 'Royal Decree 1514/2007, Spanish chart of accounts (PGC)', ref: 'Conceptual framework (accrual), recognition and measurement rules and chart of accounts' },
   },
+  // v0.60.0 · los modelos del Balance (ADR 0062)
+  pgcmodelos: {
+    issuer: 'BOE', checked: '2026-11-06',
+    url: 'https://www.boe.es/eli/es/rd/2007/11/16/1514/con',
+    es: { title: 'Real Decreto 1514/2007, Plan General de Contabilidad', ref: 'Tercera parte: modelos normales y abreviados del balance' },
+    en: { title: 'Royal Decree 1514/2007, Spanish chart of accounts (PGC)', ref: 'Part three: full and abridged balance sheet models' },
+  },
+  pgcpymes: {
+    issuer: 'BOE', checked: '2026-11-06',
+    url: 'https://www.boe.es/eli/es/rd/2007/11/16/1515/con',
+    es: { title: 'Real Decreto 1515/2007, Plan General de Contabilidad de Pequeñas y Medianas Empresas', ref: 'Tercera parte: modelo de balance de PYMES' },
+    en: { title: 'Royal Decree 1515/2007, chart of accounts for small and medium-sized enterprises', ref: 'Part three: SME balance sheet model' },
+  },
   lis: {
     issuer: 'BOE', checked: '2026-10-20',
     url: 'https://www.boe.es/eli/es/l/2014/11/27/27/con',

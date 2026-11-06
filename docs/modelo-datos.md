@@ -6,7 +6,7 @@ nombres van en inglés, al estilo de BC y SAP; el vocabulario está en [glosario
 - **Las reglas viven en la base de datos:** triggers, funciones y seguridad fila a fila (RLS). La web solo dibuja.
 - **Cada función, en su versión vigente:** [`database/funciones/`](../database/funciones/README.md) (349 funciones,
   generado con `scripts/volcar-funciones.sh`). Este documento es el mapa; el detalle está allí y en cada ADR.
-- **85 tablas y 23 vistas** en `erp`, agrupadas abajo por área, con la migración que crea cada una.
+- **89 tablas y 23 vistas** en `erp`, agrupadas abajo por área, con la migración que crea cada una.
 - Las equivalencias con BC y SAP son orientativas, para situarse *(pendiente de validar por Diosvely)*.
 
 ## El núcleo
@@ -91,6 +91,7 @@ Todo lo demás (inmovilizado, nóminas, préstamos, liquidaciones, cierre…) ge
 |---|---|---|
 | `balance_rules` | Naturaleza normal del saldo de cada cuenta (para los saldos al revés) | 0013 |
 | `fs_lines` / `fs_mapping` | Partidas del Balance y la PyG (modelo PYMES) y a cuál va cada cuenta según el signo de su saldo | 0016 |
+| `fs_models` / `fs_model_lines` / `fs_model_mapping` | Los otros modelos del Balance (abreviado y normal del RD 1514/2007): sus partidas y a cuál va cada cuenta según el signo de su saldo. PYMES sigue en `fs_lines` (v0.60.0, ADR 0062) | 0089 |
 | `cf_lines` / `cf_mapping` | Estado de flujos de efectivo por los dos métodos | 0022 |
 | `ratio_defs` | Ratios con su fórmula y su zona de referencia | 0023 |
 | `valuation_rules` | Normas de valoración que usan las reglas | 0025 |

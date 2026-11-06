@@ -263,8 +263,8 @@ begin
   assert public.falla($q$insert into erp.dash_widgets (dashboard, sort, kind, source, label, label_en, metrics) values ('calidad', 99, 'checklist', 'anomalies', 'x', 'x', '{}')$q$,
                       'dash_widgets_source_check'), 'la lista de control no tiene fuente';
   assert not has_function_privilege('anon', 'erp.quality_checks(uuid, integer, date, boolean)', 'execute');
-  assert not has_function_privilege('anon', 'erp.fs_line_anomalies(uuid, integer, date, boolean)', 'execute');
-  assert has_function_privilege('authenticated', 'erp.fs_line_anomalies(uuid, integer, date, boolean)', 'execute');
+  assert not has_function_privilege('anon', 'erp.fs_line_anomalies(uuid, integer, date, boolean, text)', 'execute');
+  assert has_function_privilege('authenticated', 'erp.fs_line_anomalies(uuid, integer, date, boolean, text)', 'execute');
   raise notice 'OK  · catálogo y permisos';
 end $$;
 

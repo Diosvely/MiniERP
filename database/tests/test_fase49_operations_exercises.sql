@@ -43,7 +43,7 @@ begin
   assert not exists (select 1 from erp.operations o, unnest(o.sources) k where not exists (select 1 from erp.sources s where s.key = k))
      and not exists (select 1 from erp.exercises o, unnest(o.sources) k where not exists (select 1 from erp.sources s where s.key = k)),
          'todas las fuentes citadas existen en la base documental';
-  assert (select count(*) from erp.sources) = 17, 'diez fuentes de la v0.39.0 + seis de los supuestos + la LSC (0061)';
+  assert (select count(*) from erp.sources) = 19, 'diez fuentes de la v0.39.0 + seis de los supuestos + la LSC (0061) + los modelos del Balance (0089)';
   assert not exists (select 1 from erp.exercises where cardinality(sources) = 0 or concept is null), 'cada supuesto cita su norma y su concepto';
   assert not exists (select 1 from erp.exercises xx where (select sum((e->>'amount')::numeric) filter (where e->>'side' = 'debit') from jsonb_array_elements(xx.expected) e)
                                                     <> (select sum((e->>'amount')::numeric) filter (where e->>'side' = 'credit') from jsonb_array_elements(xx.expected) e)),

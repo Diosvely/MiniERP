@@ -2,6 +2,22 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.60.0] - 2026-11-06
+### Añadido
+- **El Balance en los tres modelos del PGC** (ADR 0062, migración 0089): un selector «Modelo: PYMES · Abreviado ·
+  Normal», con PYMES por defecto. La web recuerda el último modelo elegido.
+  - Es el mismo balance: las mismas cuentas con el mismo saldo, recolocadas en las partidas de cada modelo. El total no
+    cambia.
+  - El **normal** sigue el BOE (RD 1514/2007, tercera parte): empieza el activo corriente por «I. Activos no corrientes
+    mantenidos para la venta» (por eso las Existencias son «II») y desglosa las Existencias, los deudores, los
+    acreedores, las deudas, las inversiones y el patrimonio neto. El **abreviado** agrupa sus partidas.
+  - Funcionan igual el año anterior, «hasta», la simulación, desplegar cuentas, el aviso ⚠ y la exportación a Excel.
+  - Botón 📘 con la norma de cada modelo (RD 1515/2007 y RD 1514/2007).
+- `financial_statement`, `fs_line_accounts` y `fs_line_anomalies` reciben `p_model` (por defecto `pymes`, el mismo
+  código de antes). La PyG sigue en el modelo PYMES.
+### Cambiado
+- La nota del proveedor deudor nombra también la partida del modelo normal («Deudores varios»).
+
 ## [0.59.3] - 2026-11-05
 ### Cambiado
 - **Nueva portada** (pantalla de entrada sin sesión), más moderna y con el lema «Tu aliado en la contabilidad y el

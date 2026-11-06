@@ -425,17 +425,76 @@ a.enlace:hover { text-decoration: underline; }
 .caja-error summary { cursor: pointer; }
 .caja-error code { display: block; margin-top: 4px; white-space: pre-wrap; word-break: break-word; }
 
-/* --- v0.26.0: pantalla de entrada --- */
-.entrada { display: flex; flex-direction: column; gap: 16px; }
-.entrada-portada { display: flex; flex-direction: column; gap: 10px; }
-.entrada-portada h2 { font-size: 1.45rem; line-height: 1.25; margin: 0; }
-.entrada-sub { margin: 0; color: var(--suave); }
-.entrada-puntos { display: flex; flex-direction: column; gap: 8px; }
-.entrada-puntos li { flex-direction: row; align-items: flex-start; gap: 10px; padding: 0; border: 0; }
-.entrada-puntos li > span { font-size: 1.25rem; line-height: 1.3; }
-.entrada-puntos li div { display: flex; flex-direction: column; }
-.entrada-puntos li div span { font-size: .88rem; }
-.boton-demo { font-size: 1.05rem; padding: 14px 18px; font-weight: 600; }
+/* --- v0.26.0: pantalla de entrada · v0.59.3: portada --- */
+main:has(.entrada) { max-width: 1160px; }
+.entrada { display: flex; flex-direction: column; gap: 48px; padding-top: 8px; }
+.cabecera-marca { display: flex; flex-direction: column; }
+.cabecera-marca h1 { margin: 0; }
+.cabecera-marca span { color: var(--suave); font-size: .85rem; letter-spacing: .02em; }
+.boton-cabecera { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; font-weight: 600; }
+@media (max-width: 480px) { .boton-cabecera span { display: none; } }
+
+/* Portada: texto a la izquierda, captura a la derecha (una columna en el móvil) */
+.portada-hero { display: grid; grid-template-columns: minmax(0, 5fr) minmax(0, 7fr); gap: 40px; align-items: center;
+                padding: 32px 0 8px; }
+.portada-texto { display: flex; flex-direction: column; gap: 16px; }
+.portada-texto h2 { font-size: clamp(1.8rem, 3.6vw, 2.7rem); line-height: 1.12; letter-spacing: -.02em; margin: 0; }
+.entrada-sub { margin: 0; color: var(--suave); font-size: 1.08rem; line-height: 1.55; }
+.portada-botones { display: flex; flex-wrap: wrap; gap: 10px; }
+.portada-botones .secundario { display: inline-flex; align-items: center; gap: 6px; padding: 14px 18px; font-weight: 600; }
+.boton-demo { font-size: 1.05rem; padding: 14px 20px; font-weight: 600; }
+.portada-confianza { display: flex; flex-wrap: wrap; gap: 6px 16px; }
+.portada-confianza li { flex-direction: row; align-items: center; gap: 6px; padding: 0; border: 0; color: var(--suave); font-size: .88rem; }
+.portada-confianza .icono-svg { color: var(--exito); }
+.portada-captura { margin: 0; display: flex; flex-direction: column; gap: 8px; }
+.portada-captura img { display: block; width: 100%; height: auto; border-radius: 14px; border: 1px solid var(--borde);
+                       box-shadow: 0 18px 50px -18px color-mix(in srgb, var(--primario) 45%, transparent),
+                                   0 4px 14px rgba(0, 0, 0, .08); }
+.portada-captura figcaption { color: var(--suave); font-size: .8rem; text-align: center; }
+
+/* Secciones */
+.portada-seccion > h2, .portada-por-que h2 { font-size: 1.6rem; letter-spacing: -.01em; margin: 0 0 18px; }
+.portada-funciones { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+.portada-funciones li.tarjeta { margin: 0; padding: 20px; gap: 8px; border-bottom: 1px solid var(--borde); }
+.portada-funciones li strong { font-size: 1.05rem; }
+.portada-funciones li span:last-child { line-height: 1.5; }
+.portada-icono { display: inline-flex; width: 42px; height: 42px; align-items: center; justify-content: center; border-radius: 10px;
+                 color: var(--primario); background: color-mix(in srgb, var(--primario) 12%, transparent); }
+.portada-por-que { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 420px); gap: 40px; align-items: start; }
+.portada-lista { display: flex; flex-direction: column; gap: 14px; }
+.portada-lista li { flex-direction: row; align-items: flex-start; gap: 10px; padding: 0; border: 0; }
+.portada-lista li div { display: flex; flex-direction: column; gap: 2px; }
+.portada-lista li div span { line-height: 1.5; }
+.portada-lista .entrada-icono { color: var(--exito); }
+.entrada-acceso { margin: 0; scroll-margin-top: 16px; }
+
+/* Banda final */
+.portada-banda { display: flex; align-items: center; justify-content: space-between; gap: 20px; flex-wrap: wrap;
+                 padding: 28px 32px; border-radius: 16px; border: 1px solid var(--borde);
+                 background: color-mix(in srgb, var(--primario) 9%, var(--tarjeta)); }
+.portada-banda h2 { font-size: 1.4rem; margin: 0 0 4px; }
+.portada-banda p { margin: 0; color: var(--suave); }
+
+/* Pie */
+.entrada-pie { text-align: center; color: var(--suave); font-size: .85rem; padding: 20px 0 16px; border-top: 1px solid var(--borde); }
+.entrada-pie p { margin: 4px 0; }
+.entrada-pie .portada-marca { font-weight: 700; color: var(--texto); }
+.entrada-pie .portada-marca span { font-weight: 400; color: var(--suave); margin-left: 6px; }
+.pie-enlaces { display: flex; justify-content: center; flex-wrap: wrap; gap: 8px 20px; margin: 10px 0; }
+.pie-enlaces a { display: inline-flex; align-items: center; gap: 6px; color: var(--primario); }
+
+@media (max-width: 900px) {
+  .portada-hero, .portada-por-que { grid-template-columns: minmax(0, 1fr); gap: 28px; }
+  .portada-funciones { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 560px) {
+  .entrada { gap: 36px; }
+  .portada-hero { padding-top: 12px; }
+  .portada-funciones { grid-template-columns: minmax(0, 1fr); }
+  .portada-botones > button { flex: 1 1 100%; justify-content: center; }
+  .portada-banda { padding: 20px; }
+  .portada-banda .boton-demo { width: 100%; }
+}
 .pestanas-acceso { display: flex; border-bottom: 1px solid var(--borde); margin: -4px 0 4px; }
 .pestanas-acceso button { flex: 1; background: transparent; color: var(--suave); border-radius: 0; border-bottom: 3px solid transparent; }
 .pestanas-acceso button.activa { color: var(--primario); border-bottom-color: var(--primario); font-weight: 600; }
@@ -448,9 +507,6 @@ a.enlace:hover { text-decoration: underline; }
 .requisito.ok { color: var(--exito); }
 .enviado { display: flex; flex-direction: column; gap: 8px; }
 .enviado p { margin: 0; }
-.entrada-pie { text-align: center; color: var(--suave); font-size: .85rem; padding-bottom: 16px; }
-.entrada-pie p { margin: 4px 0; }
-.entrada-pie a { color: var(--primario); }
 
 /* --- v0.26.0: plantillas de asientos y buscador de cuentas --- */
 .plantillas { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border-radius: 10px;

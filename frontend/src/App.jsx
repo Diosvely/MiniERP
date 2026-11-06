@@ -11,7 +11,8 @@ import Pgc from './components/Pgc'
 import TempKeeper from './components/TempKeeper'
 import Link from './components/Link'
 import { useHashRoute } from './router'
-import { BookMarked, BookOpen, GraduationCap } from 'lucide-react'
+import { BookMarked, BookOpen, GraduationCap, LogIn } from 'lucide-react'
+import { scrollToSection } from './landing'
 import { ICON } from './icons'
 
 export default function App() {
@@ -45,12 +46,21 @@ function Layout({ session }) {
       {/* v0.49.0 · Latido de las empresas temporales (no se ve) */}
       {session && <TempKeeper session={session} />}
       <header className="cabecera">
-        <h1>{t('appTitle')}</h1>
+        {/* v0.59.3 · en la portada, el lema debajo del nombre */}
+        {!session && route[0] !== 'glosario'
+          ? <div className="cabecera-marca"><h1>{t('appTitle')}</h1><span>{t('landingTagline')}</span></div>
+          : <h1>{t('appTitle')}</h1>}
         <div className="cabecera-acciones">
           {session && <Link to="/practicar" className="enlace-glosario" aria-label={t('practice')}><GraduationCap {...ICON} /> <span>{t('practice')}</span></Link>}
           {session && <Link to="/pgc" className="enlace-glosario" aria-label={t('pgc.title')}><BookMarked {...ICON} /> <span>{t('pgc.button')}</span></Link>}
           <Link to="/glosario" className="enlace-glosario" aria-label={t('glossary')}><BookOpen {...ICON} /> <span>{t('glossary')}</span></Link>
           <LanguageSwitch />
+          {/* v0.59.3 · sin sesión, en la portada: lleva al formulario de acceso (sin tocar el hash, que es la ruta) */}
+          {!session && route[0] !== 'glosario' && (
+            <button type="button" className="boton-cabecera" aria-label={t('landingSignIn')} onClick={() => scrollToSection('acceso')}>
+              <LogIn {...ICON} /> <span>{t('landingSignIn')}</span>
+            </button>
+          )}
         </div>
       </header>
       {route[0] === 'glosario' ? <Glossary />

@@ -1844,3 +1844,27 @@ Pruebas: 81 SQL y 323 de la web.
   - el proveedor deudor suele ser algo que corregir, con un asiento definitivo.
 - **El estudio encuentra lo que las pruebas no:** las pruebas comprobaban lo que el ERP hacía, no si era el mejor
   criterio.
+
+## 2026-11-05 · v0.59.3 · Portada nueva
+
+**De dónde viene:** Diosvely veía la portada «un poquito feita» y trajo una propuesta con un prototipo. Lema elegido:
+«Tu aliado en la contabilidad y el análisis financiero». Se prueba en local hasta que le guste, sin publicar.
+
+**Criterio del constructor sobre la propuesta:**
+- se queda la estructura (cabecera, portada con imagen, 6 funciones, por qué, banda final y pie);
+- la imagen es una **captura real** del tablero de una empresa sintética (semilla 4817 · taller · 12 meses) con «datos
+  ficticios», no un panel inventado con cifras de adorno;
+- «con empresas de práctica», no «datos reales» (ADR 0010);
+- sin fuentes externas ni ilustraciones 3D: la CSP solo deja `font-src 'self'`, y los colores son variables, para que
+  el modo oscuro siga funcionando (hay una captura para cada modo);
+- el formulario de acceso sigue a la vista; el botón de la cabecera lleva a él sin tocar el hash, que es la ruta.
+
+**Pantallas pendientes de diálogo:** la portada (crear cuenta y entrar como invitado) sale de la lista.
+
+**Pruebas:** 331 de la web (nueva `landing.test.js`: enlaces, textos en los dos idiomas, «datos ficticios», sin
+nombres de programas comerciales, y el desplazamiento sin cambiar de ruta). Revisión visual en escritorio, móvil,
+oscuro e inglés.
+
+**Lo que se aprende**
+- **Una captura real enseña más que un dibujo:** quien llega ve lo que va a encontrar, y no promete nada que no exista.
+

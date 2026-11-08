@@ -1,7 +1,7 @@
 -- =====================================================================
 -- 0078 · Cada empresa, independiente del tamaño de las demás (v0.52.3)
 -- ---------------------------------------------------------------------
--- En Supabase, Comprobaciones de «Empresa 1 SAGE» seguía tardando 12–20 s con la 0077 (en local, 0,7 s con los mismos
+-- En Supabase, Comprobaciones de una empresa importada grande seguía tardando 12–20 s con la 0077 (en local, 0,7 s con los mismos
 -- datos). Medido allí pieza a pieza: erp.audit_lines tardaba 2,4 s (70 ms en local) y Comprobaciones la usa 7 veces.
 -- Reproducido en local con PostgreSQL 17.6 (el de Supabase) y varias empresas grandes en la misma base:
 --

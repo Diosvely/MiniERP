@@ -10,7 +10,7 @@ const base = '2026-02-10'   // mes de trabajo: febrero de 2026
 const today = '2026-10-26'
 const q = (s) => parseQuickDate(s, base, today)
 
-// Mejora de uso 8 (mejoras-de-uso.md): como ContaSol, el día solo y el mes y el año del mes de trabajo
+// Mejora de uso 8 (mejoras-de-uso.md): el día solo y el mes y el año del mes de trabajo
 describe('fecha rápida', () => {
   it('solo el día: el mes y el año del mes de trabajo', () => {
     expect([q('2'), q('02'), q(' 28 ')]).toEqual(['2026-02-02', '2026-02-02', '2026-02-28'])

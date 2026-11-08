@@ -9,7 +9,7 @@ import { companyPath } from '../router'
 import ErrorBox from './ErrorBox'
 
 // Prorrata general del IVA / IGIC: porcentaje provisional del año y regularización con el definitivo en el 4T
-// (como la "Prorrata" de A3ECO / Sage: % provisional en la ficha y asistente de regularización anual)
+// (% provisional en la ficha y asistente de regularización anual)
 export default function ProRata({ company, readOnly }) {
   const { t, language } = useI18n()
   const isAdmin = !readOnly && company.my_role === 'admin'

@@ -10,7 +10,7 @@ import ErrorBox from './ErrorBox'
 const BOXES = { 111: ['07', '08', '09'], 115: ['01', '02', '03'] }
 
 // Retenciones IRPF del trimestre: practicadas (las ingresa la empresa: 111 / 115) y soportadas (pagos a cuenta)
-// Como el informe de retenciones de A3 / Sage o el "Withholding Tax Report" (S_P00_07000134) de SAP
+// Como el informe de retenciones de un programa contable o el "Withholding Tax Report" (S_P00_07000134) de SAP
 export default function Withholdings({ company }) {
   const { t, language } = useI18n()
   const [years, setYears] = useState([])

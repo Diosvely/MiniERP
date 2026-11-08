@@ -605,11 +605,11 @@ export default {
 
 // Importar diario de otro ERP
   importJournalTitle: 'Importar el diario de otro ERP',
-  importJournalCard: 'Trae la contabilidad completa de Sage, Dynamics 365 Business Central u otro programa (con la plantilla del laboratorio) a una empresa nueva, con todos sus años.',
+  importJournalCard: 'Trae la contabilidad completa de otro programa (un diario en Excel, Dynamics 365 Business Central o la plantilla del laboratorio) a una empresa nueva, con todos sus años.',
   importJournalButton: 'Importar diario',
   importJournalIntro: 'El fichero se lee en tu navegador, se convierte a la plantilla del laboratorio y entra en una empresa NUEVA. Antes de importar verás los controles de auditor.',
   importChooseFile: 'Elegir fichero (Excel o CSV)',
-  importFormats: 'Formatos: Excel de Sage (hoja «Diario»: Fecha, Asiento, Cuenta, Nombre, Debe, Haber, Concepto, Tipo Asiento) · CSV de movimientos de contabilidad de Business Central (G/L Entry) · plantilla del laboratorio (fecha;asiento;tipo;cuenta;nombre;debe;haber;concepto;documento).',
+  importFormats: 'Formatos: diario en Excel (hoja «Diario»: Fecha, Asiento, Cuenta, Nombre, Debe, Haber, Concepto, Tipo Asiento) · CSV de movimientos de contabilidad de Business Central (G/L Entry) · plantilla del laboratorio (fecha;asiento;tipo;cuenta;nombre;debe;haber;concepto;documento).',
   importReading: 'Leyendo y convirtiendo el fichero',
   importUploading: 'Subiendo apuntes',
   importChecking: 'Revisando el diario',
@@ -617,7 +617,7 @@ export default {
   importPosting: 'Contabilizando',
   importClosing: 'Cerrando ejercicios',
   importDetected: '{s}: {n} apuntes · subcuentas de {d} dígitos · años {y}.',
-  importSource: { sage: 'Sage (diario en Excel)', dynamics: 'Dynamics 365 Business Central', template: 'Plantilla del laboratorio' },
+  importSource: { sage: 'Diario en Excel (Fecha, Asiento, Cuenta, Debe, Haber…)', dynamics: 'Dynamics 365 Business Central', template: 'Plantilla del laboratorio' },
   territoryLabel: 'Territorio',
   industryLabel: 'Sector',
   importPrivateHelp: 'La empresa importada es privada: solo la ves tú. No la publiques como demo si son datos reales.',
@@ -634,7 +634,7 @@ export default {
     unbalanced: '{d} asiento(s) descuadrados en más de 1 €: no se puede importar.',
     empty: 'El fichero no tiene apuntes.',
   },
-  importNegatives: '{n} importes negativos (anulaciones "en negativo" de Sage): pasarán al lado contrario en positivo. El saldo no cambia, las sumas del Debe y del Haber sí.',
+  importNegatives: '{n} importes negativos (anulaciones "en negativo", como las exportan algunos programas): pasarán al lado contrario en positivo. El saldo no cambia, las sumas del Debe y del Haber sí.',
   importRounded: '{n} asiento(s) descuadrados por céntimos: se cuadrarán con la 678 / 778 (redondeos).',
   importZeros: '{n} apuntes a cero: no se importan.',
   journalImportAccounts: '{n} subcuentas en el diario; se crearán {m}. Si el nombre viene oculto, se usa el de su cuenta del PGC.',
@@ -886,8 +886,8 @@ export default {
   // Cuentas controladas y Comprobaciones (v0.33.0)
   controlModeLabel: 'Control de las cuentas',
   controlMode: {
-    strict: { label: 'Estricto (como SAP o Business Central)', help: 'Las cuentas de terceros (400, 410, 430, 440) y de IVA / IGIC (472, 477) solo las mueven sus pantallas: un asiento manual sobre ellas no se contabiliza. Recomendado para aprender.' },
-    guided: { label: 'Guiado (como los ERP españoles)', help: 'Se puede hacer un asiento manual sobre esas cuentas: el ERP avisa antes y después lo lista en Comprobaciones para revisarlo.' },
+    strict: { label: 'Estricto: control antes de contabilizar', help: 'Las cuentas de terceros (400, 410, 430, 440) y de IVA / IGIC (472, 477) solo las mueven sus pantallas: un asiento manual sobre ellas no se contabiliza. Recomendado para aprender.' },
+    guided: { label: 'Guiado: control después', help: 'Se puede hacer un asiento manual sobre esas cuentas: el ERP avisa antes y después lo lista en Comprobaciones para revisarlo.' },
   },
   ctl: {
     strictTitle: 'La {a} es una cuenta controlada: este asiento no se puede contabilizar',
@@ -901,7 +901,7 @@ export default {
   },
   chk: {
     title: 'Comprobaciones del auditor',
-    intro: 'Los cuadres que hace un auditor después de contabilizar (como los ERP españoles): el IVA de la contabilidad frente al libro registro, cada tercero frente a sus facturas, los saldos al revés… Están siempre activos, en los dos modos.',
+    intro: 'Los cuadres que hace un auditor después de contabilizar: el IVA de la contabilidad frente al libro registro, cada tercero frente a sus facturas, los saldos al revés… Están siempre activos, en los dos modos.',
     date: 'A fecha',
     count: { ok: '{n} correctas', info: '{n} informativas', warning: '{n} con aviso', error: '{n} con error' },
     status: { ok: 'Correcta', info: 'Informativa', warning: 'Aviso', error: 'Error' },
@@ -979,7 +979,7 @@ export default {
   },
   wiz: {
     title: 'Asistente de cierre {y}',
-    intro: 'Los pasos del cierre en orden, como el asistente de A3 o Sage. ✓ hecho · ✕ falta · 👁 revísalo tú (el ERP no lo puede saber) · – no aplica.',
+    intro: 'Los pasos del cierre en orden. ✓ hecho · ✕ falta · 👁 revísalo tú (el ERP no lo puede saber) · – no aplica.',
     count: { done: '{n} hechos', pending: '{n} faltan', review: '{n} por revisar', na: '{n} no aplican' },
     status: { done: 'Hecho', pending: 'Falta', review: 'Revisar', na: 'No aplica' },
     step: {
@@ -1613,7 +1613,7 @@ export default {
     reopen: 'Reabrir {m}',
     startDate: 'Fecha de inicio de la contabilidad',
     monthly: 'Llevar la contabilidad mes a mes',
-    monthlyHelp: 'Empiezas en el mes de la fecha de inicio y solo contabilizas en el mes abierto; con «Cerrar mes» pasas al siguiente, como en ContaSol.',
+    monthlyHelp: 'Empiezas en el mes de la fecha de inicio y solo contabilizas en el mes abierto; con «Cerrar mes» pasas al siguiente.',
     freeHelp: 'Todos los meses del ejercicio quedan abiertos.',
   },
   // v0.47.0 · Pantalla «Asientos»
@@ -1738,7 +1738,7 @@ export default {
     badge: 'Temporal',
     headerHelp: 'Empresa de prueba: se borra tras {idle} sin usar la aplicación o, como muy tarde, el {date}. Exporta a Excel lo que quieras guardar.',
     importTitle: 'Prueba el ERP con tu diario',
-    importHelp: 'Importa el diario de tu ERP (Sage, Business Central o la plantilla) y trabaja con él, con la IA incluida ({ai} consultas al día). Va a una empresa temporal: se borra tras {idle} sin usar la aplicación y, como muy tarde, a las {hours} h. Hasta {lines} líneas. No gasta tu empresa propia. No subas datos personales reales.',
+    importHelp: 'Importa un diario (en Excel, de Business Central o con la plantilla) y trabaja con él, con la IA incluida ({ai} consultas al día). Va a una empresa temporal: se borra tras {idle} sin usar la aplicación y, como muy tarde, a las {hours} h. Hasta {lines} líneas. No gasta tu empresa propia. No subas datos personales reales.',
     importWarning: 'Empresa temporal: se borra tras {idle} sin usar la aplicación y, como muy tarde, a las {hours} h. Exporta a Excel lo que quieras guardar y no subas datos personales reales.',
     hasTemp: 'Ya tienes una empresa temporal, {name}: se borra tras {idle} sin usar la aplicación o el {date}. Cuando se borre podrás importar otra.',
     open: 'Abrirla',
@@ -1941,7 +1941,7 @@ export default {
     faNoAssetLine: { title: 'La factura {1} no tiene ninguna línea en la cuenta del activo', hint: 'La venta de un activo se factura a su cuenta (21x), no a una 7xx.' },
     faInvoiceUsed: { title: 'La factura {1} ya se usó en otra baja', hint: 'Cada venta tiene su factura.' },
     faDisposalDate: { title: 'La baja no puede ser anterior a la puesta en funcionamiento', hint: 'Revisa la fecha.' },
-    controlled: { title: 'La {1} es una cuenta controlada: no admite asientos manuales', hint: 'La empresa está en modo estricto (como SAP o Business Central): esa cuenta solo la mueve su pantalla. El asiento se ha quedado en borrador; regístralo desde allí. El administrador puede pasar la empresa a modo guiado en Comprobaciones.' },
+    controlled: { title: 'La {1} es una cuenta controlada: no admite asientos manuales', hint: 'La empresa está en modo estricto (control antes de contabilizar): esa cuenta solo la mueve su pantalla. El asiento se ha quedado en borrador; regístralo desde allí. El administrador puede pasar la empresa a modo guiado en Comprobaciones.' },
     controlMode: { title: 'Modo de control no válido', hint: 'Elige estricto o guiado.' },
     lineHeadingAccount: { title: 'Línea {1}: la cuenta {2} es de grupo', hint: 'Solo se apunta en subcuentas (las de último nivel, p. ej. 57200001). Créala en el Plan de cuentas.' },
     headingAccount: { title: 'La cuenta {1} es de grupo', hint: 'Solo se apunta en subcuentas (las de último nivel, p. ej. 57200001). Créala en el Plan de cuentas.' },
@@ -2048,7 +2048,7 @@ export default {
   landingTrustLabel: 'En resumen',
   landingTrust: ['Sin registro para explorar', 'PGC 2007', 'IVA e IGIC', 'Proyecto educativo'],
   landingShotAlt: 'Tablero «Resumen de dirección» del Mini ERP: cifra de negocios, resultado, tesorería, fondo de maniobra y un gráfico de ingresos y gastos de cada mes',
-  landingShotCaption: 'Captura real del tablero «Resumen de dirección» · empresa sintética 4817 · datos ficticios',
+  landingShotCaption: 'Captura de la aplicación · tablero «Resumen de dirección» · empresa sintética 4817 · datos ficticios',
   landingFeaturesTitle: 'Qué puedes hacer',
   landingFeature: {
     accounting: { title: 'Contabilidad española', text: 'Asientos, terceros, facturas, amortizaciones, nóminas y cierre del ejercicio con el PGC 2007, y las liquidaciones del IVA (303) y del IGIC (420).' },

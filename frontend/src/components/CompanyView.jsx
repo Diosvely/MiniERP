@@ -50,7 +50,7 @@ import { computeWorkDate } from '../workDate'
 
 // PANTALLAS de la empresa. Dos menús sobre las mismas pantallas (como los "perfiles" de Business Central):
 //   · Modo BÁSICO (por defecto): lista corta, solo lo del día a día, en lenguaje sencillo.
-//   · Modo AUDITOR: todo, agrupado por áreas como en A3 / Sage: Contabilidad · Facturas · Impuestos · Informes · Datos maestros.
+//   · Modo AUDITOR: todo, agrupado por áreas: Contabilidad · Facturas · Impuestos · Informes · Datos maestros.
 // Cada entrada lleva un nombre sencillo y, debajo, el término técnico (nav.<id>.label / nav.<id>.sub en el i18n).
 //   basic: true      → sale en el menú Básico
 //   basic: 'hidden'  → no sale en el menú Básico, pero es del modo Básico (se llega desde Inicio; sin aviso)

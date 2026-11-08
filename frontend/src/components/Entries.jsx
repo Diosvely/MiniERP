@@ -17,7 +17,7 @@ import { Trash2 } from 'lucide-react'
 
 const ICON = { posted: '✓', ok: '✎', error: '✕' }
 
-// ASIENTOS (v0.47.0, mejora de uso 9): la pantalla principal de Contabilidad, como la gestión de asientos de ContaSol.
+// ASIENTOS (v0.47.0, mejora de uso 9): la pantalla principal de Contabilidad, con la lista de asientos y sus filtros.
 // Una fila por asiento con su origen y su estado (contabilizado · en edición · con error), coloreada muy suave.
 // Fechas con tres botones (Mes actual · Desde / hasta · Todos), más filtros de estado, origen y texto.
 // Un clic abre el asiento: el contabilizado, su ficha; el borrador, en Nuevo asiento para seguir con él.

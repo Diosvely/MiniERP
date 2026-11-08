@@ -27,7 +27,7 @@ Es la prioridad 1 de la fase 2 del plan revisado (15-10-2026).
    - Hay un cuadro de amortización por años.
    - «Amortizar hasta» genera un asiento 68x/28x con todos los activos; la última amortización se deshace desde el
      módulo y nunca desde el diario.
-3. **Baja y venta, en dos piezas** (como BC o A3):
+3. **Baja y venta, en dos piezas** (como en BC):
    - la venta es una **factura emitida a la cuenta del activo** (no a una 7xx), para que el IVA entre en el libro
      registro y en el 303;
    - la baja amortiza hasta la fecha, cancela la 28x y lo que queda de la 2x, y lleva la diferencia a **67x** o
@@ -61,3 +61,5 @@ Es la prioridad 1 de la fase 2 del plan revisado (15-10-2026).
 - **Pruebas:** 37 de 37 en la base de datos y 104 tests de la web.
   - Las fases 36 y 37 son nuevas, con el supuesto calculado a mano.
   - La fase 34 compra, amortiza y vende activos al azar, con cuatro semillas.
+
+*Revisión ética (v0.60.1, 2026-11-08): se quitan los nombres de programas comerciales (ADR 0063). La decisión y sus consecuencias no cambian.*

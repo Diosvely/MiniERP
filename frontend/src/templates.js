@@ -1,4 +1,4 @@
-// PLANTILLAS DE ASIENTOS FRECUENTES ("¿Qué ha pasado?"), como los asientos predefinidos de ContaPlus / A3
+// PLANTILLAS DE ASIENTOS FRECUENTES ("¿Qué ha pasado?"), como los asientos predefinidos de muchos programas contables
 // o los diarios periódicos de Business Central. Cada línea dice de qué cuenta del PGC cuelga (prefix) y en qué
 // lado va (side). Al elegir una, se rellenan las SUBCUENTAS de la empresa (la primera que exista de ese grupo) y
 // el usuario solo escribe los importes; en la línea marcada como total, el botón "=" cuadra el asiento.

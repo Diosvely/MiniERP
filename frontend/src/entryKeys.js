@@ -1,5 +1,5 @@
 // ASIENTOS EN UNA LÍNEA (v0.41.1): qué hace cada tecla en el formulario de asiento. Va aparte, sin React, para
-// probarlo tecla a tecla (tests/entryKeys.test.js). Como en ContaSol o A3: Enter avanza, el importe que falta para
+// probarlo tecla a tecla (tests/entryKeys.test.js). Como en muchos programas contables: Enter avanza, el importe que falta para
 // cuadrar se propone solo y una línea nueva aparece al terminar la última.
 
 // Importe escrito («1210,5», «1.210,50» no: aquí se escribe sin miles) → céntimos (0.1 + 0.2 ≠ 0.3 en JavaScript)

@@ -14,7 +14,7 @@ const emptyLine = () => ({ account_no: '', amount: '', tax_code: '', description
 const REDUCING = ['606', '608', '609', '706', '708', '709']
 const cents = (v) => Math.round((parseFloat(String(v).replace(',', '.')) || 0) * 100)
 
-// Registro de una factura recibida (purchase) o emitida (sale), como el de A3 / Sage / ContaPlus
+// Registro de una factura recibida (purchase) o emitida (sale), como el de una gestoría
 export default function InvoiceForm({ company, invoiceType, invoices, onPosted }) {
   const { t, language } = useI18n()
   const emptyHeader = () => ({

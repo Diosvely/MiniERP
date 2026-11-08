@@ -91,9 +91,10 @@ El impuesto se calcula con dos normas:
   - fase 53: los asientos, las bases negativas (con y sin crédito, y el límite del 70 %), una devolución y las
     reversiones;
   - fase 54: el cierre, el invariante, la 129 y los supuestos de Practicar.
-- **Pendiente de validar por Diosvely:**
-  - los tipos de 2026 y los de reducida dimensión de 2025 a 2029, en el BOE;
-  - qué provisiones vienen marcadas por defecto.
+- **Pendiente de validar por Diosvely:** qué provisiones vienen marcadas por defecto.
+- **Tipos validados** (auditoría fiscal, 08-11-2026): los de 2026 y los de reducida dimensión de 2025 a 2029 coinciden
+  con el art. 29.1 y la DT 44.ª de la LIS, en la redacción de la Ley 7/2024, DF 8.ª (BOE núm. 307, de 21-12-2024).
+  Los de la microempresa de 2025 y desde 2027 se corrigen en la v0.60.2.
 
 ## Cómo explicarlo
 - **El impuesto también es un gasto del año.** Si el cierre lleva a la 129 el resultado antes de impuestos, el

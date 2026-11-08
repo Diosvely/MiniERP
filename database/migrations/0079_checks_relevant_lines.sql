@@ -1,7 +1,7 @@
 -- =====================================================================
 -- 0079 · Comprobaciones: leer solo los apuntes que necesita (v0.52.4)
 -- ---------------------------------------------------------------------
--- Con la 0078, Comprobaciones de «Empresa 1 SAGE» bajó en Supabase de 12–20 s a 2,3 s (con la memoria caliente). Pero
+-- Con la 0078, Comprobaciones de una empresa importada grande bajó en Supabase de 12–20 s a 2,3 s (con la memoria caliente). Pero
 -- la primera vez, con la memoria fría, la web aún podía pasar del límite de 8 s: en Supabase todo va entre 6 y 15 veces
 -- más lento que en local y leer del disco es lo que más cuesta.
 --

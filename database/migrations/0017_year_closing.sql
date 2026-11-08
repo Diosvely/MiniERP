@@ -1,7 +1,7 @@
 -- =====================================================================
 -- 0017 · YEAR-END CLOSING · Cierre del ejercicio (bloque M)
 -- ---------------------------------------------------------------------
--- Asistente de cierre en 4 pasos, como el de A3 / Sage / ContaPlus:
+-- Asistente de cierre en 4 pasos:
 --   1. Comprobaciones   → borradores, ejercicio anterior, trimestres de IVA/IGIC, saldos anómalos
 --   2. Regularización   → los grupos 6 y 7 se saldan contra la 129 Resultado del ejercicio  (closing_pl, 31/12)
 --   3. Cierre           → todas las cuentas de balance (grupos 1 a 5) quedan a cero          (closing,    31/12)

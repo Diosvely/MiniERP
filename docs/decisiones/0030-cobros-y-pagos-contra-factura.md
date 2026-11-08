@@ -32,7 +32,7 @@ El plan de ejecución (`plan-ejecucion.md`) adelanta este módulo al Inmovilizad
 4. **Partidas abiertas y antigüedad a una fecha** (`erp.open_items`, `erp.aging`):
    - tramos: sin vencer, 1–30, 31–60, 61–90 y más de 90 días;
    - con el **saldo contable** de la subcuenta al lado. Si no coincide con lo pendiente, hay movimientos sin vincular.
-     Es el control «después» de los ERP españoles, que convive con el control «antes» de SAP y BC.
+     Es el control «después» (posterior), que convive con el control «antes» (preventivo) de las cuentas controladas.
 5. **Web:**
    - pantalla «Cobros y pagos» con tres pestañas: Pagos, Cobros y Antigüedad de saldos. Antes de registrar se ve el
      asiento que hará el ERP;
@@ -53,3 +53,5 @@ El plan de ejecución (`plan-ejecucion.md`) adelanta este módulo al Inmovilizad
 - La base para la v0.33.0 (cuentas controladas) y para las métricas del chat: pendiente de cobro y de pago, días de
   retraso.
 - **Pruebas:** 29 de 29 en la base de datos (fase 29 nueva, que falla sin la regla de borrado) y 89 tests de la web.
+
+*Revisión ética (v0.60.1, 2026-11-08): se quitan los nombres de programas comerciales y la contraposición de los modos de control; cada modo se explica por lo que hace (control antes o después) (ADR 0063). La decisión y sus consecuencias no cambian.*

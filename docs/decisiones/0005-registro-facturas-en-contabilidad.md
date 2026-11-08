@@ -5,7 +5,7 @@
 ## Contexto
 Para automatizar el IVA/IGIC (con devoluciones, rappels, descuentos por pronto pago y ajustes) hay dos caminos:
 un módulo de facturación con artículos (SAP SD/MM, facturas de BC) o registrar las facturas desde la propia
-contabilidad (SAP FB60/FB70, registro de facturas de A3ECO / Sage Contabilidad / ContaPlus).
+contabilidad (SAP FB60/FB70, el registro de facturas de los programas contables que usan las gestorías).
 
 El objetivo del proyecto es **aprender contabilidad española como una gestoría** y analizar empresas como un auditor.
 
@@ -31,3 +31,5 @@ El objetivo del proyecto es **aprender contabilidad española como una gestoría
 - Un futuro módulo de facturación no calculará asientos por su cuenta: llamará al mismo motor.
 - Los porcentajes y supuestos fiscales se contrastarán con la normativa vigente al implementarlos (proyecto de estudio,
   no asesoramiento fiscal).
+
+*Revisión ética (v0.60.1, 2026-11-08): se quitan los nombres de programas comerciales (ADR 0063). La decisión y sus consecuencias no cambian.*

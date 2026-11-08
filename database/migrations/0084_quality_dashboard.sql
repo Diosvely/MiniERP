@@ -3,7 +3,7 @@
 -- ---------------------------------------------------------------------
 -- Diseño validado por Diosvely (diseno-v0.57.0.md, 01-11-2026): «meses sin cerrar» solo en las empresas mes a mes, las
 -- liquidaciones pendientes como error, el aviso del Balance completo (franja, partida y cuenta) y la 400 deudora en
--- Existencias con aviso hasta compararla con el balance oficial de Sage y de ContaSol.
+-- Existencias con aviso hasta revisar el criterio (hecho en la 0088, ADR 0061).
 --
 --   · LISTA DE CONTROL (erp.quality_checks): 7 filas a una fecha, cada una con su valor, su gravedad (ok, info, warning,
 --     error o «no aplica») y su pantalla. Salen de lo que ya existe: balance_anomalies, draft_problem, los periodos,

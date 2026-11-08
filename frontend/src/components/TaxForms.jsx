@@ -14,7 +14,7 @@ import ReportActions from './ReportActions'
 import ErrorBox from './ErrorBox'
 
 // MODELOS (v0.39.0): el borrador de cada modelo con sus casillas oficiales, calculado por la base de datos desde el libro
-// registro de facturas (0051 y 0052), como el borrador de A3 / Sage o el «VAT statement» de Business Central:
+// registro de facturas (0051 y 0052), como el borrador de un programa contable o el «VAT statement» de Business Central:
 //   · trimestral: 303 (IVA) o 420 (IGIC) · anual: 390 o 425 · 347 (operaciones con terceros) · 349 (intracomunitarias, IVA)
 // Cada modelo enseña sus fuentes oficiales (📘). El ERP no presenta nada: el borrador se copia en la sede electrónica.
 export default function TaxForms({ company }) {

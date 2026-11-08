@@ -1,7 +1,7 @@
 -- =====================================================================
 -- 0009 · BUSINESS PARTNERS · Terceros: clientes, proveedores, acreedores y deudores
 -- ---------------------------------------------------------------------
--- Cada tercero tiene SU subcuenta en contabilidad (estilo ERP español: ContaPlus, A3, Sage):
+-- Cada tercero tiene SU subcuenta en contabilidad (lo habitual en España):
 --   customer (cliente)   → 430xxxxx  · ventas de la actividad principal
 --   vendor   (proveedor) → 400xxxxx  · compras de mercaderías y aprovisionamientos
 --   creditor (acreedor)  → 410xxxxx  · servicios, suministros, profesionales…

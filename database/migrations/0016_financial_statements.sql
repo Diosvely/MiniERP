@@ -14,7 +14,7 @@
 --   · Se clasifica cada SUBCUENTA por su propio saldo (sin compensar): un cliente con saldo acreedor
 --     va al pasivo aunque los demás clientes sean deudores. Así lo exige el PGC (no compensación).
 --   · Los grupos 6 y 7 aún sin regularizar se suman en "VII. Resultado del ejercicio": el balance cuadra
---     en cualquier fecha, igual que el balance provisional de BC o de A3.
+--     en cualquier fecha, igual que el balance provisional de BC.
 --   · Los estados SOLO leen apuntes contabilizados y el plan de cuentas: valen igual para asientos manuales,
 --     facturas, liquidaciones o diarios IMPORTADOS de otro ERP.
 -- =====================================================================

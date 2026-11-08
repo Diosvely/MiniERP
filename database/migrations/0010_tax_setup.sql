@@ -4,7 +4,7 @@
 -- Qué cuenta usa cada tipo de impuesto al contabilizar, como:
 --   BC  → "VAT Posting Setup" (Purchase VAT Account / Sales VAT Account)
 --   SAP → determinación de cuentas de impuesto (transacción OB40, claves VST / MWS)
---   A3 / Sage / ContaPlus → tabla de tipos de IVA con su subcuenta de soportado y repercutido
+--   gestorías     → tabla de tipos de IVA con su subcuenta de soportado y repercutido
 --
 --   erp.tax_setup             → por tipo (VAT21, IGIC7…): subcuenta 472 (soportado) y 477 (repercutido)
 --   erp.tax_settlement_setup  → por impuesto (VAT / IGIC): subcuentas de la liquidación

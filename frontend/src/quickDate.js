@@ -1,4 +1,4 @@
-// FECHA RÁPIDA (v0.47.0, mejora de uso 8): como en ContaSol, basta con escribir el día y el mes y el año salen de la
+// FECHA RÁPIDA (v0.47.0, mejora de uso 8): basta con escribir el día y el mes y el año salen de la
 // fecha de trabajo (el mes abierto). Todo se guarda en ISO (aaaa-mm-dd); en pantalla, dd/mm/aaaa.
 //   «2» o «02»          → día 2 del mes de trabajo
 //   «15/3», «15-3», «1503» → 15 de marzo del año de trabajo

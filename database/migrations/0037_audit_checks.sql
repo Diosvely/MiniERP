@@ -1,7 +1,7 @@
 -- =====================================================================
--- 0037 · COMPROBACIONES DEL AUDITOR (controles posteriores, estilo ERP español) · v0.33.0
+-- 0037 · COMPROBACIONES DEL AUDITOR (controles posteriores) · v0.33.0
 -- ---------------------------------------------------------------------
--- Los ERP españoles (A3, Sage) dejan contabilizar casi todo a mano y controlan DESPUÉS: cuadres y listados de
+-- Muchos programas dejan contabilizar casi todo a mano y controlan DESPUÉS: cuadres y listados de
 -- revisión. Aquí esos controles están siempre activos, en los dos modos (estricto o guiado, 0036), y se ven en la
 -- pantalla «Comprobaciones».
 --
@@ -40,7 +40,7 @@ create table if not exists erp.audit_checks (
   fix_en    text not null,
   screen    text not null      -- pantalla de la web donde se arregla
 );
-comment on table erp.audit_checks is 'Auditor checks (detective controls of Spanish ERPs): what is checked, why and where to fix it.';
+comment on table erp.audit_checks is 'Auditor checks (detective controls, after posting): what is checked, why and where to fix it.';
 
 insert into erp.audit_checks (code, sort, area, severity, title, title_en, why, why_en, fix, fix_en, screen) values
 ('vat_input', 10, 'taxes', 'warning',

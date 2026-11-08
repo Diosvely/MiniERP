@@ -127,3 +127,20 @@ los tableros. Las equivalencias con BC y SAP son orientativas *(pendiente de val
 | Azar determinista (pseudoaleatorio) | deterministic pseudo-random (`syn_rand`) | — | — |
 | Huella de la contabilidad | fingerprint (`company_fingerprint`) | — | — |
 | Versión del generador | generator version (`g1`) | — | — |
+
+## Modelos del Balance (v0.60.0)
+
+| Español | English | Business Central | SAP |
+|---|---|---|---|
+| Balance, modelo PYMES (RD 1515/2007) | SME balance sheet (`p_model = 'pymes'`) | — | — |
+| Balance, modelo abreviado (RD 1514/2007) | abridged balance sheet (`'abreviado'`) | — | — |
+| Balance, modelo normal (RD 1514/2007) | full balance sheet (`'normal'`) | Account Schedule | Financial Statement Version |
+| Activos no corrientes mantenidos para la venta (580–584) | non-current assets held for sale | — | — |
+
+## Control interno (v0.60.1)
+
+| Español | English | Business Central | SAP |
+|---|---|---|---|
+| Control preventivo (antes de contabilizar): modo estricto | preventive control (`control_mode = 'strict'`) | Direct Posting = No | Reconciliation account |
+| Control posterior (después): modo guiado y Comprobaciones | detective control (`'guided'`, `audit_checks`) | Reconciliation reports | Reconciliation reports |
+

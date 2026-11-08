@@ -24,7 +24,7 @@ const emptyLine = () => ({ accountText: '', gl_account_id: '', debit: '', credit
 // Búsqueda sin acentos ni mayúsculas: "camion" encuentra "Camión"
 const norm = (s) => String(s ?? '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
 
-// Atajo de ContaPlus / Sage / A3: el punto rellena con ceros hasta la longitud de la subcuenta.
+// Atajo habitual de los programas contables: el punto rellena con ceros hasta la longitud de la subcuenta.
 //   572.1 → 57200001   ·   43.25 → 43000025
 function expandDot(text, digits) {
   const t = text.trim()

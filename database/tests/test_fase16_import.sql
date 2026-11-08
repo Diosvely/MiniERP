@@ -1,6 +1,6 @@
 -- =====================================================================
 -- PRUEBAS FASE 16 · Importación de diarios (migración 0021)
--- Datos inventados con la forma de un diario de Sage (con aperturas y cierres) y de Dynamics BC (sin ellos)
+-- Datos inventados con la forma de un diario en Excel (con aperturas y cierres) y de Dynamics BC (sin ellos)
 -- =====================================================================
 \set ON_ERROR_STOP 1
 \set QUIET 1
@@ -51,11 +51,11 @@ grant execute on function public.falla(text, text), public.subir(uuid, jsonb), p
 set role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a1', false) \gset
 
--- ---------- 1) Diario tipo Sage: dos años con apertura, regularización y cierre ----------
+-- ---------- 1) Diario en Excel: dos años con apertura, regularización y cierre ----------
 do $$
 declare e uuid; b uuid; p jsonb; r jsonb;
 begin
-  select company_id, batch_id into e, b from erp.import_start('Sage Prueba SL', 8, 'mainland', 'services', 'sage', 'sage.xlsx');
+  select company_id, batch_id into e, b from erp.import_start('Diario Excel Prueba SL', 8, 'mainland', 'services', 'sage', 'sage.xlsx');
   assert (select posting_account_digits from erp.companies where id = e) = 8;
   perform public.subir(b, '[
     ["2025-01-01","1","opening","57200000","BANCO****",10000,0],
@@ -100,14 +100,14 @@ begin
   assert not exists (select 1 from erp.import_lines where batch_id = b), 'filas temporales borradas';
   raise notice 'OK  · importado: 2025 cerrado con los asientos del fichero, resultado 750';
 
-  -- El negativo de Sage pasa al otro lado; el apunte a cero no se importa; los nombres ocultos toman el del PGC
+  -- El importe negativo pasa al otro lado; el apunte a cero no se importa; los nombres ocultos toman el del PGC
   assert (select string_agg(g.account_no || ' ' || l.debit || '/' || l.credit, ' | ' order by l.line_no)
           from erp.journal_entries j join erp.journal_lines l on l.entry_id = j.id join erp.gl_accounts g on g.id = l.gl_account_id
           where j.company_id = e and j.source_ref = '9') = '62900000 0.00/50.00 | 57200000 50.00/0.00';
   assert not exists (select 1 from erp.journal_entries where company_id = e and source_ref = '10'), 'asiento solo con ceros';
   assert (select name from erp.gl_accounts where company_id = e and account_no = '57200000') like 'Bancos%57200000';
   assert (select name from erp.gl_accounts where company_id = e and account_no = '70000000') = 'VENTAS';
-  raise notice 'OK  · negativo de Sage al lado contrario, ceros fuera y nombres ocultos con el del PGC';
+  raise notice 'OK  · importe negativo al lado contrario, ceros fuera y nombres ocultos con el del PGC';
 
   -- Informes iguales que con asientos registrados a mano
   assert public.partida(e, 2025, 'pyg', 'PD') = 750;

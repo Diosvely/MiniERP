@@ -8,7 +8,7 @@
 
 El objetivo del Modo auditor es que el ERP saque por sí mismo lo que los profesionales construyen en Power BI
 a partir de un diario importado: balance, PyG, **flujos de efectivo** y ratios. Con las 4 contabilidades reales
-importadas en la v0.19.0 (3 de Sage y 1 de Dynamics BC) ya hay datos suficientes para el estado de flujos.
+importadas en la v0.19.0 (3 en Excel y 1 de Dynamics BC) ya hay datos suficientes para el estado de flujos.
 
 El PGC solo exige el EFE en el modelo normal, y lo presenta por el **método indirecto**. La NIC 7 recomienda el
 **método directo**. Para aprender, interesa ver los dos y entender por qué dan el mismo total.
@@ -56,3 +56,5 @@ El PGC solo exige el EFE en el modelo normal, y lo presenta por el **método ind
   en patrimonio (IC1) y no en "Pagos por dividendos". El directo sí lo muestra como pago de dividendos.
   El total de financiación es igual por los dos métodos.
 - **Base para los ratios del Modo auditor**: la siguiente versión.
+
+*Revisión ética (v0.60.1, 2026-11-08): se quitan los nombres de programas comerciales (ADR 0063). La decisión y sus consecuencias no cambian.*

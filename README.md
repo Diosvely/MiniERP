@@ -7,11 +7,12 @@
 
 ERP web de **contabilidad general** para aprender contabilidad española (**PGC 2007, IVA e IGIC**) como lo haría
 una gestoría. Cubre asientos, terceros, registro de facturas, liquidación trimestral, cierre del ejercicio, estados
-financieros e informes de auditor. Además, importa contabilidades reales de otros ERP y añade **IA open source**
+financieros e informes de auditor. Además, importa diarios de otros programas para practicar con ellos y añade **IA open source**
 que interpreta los estados y propone asientos.
 La estructura de datos se inspira en **Microsoft Dynamics 365 Business Central** y **SAP FI**. El registro de
-facturas sigue a los ERP españoles (**A3, Sage, ContaPlus**), simplificado para que cada pieza se entienda.
-Proyecto de aprendizaje en evolución.
+facturas sigue el modelo de trabajo de una gestoría española, simplificado para que cada pieza se entienda.
+Proyecto de aprendizaje en evolución. **Es para practicar:** no está pensado para llevar la contabilidad real de una
+empresa.
 
 > **English summary.** A web-based general ledger (mini ERP) built to learn Spanish accounting
 > (Spanish GAAP – PGC 2007, VAT and Canary Islands IGIC). Features:
@@ -19,7 +20,7 @@ Proyecto de aprendizaje en evolución.
 >   equivalence surcharge and pro rata;
 > - quarterly tax settlement (forms 303 / 420) and year-end closing;
 > - balance sheet, income statement, cash flow statement (direct and indirect), financial ratios and audit reports;
-> - an **auditor mode** that imports real journals from Sage and Business Central;
+> - an **auditor mode** that imports journals (an Excel export from other accounting programs, or Business Central) to practise with;
 > - an open-source **AI analyst** and an **AI journal-entry tutor** whose proposals are validated by the ERP;
 > - a guided home screen, a Basic / Auditor menu, plain-language error messages, journal-entry templates and an
 >   in-app glossary with Business Central / SAP equivalents. Accessible: no axe-core issues (WCAG 2 A/AA);
@@ -50,7 +51,7 @@ española y el funcionamiento real de un ERP. Los ERP comerciales son caros y di
 propia, así que decidí **construir uno**. Diseñar la tabla de asientos obliga a entender *por qué* un ERP impone
 cada regla. Además, todo el código está en inglés para practicar el vocabulario técnico de BC y SAP.
 
-## ¿Qué hace hoy? (v0.60.0)
+## ¿Qué hace hoy? (v0.60.1)
 
 **Primeros pasos y navegación**
 - **Pantalla de Inicio** en cada empresa:
@@ -80,16 +81,16 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
   de la página sigue al elegido y los colores tienen contraste suficiente.
 
 **Contabilidad**
-- **Plan General Contable 2007** (grupos 1-7) con nombre oficial y traducción al inglés, copiado automáticamente a
+- **Plan General de Contabilidad 2007** (grupos 1 a 9) con nombre oficial y traducción al inglés, copiado automáticamente a
   cada empresa. **Subcuentas** validadas e **importación desde CSV** con vista previa.
 - **Empresas** por sector y territorio fiscal: **Península → IVA** o **Canarias → IGIC**. Ejercicios con 12
   periodos. **Contabilidad mes a mes** (opcional, desde la fecha de inicio): solo se contabiliza en el mes abierto,
   «Cerrar mes» avisa de lo que falta (borradores, nómina, liquidación) y diciembre se cierra con el ejercicio.
 - **Pantalla «Asientos»**: una fila por asiento con su origen y su estado (contabilizado, en edición o con error, y
   por qué), filtros Mes actual · Desde / hasta · Todos, borradores a medias y contabilizar varios a la vez.
-- **Fecha rápida** como ContaSol: el día solo (`2`), día y mes (`1503`), `h` para hoy.
-- **Asientos** en una línea por apunte (Cuenta | Debe | Haber) con cuadre en vivo y manejo con teclado como ContaSol o
-  A3: Enter avanza y crea la línea nueva, lo que falta para cuadrar sale en gris (Enter o "=" lo ponen), Ctrl + Supr
+- **Fecha rápida**: el día solo (`2`), día y mes (`1503`), `h` para hoy.
+- **Asientos** en una línea por apunte (Cuenta | Debe | Haber) con cuadre en vivo y manejo con teclado:
+  Enter avanza y crea la línea nueva, lo que falta para cuadrar sale en gris (Enter o "=" lo ponen), Ctrl + Supr
   borra la línea (con deshacer), atajo del punto `572.1 = 57200001`, y numeración correlativa sin huecos.
 - **Plantillas "¿Qué ha pasado?"** (compra, venta, cobro, pago, nómina) que rellenan las subcuentas, y **buscador de
   cuentas por nombre** ("caja", "bancos").
@@ -176,7 +177,8 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
   la ficha en un panel lateral sin perder el asiento.
 
 **Estados financieros e informes (mirada de auditor)**
-- **Balance de situación** y **cuenta de pérdidas y ganancias** (modelo PYMES del PGC), con desglose hasta la
+- **Balance de situación** en los tres modelos del PGC (PYMES por defecto, abreviado y normal; RD 1515/2007 y
+  RD 1514/2007) y **cuenta de pérdidas y ganancias** (modelo PYMES), con desglose hasta la
   subcuenta y **análisis horizontal**: año anterior, variación en importe y en %. A mitad de ejercicio, la PyG se
   compara con el mismo periodo y el Balance con el cierre anterior (NIC 34).
 - **Estado de flujos de efectivo** por el método **directo** y el **indirecto**, con el cuadre del auditor entre
@@ -211,11 +213,11 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
 - **Rastro contable:** el nº de asiento del mayor abre la **ficha del asiento**, y cada cuenta de la ficha (y del
   diario) abre su libro mayor; una anulación lleva a su pareja. Como el FBL3N → FB03 de SAP. "Volver" y el botón
   atrás deshacen el camino.
-- **Rápido con contabilidades reales:** el mayor filtra antes de calcular el saldo (0,2 s con 120.000 apuntes) y
+- **Rápido con diarios grandes:** el mayor filtra antes de calcular el saldo (0,2 s con 120.000 apuntes) y
   las listas largas se leen por páginas, sin el corte de 1.000 filas de Supabase.
 
-**Modo auditor: contabilidades reales**
-- **Importación de diarios** de **Sage** (Excel) y **Business Central**: vista previa, creación de subcuentas,
+**Modo auditor: practicar con diarios importados**
+- **Importación de diarios** en **Excel** (el diario que exportan muchos programas contables) y de **Business Central**: vista previa, creación de subcuentas,
   contabilización mes a mes y cierre de cada ejercicio.
 - Las empresas importadas son privadas. Se publican como demo **solo si su titular lo decide**, con su mención y
   con datos anonimizados.
@@ -227,7 +229,7 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
   viendo, en un panel lateral que no tapa la pantalla en el PC.
 - **Analista IA:** interpreta el balance, la PyG, el EFE y los ratios ya calculados (fortalezas, alertas y
   preguntas del auditor). Solo recibe **cifras agregadas**: nunca nombres de empresas, terceros ni conceptos.
-- **Tutor de asientos:** describes una operación ("factura de la abogada de 1.000 € más IVA") y la IA propone el
+- **Tutor de asientos:** describes una operación ("factura de la abogada de 1.000 € más IGIC") y la IA propone el
   asiento.
   - **El ERP lo valida**: impuestos de nuestras tablas, subcuentas reales, normas de valoración y reglas de
     criterio.
@@ -279,7 +281,7 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
 | Web | **React + Vite** | Componentes por pantalla, i18n propio (es/en), rutas con almohadilla, iconos `lucide-react` |
 | IA | **Cloudflare Workers AI** + Pages Functions | `/api/ai` (Mistral Small 3.1) y `/api/tutor` (gpt-oss-120b); la clave nunca llega al navegador |
 | Despliegue | **Cloudflare Pages** | Despliegue automático desde `main`, dirección de prueba por rama y cabeceras de seguridad (`_headers`) |
-| Calidad | **GitHub Actions** + **Vitest** + Dependabot | 81 pruebas SQL, 323 tests de la web, lint, build y auditoría de dependencias en cada Pull Request |
+| Calidad | **GitHub Actions** + **Vitest** + Dependabot | 83 pruebas SQL, 339 tests de la web, lint, build y auditoría de dependencias en cada Pull Request |
 | Versionado | Git + GitHub | Ramas, Pull Requests, `main` protegida, versiones etiquetadas y decisiones documentadas (ADR) |
 
 **Principio clave:** la web nunca es la única barrera. Aunque alguien manipule el navegador, PostgreSQL rechaza:
@@ -343,12 +345,12 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 ├── scripts/generar-diagnostico.sh  genera database/diagnostico-supabase.sql (¿le falta algo a tu Supabase?)
 ├── scripts/generar-permisos.mjs    genera docs/permisos.md desde la prueba de permisos (fase 79)
 ├── database/
-│   ├── migrations/            0001 → 0088, se ejecutan en orden en Supabase
+│   ├── migrations/            0001 → 0090, se ejecutan en orden en Supabase
 │   ├── funciones/             versión vigente de cada función, para estudiarla (generado)
 │   ├── diagnostico-supabase.sql  consulta de solo lectura: qué le falta a tu Supabase (generado)
 │   ├── reset/                 reset del schema antiguo (solo histórico)
 │   ├── seed/                  datos de ejemplo (opcional)
-│   └── tests/                 pruebas automáticas en SQL (fases 1 → 81) y simulador de Supabase
+│   └── tests/                 pruebas automáticas en SQL (fases 1 → 83) y simulador de Supabase
 ├── frontend/                  web React + Vite
 │   ├── .env.example           variables de entorno (sin valores reales)
 │   ├── public/_headers        cabeceras de seguridad (CSP…) que aplica Cloudflare Pages
@@ -374,7 +376,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 │       ├── practice.js        Practicar: respuesta, progreso y evaluación de la IA
 │       ├── pgc.js             PGC de estudio: ficha de una cuenta, buscador y enlaces entre cuentas
 │       ├── icons.js           tamaño común de los iconos (lucide-react)
-│       ├── importers.js       lectura de diarios de Sage y Business Central
+│       ├── importers.js       lectura de diarios en Excel y de Business Central
 │       ├── format.js          formato de importes y nombres de cuenta
 │       └── supabase.js        conexión con la base de datos (solo clave publicable)
 └── docs/
@@ -387,19 +389,20 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
     ├── seguridad-supabase.md  lista de ajustes de seguridad del panel de Supabase
     ├── powerbi/GUIA.md        guía para conectar Power BI al esquema bi
     ├── capturas/              capturas de la app para el README
-    └── decisiones/            ADR 0001 → 0061
+    └── decisiones/            ADR 0001 → 0063
 ```
 
 ## Calidad
 
 - **Integración continua** (GitHub Actions) en cada Pull Request:
-  - las 82 pruebas de la base de datos sobre PostgreSQL 16, cada una en una base limpia con todas las migraciones
+  - las 83 pruebas de la base de datos sobre PostgreSQL 16, cada una en una base limpia con todas las migraciones
     (la fase 23 vigila también que toda clave foránea tenga índice; la 34 lanza unas 300 operaciones al azar por
     empresa y exige nueve invariantes contables; la 35 compara al céntimo cinco supuestos calculados desde la norma;
     de la 69 a la 78, cada tablero cuadra al céntimo con su informe: PyG, Balance, Ratios y liquidación; la 79 exige la
     matriz de permisos y la 80, la guardiana, prueba todas las funciones contra las empresas de otro usuario; la 81,
-    que la misma semilla da la misma contabilidad y que cada empresa sintética cuadra);
-  - **323 tests de la web con Vitest**: formatos, rutas, importadores, errores, idiomas (español e inglés con las
+    que la misma semilla da la misma contabilidad y que cada empresa sintética cuadra; la 82, que los tres modelos
+    del Balance suman lo mismo; y la 83, que ningún texto de la base de datos nombra un programa comercial);
+  - **339 tests de la web con Vitest**: formatos, rutas, importadores, errores, idiomas (español e inglés con las
     mismas claves), glosario, plantillas, la defensa de las funciones de IA, la lectura por páginas, el borrado por
     tandas, la fecha de trabajo, los gráficos, el análisis horizontal, la exportación a Excel y los tableros (unidades,
     trimestres, rankings, lista de control y saldos al revés) y que la tabla de roles dice lo mismo que la matriz de
@@ -413,7 +416,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 
 1. **Base de datos.** En un proyecto de Supabase:
    - activa **`pg_cron`** en *Database → Extensions* (para la limpieza de invitados y de las empresas temporales);
-   - en el *SQL Editor*, ejecuta en orden `database/migrations/0001` … `0084`.
+   - en el *SQL Editor*, ejecuta en orden todas las de `database/migrations/` (de la 0001 a la última).
    - comprueba que no falta nada: pega `database/diagnostico-supabase.sql` (solo lee) en el *SQL Editor*. Si no
      devuelve ninguna fila, tu base de datos coincide con el repositorio.
 2. **API.** En *Project Settings → Data API → Exposed schemas*, añade `erp`.
@@ -464,7 +467,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 Con PostgreSQL instalado (Linux, WSL o Git Bash):
 
 ```bash
-bash scripts/test-db.sh            # las 81 pruebas, cada una en una base limpia
+bash scripts/test-db.sh            # las 83 pruebas, cada una en una base limpia
 bash scripts/test-db.sh fase25     # solo las que contienen "fase25"
 ```
 
@@ -472,14 +475,14 @@ bash scripts/test-db.sh fase25     # solo las que contienen "fase25"
 
 ```bash
 cd frontend
-npm test                           # 274 tests con Vitest
+npm test                           # los tests de la web con Vitest
 ```
 
 ### Importar una contabilidad propia
 
 Para traer el diario de otro programa, prepáralo con la **plantilla del laboratorio**: una fila por apunte con
 `fecha;asiento;tipo;cuenta;nombre;debe;haber;concepto;documento`, subcuentas de la misma longitud y asientos
-cuadrados. El ERP también lee directamente los diarios de Sage (Excel) y Business Central (CSV).
+cuadrados. El ERP también lee directamente los diarios en Excel y los de Business Central (CSV).
 
 ## Hoja de ruta
 
@@ -499,7 +502,7 @@ cuadrados. El ERP también lee directamente los diarios de Sage (Excel) y Busine
 - [x] **v0.16.0**: retención IRPF (111/115) y operaciones exentas, exportaciones, intracomunitarias y no sujetas
 - [x] **v0.17.0**: inversión del sujeto pasivo, adquisiciones intracomunitarias y recargo de equivalencia
 - [x] **v0.18.0**: prorrata general (casos especiales de IVA/IGIC completos)
-- [x] **v0.19.0**: Modo auditor (1): importación de diarios de Sage y Business Central
+- [x] **v0.19.0**: Modo auditor (1): importación de diarios en Excel y de Business Central
 - [x] **v0.20.0**: Modo auditor (2): estado de flujos de efectivo por los dos métodos, con cuadre del auditor
 - [x] **v0.21.0**: Modo auditor (3): ratios (liquidez, solvencia, endeudamiento, rentabilidad, PMC / PMP)
 - [x] **v0.22.0**: Analista IA con modelos open source (Cloudflare Workers AI)
@@ -547,8 +550,9 @@ cuadrados. El ERP también lee directamente los diarios de Sage (Excel) y Busine
 - [x] **v0.59.0**: empresas sintéticas con semilla (la misma contabilidad para todos, con su huella)
 - [x] **v0.59.1**: la sintética por tandas (límite de Supabase) y diálogo de confirmación al crear
 - [x] **v0.59.2**: el proveedor con saldo deudor, en Otros deudores (sin compensar y con su aviso)
-- [x] **v0.59.3**: portada nueva (lema, captura real con datos ficticios, funciones y enlaces del autor)
+- [x] **v0.59.3**: portada nueva (lema, captura de la aplicación con datos ficticios, funciones y enlaces del autor)
 - [x] **v0.60.0**: el Balance en los tres modelos del PGC (PYMES, abreviado y normal)
+- [x] **v0.60.1**: revisión ética de los textos (sin nombres de programas comerciales; control antes o después)
 - [ ] Más botones en la barra superior
 - [ ] Ontología contable y chat con la IA (consulta, nunca calcula)
 - [ ] Más informes en Power BI e incrustarlos en el ERP con RLS por empresa

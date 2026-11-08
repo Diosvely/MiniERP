@@ -18,7 +18,7 @@ de construir (`diseno-v0.57.0.md`), con cuatro decisiones de Diosvely:
 - «meses sin cerrar» solo en la contabilidad mes a mes;
 - una liquidación pendiente es un error;
 - en el Balance, el aviso completo: franja, partida y cuenta;
-- la 400 deudora sigue en Existencias con aviso, hasta compararla con el balance oficial de Sage y de ContaSol.
+- la 400 deudora sigue en Existencias con aviso, hasta revisar el criterio (resuelto en la v0.59.2, ADR 0061: va a Deudores).
 
 ## Decisión
 
@@ -51,7 +51,7 @@ de construir (`diseno-v0.57.0.md`), con cuatro decisiones de Diosvely:
 - **Compensar la 400 deudora con los proveedores acreedores**, como hacen algunos informes y modelos de Power BI: va
   contra el principio de no compensación del Marco Conceptual y esconde un derecho y una deuda.
 - **Mover ya la 400 deudora a Deudores:** puede ser lo correcto si es un pago duplicado o un abono pendiente, pero
-  falta compararlo con el balance oficial de Sage y de ContaSol. Hasta entonces, se avisa.
+  faltaba revisar el criterio. Hasta entonces, se avisa (resuelto en la v0.59.2, ADR 0061).
 - **«Meses sin cerrar» en todas las empresas:** en las que no llevan la contabilidad mes a mes, todos los meses están
   abiertos por diseño; el aviso no significaría nada.
 
@@ -89,3 +89,5 @@ de construir (`diseno-v0.57.0.md`), con cuatro decisiones de Diosvely:
 - **En BC y SAP:** Business Central tiene las *cues* del *Role Center* del contable (documentos sin registrar,
   vencidos, *VAT Returns* abiertos); SAP S/4HANA, el *Advanced Financial Closing* con su lista de tareas del cierre.
   *(Pendiente de validar por Diosvely.)*
+
+*Revisión ética (v0.60.1, 2026-11-08): se quitan los nombres de programas comerciales (ADR 0063). La decisión y sus consecuencias no cambian.*

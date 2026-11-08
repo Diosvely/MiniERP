@@ -2,7 +2,7 @@
 -- 0051 · MODELOS DE IVA / IGIC CON SUS CASILLAS: 303 y 420 trimestrales, 390 y 425 anuales · v0.39.0
 -- ---------------------------------------------------------------------
 -- La liquidación (0012) ya calcula la cuota del trimestre y la cuadra con la contabilidad. Aquí se reparte en las
--- CASILLAS OFICIALES de cada modelo, desde el libro registro de facturas, como el borrador de A3 / Sage o el
+-- CASILLAS OFICIALES de cada modelo, desde el libro registro de facturas, como el borrador de un programa contable o el
 -- «VAT statement» de Business Central:
 --   · 303 (IVA, trimestral)      · instrucciones de la AEAT de 2026
 --   · 420 (IGIC, trimestral)     · instrucciones de la Agencia Tributaria Canaria

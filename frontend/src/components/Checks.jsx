@@ -16,9 +16,9 @@ const ICONS = { ok: '✓', info: 'ℹ', warning: '⚠', error: '✕' }
 // Comprobaciones cuyo detalle es una lista de asientos (con enlace a su ficha)
 const BY_ENTRY = ['vat_input', 'vat_output', 'tax_quota', 'withholdings', 'tax_territory', 'controlled']
 
-// COMPROBACIONES (v0.33.0): los controles posteriores de los ERP españoles (A3, Sage), a una fecha.
+// COMPROBACIONES (v0.33.0): los controles posteriores, a una fecha.
 // La base de datos los calcula (erp.run_audit_checks, 0037) y aquí se enseñan con el porqué, el detalle enlazado
-// y la pantalla donde se arregla. Arriba, el MODO de las cuentas controladas (0036): estricto (SAP / BC) o guiado.
+// y la pantalla donde se arregla. Arriba, el MODO de las cuentas controladas (0036): estricto (control antes) o guiado (control después).
 export default function Checks({ company, readOnly, onChanged }) {
   const { t, language } = useI18n()
   const [date, setDate] = useState(workDate(company))

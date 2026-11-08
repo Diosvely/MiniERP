@@ -35,8 +35,8 @@ describe('readJournal · plantilla del laboratorio', () => {
   })
 })
 
-describe('readJournal · Sage y Business Central', () => {
-  it('Sage: columnas en mayúscula y Tipo Asiento numérico', async () => {
+describe('readJournal · diario en Excel y Business Central', () => {
+  it('Diario en Excel: columnas en mayúscula y Tipo Asiento numérico', async () => {
     const csv = 'Fecha;Asiento;Cuenta;Nombre;Debe;Haber;Concepto;Tipo Asiento\n01/01/2024;1;572000001;Banco;500;0;Apertura;0\n01/01/2024;1;100000000;Capital;0;500;Apertura;0\n'
     const r = await readJournal(fakeFile('sage.csv', csv))
     expect(r.source).toBe('sage')

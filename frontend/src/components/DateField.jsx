@@ -3,7 +3,7 @@ import { useI18n } from '../i18n'
 import { addDays, outsideMonth, parseQuickDate, showDate } from '../quickDate'
 import { todayIso, workDate } from '../workDate'
 
-// CAMPO DE FECHA RÁPIDA (v0.47.0): se escribe como en ContaSol («2» → día 2 del mes de trabajo; «1503» → 15/03…),
+// CAMPO DE FECHA RÁPIDA (v0.47.0): se escribe rápido («2» → día 2 del mes de trabajo; «1503» → 15/03…),
 // ↑ ↓ suman o restan un día y el botón 📅 abre el calendario del navegador. Guarda la fecha en ISO.
 // En la contabilidad mes a mes avisa si la fecha cae fuera del mes abierto (el motor no la dejaría contabilizar).
 //   value: aaaa-mm-dd · onChange(aaaa-mm-dd) · company: para la fecha de trabajo y el mes abierto

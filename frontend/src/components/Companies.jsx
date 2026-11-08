@@ -289,7 +289,7 @@ export default function Companies({ session }) {
               <option key={tt} value={tt}>{t(`territory.${tt}`)}</option>
             ))}
           </select>
-          {/* Cuentas controladas (v0.33.0): estricto como SAP / BC, o guiado como los ERP españoles. Se cambia en Comprobaciones. */}
+          {/* Cuentas controladas (v0.33.0): estricto (control antes) o guiado (control después). Se cambia en Comprobaciones. */}
           <label htmlFor="alta-control">{t('controlModeLabel')}</label>
           <select id="alta-control" value={form.control_mode} onChange={change('control_mode')} aria-describedby="alta-control-ayuda">
             {['strict', 'guided'].map((cm) => <option key={cm} value={cm}>{t(`controlMode.${cm}.label`)}</option>)}

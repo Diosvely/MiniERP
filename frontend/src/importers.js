@@ -48,7 +48,7 @@ function parseCsv(text) {
 }
 
 // ---------------------------------------------------------------------------
-// Sage (y A3 / ContaPlus con las mismas columnas): Fecha, Asiento, Cuenta, Nombre, Debe, Haber, Concepto, Tipo Asiento
+// Diario en Excel (el que exportan muchos programas contables con estas columnas): Fecha, Asiento, Cuenta, Nombre, Debe, Haber, Concepto, Tipo Asiento
 // ---------------------------------------------------------------------------
 function fromSage(rows) {
   return rows.map((r) => ({

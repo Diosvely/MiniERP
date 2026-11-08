@@ -6,7 +6,7 @@
 
 ## Contexto
 
-Al empezar a contabilizar de verdad con el ERP, y con ContaSol abierto al lado, aparecieron cuatro problemas de uso:
+Al empezar a contabilizar de verdad con el ERP aparecieron cuatro problemas de uso:
 
 1. **En el PC la pantalla parecía un móvil gigante.** El contenido medía 1.120 px como máximo, con letra de 16 px y
    mucho relleno, así que había que hacer mucho scroll.
@@ -47,7 +47,7 @@ Las cuatro mejoras se anotan en un documento privado del proyecto (`mejoras-de-u
    - cada arreglo lleva su prueba de regresión.
 
 ## Alternativas descartadas
-- **Cinta tipo Word / Excel**, con pestañas arriba como BC o ContaSol. Aprovecha mejor el ancho, pero es un rediseño
+- **Cinta tipo Word / Excel**, con pestañas arriba como BC. Aprovecha mejor el ancho, pero es un rediseño
   de la cabecera, del móvil y de todas las pantallas. Primero se prueba el acordeón unos días; la cinta queda apuntada.
 - **Emparejar las tarjetas solo con CSS.** `:has()` no se puede anidar, así que el CSS no puede preguntar si la
   tarjeta siguiente también es pequeña. Lo resuelven unas líneas de JavaScript que solo ponen una clase.
@@ -71,7 +71,7 @@ Las cuatro mejoras se anotan en un documento privado del proyecto (`mejoras-de-u
 
 ## Cómo explicarlo
 - **Un ERP se mide también por las pulsaciones.** Un contable mete cientos de asientos al mes, así que cada clic que
-  se ahorra cuenta. Por eso los programas españoles (ContaSol, A3, Sage) hacen avanzar con Enter y proponen el
+  se ahorra cuenta. Por eso muchos programas contables hacen avanzar con Enter y proponen el
   importe que falta para cuadrar.
 - **El importe que falta se calcula, no se adivina.** Es Debe − Haber de las demás líneas, en céntimos para no
   arrastrar decimales. Si lo que falta va al Haber, se propone en el Haber.
@@ -80,3 +80,5 @@ Las cuatro mejoras se anotan en un documento privado del proyecto (`mejoras-de-u
 - **La IA a un lado, no encima.** El Tutor propone y el formulario decide: la propuesta solo llega a Nuevo asiento
   cuando pulsas «Pasar al asiento», y nada se contabiliza sin revisarlo. En BC el equivalente es Copilot en un panel
   lateral, y en SAP, Joule.
+
+*Revisión ética (v0.60.1, 2026-11-08): se quitan los nombres de programas comerciales (ADR 0063). La decisión y sus consecuencias no cambian.*

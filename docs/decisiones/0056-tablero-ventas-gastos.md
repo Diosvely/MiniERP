@@ -13,7 +13,7 @@ pasado, a quién le vendo más, a quién le compro más y en qué se va el diner
 - las **inversiones** (grupo 2) cuentan en el ranking de proveedores;
 - se enseñan los **10 primeros** y el «Resto».
 
-El problema de fondo: las empresas importadas de Sage o de ContaSol no tienen facturas en el ERP, solo asientos. Lo
+El problema de fondo: las empresas importadas no tienen facturas en el ERP, solo asientos. Lo
 que tienen todas es una subcuenta por tercero.
 
 ## Decisión
@@ -84,3 +84,5 @@ que tienen todas es una subcuenta por tercero.
 - **En BC y SAP:** Business Central enseña «Top 10 clientes» y «Top 10 proveedores» en el *Role Center*, a partir de los
   *Customer / Vendor Ledger Entries*; SAP S/4HANA, las *Fiori apps* de análisis de ventas y de cuentas a pagar.
   *(Pendiente de validar por Diosvely.)*
+
+*Revisión ética (v0.60.1, 2026-11-08): se quitan los nombres de programas comerciales (ADR 0063). La decisión y sus consecuencias no cambian.*

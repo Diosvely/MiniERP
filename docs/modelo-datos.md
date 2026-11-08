@@ -57,7 +57,7 @@ Todo lo demás (inmovilizado, nóminas, préstamos, liquidaciones, cierre…) ge
 | `coa_template` / `gl_accounts` | PGC 2007 (plantilla) y plan de cada empresa: cuentas `heading` y subcuentas `posting` | G/L Account | Chart of Accounts (SKA1 / SKB1) | 0002 |
 | `business_partners` | Clientes, proveedores, acreedores y deudores, con su subcuenta, retención y días de pago | Customer / Vendor | Business Partner | 0003 |
 | `journal_entries` / `journal_lines` | Asientos y apuntes: estado (borrador o contabilizado) y tipo (normal, apertura, regularización, cierre) | G/L Entries | BKPF / BSEG | 0004 |
-| `import_batches` / `import_lines` | Diarios importados de Sage o Business Central | Configuration Packages | LSMW · Migration Cockpit | 0021 |
+| `import_batches` / `import_lines` | Diarios importados (Excel o Business Central) | Configuration Packages | LSMW · Migration Cockpit | 0021 |
 
 ### Facturas, impuestos y cobros
 | Tabla | Qué guarda | Business Central | SAP | Migración |

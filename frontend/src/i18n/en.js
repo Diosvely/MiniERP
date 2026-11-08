@@ -606,11 +606,11 @@ export default {
 
 // Import a journal from another ERP
   importJournalTitle: 'Import the journal of another ERP',
-  importJournalCard: 'Bring the full accounting of Sage, Dynamics 365 Business Central or another program (with the lab template) into a new company, with all its years.',
+  importJournalCard: 'Bring the full accounting of another program (an Excel journal, Dynamics 365 Business Central or the lab template) into a new company, with all its years.',
   importJournalButton: 'Import journal',
   importJournalIntro: 'The file is read in your browser, converted to the lab template and loaded into a NEW company. Before importing you will see the auditor checks.',
   importChooseFile: 'Choose file (Excel or CSV)',
-  importFormats: 'Formats: Sage Excel ("Diario" sheet: Fecha, Asiento, Cuenta, Nombre, Debe, Haber, Concepto, Tipo Asiento) · Business Central G/L Entry CSV · lab template (fecha;asiento;tipo;cuenta;nombre;debe;haber;concepto;documento).',
+  importFormats: 'Formats: Excel journal ("Diario" sheet: Fecha, Asiento, Cuenta, Nombre, Debe, Haber, Concepto, Tipo Asiento) · Business Central G/L Entry CSV · lab template (fecha;asiento;tipo;cuenta;nombre;debe;haber;concepto;documento).',
   importReading: 'Reading and converting the file',
   importUploading: 'Uploading lines',
   importChecking: 'Checking the journal',
@@ -618,7 +618,7 @@ export default {
   importPosting: 'Posting',
   importClosing: 'Closing fiscal years',
   importDetected: '{s}: {n} lines · {d}-digit accounts · years {y}.',
-  importSource: { sage: 'Sage (Excel journal)', dynamics: 'Dynamics 365 Business Central', template: 'Lab template' },
+  importSource: { sage: 'Excel journal (Fecha, Asiento, Cuenta, Debe, Haber…)', dynamics: 'Dynamics 365 Business Central', template: 'Lab template' },
   territoryLabel: 'Territory',
   industryLabel: 'Industry',
   importPrivateHelp: 'The imported company is private: only you can see it. Do not publish it as a demo if it is real data.',
@@ -635,7 +635,7 @@ export default {
     unbalanced: '{d} entries are out of balance by more than €1: the file cannot be imported.',
     empty: 'The file has no lines.',
   },
-  importNegatives: '{n} negative amounts (Sage "negative" reversals): they will move to the other side as positive amounts. The balance does not change, the debit and credit totals do.',
+  importNegatives: '{n} negative amounts ("negative" reversals, as some programs export them): they will move to the other side as positive amounts. The balance does not change, the debit and credit totals do.',
   importRounded: '{n} entries are out of balance by cents: they will be balanced with 678 / 778 (rounding).',
   importZeros: '{n} zero lines: they are not imported.',
   journalImportAccounts: '{n} accounts in the journal; {m} will be created. Hidden names take the name of their Spanish GAAP account.',
@@ -887,8 +887,8 @@ export default {
   // Controlled accounts and Checks (v0.33.0)
   controlModeLabel: 'Account control',
   controlMode: {
-    strict: { label: 'Strict (like SAP or Business Central)', help: 'Partner accounts (400, 410, 430, 440) and VAT / IGIC accounts (472, 477) are posted only from their screens: a manual entry on them is not posted. Recommended for learning.' },
-    guided: { label: 'Guided (like Spanish ERPs)', help: 'A manual entry on those accounts is allowed: the ERP warns you first and then lists it in Checks for review.' },
+    strict: { label: 'Strict: control before posting', help: 'Partner accounts (400, 410, 430, 440) and VAT / IGIC accounts (472, 477) are posted only from their screens: a manual entry on them is not posted. Recommended for learning.' },
+    guided: { label: 'Guided: control afterwards', help: 'A manual entry on those accounts is allowed: the ERP warns you first and then lists it in Checks for review.' },
   },
   ctl: {
     strictTitle: '{a} is a controlled account: this entry cannot be posted',
@@ -902,7 +902,7 @@ export default {
   },
   chk: {
     title: 'Auditor checks',
-    intro: 'The reconciliations an auditor makes after posting (like Spanish ERPs): VAT in the books against the VAT register, each partner against its invoices, balances on the wrong side… They are always on, in both modes.',
+    intro: 'The reconciliations an auditor makes after posting: VAT in the books against the VAT register, each partner against its invoices, balances on the wrong side… They are always on, in both modes.',
     date: 'As of',
     count: { ok: '{n} correct', info: '{n} informative', warning: '{n} with warnings', error: '{n} with errors' },
     status: { ok: 'Correct', info: 'Informative', warning: 'Warning', error: 'Error' },
@@ -980,7 +980,7 @@ export default {
   },
   wiz: {
     title: 'Closing wizard {y}',
-    intro: 'The closing steps in order, like the A3 or Sage wizard. ✓ done · ✕ missing · 👁 review it (the ERP cannot know) · – not applicable.',
+    intro: 'The closing steps in order. ✓ done · ✕ missing · 👁 review it (the ERP cannot know) · – not applicable.',
     count: { done: '{n} done', pending: '{n} missing', review: '{n} to review', na: '{n} not applicable' },
     status: { done: 'Done', pending: 'Missing', review: 'Review', na: 'Not applicable' },
     step: {
@@ -1614,7 +1614,7 @@ export default {
     reopen: 'Reopen {m}',
     startDate: 'Accounting start date',
     monthly: 'Keep the accounts month by month',
-    monthlyHelp: 'You start in the month of the start date and post only in the open month; «Close month» moves you to the next one, as in ContaSol.',
+    monthlyHelp: 'You start in the month of the start date and post only in the open month; «Close month» moves you to the next one.',
     freeHelp: 'All months of the year stay open.',
   },
   // v0.47.0 · Entries screen
@@ -1739,7 +1739,7 @@ export default {
     badge: 'Temporary',
     headerHelp: 'Trial company: deleted after {idle} without using the app or, at the latest, on {date}. Export to Excel anything you want to keep.',
     importTitle: 'Try the ERP with your journal',
-    importHelp: 'Import the journal from your ERP (Sage, Business Central or the template) and work with it, AI included ({ai} questions a day). It goes into a temporary company: deleted after {idle} without using the app and, at the latest, after {hours} h. Up to {lines} lines. It does not use up your own company. Do not upload real personal data.',
+    importHelp: 'Import a journal (in Excel, from Business Central or with the template) and work with it, AI included ({ai} questions a day). It goes into a temporary company: deleted after {idle} without using the app and, at the latest, after {hours} h. Up to {lines} lines. It does not use up your own company. Do not upload real personal data.',
     importWarning: 'Temporary company: deleted after {idle} without using the app and, at the latest, after {hours} h. Export to Excel anything you want to keep and do not upload real personal data.',
     hasTemp: 'You already have a temporary company, {name}: deleted after {idle} without using the app or on {date}. Once it is deleted you can import another one.',
     open: 'Open it',
@@ -1942,7 +1942,7 @@ export default {
     faNoAssetLine: { title: 'Invoice {1} has no line on the asset account', hint: 'The sale of an asset is invoiced to its account (21x), not to a 7xx one.' },
     faInvoiceUsed: { title: 'Invoice {1} is already used for another disposal', hint: 'Each sale has its own invoice.' },
     faDisposalDate: { title: 'The disposal cannot be earlier than the start date', hint: 'Check the date.' },
-    controlled: { title: '{1} is a controlled account: manual entries are not allowed', hint: 'The company is in strict mode (like SAP or Business Central): that account is posted only from its screen. The entry stays as a draft; register it from there. The admin can switch the company to guided mode in Checks.' },
+    controlled: { title: '{1} is a controlled account: manual entries are not allowed', hint: 'The company is in strict mode (control before posting): that account is posted only from its screen. The entry stays as a draft; register it from there. The admin can switch the company to guided mode in Checks.' },
     controlMode: { title: 'Invalid control mode', hint: 'Choose strict or guided.' },
     lineHeadingAccount: { title: 'Line {1}: account {2} is a heading account', hint: 'You can only post to posting accounts (the last level, e.g. 57200001). Create it in the chart of accounts.' },
     headingAccount: { title: 'Account {1} is a heading account', hint: 'You can only post to posting accounts (the last level, e.g. 57200001). Create it in the chart of accounts.' },
@@ -2049,7 +2049,7 @@ export default {
   landingTrustLabel: 'In short',
   landingTrust: ['No sign-up to explore', 'Spanish GAAP 2007', 'VAT and IGIC', 'Educational project'],
   landingShotAlt: 'Mini ERP «Management summary» dashboard: revenue, profit, cash, working capital and a chart of monthly income and expenses',
-  landingShotCaption: 'Real screenshot of the «Management summary» dashboard · synthetic company 4817 · fictitious data',
+  landingShotCaption: 'App screenshot · «Management summary» dashboard · synthetic company 4817 · fictitious data',
   landingFeaturesTitle: 'What you can do',
   landingFeature: {
     accounting: { title: 'Spanish accounting', text: 'Journal entries, partners, invoices, depreciation, payroll and year-end closing under the 2007 PGC, plus the VAT (303) and IGIC (420) returns.' },

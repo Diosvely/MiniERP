@@ -95,7 +95,7 @@ Diario del proceso: qué se hizo, qué se aprendió y qué queda pendiente. Una 
 **Lo que se aprende en esta fase**
 - Cliente 430 (actividad principal), proveedor 400 (mercaderías, grupo 60),
   acreedor 410 (servicios, grupo 62) y deudor 440 (operaciones ajenas a la actividad).
-- Subcuenta por tercero (A3, Sage, ContaPlus) frente a la cuenta colectiva con detalle aparte
+- Subcuenta por tercero (lo habitual en España) frente a la cuenta colectiva con detalle aparte
   (BC posting groups, SAP reconciliation account).
 - Un mismo NIF puede ser cliente y proveedor; dos veces cliente, no (duplicaría saldos y el modelo 347).
 - Solo los asientos contabilizados mueven saldos; los borradores no.
@@ -121,7 +121,7 @@ Diario del proceso: qué se hizo, qué se aprendió y qué queda pendiente. Una 
   y el repercutido (477) una deuda.
 - Liquidación trimestral: 477 − 472 → 4750 si sale a pagar · 4700 si sale a devolver o compensar.
 - Una subcuenta por tipo (4721xxxx IGIC, 4720xxxx IVA): el mayor ya separa las cuotas por tipo.
-- Equivalencias: BC VAT Posting Setup · SAP OB40 · tabla de tipos de A3 / Sage / ContaPlus.
+- Equivalencias: BC VAT Posting Setup · SAP OB40 · la tabla de tipos de IVA de cualquier programa contable.
 
 **Decisiones**: ADR 0006 (configuración de impuestos).
 
@@ -207,7 +207,7 @@ Diario del proceso: qué se hizo, qué se aprendió y qué queda pendiente. Una 
 
 **Lo que se aprende en esta fase**
 - Los ERP organizan la navegación por áreas funcionales: Role Center de Business Central,
-  Launchpad de SAP Fiori, menús de A3 / Sage. "Datos maestros" (master data) agrupa lo que no es movimiento:
+  Launchpad de SAP Fiori. "Datos maestros" (master data) agrupa lo que no es movimiento:
   plan de cuentas y terceros.
 
 **Siguiente paso**: K2 · libro diario con rango de fechas y anulación de asientos.
@@ -225,7 +225,7 @@ Diario del proceso: qué se hizo, qué se aprendió y qué queda pendiente. Una 
 
 **Lo que se aprende en esta fase**
 - El diario no se altera: un error se corrige con un contraasiento enlazado (BC Reverse Transaction,
-  SAP FB08, A3 Anular asiento), con fecha y motivo para la pista de auditoría.
+  SAP FB08), con fecha y motivo para la pista de auditoría.
 - Cada operación se corrige por su circuito: asiento manual → anulación · factura → rectificativa ·
   liquidación → deshacer liquidación.
 - Si el periodo original está cerrado, la anulación se fecha en el primer periodo abierto.
@@ -307,7 +307,8 @@ Diario del proceso: qué se hizo, qué se aprendió y qué queda pendiente. Una 
 **Lo que se aprende en esta fase**
 - La regularización convierte el resultado de la PyG en una cuenta de patrimonio neto, la 129.
 - El cierre y la apertura son el mismo asiento con Debe y Haber cambiados: el balance final de un año
-  es el balance inicial del siguiente (principio de uniformidad y continuidad).
+  es el balance inicial del siguiente (continuidad del registro contable; la uniformidad es otra cosa:
+  mantener los mismos criterios de un ejercicio a otro).
 - La 129 abre con el resultado pendiente de aplicar; la junta decide su destino (reservas, dividendos o la 121).
 - Un ejercicio cerrado no se toca: si aparece un ajuste, se reabre y la traza queda en el diario.
 
@@ -403,12 +404,12 @@ recargo de equivalencia y prorrata.
     e `import_finish` (cierra un ejercicio por llamada: con los asientos del fichero o con nuestro asistente);
   - 10 cuentas del PGC que faltaban en la plantilla (633, 638, 644, 259, 293, 297, 598, 673, 796, 799);
   - sumas y saldos y saldos anómalos sin el asiento de cierre (opción "excluir cierre").
-- Web: convertidores Sage, Dynamics 365 Business Central y plantilla (`importers.js`) y pantalla Importar diario.
+- Web: convertidores de diario en Excel, de Dynamics 365 Business Central y de la plantilla (`importers.js`) y pantalla Importar diario.
 - Probado con 4 diarios reales (330.000 apuntes, 2019–2024): resultados y balances iguales a los del ERP de origen.
 - Pruebas: `test_fase16_import.sql` (con datos inventados).
 
 **Lo que se aprende en esta fase**
-- Cada ERP exporta distinto: Sage trae aperturas, regularizaciones y cierres; Business Central solo la regularización,
+- Cada ERP exporta distinto: el diario en Excel trae aperturas, regularizaciones y cierres; Business Central solo la regularización,
   porque arrastra los saldos sin asientos de cierre ni de apertura.
 - Controles de auditor al recibir una contabilidad: cuadre por asiento, importes negativos, cuentas fuera del PGC
   y, sobre todo, que cada apertura coincida con el cierre anterior (en un diario real apareció una reclasificación
@@ -856,8 +857,8 @@ de prueba de las fases 2 a 4. Después, el **Inmovilizado**.
 **Lo que se aprende en esta fase**
 - **Partida abierta:** una factura sin pagar del todo. El pago se aplica contra ella; es la «liquidación» de BC y la
   «compensación» de SAP (F-53 para pagar, F-28 para cobrar).
-- **Cuentas controladas:** en SAP y BC la 400/410 no se mueve a mano; se mueve desde Pagos. Es lo que en Versat se
-  llamaba cuentas controladas. Los ERP españoles lo permiten, y controlan después con cuadres y punteo.
+- **Cuentas controladas:** en SAP y BC la 400/410 no se mueve a mano; se mueve desde Pagos.
+  La otra forma de trabajar es permitirlo y controlar después, con cuadres y punteo.
 - **Pendiente real:** el total de la factura menos la retención (eso va a Hacienda, no al proveedor), menos las
   rectificativas, menos lo pagado.
 - **Antigüedad de saldos:** la herramienta del controller para cobrar. Lo vencido hace más de 90 días es un riesgo de
@@ -866,23 +867,23 @@ de prueba de las fases 2 a 4. Después, el **Inmovilizado**.
 
 **Decisiones:** ADR 0030 · Cobros y pagos contra la factura.
 
-**Siguiente paso:** v0.33.0 · cuentas controladas (modo estricto estilo SAP/BC o guiado estilo español) y controles
+**Siguiente paso:** v0.33.0 · cuentas controladas (modo estricto, con control antes, o guiado, con control después) y controles
 de auditor en una pantalla «Comprobaciones».
 
 ## 2026-10-15 · v0.33.0 · Cuentas controladas y comprobaciones del auditor
 
 **Qué se hizo**
 - **Cuentas controladas** con un interruptor por empresa (migración 0036):
-  - **estricto** como SAP/BC: un asiento manual sobre la 410, la 430 o la 472 no se contabiliza;
-  - **guiado** como un ERP español: avisa y lo deja revisar.
+  - **estricto** (control antes): un asiento manual sobre la 410, la 430 o la 472 no se contabiliza;
+  - **guiado** (control después): avisa y lo deja revisar.
 - **Comprobaciones del auditor** a una fecha (0037), en una pantalla nueva con el detalle enlazado.
 - **Conceptos**: el glosario también en la base de datos (0038), con sus cuentas del PGC.
 - 32 pruebas SQL (fases 30, 31 y 32 nuevas) y 98 tests de la web.
 
 **Lo que se aprende en esta fase**
 - **Controlar antes o después:**
-  - SAP y BC impiden el error (cuenta asociada, sin registro directo);
-  - los ERP españoles lo detectan con cuadres;
+  - el control preventivo impide el error (en SAP y BC: cuenta asociada, sin registro directo);
+  - el control posterior lo detecta con cuadres;
   - un auditor hace estos mismos cuadres en cualquier empresa.
 - **El cuadre del IVA:** la 472/477, sin la liquidación, debe salir entera de las facturas. Lo que sobra es un
   asiento manual que no está en el libro registro ni en el 303/420.
@@ -1214,13 +1215,13 @@ resultado y dividendos).
 **Qué se hizo**
 - **Pantalla ancha y densidad** (215, 215b, 215c), **menú en acordeón** (216), **asientos en una línea** (217) y
   **panel de IA** (218, 218b).
-- Las ideas salieron de usar el ERP a diario con ContaSol al lado. Se apuntan en un documento privado
+- Las ideas salieron de usar el ERP a diario. Se apuntan en un documento privado
   (`mejoras-de-uso.md`) y se meten entre versiones.
 - **Pruebas:** 187 tests de la web. axe-core sin fallos en modo claro y oscuro, en PC y en móvil.
 
 **Lo que se aprende**
 - **La usabilidad también es contabilidad:** un asiento que se mete solo con el teclado ahorra horas al mes. Por eso
-  ContaSol y A3 proponen el importe que falta para cuadrar.
+  muchos programas contables proponen el importe que falta para cuadrar.
 - **Probar como lo usa la persona.** El hueco gris del modo Auditor no salía en mis capturas, que eran del modo
   Básico, con un menú más corto. Ahora se prueban los dos modos.
 - **Un fallo que solo pasa en un PC sigue siendo un fallo.** Los tests superaban los 5 s en Windows por saturación,
@@ -1561,13 +1562,13 @@ Mismos resultados. Pruebas: 71 SQL.
 ## 2026-11-01 · v0.52.3 · Cada empresa, independiente del tamaño de las demás
 
 **Qué pasó**
-- Con la 0077 aplicada, Comprobaciones de «Empresa 1 SAGE» seguía tardando 12–20 s en Supabase; en local, 0,7 s con
+- Con la 0077 aplicada, Comprobaciones de una empresa importada grande seguía tardando 12–20 s en Supabase; en local, 0,7 s con
   los mismos datos.
 
 **Cómo se encontró**
 - Una consulta de medición en el SQL Editor de Supabase, pieza a pieza: `audit_lines` 2,4 s (70 ms en local); contar
   los asientos de un ejercicio con la seguridad fila a fila, 929 ms (63 ms en local).
-- En local, PostgreSQL 17.6 (el de Supabase) y las tres empresas de Sage en la misma base: Comprobaciones de Empresa 1
+- En local, PostgreSQL 17.6 (el de Supabase) y las tres empresas importadas en la misma base: Comprobaciones de la primera
   pasaba de 0,9 s a 2,1 s sin cambiar sus datos. Varias consultas recorrían los apuntes de **toda la base**.
 
 **Arreglo:** 0078 (apuntes asiento a asiento o filtrados por la empresa, `audit_lines` una sola vez y el permiso una
@@ -1852,7 +1853,7 @@ Pruebas: 81 SQL y 323 de la web.
 
 **Criterio del constructor sobre la propuesta:**
 - se queda la estructura (cabecera, portada con imagen, 6 funciones, por qué, banda final y pie);
-- la imagen es una **captura real** del tablero de una empresa sintética (semilla 4817 · taller · 12 meses) con «datos
+- la imagen es una **captura de la aplicación** con el tablero de una empresa sintética (semilla 4817 · taller · 12 meses) con «datos
   ficticios», no un panel inventado con cifras de adorno;
 - «con empresas de práctica», no «datos reales» (ADR 0010);
 - sin fuentes externas ni ilustraciones 3D: la CSP solo deja `font-src 'self'`, y los colores son variables, para que
@@ -1866,7 +1867,7 @@ nombres de programas comerciales, y el desplazamiento sin cambiar de ruta). Revi
 oscuro e inglés.
 
 **Lo que se aprende**
-- **Una captura real enseña más que un dibujo:** quien llega ve lo que va a encontrar, y no promete nada que no exista.
+- **Una captura de la aplicación enseña más que un dibujo:** quien llega ve lo que va a encontrar, y no promete nada que no exista.
 
 ## 2026-11-06 · v0.60.0 · El Balance en los tres modelos del PGC
 
@@ -1888,4 +1889,28 @@ de las funciones (fases 68 y 78) o el número de fuentes (fase 49).
 **Lo que se aprende**
 - **El BOE pone la 1034 y la 1044 en el pasivo:** el capital pendiente de inscripción es una deuda hasta que se
   inscribe. Fue lo único que la prueba de cobertura encontró en otra masa.
+
+## 2026-11-08 · v0.60.1 · Revisión ética de los textos
+
+**De dónde viene:** Diosvely decidió que el contenido del proyecto sea didáctico, sin polémicas ni comparaciones. Los
+chats especialistas del proyecto revisaron la documentación pública y encontraron nombres de programas comerciales,
+la contraposición de los modos de control y una expresión de captación. Es la primera versión de la etapa de
+correcciones, y solo cambia palabras (diseño validado, `diseno-v0.60.1.md`; ADR 0063).
+
+**Qué se hizo:**
+- unas 130 frases corregidas en 67 archivos: web, README, CHANGELOG, bitácora, 16 ADR y comentarios;
+- los modos de control, por lo que hacen: «Estricto: control antes de contabilizar» y «Guiado: control después»;
+- migración 0090, solo de textos: el concepto del modo de control, el ejemplo de la cuenta 112 (ahora inventado) y
+  dos comentarios de la base de datos;
+- README, glosario y CHANGELOG al día.
+
+**Pruebas:** fase 83 y `ethics.test.js`, las dos con su regresión dentro. 83 de 83 en la base de datos y 339 tests de
+la web.
+
+**Pantallas pendientes de diálogo:** ninguna; no se crea nada nuevo.
+
+**Lo que se aprende**
+- **Control preventivo y control posterior:** dos formas de controlar la misma cuenta, y un auditor usa las dos.
+  Explicarlas por lo que hacen enseña más que atribuirlas a un programa.
+- **Una regla de contenido también se prueba.** Si una regla importa, una prueba la vigila cuando el proyecto crece.
 

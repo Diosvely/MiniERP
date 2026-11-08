@@ -44,7 +44,7 @@ materiales y empezar con dos defensas que no dependen de quién escribe el códi
 ## Alternativas descartadas
 - **Esperar a supuestos de fuentes externas:** retrasaba la versión sin fecha. Quedan como mejora: cada supuesto que
   llegue se añade a la fase 35, con su fuente.
-- **Comparar solo con ContaSol:** es manual y no se puede ejecutar en cada cambio. Queda como tarea mía, en paralelo.
+- **Comparar solo con otro programa contable:** es manual y no se puede ejecutar en cada cambio. Queda como tarea mía, en paralelo.
 - **Generar las cifras esperadas con el propio ERP** (*snapshot testing*): repetiría la debilidad de fondo.
 
 ## Consecuencias
@@ -54,3 +54,5 @@ materiales y empezar con dos defensas que no dependen de quién escribe el códi
   oficiales**. Pasa al backlog.
 - **Pruebas:** 35 de 35 en la base de datos (fases 34 y 35 nuevas; la 34 pasa con cuatro semillas) y 98 tests de la
   web.
+
+*Revisión ética (v0.60.1, 2026-11-08): se quitan los nombres de programas comerciales (ADR 0063). La decisión y sus consecuencias no cambian.*

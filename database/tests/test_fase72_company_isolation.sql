@@ -1,7 +1,7 @@
 -- =====================================================================
 -- PRUEBAS FASE 72 · Cada empresa, independiente del tamaño de las demás (migración 0078 · v0.52.3)
 -- ---------------------------------------------------------------------
--- Regresión: en Supabase, Comprobaciones de «Empresa 1 SAGE» tardaba 12–20 s porque varias consultas recorrían los
+-- Regresión: en Supabase, Comprobaciones de una empresa importada grande tardaba 12–20 s porque varias consultas recorrían los
 -- apuntes y asientos de TODA la base (las demás empresas grandes incluidas). Se comprueba que el tiempo de
 -- Comprobaciones, el balance, los flujos, el tablero y el Inicio de una empresa pequeña casi no cambia al añadir
 -- otra empresa, de otro usuario, con 150.000 asientos.

@@ -1,9 +1,9 @@
 -- =====================================================================
--- 0036 · CUENTAS CONTROLADAS: modo estricto (SAP / BC) o guiado (ERP españoles) · v0.33.0
+-- 0036 · CUENTAS CONTROLADAS: modo estricto (control antes) o guiado (control después) · v0.33.0
 -- ---------------------------------------------------------------------
 -- En SAP la cuenta de proveedores es una "cuenta asociada" y en Business Central una cuenta sin "registro directo":
--- solo la mueve su módulo (facturas, pagos, liquidación…). En el ERP cubano Versat eran las "cuentas controladas".
--- Los ERP españoles (A3, Sage, ContaPlus) dejan tocarlas a mano y controlan después (cuadres, punteo).
+-- solo la mueve su módulo (facturas, pagos, liquidación…).
+-- La otra forma de trabajar es dejar tocarlas a mano y controlar después (cuadres, punteo).
 -- Aquí se pueden las dos cosas, con un interruptor por empresa (companies.control_mode):
 --   strict  → un ASIENTO MANUAL que mueve una cuenta controlada NO se contabiliza: "regístralo desde Pagos"
 --   guided  → se contabiliza, pero la web avisa antes y la pantalla Comprobaciones (0037) lo lista
@@ -74,7 +74,7 @@ $$;
 alter table erp.companies
   add column if not exists control_mode text not null default 'guided' check (control_mode in ('strict', 'guided'));
 comment on column erp.companies.control_mode is
-  'strict: manual entries cannot post to controlled accounts (SAP / BC) · guided: allowed with warnings (Spanish ERPs).';
+  'strict: manual entries cannot post to controlled accounts (control before) · guided: allowed with warnings, reviewed afterwards (control after).';
 
 create or replace function erp.set_control_mode(p_company uuid, p_mode text)
 returns void language plpgsql security definer set search_path = erp, public as $$

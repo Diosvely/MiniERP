@@ -7,8 +7,8 @@
 
 ## Contexto
 
-Las contabilidades reales del Modo auditor son de profesionales que compartieron sus datasets en cursos. Se busca
-un gancho de colaboración: decirles "tus datos están montados en mi ERP; revisa cómo los analiza y contabiliza la
+Las contabilidades reales del Modo auditor son de profesionales que compartieron sus datasets en cursos. La idea
+es colaborar con ellos: decirles "tus datos están montados en mi ERP; revisa cómo los analiza y contabiliza la
 IA y dame tu criterio". Para eso, quien cede los datos tiene que poder:
 - entrar **solo en su empresa**;
 - trabajar en ella y usar la IA;
@@ -56,3 +56,5 @@ Las demos eran hasta ahora exclusivas del owner.
   - aviso por email al dar acceso;
   - que el Miembro suba su fichero y el owner lo apruebe;
   - una pantalla global de opiniones para todas las empresas.
+
+*Revisión ética (v0.60.1, 2026-11-08): se quita el lenguaje de captación («un gancho de colaboración») (ADR 0063). La decisión y sus consecuencias no cambian.*

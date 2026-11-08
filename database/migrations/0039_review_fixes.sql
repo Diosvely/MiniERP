@@ -8,7 +8,7 @@
 --      ↔ contabilidad la detecta y la liquidación la salda.
 --   2) Un apunte manual con código IVA21, base 100 y cuota 500 se contabilizaba sin aviso. → nueva comprobación del
 --      auditor «tax_quota»: cuota distinta de base × tipo (1 céntimo de tolerancia). En modo estricto ese asiento ya
---      no se puede contabilizar (0036); en guiado y en lo importado, se detecta después, como en un ERP español.
+--      no se puede contabilizar (0036); en guiado y en lo importado, se detecta después (control posterior).
 -- Pruebas de regresión: test_fase33_review_fixes.sql. Re-ejecutable.
 -- =====================================================================
 

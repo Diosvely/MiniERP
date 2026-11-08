@@ -1,5 +1,5 @@
 -- =====================================================================
--- PRUEBAS FASE 30 · Cuentas controladas: modo estricto (SAP / BC) o guiado (ERP españoles) · migración 0036
+-- PRUEBAS FASE 30 · Cuentas controladas: modo estricto (control antes) o guiado (control después) · migración 0036
 -- =====================================================================
 \set ON_ERROR_STOP 1
 \set QUIET 1
@@ -87,7 +87,7 @@ begin
   antes := public.borrador(e, '2026-01-15', '[["62300001",100,0],["41000001",0,100]]');
   perform public.contabiliza(antes);
   insert into public.ctx values ('antes', antes);
-  raise notice 'OK  · guiado: el asiento manual 623 a 410 se contabiliza (estilo ERP español)';
+  raise notice 'OK  · guiado: el asiento manual 623 a 410 se contabiliza (control después)';
 
   -- ---------- 3. Modo estricto ----------
   perform erp.set_control_mode(e, 'strict');

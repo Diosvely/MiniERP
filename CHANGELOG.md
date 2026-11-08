@@ -2,6 +2,30 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.60.1] - 2026-11-08
+### Cambiado
+- **Revisión ética de los textos** (ADR 0063, migración 0090): en nada de lo que se lee (web, README, CHANGELOG,
+  bitácora, ADR, comentarios del código y de las migraciones) se nombra ni se compara un programa contable comercial.
+  Business Central y SAP se quedan solo como referencia de buenas prácticas.
+  - Los dos modos de las cuentas controladas se explican por lo que hacen: **«Estricto: control antes de
+    contabilizar»** y **«Guiado: control después»** (control preventivo y posterior).
+  - El importador describe el archivo por sus columnas: «Diario en Excel (Fecha, Asiento, Cuenta, Debe, Haber…)».
+  - La ficha del PGC de la cuenta 112 tiene un ejemplo inventado (80.000 · 8.000 · 72.000).
+  - Se quita «un gancho de colaboración» de la ADR 0021.
+- **README al día:** cifras (90 migraciones, 63 ADR, 83 pruebas, 339 tests), la instalación ejecuta todas las
+  migraciones, los tres modelos del Balance, los grupos 1 a 9, el ejemplo del Tutor con IGIC, el «Modo auditor:
+  practicar con diarios importados» y una línea clara: el Mini ERP es para practicar.
+- **Glosario:** modelos del Balance y control preventivo / posterior.
+- ADR 0040: los tipos del Impuesto sobre Sociedades de 2026 y de reducida dimensión, validados con la Ley 7/2024.
+- «Captura de la aplicación» en lugar de «captura real» (portada y CHANGELOG).
+- CHANGELOG ordenado: un solo separador en los títulos y la entrada sin número de la ADR 0003 en su sitio.
+### Corregido
+- Bitácora: que el balance de cierre sea el de apertura del año siguiente es la continuidad del registro, no la
+  uniformidad.
+### Añadido
+- **Pruebas guardianas:** fase 83 (ningún texto de la base de datos nombra un programa comercial) y
+  `ethics.test.js` (ningún archivo del repositorio que se lea). Las dos fallan si vuelve un nombre (regla A1).
+
 ## [0.60.0] - 2026-11-06
 ### Añadido
 - **El Balance en los tres modelos del PGC** (ADR 0062, migración 0089): un selector «Modelo: PYMES · Abreviado ·
@@ -23,8 +47,8 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y 
 - **Nueva portada** (pantalla de entrada sin sesión), más moderna y con el lema «Tu aliado en la contabilidad y el
   análisis financiero»:
   - cabecera con el lema «Aprende · Analiza · Gestiona» y un botón «Iniciar sesión» que lleva al formulario;
-  - portada con la demo arriba, «Conocer más» y una **captura real** del tablero «Resumen de dirección» de la empresa
-    sintética 4817 · taller, presentada como **datos ficticios** (en modo claro y oscuro);
+  - portada con la demo arriba, «Conocer más» y una **captura de la aplicación** con el tablero «Resumen de dirección» de la
+    empresa sintética 4817 · taller (datos ficticios, en modo claro y oscuro);
   - 6 funciones, «¿Por qué MiniERP?» junto al acceso, una banda final con la demo y un pie con GitHub, LinkedIn y
     YouTube.
 - **Crear cuenta y entrar como invitado se confirman en el cuadro de diálogo** (v0.59.1): el alta dice que la cuenta
@@ -363,7 +387,7 @@ Con esta versión termina el plan de los cinco tableros (v0.53.0 a v0.57.0).
   - solo se contabiliza en el mes abierto;
   - «Cerrar mes» en la cabecera, con avisos (borradores, nómina y liquidación del trimestre), y reabrir el último mes;
   - diciembre se cierra con el Cierre del ejercicio.
-- **Fecha rápida** como ContaSol: el día solo (`2`), día y mes (`1503`, `15/3`), `h` para hoy, ↑ ↓ y el calendario.
+- **Fecha rápida**: el día solo (`2`), día y mes (`1503`, `15/3`), `h` para hoy, ↑ ↓ y el calendario.
   Avisa si la fecha cae fuera del mes abierto.
 - **Pantalla «Asientos»** (migración `0070_entries_screen.sql`), la primera de Contabilidad:
   - una fila por asiento con su origen y su estado (contabilizado, en edición o con error, y por qué), con un color
@@ -739,7 +763,7 @@ que falla sin el arreglo):
 
 ## [0.33.0] - 2026-10-15
 ### Añadido
-- **Cuentas controladas** (como SAP, Business Central o Versat):
+- **Cuentas controladas** (como en los ERP de referencia, por ejemplo SAP y Business Central):
   - reglas por prefijo en la base de datos (400/410/430/440, 472/477, 4750, 4700);
   - **modo estricto o guiado** por empresa;
   - en estricto, un asiento manual sobre esas cuentas no se contabiliza;
@@ -1018,15 +1042,15 @@ que falla sin el arreglo):
 - Pantalla **Informes › Flujos de efectivo** (es / en).
 - Prueba `test_fase17_cash_flow.sql`.
 
-## [0.19.0] · 2026-10-08
+## [0.19.0] - 2026-10-08
 ### Añadido
-- Importar diario de otro ERP (Sage, Dynamics 365 Business Central o plantilla del laboratorio) en una empresa nueva,
+- Importar el diario de otro programa (diario en Excel, Dynamics 365 Business Central o plantilla del laboratorio) en una empresa nueva,
   con todos sus ejercicios, vista previa con controles de auditor e importación por lotes.
 - 10 cuentas del PGC en la plantilla del plan de cuentas.
 ### Cambiado
 - Sumas y saldos y saldos anómalos no incluyen el asiento de cierre.
 
-## [0.18.0] · 2026-10-07
+## [0.18.0] - 2026-10-07
 ### Añadido
 - Prorrata general del IVA / IGIC: porcentaje provisional por año, reparto de la cuota entre deducible y no deducible
   en las facturas recibidas, y regularización con la prorrata definitiva en el 4T.
@@ -1035,7 +1059,7 @@ que falla sin el arreglo):
 - El libro registro guarda lo deducido de cada tipo; la liquidación usa esa cifra e incluye la regularización de la prorrata.
 
 
-## [0.17.0] · 2026-10-07
+## [0.17.0] - 2026-10-07
 ### Añadido
 - Inversión del sujeto pasivo (IVA e IGIC) y adquisiciones intracomunitarias de bienes, con autorrepercusión 472/477.
 - Recargo de equivalencia: clientes en recargo (venta con IVA + recargo) y régimen de la empresa minorista
@@ -1044,7 +1068,7 @@ que falla sin el arreglo):
 ### Cambiado
 - La liquidación 303/420 incluye el recargo repercutido y el ISP en devengado y deducible, y excluye lo no deducible.
 
-## [0.16.0] · 2026-10-07
+## [0.16.0] - 2026-10-07
 ### Añadido
 - Retención IRPF en facturas recibidas y emitidas (profesionales 15 % / 7 %, alquileres 19 %), con líquido a pagar o cobrar.
 - Impuestos › Retenciones IRPF: borrador trimestral de los modelos 111 y 115 y retenciones soportadas.
@@ -1053,21 +1077,21 @@ que falla sin el arreglo):
 - El motor de facturas valida cada causa de exención según el tipo de factura y el territorio del tercero.
 - El borrador del 303/420 muestra las bases sin cuota con su causa en lugar de "0 %".
 
-## [0.15.0] · 2026-10-06
+## [0.15.0] - 2026-10-06
 ### Añadido
 - Cierre del ejercicio: comprobaciones, regularización, cierre, apertura del año siguiente y reapertura.
 - Etiqueta "Cierre" en el libro diario para los asientos del cierre.
 ### Cambiado
 - Balance y PyG no incluyen los asientos de regularización y cierre.
 
-## [0.14.0] · 2026-10-06
+## [0.14.0] - 2026-10-06
 ### Añadido
 - Balance de situación y Cuenta de Pérdidas y Ganancias (modelo PYMES del PGC) con ejercicio anterior,
   fecha de corte y detalle de cuentas por partida.
 ### Cambiado
 - Los importes muestran siempre separador de miles.
 
-## [0.13.1] · 2026-10-06
+## [0.13.1] - 2026-10-06
 ### Añadido
 - Guía de Git del proyecto (`docs/guia-git.md`).
 ### Cambiado
@@ -1077,38 +1101,38 @@ que falla sin el arreglo):
 ### Eliminado
 - Carpeta `Codigo GIT` (sustituida por la guía en `docs`).
 
-## [0.13.0] · 2026-10-06
+## [0.13.0] - 2026-10-06
 ### Añadido
 - Acceso como invitado (sin registro) a las empresas demo, solo lectura.
 - Enlace directo para compartir la demo.
 ### Corregido
 - La lista de empresas no muestra separadores vacíos cuando falta el NIF.
 
-## [0.12.0] · 2026-10-05
+## [0.12.0] - 2026-10-05
 ### Añadido
 - Anulación de asientos con contraasiento, fecha y motivo.
 - Libro diario con rango de fechas, búsqueda y totales del filtro.
 - Etiquetas de origen del asiento (factura, liquidación) y de anulación.
 
-## [0.11.0] · 2026-10-05
+## [0.11.0] - 2026-10-05
 ### Cambiado
 - Menú de la empresa agrupado por áreas (barra lateral en ordenador, menú desplegable en móvil).
 - La aplicación recuerda la última pantalla abierta de cada empresa.
 
-## [0.10.0] · 2026-10-05
+## [0.10.0] - 2026-10-05
 ### Añadido
 - Informes: sumas y saldos por nivel y fecha de corte, libro mayor con saldo acumulado y drill-down.
 - Informe de saldos anómalos con explicación y cuenta de reclasificación.
 - Bloqueo de saldo inverso por subcuenta (caja bloqueada por defecto).
 
-## [0.9.0] · 2026-10-05
+## [0.9.0] - 2026-10-05
 ### Añadido
 - Liquidación trimestral de IVA (modelo 303) e IGIC (modelo 420) con borrador por tipo.
 - Compensación automática de cuotas de periodos anteriores y devolución en el 4T.
 - Cuadre libro registro ↔ contabilidad antes de liquidar.
 - Bloqueo del trimestre liquidado y deshacer la última liquidación.
 
-## [0.8.0] · 2026-10-05
+## [0.8.0] - 2026-10-05
 ### Añadido
 - Registro de facturas recibidas y emitidas, normales y rectificativas, con asiento automático.
 - Regla del lado: devoluciones, rappels y descuentos por pronto pago reducen base y cuota.
@@ -1116,16 +1140,7 @@ que falla sin el arreglo):
 - Libro registro de facturas emitidas y recibidas.
 - Control de facturas duplicadas y numeración correlativa por serie.
 
-## [Sin publicar]
-### Cambiado
-- Base de datos renombrada al inglés al estilo Business Central / SAP: schema `erp`, tablas, columnas,
-  funciones, vistas, estados y mensajes de error (ADR 0003).
-### Añadido
-- Nombres en inglés (`name_en`) para las 352 cuentas del PGC y descripciones de los tipos IVA / IGIC.
-- Tabla `user_settings` para el idioma de la interfaz (es / en) por usuario.
-- `docs/glosario.md` y script `database/reset/0000_drop_conta.sql`.
-
-## [0.7.0] · 2026-10-04
+## [0.7.0] - 2026-10-04
 ### Añadido
 - Configuración de impuestos: subcuentas 472/477 por tipo de IVA/IGIC y 4750/4700 de liquidación.
 - Asistente para configurar IGIC o IVA en un clic.
@@ -1133,13 +1148,24 @@ que falla sin el arreglo):
 ### Corregido
 - Comprobación de permisos para usuarios que no son miembros de la empresa.
 
-|
-## [0.6.0] · 2026-10-03
+## [0.6.0] - 2026-10-03
 ### Añadido
 - Terceros: clientes, proveedores, acreedores y deudores con su subcuenta (430/400/410/440).
 - Validación de NIF/NIE/CIF españoles y control de duplicados.
 - Saldo de cada tercero con su naturaleza (deudor/acreedor).
 
+
+Las versiones 0.2.0 a 0.5.0 (primera web, asientos, empresas demo e importación de subcuentas) no tienen entrada
+aquí: están en `docs/bitacora.md`.
+
+## 2026-09-30 - Base de datos en inglés (ADR 0003, sin número de versión)
+### Cambiado
+- Base de datos renombrada al inglés al estilo Business Central / SAP: schema `erp`, tablas, columnas,
+  funciones, vistas, estados y mensajes de error (ADR 0003).
+### Añadido
+- Nombres en inglés (`name_en`) para las 352 cuentas del PGC y descripciones de los tipos IVA / IGIC.
+- Tabla `user_settings` para el idioma de la interfaz (es / en) por usuario.
+- `docs/glosario.md` y script `database/reset/0000_drop_conta.sql`.
 
 ## [0.1.0] - 2026-09-29
 ### Añadido

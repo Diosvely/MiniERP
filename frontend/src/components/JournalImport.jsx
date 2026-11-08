@@ -9,7 +9,7 @@ import { idleText, tooManyLines } from '../temporary'
 
 const CHUNK = 2000   // filas por envío al subir el fichero
 
-// Importar el diario completo de otro ERP (Sage, Dynamics BC o la plantilla del laboratorio) en una empresa nueva.
+// Importar el diario completo de otro ERP (diario en Excel, Dynamics BC o la plantilla del laboratorio) en una empresa nueva.
 // 1. leer y convertir en el navegador · 2. subir por bloques · 3. vista previa con controles de auditor
 // 4. importar mes a mes · 5. cerrar los ejercicios anteriores
 export default function JournalImport({ onDone, onCancel, temporary }) {

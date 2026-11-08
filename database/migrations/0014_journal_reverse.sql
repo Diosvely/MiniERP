@@ -5,7 +5,7 @@
 -- enlazado al original, con fecha y motivo:
 --   BC  → "Reverse Transaction" desde el registro de movimientos
 --   SAP → FB08 "Anular documento" (motivo de anulación + fecha de contabilización)
---   A3 / Sage → "Anular asiento": genera el contraasiento
+--   otros     → "Anular asiento": genera el contraasiento
 -- Excepciones (se corrigen por su propio circuito):
 --   asiento de una FACTURA       → rectificativa
 --   asiento de una LIQUIDACIÓN   → "Deshacer liquidación"

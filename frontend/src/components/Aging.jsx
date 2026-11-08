@@ -12,7 +12,7 @@ import ErrorBox from './ErrorBox'
 // ANTIGÜEDAD DE SALDOS (aging) a una fecha: lo pendiente de cada tercero por tramos de días vencidos, como el
 // "Aged Accounts Payable / Receivable" de Business Central o el S_ALR_87012078 / 87012168 de SAP.
 // Al lado, el SALDO CONTABLE de su subcuenta: si no coincide con las facturas pendientes, hay movimientos sin
-// vincular (pagos hechos a mano, saldos importados…). Es el control "después" de los ERP españoles.
+// vincular (pagos hechos a mano, saldos importados…). Es el control "después" (posterior).
 export default function Aging({ company, onPay }) {
   const { t, language } = useI18n()
   const [type, setType] = useState('purchase')

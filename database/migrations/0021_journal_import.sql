@@ -1,7 +1,7 @@
 -- =====================================================================
 -- 0021 · JOURNAL IMPORT · Importación de diarios de otros ERP (Modo auditor, parte 1)
 -- ---------------------------------------------------------------------
--- "De afuera hacia adentro": un diario completo de Sage, Dynamics BC u otro ERP se convierte (en la web) a la
+-- "De afuera hacia adentro": un diario completo en Excel, de Dynamics BC o de otro ERP se convierte (en la web) a la
 -- PLANTILLA DEL LABORATORIO y entra en una EMPRESA NUEVA, con sus ejercicios, subcuentas, aperturas y cierres.
 -- Después, balance, PyG, sumas y saldos, mayor, saldos anómalos y cierre funcionan igual que con lo registrado a mano.
 --
@@ -21,13 +21,13 @@
 --
 -- Reglas del laboratorio (ADR 0011):
 --   · una importación = una empresa nueva (no se mezclan datos importados con registrados);
---   · los importes negativos de Sage ("anular en negativo") pasan al lado contrario en positivo;
+--   · los importes negativos ("anular en negativo") pasan al lado contrario en positivo;
 --   · los asientos descuadrados por céntimos (≤ 1 €) se cuadran con 678 / 778 "redondeos"; si es más, no se importa;
 --   · los asientos históricos no se bloquean por saldos inversos: se SEÑALAN en el informe de saldos anómalos.
 -- Como los paquetes de configuración / "Import G/L Entries" de BC o la LSMW de SAP para los saldos iniciales.
 -- =====================================================================
 
--- Cuentas del PGC que faltaban en la plantilla (aparecen en diarios reales: Sage y Dynamics)
+-- Cuentas del PGC que faltaban en la plantilla (aparecen en diarios importados)
 insert into erp.coa_template (account_no, name, name_en, account_category) values
 ('259', 'Desembolsos pendientes sobre participaciones en el patrimonio neto', 'Uncalled capital on equity investments', 'asset'),
 ('293', 'Deterioro de valor de participaciones a largo plazo en partes vinculadas', 'Impairment of long-term investments in related parties', 'asset'),
@@ -406,7 +406,7 @@ end $$;
 -- ---------------------------------------------------------------------
 -- 5) TERMINAR: cierra UN ejercicio por llamada (el más antiguo pendiente, salvo el último del fichero);
 --    cuando no queda ninguno, borra las filas temporales y da el lote por importado. Devuelve {year, …, done}.
---    · si el año siguiente trae su APERTURA (Sage, A3…): se cierra con los asientos del propio fichero
+--    · si el año siguiente trae su APERTURA: se cierra con los asientos del propio fichero
 --    · si no (Dynamics BC no hace cierre ni apertura): se cierra con nuestro asistente, que los genera
 -- ---------------------------------------------------------------------
 create or replace function erp.import_finish(p_batch uuid)
@@ -612,7 +612,7 @@ begin
 end $$;
 
 -- ---------------------------------------------------------------------
--- Sumas y saldos (y saldos anómalos) SIN el asiento de cierre, como la opción "excluir cierre" de A3 / ContaPlus:
+-- Sumas y saldos (y saldos anómalos) SIN el asiento de cierre, como la opción "excluir cierre" de muchos programas:
 -- en un ejercicio cerrado (importado o no) se siguen viendo los saldos finales
 -- ---------------------------------------------------------------------
 create or replace function erp.trial_balance(

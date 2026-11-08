@@ -9,7 +9,7 @@
 --   · DETERIORO (NRV 10.ª 2.2: valor neto realizable menor que el coste): se revierte el del año anterior
 --     (39x D / 793x H) y se dota el nuevo (693x D / 39x H), como hace el PGC con la 39
 -- ASISTENTE DE CIERRE: erp.closing_checklist(empresa, año) da los pasos del cierre en orden, con su estado, como el
--- asistente de cierre de A3 / Sage o la lista de «Cierre del ejercicio» de BC.
+-- asistente de cierre de un programa contable o la lista de «Cierre del ejercicio» de BC.
 -- Cuentas 30-36 y 39 CONTROLADAS por el módulo de existencias. Re-ejecutable.
 -- =====================================================================
 

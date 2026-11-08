@@ -6,7 +6,7 @@
 
 ## Contexto
 
-Al llevar una empresa de prueba como en ContaSol, Diosvely apuntó lo que le frenaba (`mejoras-de-uso.md`, del 7 al 10):
+Al llevar una empresa de prueba mes a mes, Diosvely apuntó lo que le frenaba (`mejoras-de-uso.md`, del 7 al 10):
 - no se podía elegir cuándo empieza la contabilidad ni avanzar **mes a mes**;
 - la fecha había que escribirla entera o buscarla en el calendario;
 - los asientos solo se veían línea a línea en el Libro diario, sin su **estado** ni su **origen**;
@@ -25,7 +25,7 @@ Cada mejora se validó antes de construirla.
      liquidación. Hay que aceptarlos para cerrar. **Diciembre** lo cierra el Cierre del ejercicio;
    - el administrador puede **reabrir el último mes cerrado**;
    - las empresas que ya existían, las importadas y las de los casos completos no cambian.
-2. **Fecha rápida**, como ContaSol: `2` → el día 2 del mes de trabajo; `1503` o `15/3` → 15 de marzo; `h` → hoy; ↑ ↓,
+2. **Fecha rápida**: `2` → el día 2 del mes de trabajo; `1503` o `15/3` → 15 de marzo; `h` → hoy; ↑ ↓,
    un día más o menos; 📅 abre el calendario. Avisa si la fecha cae fuera del mes abierto.
 3. **Pantalla «Asientos»** (0070), la primera de Contabilidad:
    - una fila por asiento con su **origen**: factura, cobro o pago, nómina, inmovilizado…, importado o contraasiento;
@@ -57,7 +57,7 @@ Cada mejora se validó antes de construirla.
   dentro de la línea.
 
 ## Consecuencias
-- Una empresa de prueba se lleva como en ContaSol: mes a mes, escribiendo solo el día, con la lista de asientos y su
+- Una empresa de prueba se lleva mes a mes, escribiendo solo el día, con la lista de asientos y su
   estado a la vista.
 - **Limitaciones conocidas:**
   - el modo mes a mes y la fecha de inicio solo se eligen al crear la empresa;
@@ -76,3 +76,5 @@ Cada mejora se validó antes de construirla.
   que se contabilizan, y por eso se contabilizan por fecha.
 - **En BC y SAP:** la ventana de registro es «Permitir registro desde / hasta» (BC) o la OB52 (SAP); la lista de
   asientos con su estado es la de los diarios generales. Aquí todo sale del mismo diario.
+
+*Revisión ética (v0.60.1, 2026-11-08): se quitan los nombres de programas comerciales (ADR 0063). La decisión y sus consecuencias no cambian.*

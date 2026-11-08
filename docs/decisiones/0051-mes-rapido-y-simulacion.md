@@ -8,7 +8,7 @@
 
 Diosvely pidió dos mejoras de uso en los informes (diseño validado antes de construir, `diseno-v0.51.0.md`):
 1. **Elegir el periodo más rápido.** El «hasta» era el calendario del navegador. En los asientos ya se escribe la fecha
-   como en ContaSol (`0102`, `h`…), y a menudo lo que se quiere es «hasta fin de marzo».
+   (`0102`, `h`…), y a menudo lo que se quiere es «hasta fin de marzo».
 2. **Ver el efecto de un asiento antes de contabilizarlo.** Es para aprender: preparar un asiento, mirar cómo cambian
    el balance, la PyG o los ratios y, si convence, contabilizarlo; si no, borrarlo.
 
@@ -73,3 +73,5 @@ Diosvely pidió dos mejoras de uso en los informes (diseño validado antes de co
 - **En BC y SAP:** Business Central tiene la *vista previa de registro* (*Preview Posting*) y el informe de prueba del
   diario; SAP permite *simular* un documento y dejarlo *aparcado* antes de contabilizarlo. Aquí, además, se ve el
   efecto en los estados financieros. *(Pendiente de validar por Diosvely.)*
+
+*Revisión ética (v0.60.1, 2026-11-08): se quitan los nombres de programas comerciales (ADR 0063). La decisión y sus consecuencias no cambian.*

@@ -10,7 +10,7 @@ import { checklistSummary } from '../adjustments'
 const WIZ_ICON = { done: '✓', pending: '✕', review: '👁', na: '–' }
 const WIZ_CLASS = { done: 'ok', pending: 'warning', review: 'info', na: 'na' }
 
-// Cierre del ejercicio en 4 pasos, como el asistente de cierre de A3 / Sage / ContaPlus
+// Cierre del ejercicio en 4 pasos, como un asistente de cierre
 //   (BC: "Close Income Statement" + cerrar el año · SAP: FAGLGVTR "Balance Carryforward")
 export default function YearClosing({ company, readOnly }) {
   const { t, language } = useI18n()

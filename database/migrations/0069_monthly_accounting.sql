@@ -2,7 +2,7 @@
 -- 0069 · CONTABILIDAD MES A MES · v0.47.0 (mejoras de uso 7)
 -- ---------------------------------------------------------------------
 -- Cada ejercicio ya tenía sus 12 periodos abiertos o cerrados, y el motor ya rechazaba un asiento en un periodo cerrado
--- (como la OB52 de SAP). Aquí se añade lo que faltaba para llevar una empresa mes a mes, como en ContaSol:
+-- (como la OB52 de SAP). Aquí se añade lo que faltaba para llevar una empresa mes a mes:
 --   · Fecha de inicio de la contabilidad (companies.start_date) y modo mes a mes (companies.monthly), al crear la
 --     empresa (erp.start_accounting). Los meses anteriores al de inicio quedan cerrados.
 --   · MES DE TRABAJO (erp.work_month): el primer mes abierto. En el modo mes a mes, solo se contabiliza en él, como la

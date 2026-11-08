@@ -3,8 +3,8 @@
 **Fecha:** 2026-10-06 · **Estado:** aceptada
 
 ## Contexto
-Los ERP resuelven el cierre de dos formas: BC y SAP arrastran saldos sin asiento de cierre visible;
-A3, Sage y ContaPlus generan los asientos de regularización, cierre y apertura, que es como se enseña en España.
+Los ERP resuelven el cierre de dos formas: unos (BC y SAP) arrastran saldos sin asiento de cierre visible;
+otros generan los asientos de regularización, cierre y apertura, que es como se enseña en España.
 
 ## Decisión
 1. Se generan los tres asientos clásicos (regularización, cierre y apertura) de tipos `closing_pl`, `closing` y `opening`,
@@ -19,3 +19,5 @@ A3, Sage y ContaPlus generan los asientos de regularización, cierre y apertura,
 ## Consecuencias
 - Si en el año nuevo ya había asientos, la apertura no es el nº 1: no se renumera lo contabilizado.
 - Los asientos del cierre no cuentan como movimiento de IVA/IGIC ni entran en el libro registro.
+
+*Revisión ética (v0.60.1, 2026-11-08): se quitan los nombres de programas comerciales (ADR 0063). La decisión y sus consecuencias no cambian.*

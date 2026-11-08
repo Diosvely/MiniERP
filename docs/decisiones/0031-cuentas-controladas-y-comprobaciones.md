@@ -7,16 +7,16 @@
 ## Contexto
 
 Con la v0.32.0 los pagos ya se hacen contra la factura, pero nada impedía seguir haciéndolos a mano («410 a 572»):
-la factura no se enteraba y la cuenta del tercero dejaba de cuadrar con sus facturas. Los ERP resuelven esto de dos
-maneras:
+la factura no se enteraba y la cuenta del tercero dejaba de cuadrar con sus facturas. Hay dos
+maneras de controlarlo:
 
-- **SAP y Business Central controlan «antes».** La cuenta de proveedores es una *cuenta asociada* (SAP) o no admite
-  *registro directo* (BC): solo la mueve su módulo. En el ERP cubano Versat eran las «cuentas controladas».
-- **Los ERP españoles (A3, Sage, ContaPlus) controlan «después».** Dejan el asiento manual y lo detectan con cuadres:
+- **Control «antes» (preventivo).** La cuenta de proveedores solo la mueve su módulo: en SAP es una *cuenta asociada*
+  y en Business Central no admite *registro directo*.
+- **Control «después» (posterior).** Se deja el asiento manual y se detecta con cuadres:
   el IVA contra el libro registro, los terceros contra sus facturas, el punteo…
 
-Para un laboratorio de aprendizaje interesan las dos: la disciplina de SAP/BC y los cuadres que hace un auditor en
-España (`docs/cuentas-controladas.md`).
+Para un laboratorio de aprendizaje interesan las dos: la disciplina del control preventivo y los cuadres que hace un
+auditor (`docs/cuentas-controladas.md`).
 
 ## Decisión
 
@@ -31,10 +31,10 @@ España (`docs/cuentas-controladas.md`).
    | 4750 | Haber | Liquidación (el pago a Hacienda, al Debe, es manual) |
    | 4700 | Debe | Liquidación (el cobro de la devolución, al Haber, es manual) |
 2. **Modo por empresa** (`companies.control_mode`, solo lo cambia el administrador):
-   - **estricto** (SAP/BC): un asiento manual que mueve una cuenta controlada no se contabiliza. Se comprueba con un
+   - **estricto** (control antes): un asiento manual que mueve una cuenta controlada no se contabiliza. Se comprueba con un
      trigger de restricción **diferido** al final de la transacción, porque los módulos crean primero el asiento y
      después su documento;
-   - **guiado** (ERP español): se contabiliza, la web avisa antes y queda listado en Comprobaciones;
+   - **guiado** (control después): se contabiliza, la web avisa antes y queda listado en Comprobaciones;
    - por defecto, guiado en la base de datos (no cambia nada en las empresas existentes ni en las importadas); la web
      crea las empresas nuevas en estricto;
    - nunca se bloquean la apertura, el cierre, los contraasientos, las importaciones ni los asientos de los módulos.
@@ -68,7 +68,9 @@ España (`docs/cuentas-controladas.md`).
   cada globo ⓘ.
 
 ## Consecuencias
-- El ERP se comporta como SAP/BC o como un ERP español con un interruptor, y el alumno ve la diferencia.
+- El ERP controla antes o después con un interruptor, y el alumno ve la diferencia.
 - Las comprobaciones son la base de la fase 3 del plan «IA guiada por reglas»: el chat podrá responder «¿cuadra mi
   IVA?» con datos, no con suposiciones.
 - **Pruebas:** 32 de 32 en la base de datos (fases 30, 31 y 32 nuevas) y 98 tests de la web.
+
+*Revisión ética (v0.60.1, 2026-11-08): se quitan los nombres de programas comerciales y la contraposición de los modos de control; cada modo se explica por lo que hace (control antes o después) (ADR 0063). La decisión y sus consecuencias no cambian.*

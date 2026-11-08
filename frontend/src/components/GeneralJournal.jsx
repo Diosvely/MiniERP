@@ -13,7 +13,7 @@ import Link from './Link'
 
 
 // Libro diario: asientos contabilizados entre dos fechas, con búsqueda y anulación (contraasiento)
-//   como el "Diario entre fechas" de A3 y "Reverse Transaction" de Business Central / FB08 de SAP
+//   como el "Diario entre fechas" habitual y "Reverse Transaction" de Business Central / FB08 de SAP
 export default function GeneralJournal({ company, readOnly, refreshKey }) {
   const { t, language } = useI18n()
   const [rows, setRows] = useState([])

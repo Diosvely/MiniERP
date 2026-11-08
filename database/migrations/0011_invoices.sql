@@ -1,7 +1,7 @@
 -- =====================================================================
 -- 0011 · INVOICES · Registro de facturas recibidas y emitidas (modelo gestoría)
 -- ---------------------------------------------------------------------
--- Como el registro de facturas de A3ECO / Sage / ContaPlus o las transacciones FB60 / FB70 de SAP:
+-- Como el registro de facturas de una gestoría o las transacciones FB60 / FB70 de SAP:
 -- la factura se registra desde contabilidad (sin artículos ni stock) y genera SU asiento contabilizado.
 --
 --   erp.invoices            → cabecera: tercero, nº de factura, fechas, tipo (factura / rectificativa)

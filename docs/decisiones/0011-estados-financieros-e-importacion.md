@@ -17,3 +17,6 @@ por nuestras facturas ni liquidaciones y cuyas cuentas pueden no seguir el PGC.
 ## Consecuencias
 - Un diario importado dará los mismos informes que uno registrado a mano.
 - Se puede añadir el modelo abreviado o normal ampliando las tablas.
+
+*Actualización (v0.60.3, 2026-11-09): en el Balance de PYMES, las correctoras del activo con saldo acreedor (437, 5393, 5394, 5395
+y 549) restan en su partida del activo, como dice el BOE (ADR 0062, migración 0092).*

@@ -48,7 +48,7 @@ begin
   insert into erp.companies (name, industry, tax_territory, created_by)
   values ('Agrícola del Sur', 'retail', 'canary_islands', auth.uid()) returning id into e;
   insert into public.ctx values ('empresa', e);
-  insert into erp.company_users (company_id, user_id, role) values (e, '00000000-0000-0000-0000-0000000000b2', 'viewer');
+  perform public.dar_acceso(e, '00000000-0000-0000-0000-0000000000b2', 'viewer');   -- v0.60.3: ya no se escribe directo en la tabla (SEG-09)
 
   -- Vista previa: no guarda nada y clasifica cada fila
   for r in select * from erp.import_posting_accounts(e, filas, true) loop

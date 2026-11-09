@@ -41,7 +41,7 @@ begin
   insert into erp.companies (name, industry, tax_territory, created_by)
   values ('Asesoría Canarias', 'services', 'canary_islands', auth.uid()) returning id into e;
   insert into public.ctx values ('canarias', e);
-  insert into erp.company_users (company_id, user_id, role) values (e, '00000000-0000-0000-0000-0000000000b2', 'accountant');
+  perform public.dar_acceso(e, '00000000-0000-0000-0000-0000000000b2', 'accountant');   -- v0.60.3: ya no se escribe directo en la tabla (SEG-09)
   ej := erp.create_fiscal_year(e, 2026);
 
   -- Una subcuenta que ya existía se reutiliza (no se duplica)

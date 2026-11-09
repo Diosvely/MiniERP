@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.tg_company_rules · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0007_demo_and_limits 0015_guest_access 0027_members 0072_temporary_companies   →   la vigente es la de 0072_temporary_companies
+-- Definida en: 0007_demo_and_limits 0015_guest_access 0027_members 0072_temporary_companies 0092_balance_and_permissions_fixes   →   la vigente es la de 0092_balance_and_permissions_fixes
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.tg_company_rules()
@@ -28,6 +28,16 @@ begin
   if tg_op = 'UPDATE' then
     if new.temporary is distinct from old.temporary or new.expires_at is distinct from old.expires_at then
       raise exception 'A temporary company cannot be made permanent or extended';
+    end if;
+    -- v0.60.3 (SEG-10) · quién la creó cuenta para el límite de empresas: no se cambia
+    if new.created_by is distinct from old.created_by then
+      raise exception 'The creator of a company cannot be changed';
+    end if;
+    -- v0.60.3 (SEG-10) · la semilla de una sintética es su identidad (su huella): no se cambia una vez puesta
+    if old.synthetic_seed is not null and (new.synthetic_seed is distinct from old.synthetic_seed
+        or new.synthetic_profile is distinct from old.synthetic_profile
+        or new.synthetic_months is distinct from old.synthetic_months) then
+      raise exception 'The seed of a synthetic company cannot be changed';
     end if;
   elsif new.temporary then
     select * into v_s from erp.temp_settings;
@@ -62,6 +72,10 @@ begin
     -- el propietario de la aplicación, o el titular de los datos de ESTA empresa (0027); nunca una temporal
     if new.temporary or not (erp.is_owner() or (tg_op = 'UPDATE' and erp.is_data_owner(new.id))) then
       raise exception 'Only the application owner or the data owner can publish a company as demo';
+    end if;
+    -- v0.60.3 (SEG-10) · una sintética nunca es demo (la misma regla que erp.set_company_demo, 0086)
+    if new.is_demo and new.synthetic_seed is not null then
+      raise exception 'A synthetic company cannot be published as demo';
     end if;
   end if;
 

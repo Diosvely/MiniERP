@@ -108,3 +108,24 @@ Se hizo en tres pasos: medir sin cambiar nada (283), fijar y arreglar (284) y pu
 - **En BC y SAP:** Business Central separa las empresas por *Company* y los permisos por *Permission Sets*; los
   auditores revisan la separación de funciones con informes de conflictos (*SoD*). SAP S/4HANA hace lo mismo con los
   roles PFCG, los *authorization objects* y SAP GRC Access Control. *(Pendiente de validar por Diosvely.)*
+
+## Actualización (v0.60.3, 2026-11-09): las escrituras directas por la API
+
+La web solo usa funciones, pero la API de Supabase también deja escribir **directamente en las tablas** que tienen
+permiso. Ahí no se aplican las reglas de las funciones: protegen la RLS y los disparadores. El chat de seguridad
+encontró cuatro huecos (SEG-09 a SEG-12), ninguno para leer datos de otro usuario. Se cierran en la migración 0092:
+
+- **Accesos (SEG-09):** `erp.company_users` ya no admite escrituras directas. Dar y quitar accesos solo se hace con
+  `erp.grant_company_access` y `erp.revoke_company_access`, como decía el punto 3: el propietario de la app, en sus
+  empresas. Antes, un administrador de su empresa podía cambiar los accesos con una llamada directa.
+- **Columnas protegidas de la empresa (SEG-10):** no se cambia quién la creó (cuenta para el límite de empresas), ni la
+  semilla de una sintética, ni se publica como demo una sintética.
+- **El tercero de un apunte (SEG-11)** tiene que ser de la misma empresa, como ya lo era la cuenta.
+- **La guardiana (fase 80) vigila ahora también las tablas (SEG-12):** exige RLS en todas las tablas del esquema `erp`
+  y, tabla a tabla, intenta insertar, cambiar y borrar filas de la víctima con los tres atacantes. Ninguna cambia nada;
+  la víctima, con las mismas consultas, sí cambia lo suyo (control). Y una prueba por cada hueco, que falla sin la 0092.
+
+### Cómo explicarlo
+- **Dos puertas a la misma casa.** La web entra por las funciones, que comprueban quién eres; la API también deja
+  entrar por las tablas. La seguridad tiene que estar en la casa (RLS y disparadores), no solo en la puerta que usa la
+  web.

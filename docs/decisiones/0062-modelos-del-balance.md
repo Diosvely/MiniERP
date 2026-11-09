@@ -56,6 +56,9 @@ Su próximo vídeo trata del Balance, y quería enseñar esa diferencia con el E
   - Regresión: si el banco acreedor se deja en el activo, la prueba falla.
 - **La nota del proveedor deudor** nombra también la partida del normal («Deudores varios»).
 - **Lo que no sabe el ERP:** qué modelo le corresponde a cada empresa por su tamaño. Queda en `ideas-pendientes.md`.
+- **Limitación conocida:** antes del cierre, los grupos 8 y 9 se presentan en A-3 (subvenciones); las subcuentas 80-82 y
+  90-92 irían en A-2 (Ajustes por cambios de valor). Hoy el ERP solo usa los grupos 8 y 9 para las subvenciones (AF-06,
+  auditoría fiscal, 09-11-2026).
 
 ## Cómo explicarlo
 
@@ -72,4 +75,20 @@ Su próximo vídeo trata del Balance, y quería enseñar esa diferencia con el E
 - **Fuentes:**
   - RD 1514/2007, tercera parte: modelos normales y abreviados;
   - RD 1515/2007, tercera parte: modelos de PYMES.
-  *(Pendiente de validar por Diosvely: el texto exacto del modelo abreviado con el BOE, como se hizo con el normal.)*
+  **Abreviado validado** (auditoría fiscal, 09-11-2026): partidas y cuentas comparadas con el «Balance abreviado» del
+  RD 1514/2007, tercera parte, texto consolidado del BOE (última actualización 21-12-2024).
+
+## Actualización (v0.60.3, 2026-11-09)
+
+- **Las correctoras del activo con saldo acreedor restan en su partida del activo**, como dice el BOE con el paréntesis:
+  (437) en Clientes, (5393) y (5394) en Inversiones en empresas del grupo a corto, y (5395) y (549) en Inversiones
+  financieras a corto. Antes salían en el pasivo y engordaban los dos lados del Balance. Igual que la (406), que resta
+  en Proveedores. Se corrige en los tres modelos a la vez (migración 0092; hallazgo AF-05 de auditoría fiscal). Fase 82
+  con su regresión.
+- **El modelo abreviado queda validado frente al BOE** (AF-04): las 46 partidas coinciden y, con la corrección de
+  arriba, todas las cuentas que nombra el BOE caen en su partida.
+
+### Cómo explicarlo
+- **El paréntesis del BOE significa «resta aquí».** Una cuenta correctora no cambia de lado por tener su saldo normal:
+  los envases que los clientes nos tienen que devolver (437) rebajan lo que nos deben, igual que la amortización
+  rebaja el inmovilizado.

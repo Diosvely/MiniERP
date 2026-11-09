@@ -1,6 +1,6 @@
 # Funciones del esquema erp (versión vigente)
 
-Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0091`.
+Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0092`.
 No se edita a mano: el código fuente son las migraciones. Esto es para **estudiar** cada función en su forma
 actual sin rastrear sus redefiniciones.
 
@@ -332,7 +332,7 @@ actual sin rastrear sus redefiniciones.
 | [`tf_row`](tf_row.sql) | 1 | 0051_tax_forms | invoker |
 | [`tg_company_add_admin`](tg_company_add_admin.sql) | 1 | 0001_core | trigger |
 | [`tg_company_copy_coa`](tg_company_copy_coa.sql) | 1 | 0002_chart_of_accounts | trigger |
-| [`tg_company_rules`](tg_company_rules.sql) | 4 | 0072_temporary_companies | trigger |
+| [`tg_company_rules`](tg_company_rules.sql) | 5 | 0092_balance_and_permissions_fixes | trigger |
 | [`tg_company_vat_regime`](tg_company_vat_regime.sql) | 1 | 0019_reverse_charge_surcharge | trigger |
 | [`tg_entry_adjust_reverse`](tg_entry_adjust_reverse.sql) | 8 | 0064_grants | trigger |
 | [`tg_entry_asset_reverse`](tg_entry_asset_reverse.sql) | 2 | 0046_asset_impairment | trigger |
@@ -356,7 +356,7 @@ actual sin rastrear sus redefiniciones.
 | [`tg_line_set_partner`](tg_line_set_partner.sql) | 1 | 0009_partners | trigger |
 | [`tg_line_set_tax_code`](tg_line_set_tax_code.sql) | 2 | 0021_journal_import | trigger |
 | [`tg_line_tax_period_lock`](tg_line_tax_period_lock.sql) | 3 | 0021_journal_import | trigger |
-| [`tg_line_validate`](tg_line_validate.sql) | 2 | 0021_journal_import | trigger |
+| [`tg_line_validate`](tg_line_validate.sql) | 3 | 0092_balance_and_permissions_fixes | trigger |
 | [`tg_partner_equivalence`](tg_partner_equivalence.sql) | 1 | 0019_reverse_charge_surcharge | trigger |
 | [`tg_partner_sync_account_name`](tg_partner_sync_account_name.sql) | 1 | 0009_partners | trigger |
 | [`tg_partner_validate`](tg_partner_validate.sql) | 1 | 0009_partners | trigger |

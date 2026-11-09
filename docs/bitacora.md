@@ -40,21 +40,21 @@ Diario del proceso: qué se hizo, qué se aprendió y qué queda pendiente. Una 
    - Comprobado: 11 tablas con RLS, 352 cuentas con nombre en inglés, 12 tipos IVA/IGIC.
    - Aprendido: `git switch -c` crea una rama; `git switch` solo cambia a una que ya existe.
    
-## 2026-09-30 · Primera pantalla web (bilingüe)
+## 2026-09-30 · v0.2.0 · Primera pantalla web (bilingüe)
 - Frontend React + Vite en /frontend, conectado a Supabase (schema erp).
 - Login con correo y contraseña, listado y alta de empresas (copia PGC + ejercicio automáticos).
 - Interfaz en español / inglés con diccionarios en src/i18n; idioma guardado por usuario en erp.user_settings.
 - Probado: registro, alta de empresa (352 cuentas, 12 periodos) y el idioma se mantiene al volver a entrar.
 - Aprendido: componentes y Context de React, variables VITE_ en .env.local, merge entre ramas.
 
-## 2026-09-30 · Web publicada en Cloudflare Pages
+## 2026-09-30 · v0.2.0 · Web publicada en Cloudflare Pages
 - Producción: https://minierp-6ty.pages.dev (se publica sola con cada push a main).
 - Root directory = frontend; variables VITE_SUPABASE_URL / VITE_SUPABASE_KEY en Cloudflare.
 - Supabase Auth: Site URL y Redirect URLs configuradas (producción, ramas y localhost).
 - Probado en el móvil: mismo usuario, mismo idioma y mismas empresas que en el ordenador.
 
 
-## 2026-09-30 · Primeros asientos desde la web
+## 2026-09-30 · v0.3.0 · Primeros asientos desde la web
 - Pantalla de empresa con pestañas: Nuevo asiento · Libro diario · Cuentas.
 - Alta de subcuentas validada por la base de datos (longitud y cuenta PGC madre).
 - Formulario de asiento con cuadre en vivo, cálculo en céntimos, botón "=" y contabilización con post_entry().
@@ -79,7 +79,8 @@ Diario del proceso: qué se hizo, qué se aprendió y qué queda pendiente. Una 
   Estados: nueva / actualiza (renombra) / error (longitud, sin cuenta PGC, duplicada, sin nombre, letras).
 - Web: csv.js reutilizable (BOM de Excel, ; o , como separador, UTF-8 o Windows-1252) y pantalla
   de importación con plantilla descargable.
-- Probado con el plan de Agrícola del Sur: 62 subcuentas importadas, errores detectados y reimportación.
+- Probado con el plan de una empresa de prueba (nombre y datos inventados): 62 subcuentas importadas, errores
+  detectados y reimportación.
 - Referencia ERP: crear o actualizar como los Configuration Packages de Business Central;
   validación previa y todo o nada como el Migration Cockpit de SAP.
   
@@ -364,7 +365,11 @@ Diario del proceso: qué se hizo, qué se aprendió y qué queda pendiente. Una 
 - En la inversión del sujeto pasivo el impuesto lo declara quien compra: se lo repercute (477) y se lo soporta (472).
   Si es deducible, el efecto es cero, pero queda declarado: así Hacienda controla las operaciones con el extranjero y las obras.
 - Una compra de bienes a la UE no es una importación: es una adquisición intracomunitaria, y no hay aduana.
-- El recargo de equivalencia traslada al mayorista la recaudación del IVA del minorista: el minorista paga más,   no deduce nada y a
+- El recargo de equivalencia traslada al mayorista la recaudación del IVA del minorista: el minorista paga más, no deduce nada y no presenta liquidaciones de IVA por esa actividad.
+
+**Decisiones**: ADR 0014 (inversión del sujeto pasivo y recargo de equivalencia como códigos de impuesto).
+
+**Siguiente paso**: J5 parte 3: prorrata general.
 
 
 ## 2026-10-07 · v0.18.0 · Bloque J5 (parte 3) Prorrata general
@@ -405,15 +410,16 @@ recargo de equivalencia y prorrata.
   - 10 cuentas del PGC que faltaban en la plantilla (633, 638, 644, 259, 293, 297, 598, 673, 796, 799);
   - sumas y saldos y saldos anómalos sin el asiento de cierre (opción "excluir cierre").
 - Web: convertidores de diario en Excel, de Dynamics 365 Business Central y de la plantilla (`importers.js`) y pantalla Importar diario.
-- Probado con 4 diarios reales (330.000 apuntes, 2019–2024): resultados y balances iguales a los del ERP de origen.
+- Probado con varios diarios reales de práctica (privados, nunca en el repositorio): resultados y balances iguales a los
+  del programa de origen.
 - Pruebas: `test_fase16_import.sql` (con datos inventados).
 
 **Lo que se aprende en esta fase**
-- Cada ERP exporta distinto: el diario en Excel trae aperturas, regularizaciones y cierres; Business Central solo la regularización,
-  porque arrastra los saldos sin asientos de cierre ni de apertura.
+- Cada programa exporta distinto: algunos diarios en Excel traen aperturas, regularizaciones y cierres; Business Central
+  solo la regularización, porque arrastra los saldos sin asientos de cierre ni de apertura.
 - Controles de auditor al recibir una contabilidad: cuadre por asiento, importes negativos, cuentas fuera del PGC
-  y, sobre todo, que cada apertura coincida con el cierre anterior (en un diario real apareció una reclasificación
-  de 7.000 € hecha directamente en la apertura).
+  y, sobre todo, que cada apertura coincida con el cierre anterior (en un diario apareció una reclasificación hecha
+  directamente en la apertura).
 - Un saldo inverso histórico (caja acreedora) no se corrige al importar: se documenta.
 
 **Decisiones**: ADR 0016 (importación de diarios).
@@ -433,21 +439,19 @@ recargo de equivalencia y prorrata.
   - comparación por actividades y los asientos que explican la diferencia.
 - Prueba `test_fase17_cash_flow.sql` con datos inventados: préstamo, compra, amortización y venta con beneficio
   de un inmovilizado, nómina, intereses, impuesto, dividendo y ampliación de capital. Pasan las 17 fases.
-- **Validado con las 4 contabilidades reales**, 11 ejercicios: directo = indirecto = variación de la 57 en todos.
+- **Validado con los diarios de práctica** (privados): directo = indirecto = variación de la 57 en todos los ejercicios.
 
 **Lo que se aprende en esta fase**
 - Por qué los dos métodos dan el mismo total: cada asiento cuadra, así que lo que no es 57 explica la 57.
 - El indirecto mira **variaciones de saldo**; el directo mira **cobros y pagos**. Por actividades solo difieren
   por los asientos sin dinero que mezclan actividades.
 - La importancia de la **523 "Proveedores de inmovilizado"**:
-  - Empresa 3 compró inmovilizado a proveedores normales, y por eso el directo no ve inversión (0 €) donde el
-    indirecto ve (7.011,19 €).
-  - Empresa 2 paga proveedores con la póliza de crédito: es explotación para el indirecto y financiación para
-    el directo.
+  - Si una empresa compra inmovilizado a un proveedor normal (400) en lugar de a la 523, el método directo no ve la
+    inversión y el indirecto sí.
+  - Si paga a proveedores con una póliza de crédito, es explotación para el indirecto y financiación para el directo.
 - La línea 1 del indirecto es el **resultado antes de impuestos**. El impuesto (630) va al punto 4 por lo
   realmente pagado (4752).
-- El EFE explica la caja, no el resultado. Una empresa con beneficio puede quedarse sin efectivo
-  (Empresa 1 en 2022: −799.190,42 €).
+- El EFE explica la caja, no el resultado. Una empresa con beneficio puede quedarse sin efectivo.
 
 **Decisiones:** ADR del estado de flujos de efectivo en `docs/decisiones/`.
 
@@ -465,21 +469,22 @@ recargo de equivalencia y prorrata.
   - al pulsar un ratio, la fórmula con los importes reales, la zona de referencia y su significado.
 - Prueba `test_fase18_ratios.sql`: cada ratio esperado está calculado a mano a partir del balance de la empresa
   de prueba. Pasan las 18 fases.
-- Validado con las 4 contabilidades reales (11 ejercicios).
+- Validado con los diarios de práctica (privados).
 
 **Lo que se aprende en esta fase**
 - **Liquidez:**
   - fondo de maniobra, liquidez general, prueba ácida y disponibilidad;
-  - por qué las existencias separan la liquidez general de la prueba ácida (Empresa 3: 1,99 frente a 0,54,
-    con 342 días de existencias).
+  - por qué las existencias separan la liquidez general de la prueba ácida (con muchos días de existencias, la prueba
+    ácida cae muy por debajo de la liquidez general).
 - **Endeudamiento:** endeudamiento, autonomía y garantía son la misma información vista desde tres lados.
 - **Rentabilidad:**
   - ROA ≈ margen × rotación;
-  - Empresa 1 gana por **rotación** (3,9 veces su activo, con un margen del 2 %);
+  - una empresa puede ganar por **rotación** (mucho volumen y poco margen);
   - el ROE sube con la deuda si el ROA supera el coste de la deuda (apalancamiento).
-- **Periodos medios:** la Ley 15/2010 fija 60 días entre empresas. Empresa 2 cobra a 71 días; BC paga a 139.
+- **Periodos medios:** la Ley 15/2010 fija 60 días entre empresas. Un periodo medio de cobro o de pago por
+  encima del plazo legal es una pregunta para el auditor.
 - **Calidad del resultado** (flujo de explotación / beneficio): mide si el beneficio llega al banco.
-  BC tuvo beneficio en 2023, pero su flujo de explotación fue de −247.118 €.
+  Una empresa puede tener beneficio y flujo de explotación negativo.
 - Un ratio fuera de la zona de referencia es una **pregunta**, no una conclusión: depende del sector.
 
 **Decisiones:** ADR de los ratios financieros en `docs/decisiones/`.
@@ -902,9 +907,8 @@ ERP dice en qué pantalla se hace y con qué asiento.
 ## 2026-10-15 · v0.33.1 · Arreglos de una revisión externa
 
 **Qué pasó**
-Una IA externa revisó el proyecto (sobre la v0.32.0) para medir su impacto frente a otros ERP como herramienta para
-aprender contabilidad española. Su valoración: 8,5 como portafolio técnico, 7 para aprender a manejar un ERP y 4,5
-en cobertura de contabilidad española. Encontró dos fallos reales y una debilidad de fondo.
+Una IA externa revisó el proyecto (sobre la v0.32.0) como herramienta para aprender contabilidad española. Encontró
+dos fallos reales y una debilidad de fondo.
 
 **Qué se hizo**
 - **Fallo 1:** una 477 sin configurar se saltaba el cuadre del 303. Ahora la liquidación la incluye (0039).
@@ -1938,4 +1942,31 @@ web.
   de su constitución, y el tramo reducido se ajusta a los días.
 - **Una prueba que vigila todas las tablas** sigue valiendo cuando el proyecto crece: no hay que acordarse de añadir
   cada tabla nueva.
+
+## 2026-11-09 · v0.60.3 · Correctoras del activo, escrituras directas y bitácora sin cifras reales
+
+**De dónde viene:** la tercera versión de la etapa de correcciones, con todo lo que Diosvely aprobó del buzón el
+09-11-2026: auditoría fiscal (AF-04 a AF-06), seguridad (SEG-09 a SEG-12) y redacción (H-23, H-24, H-27, H-28, H-30 a
+H-32). Tres correcciones de redacción (H-25, H-26 y H-29) se reservan para hacerlas en directo en un vídeo.
+
+**Qué se hizo:**
+- **AF-05:** las correctoras del activo con saldo acreedor (437, 5393, 5394, 5395 y 549) restan en su partida del activo
+  en los tres modelos del Balance (migración 0092). AF-04 y AF-06 en el ADR 0062.
+- **SEG-09 a SEG-11:** sin escrituras directas en `erp.company_users`; `created_by`, la semilla de una sintética y la
+  demo de una sintética, protegidos en el disparador de la empresa; el tercero del apunte, de su empresa.
+- **SEG-12:** la guardiana (fase 80) exige RLS en todas las tablas y prueba las escrituras directas tabla a tabla.
+- **Bitácora:** fuera las cifras de los diarios de práctica, la frase cortada, la comparación de un formato con un
+  programa, las notas de la revisión externa y el nombre de la empresa de prueba; números de versión en las primeras
+  entradas. ADR 0010 con la política de uso.
+
+**Pruebas:** fases 80 y 82 (fallan sin la 0092). 83 de 83 en la base de datos y 341 tests de la web.
+
+**Pantallas pendientes de diálogo:** ninguna nueva (no cambia ninguna pantalla).
+
+**Lo que se aprende**
+- **El paréntesis del modelo de balance del BOE significa «resta aquí»:** una correctora se queda en su partida aunque
+  tenga su saldo normal.
+- **Dos puertas a la misma casa:** la web entra por las funciones; la API, también por las tablas. La seguridad tiene
+  que estar en la RLS y en los disparadores, y la prueba tiene que intentar entrar por las dos.
+- **Lo que se aprende de un diario real se cuenta sin sus cifras.**
 

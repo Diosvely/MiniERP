@@ -49,7 +49,7 @@ begin
     ('40000001','Proveedor A'), ('43000001','Cliente A'), ('57000001','Caja'), ('57200001','Banco'),
     ('60000001','Compras'), ('62100001','Alquiler'), ('68100001','Amortización'), ('70000001','Ventas'),
     ('76900001','Otros ingresos financieros')) as s(no, name);
-  insert into erp.company_users (company_id, user_id, role) values (e, '00000000-0000-0000-0000-0000000000b2', 'accountant');
+  perform public.dar_acceso(e, '00000000-0000-0000-0000-0000000000b2', 'accountant');   -- v0.60.3: ya no se escribe directo en la tabla (SEG-09)
 
   perform public.asiento(e, '2026-01-02', 'Constitución', '[["57200001",10000,0],["10000001",0,10000]]');
   perform public.asiento(e, '2026-01-10', 'Préstamo', '[["57200001",5000,0],["17000001",0,5000]]');

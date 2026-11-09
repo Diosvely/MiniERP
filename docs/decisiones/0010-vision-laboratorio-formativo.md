@@ -33,3 +33,6 @@ Una revisión externa señaló que esta consecuencia («no se aceptan contabilid
    - Solo se publica como demo si su **titular** lo decide, **anonimizada** y con su **mención** (ADR 0021 y 0027).
 
 *Revisión ética (v0.60.1, 2026-11-08): se quitan los nombres de programas comerciales (ADR 0063). La decisión y sus consecuencias no cambian.*
+
+*Política de uso (v0.60.3, 2026-11-09): el Mini ERP es para practicar y aprender. No invita a usarlo con datos reales de
+empresas y su autor no se responsabiliza si alguien lo hace. La importación de diarios sigue existiendo para practicar.*

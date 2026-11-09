@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.tg_line_validate · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0004_journal_entries 0021_journal_import   →   la vigente es la de 0021_journal_import
+-- Definida en: 0004_journal_entries 0021_journal_import 0092_balance_and_permissions_fixes   →   la vigente es la de 0092_balance_and_permissions_fixes
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.tg_line_validate()
@@ -47,7 +47,13 @@ begin
     raise exception 'Account % is blocked', v_account.account_no;
   end if;
 
-  -- 4) Número de línea automático si no se indica
+  -- 4) v0.60.3 (SEG-11) · el tercero, también de la misma empresa
+  if new.partner_id is not null and not exists (select 1 from erp.business_partners b
+                                                where b.id = new.partner_id and b.company_id = new.company_id) then
+    raise exception 'The partner does not belong to this company';
+  end if;
+
+  -- 5) Número de línea automático si no se indica
   if new.line_no is null then
     select coalesce(max(line_no), 0) + 1 into new.line_no from erp.journal_lines where entry_id = new.entry_id;
   end if;

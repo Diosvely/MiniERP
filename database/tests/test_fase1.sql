@@ -221,14 +221,14 @@ begin
   assert (select count(*) from erp.trial_balance(e, 2026)) = 0, 'sumas y saldos debe respetar RLS';
   assert (select count(*) from erp.coa_template) = 400, 'el PGC plantilla sí es visible (378 + el subgrupo 19 de la 0060 + los grupos 8 y 9 y la 522 de la 0064)';
   perform public.debe_fallar(format('insert into erp.company_users (company_id, user_id, role) values (%L, auth.uid(), %L)', e, 'admin'),
-                             'row-level security', 'Beto no puede autoinvitarse');
+                             'permission denied', 'Beto no puede autoinvitarse');   -- v0.60.3 (SEG-09): ni siquiera llega a la RLS
   raise notice 'OK  · aislamiento: Beto no ve nada de la empresa de Ana';
 end $$;
 
 -- Ana invita a Beto como "lectura"
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-00000000000a', false) \gset
-insert into erp.company_users (company_id, user_id, role)
-select valor, '00000000-0000-0000-0000-00000000000b', 'viewer' from public.ctx where clave = 'empresa';
+-- (v0.60.3: los accesos ya no se escriben directo en la tabla; la prueba usa su ayuda public.dar_acceso)
+select public.dar_acceso(valor, '00000000-0000-0000-0000-00000000000b', 'viewer') from public.ctx where clave = 'empresa';
 
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-00000000000b', false) \gset
 do $$

@@ -49,7 +49,7 @@ begin
   insert into erp.companies (name, industry, tax_territory, created_by)
   values ('Anulaciones SL', 'services', 'canary_islands', auth.uid()) returning id into e;
   insert into public.ctx values ('empresa', e);
-  insert into erp.company_users (company_id, user_id, role) values (e, '00000000-0000-0000-0000-0000000000b2', 'viewer');
+  perform public.dar_acceso(e, '00000000-0000-0000-0000-0000000000b2', 'viewer');   -- v0.60.3: ya no se escribe directo en la tabla (SEG-09)
   perform erp.create_fiscal_year(e, 2026);
   perform erp.setup_taxes(e);
   perform erp.create_posting_account(e, s.no, s.name) from (values

@@ -26,3 +26,13 @@ create or replace function auth.jwt() returns jsonb language sql stable as $$
   select coalesce(nullif(current_setting('request.jwt.claims', true), '')::jsonb, '{}'::jsonb)
 $$;
 grant execute on function auth.jwt() to anon, authenticated;
+
+-- v0.60.3 · Solo para las pruebas: dar un acceso a una empresa sin pasar por erp.grant_company_access (que exige ser el
+-- propietario de la aplicación). Desde la 0092 una sesión no puede escribir en erp.company_users (SEG-09); las pruebas
+-- que preparan «otro usuario con acceso de lectura» lo hacen con esta función, que no existe en Supabase.
+create or replace function public.dar_acceso(p_company uuid, p_user uuid, p_role text, p_data_owner boolean default false)
+returns void language plpgsql security definer as $$
+begin
+  insert into erp.company_users (company_id, user_id, role, data_owner) values (p_company, p_user, p_role, p_data_owner);
+end $$;
+grant execute on function public.dar_acceso(uuid, uuid, text, boolean) to authenticated;

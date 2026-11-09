@@ -316,4 +316,186 @@ begin
   assert (select status from erp.journal_entries where id = (select e from public.ctx where k = 'BORRADOR')) = 'draft';
 end $$;
 
+-- =====================================================================
+-- v0.60.3 · Escrituras directas por la API (hallazgos SEG-09 a SEG-12 del chat de seguridad)
+-- La web solo usa funciones, pero la API de Supabase también deja escribir en las tablas que tienen permiso. Ahí las
+-- reglas de las funciones no se aplican: lo que protege es la RLS y los disparadores. Lo probamos tabla a tabla.
+-- =====================================================================
+
+-- SEG-12 · Ninguna tabla del esquema erp sin RLS (una tabla nueva sin ella sería legible por cualquier sesión)
+do $$
+begin
+  assert not exists (select 1 from pg_class c join pg_namespace n on n.oid = c.relnamespace
+                     where n.nspname = 'erp' and c.relkind = 'r' and not c.relrowsecurity),
+    'tablas sin RLS: ' || (select string_agg(c.relname, ', ') from pg_class c join pg_namespace n on n.oid = c.relnamespace
+                           where n.nspname = 'erp' and c.relkind = 'r' and not c.relrowsecurity);
+  raise notice 'OK  · todas las tablas del esquema erp tienen RLS';
+end $$;
+
+-- Una escritura directa: cuántas filas cambia (o el error), y se deshace siempre
+create table public.escrituras (atacante text, tabla text, op text, filas int, error text);
+create or replace function public.escribir(p_atacante text, p_sub text, p_anon boolean, p_tabla text, p_op text,
+                                           p_sql text, p_fila jsonb default null)
+returns void language plpgsql as $$
+declare n int; err text;
+begin
+  begin
+    call public.ser('authenticated', p_sub, p_anon);
+    if p_fila is null then execute p_sql; else execute p_sql using p_fila; end if;
+    get diagnostics n = row_count;
+    raise exception 'ESCRITURA:%', n;
+  exception when others then
+    if sqlerrm like 'ESCRITURA:%' then n := substr(sqlerrm, 11)::int;
+    else n := 0; err := left(sqlerrm, 200);
+    end if;
+  end;
+  insert into public.escrituras values (p_atacante, p_tabla, p_op, n, err);
+end $$;
+
+-- SEG-12 · Cada tabla con permiso de escritura para una sesión: los tres atacantes intentan insertar, cambiar y borrar
+-- filas de las empresas de la víctima. Tiene que dar error o cero filas. Control: la víctima sí cambia lo suyo.
+do $$
+declare a record; t record; v text := '(select e from public.ctx where k in (''Z'', ''Z2'', ''I''))'; fila jsonb;
+begin
+  for a in select * from (values
+      ('registrado sin acceso', '00000000-0000-0000-0000-0000000000a6', false),
+      ('invitado de la demo',   '00000000-0000-0000-0000-0000000000a8', true),
+      ('propietario de la app', '00000000-0000-0000-0000-0000000000a1', false),
+      ('la víctima (control)',  '00000000-0000-0000-0000-0000000000b1', false)) x(atacante, sub, anon) loop
+    for t in select x.t from public.tablas x order by x.t::text loop
+      if has_table_privilege('authenticated', t.t, 'UPDATE') then
+        perform public.escribir(a.atacante, a.sub, a.anon, t.t::text, 'update',
+          format('update %s set company_id = company_id where company_id in %s', t.t, v));
+      end if;
+      if has_table_privilege('authenticated', t.t, 'DELETE') and a.atacante <> 'la víctima (control)' then
+        perform public.escribir(a.atacante, a.sub, a.anon, t.t::text, 'delete',
+          format('delete from %s where company_id in %s', t.t, v));
+      end if;
+      if has_table_privilege('authenticated', t.t, 'INSERT') and a.atacante <> 'la víctima (control)' then
+        -- una fila de la víctima, copiada con otro identificador: insertarla en su empresa no puede funcionar
+        execute format('select to_jsonb(x) from %s x where company_id in %s limit 1', t.t, v) into fila;
+        if fila is not null then
+          if fila ? 'id' then fila := fila || jsonb_build_object('id', gen_random_uuid()); end if;
+          perform public.escribir(a.atacante, a.sub, a.anon, t.t::text, 'insert',
+            format('insert into %s select * from jsonb_populate_record(null::%s, $1)', t.t, t.t), fila);
+        end if;
+      end if;
+    end loop;
+    -- la propia empresa (erp.companies no tiene company_id: es su id)
+    perform public.escribir(a.atacante, a.sub, a.anon, 'erp.companies', 'update',
+      format('update erp.companies set name = name where id in %s', v));
+    if a.atacante <> 'la víctima (control)' then
+      perform public.escribir(a.atacante, a.sub, a.anon, 'erp.companies', 'delete',
+        format('delete from erp.companies where id in %s', v));
+    end if;
+  end loop;
+end $$;
+
+do $$
+declare n int;
+begin
+  select count(*) into n from public.escrituras where atacante <> 'la víctima (control)';
+  assert n > 100, 'se prueban las escrituras directas en muchas tablas';
+  assert not exists (select 1 from public.escrituras where atacante <> 'la víctima (control)' and filas > 0),
+    'escrituras directas en lo de otro: ' || (select string_agg(atacante || ' · ' || op || ' ' || tabla || ' (' || filas || ')', E'\n')
+                                              from public.escrituras where atacante <> 'la víctima (control)' and filas > 0);
+  -- control: con la misma consulta, la víctima sí cambia filas suyas (la prueba llega a las tablas)
+  assert (select count(*) from public.escrituras where atacante = 'la víctima (control)' and filas > 0) >= 5,
+    'control: la víctima cambia lo suyo: ' || (select string_agg(tabla || ' ' || coalesce(error, filas::text), E'\n')
+                                               from public.escrituras where atacante = 'la víctima (control)');
+  raise notice 'OK  · % escrituras directas de 3 atacantes en las tablas de la víctima: ninguna cambia nada (control: la víctima cambia lo suyo en % tablas)',
+    n, (select count(*) from public.escrituras where atacante = 'la víctima (control)' and filas > 0);
+end $$;
+
+-- SEG-09 (regresión, regla A1) · Un administrador de su empresa no puede dar, cambiar ni quitar accesos escribiendo
+-- directamente en erp.company_users: solo el propietario de la app, con sus funciones, en sus empresas
+create or replace function public.falla(p_sql text) returns text language plpgsql as $$
+begin
+  execute p_sql;
+  return null;
+exception when others then
+  return sqlerrm;
+end $$;
+grant execute on function public.falla(text) to authenticated;
+
+call public.ser('authenticated', '00000000-0000-0000-0000-0000000000a6');
+do $$
+declare c uuid; e text;
+begin
+  insert into erp.companies (name, industry, tax_territory) values ('Del registrado', 'services', 'mainland') returning id into c;
+  insert into public.ctx values ('PROPIA', c);
+  assert erp.my_role(c) = 'admin', 'es administrador de su empresa';
+  e := public.falla(format('insert into erp.company_users (company_id, user_id, role) values (%L, %L, ''viewer'')',
+                           c, '00000000-0000-0000-0000-0000000000b1'));
+  assert e like '%permission denied%', 'SEG-09: dar acceso escribiendo en la tabla: ' || coalesce(e, 'lo dejó hacer');
+  e := public.falla(format('update erp.company_users set role = ''viewer'' where company_id = %L', c));
+  assert e like '%permission denied%', 'SEG-09: cambiar un rol escribiendo en la tabla: ' || coalesce(e, 'lo dejó hacer');
+  e := public.falla(format('delete from erp.company_users where company_id = %L', c));
+  assert e like '%permission denied%', 'SEG-09: quitar un acceso escribiendo en la tabla: ' || coalesce(e, 'lo dejó hacer');
+  raise notice 'OK  · SEG-09: un administrador no da, cambia ni quita accesos escribiendo en erp.company_users';
+
+  -- SEG-10 (a) · no puede cambiar quién creó su empresa (el límite de empresas lo cuenta)
+  e := public.falla(format('update erp.companies set created_by = gen_random_uuid() where id = %L', c));
+  assert e like '%creator of a company cannot be changed%', 'SEG-10: cambiar created_by: ' || coalesce(e, 'lo dejó hacer');
+  raise notice 'OK  · SEG-10: el creador de una empresa no se cambia';
+end $$;
+reset role;
+select set_config('request.jwt.claim.sub', '', false) \gset
+select set_config('request.jwt.claims', '', false) \gset
+
+-- SEG-09 (control) · el propietario de la app sí da y quita accesos en SU empresa, con las funciones
+call public.ser('authenticated', '00000000-0000-0000-0000-0000000000a1');
+do $$
+declare c uuid;
+begin
+  insert into erp.companies (name, industry, tax_territory) values ('Del propietario', 'services', 'mainland') returning id into c;
+  insert into public.ctx values ('DUENO', c);
+  perform erp.grant_company_access(c, 'extrano@test.local', 'viewer');
+  assert erp.can_read(c) and (select count(*) from erp.company_users where company_id = c) = 2, 'control: el propietario da acceso';
+  perform erp.revoke_company_access(c, '00000000-0000-0000-0000-0000000000a6');
+  assert (select count(*) from erp.company_users where company_id = c) = 1, 'control: el propietario quita el acceso';
+  raise notice 'OK  · control: el propietario da y quita accesos en su empresa con las funciones';
+end $$;
+reset role;
+select set_config('request.jwt.claim.sub', '', false) \gset
+select set_config('request.jwt.claims', '', false) \gset
+
+-- SEG-10 (b) · una sintética nunca es demo, tampoco con una escritura directa del propietario de la app
+update erp.companies set synthetic_seed = 4817, synthetic_profile = 'workshop', synthetic_months = 1
+where id = (select e from public.ctx where k = 'DUENO');
+call public.ser('authenticated', '00000000-0000-0000-0000-0000000000a1');
+do $$
+declare c uuid := (select e from public.ctx where k = 'DUENO'); e text;
+begin
+  e := public.falla(format('update erp.companies set is_demo = true where id = %L', c));
+  assert e like '%synthetic company cannot be published as demo%', 'SEG-10: sintética como demo: ' || coalesce(e, 'lo dejó hacer');
+  e := public.falla(format('update erp.companies set synthetic_seed = 1 where id = %L', c));
+  assert e like '%seed of a synthetic company cannot be changed%', 'SEG-10: cambiar la semilla: ' || coalesce(e, 'lo dejó hacer');
+  raise notice 'OK  · SEG-10: una sintética no se publica como demo ni cambia de semilla con una escritura directa';
+end $$;
+reset role;
+select set_config('request.jwt.claim.sub', '', false) \gset
+select set_config('request.jwt.claims', '', false) \gset
+
+-- SEG-11 (regresión) · un apunte no puede llevar un tercero de otra empresa (aunque las dos sean de la víctima)
+call public.ser('authenticated', '00000000-0000-0000-0000-0000000000b1');
+do $$
+declare a uuid := (select e from public.ctx where k = 'BORRADOR'); z uuid := (select e from public.ctx where k = 'Z');
+        z2 uuid := (select e from public.ctx where k = 'Z2'); cta uuid; e text;
+begin
+  cta := (select id from erp.gl_accounts where company_id = z and account_no = '62300001');
+  e := public.falla(format('insert into erp.journal_lines (entry_id, gl_account_id, debit, partner_id) values (%L, %L, 10, %L)',
+                           a, cta, (select id from erp.business_partners where company_id = z2 limit 1)));
+  assert e like '%partner does not belong to this company%', 'SEG-11: tercero de otra empresa: ' || coalesce(e, 'lo dejó hacer');
+  -- control: con un tercero de su empresa, sí
+  e := public.falla(format('insert into erp.journal_lines (entry_id, gl_account_id, debit, partner_id) values (%L, %L, 10, %L)',
+                           a, cta, (select id from erp.business_partners where company_id = z limit 1)));
+  assert e is null, 'control: tercero de la misma empresa: ' || coalesce(e, '');
+  delete from erp.journal_lines where entry_id = a and debit = 10;
+  raise notice 'OK  · SEG-11: el tercero de un apunte es de su misma empresa';
+end $$;
+reset role;
+select set_config('request.jwt.claim.sub', '', false) \gset
+select set_config('request.jwt.claims', '', false) \gset
+
 \echo 'FASE 80 OK'

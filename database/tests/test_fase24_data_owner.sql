@@ -43,7 +43,7 @@ begin
   insert into erp.companies (name, industry, tax_territory, created_by)
   values ('Empresa del Curioso SL', 'services', 'mainland', auth.uid()) returning id into e_curioso;
   assert public.falla(format($q$update erp.company_users set data_owner = true
-                                where company_id = %L and user_id = auth.uid()$q$, e_curioso), 'only the application owner');
+                                where company_id = %L and user_id = auth.uid()$q$, e_curioso), 'permission denied');   -- v0.60.3 (SEG-09)
   assert not erp.is_data_owner(e_curioso), 'no es titular';
   -- v0.58.0 (0085): quien administra su empresa sí usa la IA en ella («lo tuyo, todo»)
   assert erp.ai_allowed(e_curioso), 'con IA en su empresa (v0.58.0)';
@@ -53,7 +53,7 @@ begin
   -- ---------- Tampoco puede crear una fila nueva como titular ----------
   assert public.falla(format($q$insert into erp.company_users (company_id, user_id, role, data_owner)
                                 values (%L, '00000000-0000-0000-0000-0000000000b2', 'viewer', true)$q$, e_curioso),
-                      'only the application owner');
+                      'permission denied');   -- v0.60.3 (SEG-09): ya no se escribe directo en la tabla
   raise notice 'OK  · un admin no puede añadir a otro usuario como titular';
 
   -- ---------- El Miembro conserva sus permisos ----------

@@ -2,6 +2,31 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.60.3] - 2026-11-09
+### Corregido
+- **Correctoras del activo en el Balance** (migración 0092, hallazgo AF-05 de auditoría fiscal): la (437), la (5393), la
+  (5394), la (5395) y la (549) con saldo acreedor salían en el pasivo; ahora restan en su partida del activo, como dice
+  el BOE con el paréntesis, en los tres modelos (PYMES, abreviado y normal). Igual que la (406) en Proveedores.
+- **Escrituras directas por la API** (hallazgos SEG-09 a SEG-11 de seguridad; ninguno dejaba leer datos de otros):
+  - los accesos a una empresa solo se cambian con las funciones del propietario de la aplicación (se quitan la política
+    y los permisos de escritura directa en `erp.company_users`);
+  - no se puede cambiar quién creó una empresa (cuenta para el límite de empresas), ni la semilla de una sintética, ni
+    publicar una sintética como demo;
+  - el tercero de un apunte tiene que ser de la misma empresa.
+- **Bitácora:** sin cifras sacadas de los diarios reales de práctica (resultados, flujos, ratios y periodos medios); la
+  frase cortada del recargo de equivalencia, terminada; «algunos diarios en Excel» en lugar de comparar un formato con un
+  programa; sin las notas de la revisión externa; la empresa de prueba del plan de cuentas, como inventada; y el número
+  de versión en las primeras entradas (v0.2.0 y v0.3.0).
+### Añadido
+- **La guardiana vigila también las tablas** (SEG-12): la fase 80 exige RLS en todas las tablas del esquema `erp` e
+  intenta, tabla a tabla, insertar, cambiar y borrar filas de la víctima con los tres atacantes. Más una prueba por cada
+  hueco cerrado.
+- ADR 0062: el modelo abreviado del Balance, **validado frente al BOE** (AF-04), y la limitación de los grupos 8 y 9
+  antes del cierre (AF-06). ADR 0058 y ADR 0011 con su actualización. ADR 0010 con la política de uso: el Mini ERP es
+  para practicar.
+### Pruebas
+- 83 de 83 en la base de datos (fases 80 y 82 ampliadas; sin la 0092 fallan) y 341 tests de la web.
+
 ## [0.60.2] - 2026-11-09
 ### Corregido
 - **Impuesto sobre Sociedades de la microempresa** (migración 0091, hallazgo AF-02 de auditoría fiscal): faltaban los

@@ -103,6 +103,41 @@ begin
   raise notice 'OK  · casos del BOE (Existencias, 407, proveedor deudor, banco, 58x, Hacienda, PN)';
 end $$;
 
+-- v0.60.3 · AF-04: el modelo abreviado, comparado con el BOE por auditoría fiscal (casos del «Balance abreviado»)
+do $$
+begin
+  assert public.partida('abreviado', '43300000', true) = 'AC.III.1', 'clientes del grupo: 1. Clientes';
+  assert public.partida('abreviado', '55800000', true) = 'AC.III.2', '5580: 2. Accionistas por desembolsos exigidos';
+  assert public.partida('abreviado', '54400000', true) = 'AC.III.3', 'créditos al personal: 3. Otros deudores';
+  assert public.partida('abreviado', '40700000', true) = 'AC.II', '407 en Existencias';
+  assert public.partida('abreviado', '16250000', false) = 'PNC.II.2' and public.partida('abreviado', '17600000', false) = 'PNC.II.3',
+     'deudas a largo: 2. arrendamiento financiero y 3. otras';
+  assert public.partida('abreviado', '43800000', false) = 'PC.V.2' and public.partida('abreviado', '40300000', false) = 'PC.V.1',
+     'anticipos de clientes y proveedores del grupo';
+  assert public.partida('abreviado', '10340000', false) = 'PC.III.3', '1034: 3. Otras deudas a corto plazo';
+  raise notice 'OK  · AF-04: casos del Balance abreviado del BOE';
+end $$;
+
+-- v0.60.3 · AF-05 (regresión, regla A1): las correctoras del activo con saldo acreedor RESTAN en su partida del activo,
+-- como dice el BOE con el paréntesis: (437), (5393), (5394), (5395), (549). Antes de la 0092 salían en el pasivo.
+do $$
+begin
+  assert public.partida('normal', '43700000', false) = 'AC.III.1' and public.partida('abreviado', '43700000', false) = 'AC.III.1'
+     and public.partida('pymes', '43700000', false) = 'AC.II.1', '(437) resta en Clientes en los tres modelos';
+  assert public.partida('normal', '53930000', false) = 'AC.IV.1' and public.partida('abreviado', '53930000', false) = 'AC.IV'
+     and public.partida('pymes', '53930000', false) = 'AC.III', '(5393) resta en Inversiones en empresas del grupo a corto';
+  assert public.partida('normal', '53940000', false) = 'AC.IV.1' and public.partida('pymes', '53940000', false) = 'AC.III',
+     '(5394) igual';
+  assert public.partida('normal', '53950000', false) = 'AC.V.1' and public.partida('abreviado', '53950000', false) = 'AC.V'
+     and public.partida('pymes', '53950000', false) = 'AC.IV', '(5395) resta en Inversiones financieras a corto';
+  assert public.partida('normal', '54900000', false) = 'AC.V.1' and public.partida('abreviado', '54900000', false) = 'AC.V'
+     and public.partida('pymes', '54900000', false) = 'AC.IV', '(549) resta en Inversiones financieras a corto';
+  -- lo demás no cambia: el cliente acreedor y los anticipos de clientes siguen en el pasivo
+  assert public.partida('normal', '43000001', false) = 'PC.V.7' and public.partida('normal', '43800000', false) = 'PC.V.7'
+     and public.partida('pymes', '43000001', false) = 'PC.IV.2', 'la 430 y la 438 acreedoras siguen en el pasivo';
+  raise notice 'OK  · AF-05: (437), (5393), (5394), (5395) y (549) restan en el activo en los tres modelos';
+end $$;
+
 -- ---------- 2. El mismo Balance en los tres modelos, con empresas reales ----------
 set role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a1', false);

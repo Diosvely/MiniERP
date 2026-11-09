@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../supabase'
 import { useI18n } from '../i18n'
-import { money } from '../format'
+import { money, shortDate } from '../format'
 import { companyPath } from '../router'
 import { workYear } from '../workDate'
 import { downloadXlsx, fileName } from '../exportXlsx'
-import { REGIMES, breakdown, entriesPreview, expense, sign } from '../corporateTax'
+import { REGIMES, breakdown, entriesPreview, expense, period, sign } from '../corporateTax'
 import Link from './Link'
+import DateField from './DateField'
 import Sources from './Sources'
 import ErrorBox from './ErrorBox'
 import ReportActions from './ReportActions'
@@ -24,6 +25,7 @@ export default function CorporateTax({ company, readOnly }) {
   const [confirming, setConfirming] = useState(null)   // 'post' | 'cancel'
   const [error, setError] = useState('')
   const [manual, setManual] = useState(null)     // ajuste manual en edición
+  const [periodDraft, setPeriodDraft] = useState(null)   // inicio del período impositivo, antes de aplicarlo
   const m = (v) => money(v, language)
   const pct = (v) => `${Number(v).toLocaleString(language === 'en' ? 'en-GB' : 'es-ES', { maximumFractionDigits: 2 })} %`
 
@@ -64,6 +66,7 @@ export default function CorporateTax({ company, readOnly }) {
   const prepare = () => run('corporate_tax_prepare', { p_company: company.id, p_year: Number(year) })
   const settings = (regime, recognize) => run('corporate_tax_settings', { p_return: calc.return_id, p_regime: regime, p_recognize: recognize })
   const include = (id, v) => run('corporate_tax_include', { p_adjustment: id, p_included: v })
+  const setPeriod = (start) => { setPeriodDraft(null); return run('corporate_tax_period', { p_return: calc.return_id, p_start: start || null }) }
   async function saveManual() {
     await run('corporate_tax_manual', { p: { return_id: calc.return_id, kind: manual.kind, direction: manual.direction, concept: manual.concept,
       amount: Number(String(manual.amount).replace(/\./g, '').replace(',', '.')), article: manual.article } })
@@ -76,6 +79,7 @@ export default function CorporateTax({ company, readOnly }) {
   const editable = canWrite && draft
   const hint = calc?.hint
   const preview = entriesPreview(calc)
+  const per = period(calc)
 
   function excel() {
     const rows = [...breakdown(calc).map((r) => ({ concept: t(`ct.row.${r.key}`), amount: r.amount })),
@@ -93,7 +97,7 @@ export default function CorporateTax({ company, readOnly }) {
         <p className="ayuda">{t('ct.intro')}</p>
         <div className="rejilla-tres">
           <label>{t('year')}
-            <select value={year} onChange={(e) => { setConfirming(null); setManual(null); setYear(e.target.value) }}>
+            <select value={year} onChange={(e) => { setConfirming(null); setManual(null); setPeriodDraft(null); setYear(e.target.value) }}>
               {(years.length ? years.map((y) => y.year) : [year]).map((y) => <option key={y} value={y}>{y}</option>)}
             </select>
           </label>
@@ -119,6 +123,30 @@ export default function CorporateTax({ company, readOnly }) {
               </select>
             </label>
             {hint && <p className="ayuda">{t('ct.hint').replace('{m}', m(hint.turnover)).replace('{y}', hint.basis_year).replace('{r}', t(`ct.regime.${hint.suggested}`))}</p>}
+            {per && (
+              <div className="periodo-impositivo">
+                <p>{t('ct.period').replace('{a}', shortDate(per.start)).replace('{b}', shortDate(per.end)).replace('{n}', per.days)}</p>
+                {editable && (
+                  <div className="fila-periodo">
+                    <label>{t('ct.periodStart')}
+                      <DateField label={t('ct.periodStart')} value={periodDraft ?? per.start} company={company} monthHint={false}
+                        baseDate={`${year}-01-01`} onChange={setPeriodDraft} />
+                    </label>
+                    {periodDraft && periodDraft !== per.start && (
+                      <button type="button" disabled={busy} onClick={() => setPeriod(periodDraft)}>{t('ct.periodApply')}</button>
+                    )}
+                  </div>
+                )}
+                {per.short && <p className="ayuda">{t('ct.periodShort')}</p>}
+                {editable && per.suggested && (
+                  <p className="ayuda">{t('ct.periodSuggest').replace('{d}', shortDate(per.suggested))}{' '}
+                    <button type="button" className="enlace" disabled={busy} onClick={() => setPeriod(per.suggested)}>{t('ct.periodUse')}</button></p>
+                )}
+                {editable && per.short && (
+                  <button type="button" className="enlace" disabled={busy} onClick={() => setPeriod(null)}>{t('ct.periodWhole')}</button>
+                )}
+              </div>
+            )}
             {calc.brackets?.length > 0 && <p className="ayuda">{t('ct.rates')}: {calc.brackets.map((b) => `${pct(b.rate)} × ${m(b.base)}`).join(' + ')} ({t('ct.ratesYear')} {calc.rates_year})</p>}
             <label className="opcion">
               <input type="checkbox" checked={calc.recognize_loss_credit} disabled={!editable || busy} onChange={(e) => settings(calc.regime, e.target.checked)} />

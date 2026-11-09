@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.corporate_tax_calc · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0057_corporate_tax 0061_equity_integration   →   la vigente es la de 0061_equity_integration
+-- Definida en: 0057_corporate_tax 0061_equity_integration 0091_corporate_tax_fixes   →   la vigente es la de 0091_corporate_tax_fixes
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.corporate_tax_calc(p_company uuid, p_year integer, p_regime text DEFAULT NULL::text, p_recognize boolean DEFAULT NULL::boolean)
@@ -16,6 +16,7 @@ declare
   v_base numeric; v_q jsonb; v_quota numeric; v_rate numeric; v_wh numeric; v_diff numeric;
   v_loss numeric; v_credit numeric; v_credit_used numeric := 0; v_def numeric; v_warn jsonb := '[]';
   v_eq numeric; v_eqtax numeric := 0;
+  v_start date; v_days int; v_cstart date;
 begin
   if not erp.can_read(p_company) then raise exception 'Not allowed to read this company'; end if;
   select * into v_fy from erp.fiscal_years where company_id = p_company and year = p_year;
@@ -25,6 +26,11 @@ begin
   v_hint := erp.corporate_tax_regime_hint(p_company, p_year);
   v_regime := coalesce(p_regime, v_ret.regime, v_hint->>'suggested');
   v_recognize := coalesce(p_recognize, v_ret.recognize_loss_credit, false);
+  -- v0.60.2 · período impositivo (art. 29.1 LIS): por defecto, el ejercicio entero; si empieza más tarde (el primer
+  -- ejercicio de una sociedad), el tramo reducido se reparte por días. La fecha de inicio de la contabilidad solo se sugiere
+  v_start := coalesce(v_ret.period_start, v_fy.starting_date);
+  v_days := least((v_fy.ending_date - v_start) + 1, 365);
+  select c.start_date into v_cstart from erp.companies c where c.id = p_company;
 
   -- ajustes: los de la declaración (borrador) o los propuestos
   if v_ret.id is not null then
@@ -60,7 +66,7 @@ begin
   end loop;
   v_base := v_prev - v_comp;
 
-  v_q := erp.corporate_tax_quota(p_year, v_regime, greatest(v_base, 0));
+  v_q := erp.corporate_tax_quota(p_year, v_regime, greatest(v_base, 0), v_days);
   v_quota := (v_q->>'quota')::numeric;
   v_rate := (v_q->>'marginal_rate')::numeric;
   -- retenciones y pagos fraccionados: saldo deudor de la 473 al cierre
@@ -74,7 +80,7 @@ begin
   select coalesce(sum((x->>'amount')::numeric), 0) into v_eq
   from jsonb_array_elements(v_adj) x where (x->>'included')::boolean and x->>'origin' = 'equity_costs';
   if v_eq > 0 then
-    v_eqtax := ((erp.corporate_tax_quota(p_year, v_regime, greatest(v_base + v_eq, 0)))->>'quota')::numeric - v_quota;
+    v_eqtax := ((erp.corporate_tax_quota(p_year, v_regime, greatest(v_base + v_eq, 0), v_days))->>'quota')::numeric - v_quota;
   end if;
 
   -- impuesto diferido (NRV 13.ª): diferencias temporarias × tipo; bases negativas, solo si se registra el crédito
@@ -100,6 +106,9 @@ begin
     'base_before_losses', v_prev, 'losses_available', v_avail, 'losses_limit', v_limit,
     'losses_compensated', v_comp, 'loss_usage', v_usage, 'taxable_base', v_base,
     'quota', v_quota, 'brackets', v_q->'brackets', 'rates_year', v_q->'rates_year',
+    'period_start', v_start, 'period_end', v_fy.ending_date, 'period_days', v_days,
+    'suggested_start', case when v_cstart > v_fy.starting_date and v_cstart <= v_fy.ending_date and v_cstart <> v_start
+                            and v_ret.period_start is null then v_cstart end,
     'withholdings', v_wh, 'differential', v_diff,
     'outcome', case when v_diff > 0 then 'pay' when v_diff < 0 then 'refund' else 'zero' end,
     'deferred_rate', v_rate, 'loss_generated', v_loss, 'loss_credit', v_credit, 'loss_credit_used', v_credit_used,

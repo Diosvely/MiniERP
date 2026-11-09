@@ -1,6 +1,6 @@
 # Funciones del esquema erp (versión vigente)
 
-Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0089`.
+Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0091`.
 No se edita a mano: el código fuente son las migraciones. Esto es para **estudiar** cada función en su forma
 actual sin rastrear sus redefiniciones.
 
@@ -9,7 +9,7 @@ actual sin rastrear sus redefiniciones.
 - **Tipo:** *invoker* (se ejecuta con los permisos de quien llama: manda la RLS), *security definer* (con los del
   dueño: comprueba ella misma los permisos) o *trigger*.
 
-368 funciones.
+369 funciones.
 
 | Función | Versiones | Vigente en | Tipo |
 |---|---|---|---|
@@ -94,7 +94,7 @@ actual sin rastrear sus redefiniciones.
 | [`concepts_for_account`](concepts_for_account.sql) | 1 | 0038_concepts | invoker |
 | [`control_rule_for`](control_rule_for.sql) | 1 | 0036_controlled_accounts | invoker |
 | [`controlled_lines`](controlled_lines.sql) | 1 | 0036_controlled_accounts | invoker |
-| [`corporate_tax_calc`](corporate_tax_calc.sql) | 2 | 0061_equity_integration | invoker |
+| [`corporate_tax_calc`](corporate_tax_calc.sql) | 3 | 0091_corporate_tax_fixes | invoker |
 | [`corporate_tax_cancel`](corporate_tax_cancel.sql) | 1 | 0058_corporate_tax_posting | security definer |
 | [`corporate_tax_draft`](corporate_tax_draft.sql) | 1 | 0057_corporate_tax | security definer |
 | [`corporate_tax_entry`](corporate_tax_entry.sql) | 1 | 0058_corporate_tax_posting | security definer |
@@ -102,10 +102,11 @@ actual sin rastrear sus redefiniciones.
 | [`corporate_tax_loss_carryforwards`](corporate_tax_loss_carryforwards.sql) | 1 | 0057_corporate_tax | invoker |
 | [`corporate_tax_manual`](corporate_tax_manual.sql) | 1 | 0057_corporate_tax | security definer |
 | [`corporate_tax_pending`](corporate_tax_pending.sql) | 1 | 0057_corporate_tax | invoker |
+| [`corporate_tax_period`](corporate_tax_period.sql) | 1 | 0091_corporate_tax_fixes | security definer |
 | [`corporate_tax_post`](corporate_tax_post.sql) | 2 | 0061_equity_integration | security definer |
 | [`corporate_tax_prepare`](corporate_tax_prepare.sql) | 1 | 0057_corporate_tax | security definer |
 | [`corporate_tax_proposals`](corporate_tax_proposals.sql) | 3 | 0061_equity_integration | invoker |
-| [`corporate_tax_quota`](corporate_tax_quota.sql) | 1 | 0057_corporate_tax | invoker |
+| [`corporate_tax_quota`](corporate_tax_quota.sql) | 2 | 0091_corporate_tax_fixes | invoker |
 | [`corporate_tax_regime_hint`](corporate_tax_regime_hint.sql) | 1 | 0057_corporate_tax | invoker |
 | [`corporate_tax_settings`](corporate_tax_settings.sql) | 1 | 0057_corporate_tax | security definer |
 | [`counts_in_reports`](counts_in_reports.sql) | 1 | 0074_report_simulation | invoker |

@@ -111,3 +111,29 @@ El impuesto se calcula con dos normas:
 - **Business Central y SAP** no calculan el impuesto de sociedades: el asiento lo prepara el asesor fiscal y se
   registra a mano (BC, diario general; SAP, con la herramienta de impuestos diferidos o un asiento manual). Aquí se
   calcula para aprender de dónde sale cada cifra.
+
+## Actualización (v0.60.2, 2026-11-09)
+
+Dos hallazgos del chat de auditoría fiscal (AF-02 y AF-03), aprobados por Diosvely y corregidos en la migración 0091:
+
+1. **Tipos de la microempresa que faltaban.** Solo estaban los de 2026, así que en 2025 el cálculo daba error y desde
+   2027 aplicaba los de 2026. Ahora: **2025, 21 % / 22 %** (DT 44.ª LIS) y **desde 2027, 17 % / 20 %** (art. 29.1 LIS),
+   en la redacción de la Ley 7/2024, DF 8.ª (BOE núm. 307, de 21-12-2024). Con una base de 100.000 € en 2027, la cuota
+   pasa de 20.000 € a 18.500 €.
+2. **Período impositivo de menos de un año.** El art. 29.1 reparte el tramo de 50.000 € por días (50.000 × días / 365).
+   El ejercicio del ERP va de enero a diciembre, así que la declaración guarda dónde empieza el período impositivo
+   (`period_start`; vacío = el ejercicio entero) y la pantalla deja cambiarlo mientras es un borrador. La fecha de
+   inicio de la contabilidad de la empresa solo se **sugiere** (puede no ser la de constitución). Ejemplo: del 01-07 al
+   31-12 (184 días), base de 40.000 € en 2026 → 25.205,48 × 19 % + 14.794,52 × 21 % = 7.895,89 €.
+   - *Pendiente de que lo confirme auditoría fiscal:* que el primer período impositivo empieza en la constitución
+     (art. 27 LIS).
+
+**Pruebas:** fase 52 con la regresión de los dos hallazgos (falla sin la 0091). 83 de 83 en la base de datos y 341 tests
+de la web.
+
+### Cómo explicarlo (actualización)
+- **Un período corto, un tramo corto.** El tipo reducido es una ayuda pensada para un año de actividad. Si la sociedad
+  solo ha existido medio año, recibe media ayuda: los primeros 25.205,48 € al tipo reducido en lugar de 50.000 €.
+- **Ejercicio contable y período impositivo no son siempre lo mismo.** Casi siempre coinciden, pero el primer año de
+  una sociedad empieza el día que se constituye.
+

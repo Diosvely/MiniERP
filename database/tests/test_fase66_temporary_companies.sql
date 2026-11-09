@@ -175,6 +175,38 @@ begin
   raise notice 'OK  · la limpieza borra la caducada (2 h sin latido) con sus asientos y no toca las permanentes';
 end $$;
 
+-- v0.60.2 · SEG-05 (chat de seguridad): el borrado es completo en TODAS las tablas, no solo en las cuatro de arriba.
+-- Recorre cada tabla del esquema erp con la columna company_id y cuenta las filas de la empresa borrada. Si una
+-- migración futura añade una tabla con company_id sin borrado en cascada, esta prueba falla (regla A1, abajo).
+create or replace function public.restos(p_company uuid) returns text[] language plpgsql as $$
+declare t record; n int; v text[] := '{}';
+begin
+  for t in select c.table_name from information_schema.columns c
+           join information_schema.tables x on x.table_schema = c.table_schema and x.table_name = c.table_name
+           where c.table_schema = 'erp' and c.column_name = 'company_id' and x.table_type = 'BASE TABLE'
+           order by 1 loop
+    execute format('select count(*) from erp.%I where company_id = $1', t.table_name) into n using p_company;
+    if n > 0 then v := v || t.table_name::text; end if;
+  end loop;
+  return v;
+end $$;
+do $$
+declare e uuid := (select c.e from public.ctx c where c.k = 'temp'); n int;
+begin
+  select count(*) into n from information_schema.columns c
+    join information_schema.tables x on x.table_schema = c.table_schema and x.table_name = c.table_name
+    where c.table_schema = 'erp' and c.column_name = 'company_id' and x.table_type = 'BASE TABLE';
+  assert n >= 40, 'se recorren todas las tablas con company_id (43 en la v0.60.2): ' || n;
+  assert public.restos(e) = '{}', 'no queda ninguna fila de la empresa borrada: ' || public.restos(e)::text;
+  -- Regresión: una tabla nueva con company_id y sin borrado en cascada dejaría datos; la prueba lo ve
+  create table erp.zz_sin_cascada (company_id uuid);
+  insert into erp.zz_sin_cascada values (e);
+  assert public.restos(e) = '{zz_sin_cascada}', 'una tabla sin cascada se detecta';
+  drop table erp.zz_sin_cascada;
+  raise notice 'OK  · borrado completo: ninguna de las % tablas con company_id guarda filas de la empresa borrada', n;
+end $$;
+drop function public.restos(uuid);
+
 -- ---------- Topes ----------
 set role authenticated;
 select public.como('b2');

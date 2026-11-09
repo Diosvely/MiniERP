@@ -1914,3 +1914,28 @@ la web.
   Explicarlas por lo que hacen enseña más que atribuirlas a un programa.
 - **Una regla de contenido también se prueba.** Si una regla importa, una prueba la vigila cuando el proyecto crece.
 
+## 2026-11-09 · v0.60.2 · Correcciones del Impuesto sobre Sociedades y prueba del borrado
+
+**De dónde viene:** la segunda versión de la etapa de correcciones. Dos hallazgos del chat de auditoría fiscal (AF-02 y
+AF-03) y uno del de seguridad (SEG-05), aprobados por Diosvely (diseño `diseno-v0.60.2.md`).
+
+**Qué se hizo:**
+- **AF-02:** los tipos de la microempresa de 2025 (21 % / 22 %) y desde 2027 (17 % / 20 %). Antes, 2025 daba error y
+  2027 aplicaba los de 2026 (migración 0091).
+- **AF-03:** el período impositivo de la declaración (por defecto, el año entero) y el tramo de 50.000 € repartido por
+  días cuando es más corto. La pantalla lo enseña y deja cambiar el inicio en el borrador; la fecha de inicio de la
+  contabilidad solo se sugiere. `erp.corporate_tax_quota` recibe los días y `erp.corporate_tax_period` cambia el inicio.
+- **SEG-05:** la fase 66 recorre las 43 tablas con `company_id` tras borrar una empresa temporal; crea a propósito una
+  tabla sin cascada para comprobar que la detecta.
+
+**Pruebas:** fase 52 (falla sin la 0091: 2027 daba 20.000) y fase 66. 83 de 83 en la base de datos y 341 tests de la
+web.
+
+**Pantallas pendientes de diálogo:** ninguna nueva (cambiar la fecha no crea nada).
+
+**Lo que se aprende**
+- **El ejercicio contable y el período impositivo pueden no coincidir.** El primer año de una sociedad empieza el día
+  de su constitución, y el tramo reducido se ajusta a los días.
+- **Una prueba que vigila todas las tablas** sigue valiendo cuando el proyecto crece: no hay que acordarse de añadir
+  cada tabla nueva.
+

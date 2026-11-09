@@ -87,7 +87,18 @@ begin
      and (erp.corporate_tax_quota(2026, 'micro', 40000)->>'marginal_rate')::numeric = 19, 'base por debajo de 50.000: todo al 19 %';
   assert (erp.corporate_tax_quota(2026, 'erd', 100000)->>'quota')::numeric = 23000 and (erp.corporate_tax_quota(2026, 'new_entity', 100000)->>'quota')::numeric = 15000;
   assert public.falla($q$select erp.corporate_tax_quota(2024, 'general', 1)$q$, 'No corporate tax rates'), 'sin tipos para el año: avisa';
-  raise notice 'OK  · resultado 182.000, cifra de negocios 300.000 → microempresa; escalas 2026';
+  -- v0.60.2 · AF-02 (regresión, regla A1): la microempresa de 2025 y desde 2027 (art. 29.1 y DT 44.ª LIS, Ley 7/2024).
+  -- Antes de la 0091, 2027 daba 20.000 (los tipos de 2026) y 2025 daba error
+  assert (erp.corporate_tax_quota(2027, 'micro', 100000)->>'quota')::numeric = 18500
+     and (erp.corporate_tax_quota(2027, 'micro', 100000)->>'marginal_rate')::numeric = 20, 'desde 2027: 17 % × 50.000 + 20 % × 50.000';
+  assert (erp.corporate_tax_quota(2028, 'micro', 40000)->>'quota')::numeric = 6800, '2028: todo al 17 %';
+  assert (erp.corporate_tax_quota(2025, 'micro', 100000)->>'quota')::numeric = 21500, '2025: 21 % × 50.000 + 22 % × 50.000';
+  -- AF-03: el tramo por días si el período impositivo dura menos de un año (50.000 × 184 / 365 = 25.205,48)
+  assert (erp.corporate_tax_quota(2026, 'micro', 40000, 184)->>'quota')::numeric = 7895.89, '184 días: 25.205,48 × 19 % + 14.794,52 × 21 %';
+  assert (erp.corporate_tax_quota(2026, 'micro', 40000, 365)->>'quota')::numeric = 7600
+     and (erp.corporate_tax_quota(2026, 'micro', 40000, 366)->>'quota')::numeric = 7600, 'un año entero (también bisiesto): sin reparto';
+  assert (erp.corporate_tax_quota(2026, 'erd', 100000, 184)->>'quota')::numeric = 23000, 'sin tramos, los días no cambian nada';
+  raise notice 'OK  · resultado 182.000, cifra de negocios 300.000 → microempresa; escalas 2025, 2026 y 2027 (AF-02) y tramo por días (AF-03)';
 
   -- ---------- 2. Ajustes propuestos ----------
   assert (select count(*) from erp.corporate_tax_proposals(e, 2026)) = 2, 'amortización y provisión';
@@ -135,6 +146,25 @@ begin
          'avisa: por la cifra de negocios sería microempresa';
   perform erp.corporate_tax_settings(v_ret, 'micro', false);
   raise notice 'OK  · régimen general: cuota 46.400, gasto 45.750 = 183.000 × 25 %%, con aviso de que sería microempresa';
+
+  -- ---------- 6 bis. Período impositivo más corto que el ejercicio (v0.60.2 · AF-03) ----------
+  g := erp.corporate_tax_calc(e, 2026);
+  assert g->>'period_start' = '2026-01-01' and (g->>'period_days')::int = 365 and g->'suggested_start' = 'null'::jsonb,
+         'por defecto, el ejercicio entero y sin sugerencia: ' || g::text;
+  update erp.companies set start_date = '2026-07-01' where id = e;
+  assert erp.corporate_tax_calc(e, 2026)->>'suggested_start' = '2026-07-01', 'la fecha de inicio de la contabilidad se sugiere';
+  assert (erp.corporate_tax_calc(e, 2026)->>'quota')::numeric = 37976, 'pero no se aplica sola';
+  perform erp.corporate_tax_period(v_ret, '2026-07-01');
+  g := erp.corporate_tax_calc(e, 2026);
+  assert (g->>'period_days')::int = 184 and (g->>'quota')::numeric = 38471.89 and g->'suggested_start' = 'null'::jsonb,
+         '184 días: 25.205,48 × 19 % + 160.394,52 × 21 % = 38.471,89: ' || g::text;
+  assert ((g->'brackets')->0->>'upto')::numeric = 25205.48, 'el tramo que enseña la pantalla';
+  assert public.falla(format($q$select erp.corporate_tax_period(%L, '2025-12-31')$q$, v_ret), 'within the fiscal year'), 'fuera del ejercicio: no';
+  perform erp.corporate_tax_period(v_ret, '2026-01-01');
+  assert (select period_start from erp.corporate_tax_returns where id = v_ret) is null
+     and (erp.corporate_tax_calc(e, 2026)->>'quota')::numeric = 37976, 'el 1 de enero = el ejercicio entero, como antes';
+  update erp.companies set start_date = null where id = e;
+  raise notice 'OK  · período impositivo del 01-07 al 31-12: 184 días, tramo de 25.205,48 y cuota 38.471,89; por defecto, el año entero';
 
   -- ---------- 7. Ajustes manuales ----------
   perform erp.corporate_tax_manual(jsonb_build_object('id', adj, 'kind', 'permanent', 'direction', 'increase', 'concept', 'Multa de tráfico', 'amount', 1500));

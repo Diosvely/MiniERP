@@ -58,3 +58,13 @@ export function entriesPreview(c) {
 
 // ¿Cuadra un asiento? (debe = haber, al céntimo)
 export const balanced = (lines) => lines.reduce((s, l) => s + cents(l.debit) - cents(l.credit), 0) === 0
+
+// v0.60.2 · Período impositivo (art. 29.1 LIS): del inicio guardado (o el 1 de enero) al cierre del ejercicio. Si dura
+// menos de un año, la base de datos reparte por días el tramo reducido de la microempresa. «suggested» es la fecha de
+// inicio de la contabilidad cuando cae dentro del año: solo se sugiere, porque puede no ser la de constitución
+export function period(c) {
+  if (!c?.period_start) return null
+  const days = Number(c.period_days)
+  return { start: c.period_start, end: c.period_end, days, short: days < 365, suggested: c.suggested_start ?? null }
+}
+

@@ -2,6 +2,22 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.60.2] - 2026-11-09
+### Corregido
+- **Impuesto sobre Sociedades de la microempresa** (migración 0091, hallazgo AF-02 de auditoría fiscal): faltaban los
+  tipos de 2025 (21 % / 22 %, DT 44.ª LIS) y desde 2027 se aplicaban los de 2026; ahora, 17 % / 20 % (art. 29.1 LIS,
+  Ley 7/2024). Con 100.000 € de base en 2027, la cuota pasa de 20.000 € a 18.500 €.
+### Añadido
+- **Período impositivo de menos de un año** (hallazgo AF-03): la declaración guarda dónde empieza el período impositivo
+  y el tramo reducido de la microempresa se reparte por días (50.000 × días / 365, art. 29.1 LIS). En la pantalla,
+  «Período impositivo: del … al … (N días)», con la fecha de inicio editable en el borrador; la fecha de inicio de la
+  contabilidad solo se sugiere. Por defecto, el ejercicio entero: nada cambia en las empresas que ya existen.
+- **Prueba del borrado completo** (hallazgo SEG-05 de seguridad): la fase 66 comprueba que, al borrar una empresa, no
+  queda ninguna fila suya en ninguna de las 43 tablas con `company_id`, y que una tabla nueva sin borrado en cascada se
+  detectaría.
+### Pruebas
+- 83 de 83 en la base de datos (fases 52 y 66 ampliadas, con su regresión) y 341 tests de la web.
+
 ## [0.60.1] - 2026-11-08
 ### Cambiado
 - **Revisión ética de los textos** (ADR 0063, migración 0090): en nada de lo que se lee (web, README, CHANGELOG,

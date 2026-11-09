@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { balanced, breakdown, entriesPreview, expense, sign } from '../src/corporateTax'
+import { balanced, breakdown, entriesPreview, expense, period, sign } from '../src/corporateTax'
 import { friendlyError } from '../src/errors'
 import es from '../src/i18n/es.js'
 import en from '../src/i18n/en.js'
@@ -94,3 +94,22 @@ describe('Impuesto sobre Sociedades · gastos cargados a reservas', () => {
     expect(balanced(current)).toBe(true)
   })
 })
+
+// v0.60.2 · AF-03: el período impositivo que enseña la pantalla (la base de datos hace el cálculo; fase 52)
+describe('Impuesto sobre Sociedades · período impositivo', () => {
+  it('el año entero por defecto; corto cuando empieza más tarde; la fecha de inicio solo se sugiere', () => {
+    expect(period({ period_start: '2026-01-01', period_end: '2026-12-31', period_days: 365, suggested_start: null }))
+      .toEqual({ start: '2026-01-01', end: '2026-12-31', days: 365, short: false, suggested: null })
+    expect(period({ period_start: '2026-07-01', period_end: '2026-12-31', period_days: 184 }).short).toBe(true)
+    expect(period({ period_start: '2026-01-01', period_end: '2026-12-31', period_days: 365, suggested_start: '2026-07-01' }).suggested).toBe('2026-07-01')
+    expect(period(null)).toBeNull()
+    expect(period({ quota: 0 })).toBeNull()   // una base de datos sin la 0091 no rompe la pantalla
+  })
+  it('los textos del período existen en los dos idiomas y citan la ley', () => {
+    for (const k of ['period', 'periodStart', 'periodShort', 'periodSuggest', 'periodUse', 'periodWhole', 'periodApply']) {
+      expect(es.ct[k]).toBeTruthy(); expect(en.ct[k]).toBeTruthy()
+    }
+    expect(es.ct.periodShort).toContain('art. 29.1 LIS')
+  })
+})
+

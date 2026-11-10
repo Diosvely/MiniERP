@@ -1,5 +1,5 @@
 -- =====================================================================
--- DIAGNÓSTICO DE SUPABASE · migraciones 0001 … 0089 (GENERADO por scripts/generar-diagnostico.sh: no editar)
+-- DIAGNÓSTICO DE SUPABASE · migraciones 0001 … 0093 (GENERADO por scripts/generar-diagnostico.sh: no editar)
 -- ---------------------------------------------------------------------
 -- Pégalo en el SQL Editor de Supabase y pulsa Run. SOLO LEE: no cambia nada.
 -- Devuelve una fila por cada diferencia con el repositorio. Ninguna fila («No rows returned») = todo al día.
@@ -90,7 +90,7 @@ f(sig, hash) as (values
   ('erp.concepts_for_account(text)', '99dc792450f9ce388d0422c3eaccc87d'),
   ('erp.control_rule_for(text)', 'c001109796e787fc4f0492d69dfbd72a'),
   ('erp.controlled_lines(jsonb)', '90cfc32f2636622abfe982ad023fbef6'),
-  ('erp.corporate_tax_calc(uuid,integer,text,boolean)', '8e5916d8ea652483aa0e88b942b82c38'),
+  ('erp.corporate_tax_calc(uuid,integer,text,boolean)', '5b8a4ae51172c9a90467f605703f8c24'),
   ('erp.corporate_tax_cancel(uuid,integer)', 'c00a8c1a3080c05277c6d9238923e348'),
   ('erp.corporate_tax_draft(uuid)', '10d16007d156ea30493569ef4d2d7461'),
   ('erp.corporate_tax_entry(uuid,date,text,jsonb)', '430f64eb9ceba3f77d14de764fa78918'),
@@ -98,10 +98,11 @@ f(sig, hash) as (values
   ('erp.corporate_tax_loss_carryforwards(uuid,integer)', 'a58551e50be163bbafe99ae8433786bb'),
   ('erp.corporate_tax_manual(jsonb)', '9c21e59cd633132042b2b266c9d2691c'),
   ('erp.corporate_tax_pending(uuid,text,uuid,integer)', '432a6280bc82bf94fdd85e5fedb6bb3e'),
+  ('erp.corporate_tax_period(uuid,date)', '35e044c704d841384ec5338b70eb250e'),
   ('erp.corporate_tax_post(uuid,integer)', '68a533ef4d35d4280c181bd4c6762a03'),
   ('erp.corporate_tax_prepare(uuid,integer)', '21f5fd0a8a5aac030952e137c1e131f2'),
   ('erp.corporate_tax_proposals(uuid,integer)', 'cecd27dad2ff1d09b22900d891444cde'),
-  ('erp.corporate_tax_quota(integer,text,numeric)', 'f0c264ae93b8ef669e1eaae6c324c103'),
+  ('erp.corporate_tax_quota(integer,text,numeric,integer)', '3bd0b0dcb09eea25137d84f1f4523785'),
   ('erp.corporate_tax_regime_hint(uuid,integer)', '8d13a5d8d341184b503bd353acbdfbab'),
   ('erp.corporate_tax_settings(uuid,text,boolean)', 'ce5aaaf44cd76e3e94b40f269fffa974'),
   ('erp.counts_in_reports(text,uuid)', '1a407aba5391ef28eea7df79706bb182'),
@@ -327,7 +328,7 @@ f(sig, hash) as (values
   ('erp.tf_row(integer,text,text,text,text,text,numeric)', '0868e3c2e4fcea2a501fa0e26535782e'),
   ('erp.tg_company_add_admin()', '61534513dc242f3be42a22e646404ef6'),
   ('erp.tg_company_copy_coa()', '5108b781b52893b9f5b5eff4cc62462d'),
-  ('erp.tg_company_rules()', '7ebd061658b3acf0ee5756ac1a22bab5'),
+  ('erp.tg_company_rules()', '345a3529072a342b085fd584897bc758'),
   ('erp.tg_company_vat_regime()', 'aa9136e3eea2ed3c743e00fd0bc62201'),
   ('erp.tg_entry_adjust_reverse()', '3e3eae876c48bbd4aa172e738c9b55a0'),
   ('erp.tg_entry_asset_reverse()', '40766bf69db825da77129cb1b9dca023'),
@@ -351,7 +352,7 @@ f(sig, hash) as (values
   ('erp.tg_line_set_partner()', '4360db62c6ac9a8790c5cdb88f3dca89'),
   ('erp.tg_line_set_tax_code()', 'd9e716f948d7ebc94fa1dd9539965b17'),
   ('erp.tg_line_tax_period_lock()', '381fff842e8d6c760f59de35078a1d2a'),
-  ('erp.tg_line_validate()', 'e49430c8fa6e9c7f55741de8e489123c'),
+  ('erp.tg_line_validate()', '0263e3cc03af3eb5722389d692b7bd0f'),
   ('erp.tg_partner_equivalence()', 'ea6815de01942e6268c313f70e724b62'),
   ('erp.tg_partner_sync_account_name()', '1704f429e4e9d8bf3e1188f63260b2cd'),
   ('erp.tg_partner_validate()', 'ac563add12522d8642fb5ebaac519f04'),

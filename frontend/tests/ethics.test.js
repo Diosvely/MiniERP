@@ -35,9 +35,15 @@ export const NAMES = /\b(ContaSol|Sage|SAGE|A3ECO|ContaPlus|Versat|DELSOL)\b|\bA
 export const CONTRAST = /ERPs? español(es)?|Spanish ERPs?|estilo español/i
 const ALLOWED = [/regla A3/i, /\(A3\)/, /PN\.A3/, /A-3\)/]
 
+const ALLOWED_G = ALLOWED.map((re) => new RegExp(re.source, re.flags + 'g'))   // compiladas una sola vez
+const ANY = new RegExp(`${NAMES.source}|${CONTRAST.source}`, 'i')
+
 export function offending(text) {
+  // v0.60.4 · primero una búsqueda rápida en el archivo entero: casi ninguno tiene nada y se salta sin partirlo en líneas
+  // (regresión: en el PC de Diosvely, grabando la pantalla, la prueba pasó de los 30 s)
+  if (!ANY.test(text)) return []
   return text.split(/\r?\n/).filter((l) => {
-    const clean = ALLOWED.reduce((s, re) => s.replace(new RegExp(re.source, re.flags + 'g'), ''), l)
+    const clean = ALLOWED_G.reduce((s, re) => s.replace(re, ''), l)
     return NAMES.test(clean) || CONTRAST.test(clean)
   })
 }
@@ -59,5 +65,5 @@ describe('revisión ética: sin nombres de programas comerciales', () => {
       for (const l of offending(fs.readFileSync(f, 'utf8'))) found.push(`${path.relative(ROOT, f)}: ${l.trim().slice(0, 120)}`)
     }
     expect(found).toEqual([])
-  })
+  }, 120000)   // margen para un PC cargado: recorre todo el repositorio
 })

@@ -31,15 +31,15 @@ do $$
 begin
   assert (select count(*) from erp.pgc_groups) = 9, 'grupos';
   assert (select count(*) from erp.pgc_subgroups) = 78, 'subgrupos';
-  assert (select count(*) from erp.pgc_accounts) = 712, 'cuentas';
+  assert (select count(*) from erp.pgc_accounts) = 728, 'cuentas (712 + 16 de los subgrupos 80-82 y 90-92, 0093)';
   assert (select count(*) from erp.pgc_accounts where left(account, 1) between '1' and '7') = 704, '703 del PGC + la 2804';
-  assert (select count(*) from erp.pgc_accounts where left(account, 1) in ('8', '9')) = 8, 'grupos 8 y 9: 830x, 84x y 94x';
+  assert (select count(*) from erp.pgc_accounts where left(account, 1) in ('8', '9')) = 24, 'grupos 8 y 9: 830x, 84x y 94x, y 80x-82x y 90x-92x (0093)';
   assert (select count(*) from erp.pgc_cards) = 70, 'fichas';
   assert (select count(*) from erp.pgc_valuation_rules) = 23, 'NRV';
   assert (select count(*) from erp.pgc_principles) = 6, 'principios';
   assert (select name from erp.pgc_accounts where account = '2804') = 'Amortización acumulada de fondo de comercio', 'la 2804';
   assert not exists (select 1 from erp.pgc_cards where left(code, 1) in ('8', '9')), 'los grupos 8 y 9 van sin ficha';
-  raise notice 'OK  · 9 grupos, 78 subgrupos, 712 cuentas, 70 fichas, 23 NRV y 6 principios';
+  raise notice 'OK  · 9 grupos, 78 subgrupos, 728 cuentas, 70 fichas, 23 NRV y 6 principios';
 end $$;
 
 -- ---------- Todo cuadra y las referencias existen ----------
@@ -80,7 +80,7 @@ begin
     'cada cuenta de la plantilla está en el PGC de estudio';
   assert not exists (select 1 from erp.coa_template t join erp.pgc_accounts a on a.account = t.account_no where a.name <> t.name),
     'con el mismo nombre';
-  raise notice 'OK  · las 400 cuentas del plan del ERP están en el PGC de estudio, con el mismo nombre';
+  raise notice 'OK  · las 422 cuentas del plan del ERP están en el PGC de estudio, con el mismo nombre';
 end $$;
 
 -- ---------- Regla A3 y textos propios ----------
@@ -97,7 +97,7 @@ set role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a1', false) \gset
 do $$
 begin
-  assert (select count(*) from erp.pgc_accounts) = 712, 'quien ha entrado lo lee';
+  assert (select count(*) from erp.pgc_accounts) = 728, 'quien ha entrado lo lee';
   assert (select count(*) from erp.pgc_cards) = 70, 'y las fichas';
   assert public.falla($q$update erp.pgc_cards set usage = 'x' where code = '129'$q$, 'permission denied'), 'no cambia fichas';
   assert public.falla($q$insert into erp.pgc_accounts values ('9999', '99', 'x', '[]')$q$, 'permission denied'), 'ni crea cuentas';

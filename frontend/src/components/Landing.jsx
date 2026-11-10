@@ -15,7 +15,7 @@ const MIN_PASSWORD = 8   // el mismo mínimo que "Cambiar contraseña"
 const FEATURE_ICONS = { accounting: Calculator, reports: BarChart3, dashboards: LayoutDashboard, ai: Bot,
   trace: SearchCheck, import: Upload }
 
-// PANTALLA DE ENTRADA (sin sesión). v0.59.3: portada con la demo arriba y una captura real (empresa sintética, datos
+// PANTALLA DE ENTRADA (sin sesión). v0.59.3: portada con la demo arriba y una captura de la aplicación (empresa sintética, datos
 // ficticios), las 6 funciones, «¿Por qué MiniERP?» junto al acceso, una banda final y el pie con los enlaces del autor.
 // La lógica de entrar, crear cuenta, invitado y CAPTCHA es la de v0.26.0 / v0.28.0; solo cambia que el alta y el error
 // del invitado se confirman en el cuadro de diálogo (v0.59.1).

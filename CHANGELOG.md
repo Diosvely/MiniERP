@@ -2,6 +2,20 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.60.4] - 2026-11-10
+### Añadido
+- **Logo nuevo** en la cabecera de la portada (SVG, versión clara y oscura) con «Aprende · Analiza · Aporta», e icono
+  nuevo de la pestaña del navegador.
+- Las cuentas de los subgrupos 80-82 y 90-92 en la plantilla del plan de cuentas.
+### Corregido
+- **Grupos 8 y 9 en el Balance** (migración 0093, hallazgo AF-06 de auditoría fiscal): 80-82 y 90-92 sin regularizar van
+  a «A-2) Ajustes por cambios de valor» en los modelos normal y abreviado; las subvenciones siguen en A-3.
+- **Bitácora:** el antiguo CIF desapareció en 2008; hoy todos son NIF (hallazgo H-25 de redacción).
+- Comentario de la portada: «captura de la aplicación» (hallazgo H-29 de redacción).
+- `database/diagnostico-supabase.sql` regenerado con todas las migraciones (estaba en la 0089).
+### Pruebas
+- 83 de 83 en la base de datos (fase 82 con la regresión de AF-06) y 341 tests de la web.
+
 ## [0.60.3] - 2026-11-09
 ### Corregido
 - **Correctoras del activo en el Balance** (migración 0092, hallazgo AF-05 de auditoría fiscal): la (437), la (5393), la

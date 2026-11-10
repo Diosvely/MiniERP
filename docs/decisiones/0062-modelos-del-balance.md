@@ -56,9 +56,8 @@ Su próximo vídeo trata del Balance, y quería enseñar esa diferencia con el E
   - Regresión: si el banco acreedor se deja en el activo, la prueba falla.
 - **La nota del proveedor deudor** nombra también la partida del normal («Deudores varios»).
 - **Lo que no sabe el ERP:** qué modelo le corresponde a cada empresa por su tamaño. Queda en `ideas-pendientes.md`.
-- **Limitación conocida:** antes del cierre, los grupos 8 y 9 se presentan en A-3 (subvenciones); las subcuentas 80-82 y
-  90-92 irían en A-2 (Ajustes por cambios de valor). Hoy el ERP solo usa los grupos 8 y 9 para las subvenciones (AF-06,
-  auditoría fiscal, 09-11-2026).
+- ~~**Limitación conocida:** antes del cierre, los grupos 8 y 9 se presentan en A-3.~~ Corregido en la v0.60.4: ver la
+  actualización de abajo.
 
 ## Cómo explicarlo
 
@@ -92,3 +91,18 @@ Su próximo vídeo trata del Balance, y quería enseñar esa diferencia con el E
 - **El paréntesis del BOE significa «resta aquí».** Una cuenta correctora no cambia de lado por tener su saldo normal:
   los envases que los clientes nos tienen que devolver (437) rebajan lo que nos deben, igual que la amortización
   rebaja el inmovilizado.
+
+## Actualización (v0.60.4, 2026-11-10)
+
+- **Los grupos 8 y 9 sin regularizar, en su partida** (hallazgo AF-06 de auditoría fiscal; Diosvely decidió corregirlo):
+  80 y 90 van a «A-2) I. Activos financieros a valor razonable con cambios en el patrimonio neto», 81 y 91 a «II.
+  Operaciones de cobertura» y 82 y 92 a «III. Otros» (en el abreviado, A-2). Las subvenciones (84 y 94) siguen en A-3.
+  El total del patrimonio neto no cambia. Migración 0093, con la prueba en la fase 82. El modelo de PYMES no cambia.
+- **Las cuentas de los subgrupos 80-82 y 90-92 entran en la plantilla del plan de cuentas,** para poder usarlas (antes
+  un diario con una 900 no se podía importar).
+- **Limitación conocida:** el cierre del ERP regulariza los grupos 8 y 9 contra la 130; para 80-82 y 90-92 la
+  contrapartida sería la 133, la 1340 o la 135. Queda para auditoría fiscal.
+
+### Cómo explicarlo
+- **No todo el grupo 9 es una subvención.** Si unas acciones a valor razonable suben de valor, la ganancia todavía no
+  realizada va al patrimonio neto (900), pero no es una ayuda pública: es un ajuste por cambio de valor (A-2).

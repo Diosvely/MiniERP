@@ -2047,7 +2047,7 @@ export default {
   },
 
  // v0.26.0 · Landing screen
-  landingTagline: 'Learn · Analyse · Manage',
+  landingTagline: 'Learn · Analyse · Contribute',
   landingTitle: 'Your ally in accounting and financial analysis',
   landingSubtitle: 'A web ERP to learn Spanish accounting with practice companies: register invoices, settle VAT or IGIC, close the year and analyse the financial statements.',
   landingMore: 'Learn more',

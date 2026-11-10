@@ -428,9 +428,10 @@ a.enlace:hover { text-decoration: underline; }
 /* --- v0.26.0: pantalla de entrada · v0.59.3: portada --- */
 main:has(.entrada) { max-width: 1160px; }
 .entrada { display: flex; flex-direction: column; gap: 48px; padding-top: 8px; }
-.cabecera-marca { display: flex; flex-direction: column; }
-.cabecera-marca h1 { margin: 0; }
-.cabecera-marca span { color: var(--suave); font-size: .85rem; letter-spacing: .02em; }
+/* v0.60.4 · el logo de la portada (SVG, versión clara y oscura) */
+.cabecera-logo { margin: 0; line-height: 0; }
+.cabecera-logo img { height: 56px; width: auto; display: block; }
+@media (max-width: 480px) { .cabecera-logo img { height: 40px; } }
 .boton-cabecera { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; font-weight: 600; }
 @media (max-width: 480px) { .boton-cabecera span { display: none; } }
 

@@ -138,6 +138,20 @@ begin
   raise notice 'OK  · AF-05: (437), (5393), (5394), (5395) y (549) restan en el activo en los tres modelos';
 end $$;
 
+-- v0.60.4 · AF-06 (regresión, regla A1): antes del cierre, 80-82 y 90-92 van a «A-2) Ajustes por cambios de valor»;
+-- las subvenciones (84, 94) siguen en «A-3)». Antes de la 0093 todo el grupo 8 y 9 salía en A-3.
+do $$
+begin
+  assert public.partida('normal', '90000000', false) = 'PN.A2.I' and public.partida('normal', '80000000', true) = 'PN.A2.I',
+     '80 y 90: valoración de activos a valor razonable (A-2 I)';
+  assert public.partida('normal', '91000000', false) = 'PN.A2.II' and public.partida('normal', '82000000', true) = 'PN.A2.III',
+     '81/91 coberturas (A-2 II) y 82/92 diferencias de conversión (A-2 III)';
+  assert public.partida('abreviado', '90000000', false) = 'PN.A2', 'en el abreviado, A-2';
+  assert public.partida('normal', '94000000', false) = 'PN.A3' and public.partida('abreviado', '84000000', true) = 'PN.A3',
+     'las subvenciones (84, 94) siguen en A-3';
+  raise notice 'OK  · AF-06: grupos 80-82 y 90-92 en A-2; las subvenciones, en A-3';
+end $$;
+
 -- ---------- 2. El mismo Balance en los tres modelos, con empresas reales ----------
 set role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a1', false);

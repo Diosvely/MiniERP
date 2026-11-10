@@ -841,7 +841,8 @@ asientos frecuentes.
 - **La retención en la factura:** profesional persona física 15 % (7 % en inicio de actividad), alquiler de local
   19 %. Se calcula sobre la base, sin impuesto, y el tercero cobra base + impuesto − retención: 1.000 + 70 − 150 = 920.
   Una SL que presta servicios profesionales no lleva retención.
-- **El NIF dice la forma jurídica:** un NIF o NIE es de una persona física; un CIF, de una entidad.
+- **El NIF dice la forma jurídica:** si empieza por un número (DNI) o por X, Y o Z (NIE), es de una persona física; si
+  empieza por una letra como A o B, es de una entidad. El antiguo CIF desapareció en 2008: hoy todos son NIF.
 - **Medir sin rastrear:** los usuarios anónimos de la demo ya son el recuento. Al borrar datos, antes se guarda lo
   que se quiere seguir midiendo.
 
@@ -1969,4 +1970,25 @@ H-32). Tres correcciones de redacción (H-25, H-26 y H-29) se reservan para hace
 - **Dos puertas a la misma casa:** la web entra por las funciones; la API, también por las tablas. La seguridad tiene
   que estar en la RLS y en los disparadores, y la prueba tiene que intentar entrar por las dos.
 - **Lo que se aprende de un diario real se cuenta sin sus cifras.**
+
+## 2026-11-10 · v0.60.4 · Logo, grupos 8 y 9 y la corrección en directo
+
+**De dónde viene:** la versión que se hizo grabando el vídeo 02 («Cómo trabajo y cómo audito el Mini ERP»): hallazgos
+de redacción (H-25 y H-29) y de auditoría fiscal (AF-06), aprobados por Diosvely, y el logo nuevo. La corrección del
+plazo de pago (H-26) queda pendiente: Diosvely quiere que auditoría fiscal la revise antes.
+
+**Qué se hizo:**
+- Logo en la cabecera de la portada (claro y oscuro) e icono nuevo.
+- AF-06: los grupos 80-82 y 90-92 sin regularizar, en «A-2) Ajustes por cambios de valor»; sus cuentas, en la plantilla
+  (migración 0093).
+- H-25: el CIF desapareció en 2008. H-29: «captura de la aplicación».
+- Diagnóstico de Supabase al día.
+
+**Pruebas:** 83 de 83 y 341 tests.
+
+**Lo que se aprende**
+- **No todo el grupo 9 es una subvención:** una ganancia de valor no realizada va al patrimonio neto, pero en «Ajustes
+  por cambios de valor».
+- **Un archivo generado también envejece:** el diagnóstico comparaba con la migración 0089 y daba diferencias que no
+  eran errores. Se regenera al cerrar cada versión.
 

@@ -2046,7 +2046,7 @@ export default {
   },
 
 // v0.26.0 · Pantalla de entrada
-  landingTagline: 'Aprende · Analiza · Gestiona',
+  landingTagline: 'Aprende · Analiza · Aporta',
   landingTitle: 'Tu aliado en la contabilidad y el análisis financiero',
   landingSubtitle: 'Un ERP web para aprender contabilidad española con empresas de práctica: registras facturas, liquidas el IVA o el IGIC, cierras el ejercicio y analizas los estados financieros.',
   landingMore: 'Conocer más',

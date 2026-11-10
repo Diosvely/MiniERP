@@ -46,9 +46,14 @@ function Layout({ session }) {
       {/* v0.49.0 · Latido de las empresas temporales (no se ve) */}
       {session && <TempKeeper session={session} />}
       <header className="cabecera">
-        {/* v0.59.3 · en la portada, el lema debajo del nombre */}
+        {/* v0.60.4 · en la portada, el logo (con el lema dentro); el nombre sigue en el h1 para los lectores de pantalla */}
         {!session && route[0] !== 'glosario'
-          ? <div className="cabecera-marca"><h1>{t('appTitle')}</h1><span>{t('landingTagline')}</span></div>
+          ? <h1 className="cabecera-logo">
+              <picture>
+                <source srcSet="/logo-oscuro.svg" media="(prefers-color-scheme: dark)" />
+                <img src="/logo-claro.svg" width="1091" height="300" alt={`${t('appTitle')} · ${t('landingTagline')}`} />
+              </picture>
+            </h1>
           : <h1>{t('appTitle')}</h1>}
         <div className="cabecera-acciones">
           {session && <Link to="/practicar" className="enlace-glosario" aria-label={t('practice')}><GraduationCap {...ICON} /> <span>{t('practice')}</span></Link>}

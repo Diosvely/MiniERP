@@ -51,7 +51,7 @@ española y el funcionamiento real de un ERP. Los ERP comerciales son caros y di
 propia, así que decidí **construir uno**. Diseñar la tabla de asientos obliga a entender *por qué* un ERP impone
 cada regla. Además, todo el código está en inglés para practicar el vocabulario técnico de BC y SAP.
 
-## ¿Qué hace hoy? (v0.60.3)
+## ¿Qué hace hoy? (v0.60.4)
 
 **Primeros pasos y navegación**
 - **Pantalla de Inicio** en cada empresa:
@@ -346,7 +346,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 ├── scripts/generar-diagnostico.sh  genera database/diagnostico-supabase.sql (¿le falta algo a tu Supabase?)
 ├── scripts/generar-permisos.mjs    genera docs/permisos.md desde la prueba de permisos (fase 79)
 ├── database/
-│   ├── migrations/            0001 → 0092, se ejecutan en orden en Supabase
+│   ├── migrations/            0001 → 0093, se ejecutan en orden en Supabase
 │   ├── funciones/             versión vigente de cada función, para estudiarla (generado)
 │   ├── diagnostico-supabase.sql  consulta de solo lectura: qué le falta a tu Supabase (generado)
 │   ├── reset/                 reset del schema antiguo (solo histórico)
@@ -556,6 +556,7 @@ cuadrados. El ERP también lee directamente los diarios en Excel y los de Busine
 - [x] **v0.60.1**: revisión ética de los textos (sin nombres de programas comerciales; control antes o después)
 - [x] **v0.60.2**: correcciones del Impuesto sobre Sociedades (microempresa 2025 y desde 2027; período impositivo de menos de un año) y prueba del borrado completo
 - [x] **v0.60.3**: correctoras del activo en el Balance, escrituras directas por la API cerradas (la guardiana vigila también las tablas) y bitácora sin cifras de diarios reales
+- [x] **v0.60.4**: logo nuevo, grupos 8 y 9 en «Ajustes por cambios de valor» y correcciones del vídeo 02
 - [ ] Más botones en la barra superior
 - [ ] Ontología contable y chat con la IA (consulta, nunca calcula)
 - [ ] Más informes en Power BI e incrustarlos en el ERP con RLS por empresa

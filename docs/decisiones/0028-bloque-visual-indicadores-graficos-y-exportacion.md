@@ -29,7 +29,7 @@ Tres revisiones externas del proyecto coincidieron: el dominio contable y la doc
      - empresa propia con lo básico hecho → los indicadores aparecen debajo de la ruta;
      - empresa con la ruta completa → indicadores arriba y la ruta plegada.
    - **Rendimiento:** permiso comprobado una vez (`can_read`) y `jit = off`. El primer intento tardaba 5 s
-     (permisos fila a fila y compilación JIT); el definitivo, 0,17 s con 120.000 apuntes.
+     (permisos fila a fila y compilación JIT); el definitivo, 0,17 s con un diario grande.
 2. **Balance y PyG comparativos** (migración 0032 y `src/compare.js`):
    - la columna del año anterior ya existía; se añade el **análisis horizontal**: variación en importe y en %, y el
      año anterior también al desplegar una partida;

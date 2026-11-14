@@ -17,8 +17,17 @@
 // Mistral Small 3.1: buen español, ~190 neuronas por análisis → unos 50 análisis al día gratis
 const DEFAULT_MODEL = '@cf/mistralai/mistral-small-3.1-24b-instruct'
 
+// v0.60.5 (SEG-20) · Cloudflare no aplica public/_headers a lo que responden las Pages Functions: las cabeceras de
+// seguridad van aquí. La respuesta lleva cifras de la empresa o el texto del usuario: que no se guarde en ninguna caché.
+export const API_HEADERS = {
+  'Content-Type': 'application/json; charset=utf-8',
+  'Cache-Control': 'no-store',
+  'X-Content-Type-Options': 'nosniff',
+  'Referrer-Policy': 'no-referrer',
+  'Content-Security-Policy': "default-src 'none'; frame-ancestors 'none'",
+}
 const json = (body, status = 200) =>
-  new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json; charset=utf-8' } })
+  new Response(JSON.stringify(body), { status, headers: API_HEADERS })
 
 // ---- Defensa de la entrada (v0.28.0) ----
 // · Cuerpo de la petición pequeño: aquí solo llegan { company_id, year | text, language }. Lo demás se rechaza (413).

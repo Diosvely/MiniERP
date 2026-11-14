@@ -15,7 +15,7 @@ ser **didáctico**, sin polémicas ni comparaciones. Al revisar la documentació
 - los dos modos de las cuentas controladas presentados como **«estricto = SAP / BC»** frente a **«guiado = los ERP
   españoles»**, una contraposición que no enseña nada y puede leerse como una crítica;
 - una expresión de captación («un gancho de colaboración», ADR 0021);
-- un ejemplo de la ficha del PGC de la cuenta 112 que parecía sacado de una contabilidad real de prueba.
+- un ejemplo de la ficha del PGC de la cuenta 112 que parecía sacado de un diario de estudio.
 
 ## Decisión
 

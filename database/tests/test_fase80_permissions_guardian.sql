@@ -498,4 +498,89 @@ reset role;
 select set_config('request.jwt.claim.sub', '', false) \gset
 select set_config('request.jwt.claims', '', false) \gset
 
+-- ---------- v0.60.5 · SEG-13, SEG-14, SEG-18 y SEG-19 (regresión) ----------
+-- La víctima escribe directamente en SU empresa (Z2, el caso hasta antes del cierre: 2026 abierto)
+call public.ser('authenticated', '00000000-0000-0000-0000-0000000000b1');
+do $$
+declare z uuid := (select e from public.ctx where k = 'Z2'); z1 uuid := (select e from public.ctx where k = 'Z');
+        fy uuid; d date; gasto uuid; banco uuid; p uuid; d2 uuid; d3 uuid; d4 uuid; n int; e text; t uuid;
+begin
+  select y.id, per.ending_date into fy, d
+  from erp.fiscal_years y join erp.accounting_periods per on per.fiscal_year_id = y.id
+  where y.company_id = z and y.status = 'open' and per.status = 'open' order by y.year desc, per.period_no limit 1;
+  gasto := (select id from erp.gl_accounts where company_id = z and account_no = '62300001');
+  banco := (select id from erp.gl_accounts where company_id = z and account_no = '57200001');
+  -- un asiento contabilizado (con erp.post_entry) y dos borradores
+  insert into erp.journal_entries (company_id, fiscal_year_id, posting_date, description) values (z, fy, d, 'SEG contabilizado') returning id into p;
+  insert into erp.journal_lines (entry_id, gl_account_id, debit) values (p, gasto, 50);
+  insert into erp.journal_lines (entry_id, gl_account_id, credit) values (p, banco, 50);
+  perform erp.post_entry(p);
+  insert into erp.journal_entries (company_id, fiscal_year_id, posting_date, description) values (z, fy, d, 'SEG borrador 2') returning id into d2;
+  insert into erp.journal_lines (entry_id, gl_account_id, debit) values (d2, gasto, 30);
+  insert into erp.journal_lines (entry_id, gl_account_id, credit) values (d2, banco, 30);
+  insert into erp.journal_entries (company_id, fiscal_year_id, posting_date, description) values (z, fy, d, 'SEG borrador 3') returning id into d3;
+  insert into erp.journal_lines (entry_id, gl_account_id, debit) values (d3, gasto, 999);
+
+  -- SEG-13 · una línea no cambia de asiento: ni de un contabilizado a un borrador, ni entre borradores
+  e := public.falla(format('update erp.journal_lines set entry_id = %L where entry_id = %L and credit = 50', d2, p));
+  assert e like '%cannot be moved to another entry%', 'SEG-13: mover la línea de un contabilizado: ' || coalesce(e, 'lo dejó hacer');
+  assert (select count(*) from erp.journal_lines where entry_id = p) = 2, 'SEG-13: el contabilizado conserva sus dos líneas';
+  e := public.falla(format('update erp.journal_lines set entry_id = %L where entry_id = %L and debit = 30', d3, d2));
+  assert e like '%cannot be moved to another entry%', 'SEG-13: mover una línea entre borradores: ' || coalesce(e, 'lo dejó hacer');
+  -- control: editar el importe de un borrador sigue funcionando
+  e := public.falla(format('update erp.journal_lines set debit = 35 where entry_id = %L and debit = 30', d2));
+  assert e is null, 'control: editar un borrador: ' || coalesce(e, '');
+  update erp.journal_lines set credit = 35 where entry_id = d2 and credit = 30;
+  raise notice 'OK  · SEG-13: una línea no se mueve de un asiento a otro';
+
+  -- SEG-14 · solo se contabiliza lo que erp.post_entry aceptaría
+  e := public.falla(format('update erp.journal_entries set status = %L, entry_no = 999 where id = %L', 'posted', d3));
+  assert e like '%at least 2 lines%', 'SEG-14: una sola línea: ' || coalesce(e, 'lo dejó hacer');
+  insert into erp.journal_lines (entry_id, gl_account_id, credit) values (d3, banco, 1);
+  e := public.falla(format('update erp.journal_entries set status = %L, entry_no = 999 where id = %L', 'posted', d3));
+  assert e like '%Unbalanced entry%', 'SEG-14: descuadrado: ' || coalesce(e, 'lo dejó hacer');
+  e := public.falla(format('update erp.journal_entries set status = %L, entry_no = 999 where id = %L', 'posted', d2));
+  assert e like '%must be the next one%', 'SEG-14: número a elección: ' || coalesce(e, 'lo dejó hacer');
+  e := public.falla(format('insert into erp.journal_entries (company_id, fiscal_year_id, posting_date, description, status, entry_no) values (%L, %L, %L, %L, %L, 9999)',
+                           z, fy, d, 'SEG directo', 'posted'));
+  assert e like '%starts as a draft%', 'SEG-14: crear un asiento ya contabilizado: ' || coalesce(e, 'lo dejó hacer');
+  -- control: erp.post_entry del mismo borrador cuadrado funciona y pone el número siguiente
+  n := erp.post_entry(d2);
+  assert n = (select max(entry_no) from erp.journal_entries where fiscal_year_id = fy), 'control: post_entry pone el número siguiente';
+  raise notice 'OK  · SEG-14: solo se contabiliza con las condiciones de erp.post_entry (número %)', n;
+
+  -- SEG-18 · la subcuenta de un tercero: de su empresa, de detalle y de su tipo
+  t := (select id from erp.business_partners where company_id = z and partner_type = 'customer' limit 1);
+  e := public.falla(format('update erp.business_partners set gl_account_id = %L where id = %L',
+                           (select id from erp.gl_accounts where company_id = z1 and account_no like '430%%' and account_type = 'posting' limit 1), t));
+  assert e like '%does not belong to this company%', 'SEG-18: subcuenta de otra empresa: ' || coalesce(e, 'lo dejó hacer');
+  e := public.falla(format('update erp.business_partners set gl_account_id = %L where id = %L', banco, t));
+  assert e like '%does not match the partner type%', 'SEG-18: el banco como subcuenta de un cliente: ' || coalesce(e, 'lo dejó hacer');
+  e := public.falla(format('update erp.business_partners set partner_type = %L where id = %L', 'vendor', t));
+  assert e like '%does not match the partner type%', 'SEG-18: cliente a proveedor sin cambiar su 430: ' || coalesce(e, 'lo dejó hacer');
+  -- control: cambiar el nombre del tercero sigue funcionando
+  e := public.falla(format('update erp.business_partners set email = %L where id = %L', 'cliente@ficticio.test', t));
+  assert e is null, 'control: cambiar el correo del tercero: ' || coalesce(e, '');
+  raise notice 'OK  · SEG-18: la subcuenta de un tercero es de su empresa y de su tipo';
+
+  -- SEG-19 · tope de tamaño de las opiniones sobre la IA (1.000 caracteres de texto del usuario)
+  e := public.falla(format('insert into erp.ai_feedback (company_id, kind, prompt, answer, verdict) values (%L, %L, %L, %L, %L)',
+                           z, 'tutor', repeat('x', 1001), '{}', 'correct'));
+  assert e like '%ai_feedback_sizes%', 'SEG-19: pregunta de 1.001 caracteres: ' || coalesce(e, 'lo dejó hacer');
+  e := public.falla(format('insert into erp.ai_feedback (company_id, kind, prompt, answer, verdict, comment) values (%L, %L, %L, %L, %L, %L)',
+                           z, 'tutor', 'Compra de material', '{}', 'wrong', repeat('x', 1001)));
+  assert e like '%ai_feedback_sizes%', 'SEG-19: comentario de 1.001 caracteres: ' || coalesce(e, 'lo dejó hacer');
+  e := public.falla(format('insert into erp.ai_feedback (company_id, kind, prompt, answer, verdict) values (%L, %L, %L, %L, %L)',
+                           z, 'tutor', 'Compra', jsonb_build_object('x', repeat('y', 40000)), 'correct'));
+  assert e like '%ai_feedback_sizes%', 'SEG-19: respuesta de más de 32 KB: ' || coalesce(e, 'lo dejó hacer');
+  -- control: una opinión normal se guarda
+  e := public.falla(format('insert into erp.ai_feedback (company_id, kind, prompt, answer, verdict, comment) values (%L, %L, %L, %L, %L, %L)',
+                           z, 'tutor', repeat('x', 1000), '{"lines": []}', 'partial', 'Falta el IGIC'));
+  assert e is null, 'control: una opinión normal: ' || coalesce(e, '');
+  raise notice 'OK  · SEG-19: las opiniones sobre la IA tienen tope de tamaño';
+end $$;
+reset role;
+select set_config('request.jwt.claim.sub', '', false) \gset
+select set_config('request.jwt.claims', '', false) \gset
+
 \echo 'FASE 80 OK'

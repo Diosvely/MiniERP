@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# =====================================================================
+# Prueba del diagnóstico de Supabase (v0.60.5, SEG-15)
+#   1. Una base nueva con todas las migraciones → el diagnóstico NO devuelve ninguna fila.
+#   2. La misma base con una corrección de permisos «a medias» (la de la v0.60.3, SEG-09, sin su revoke y con su
+#      política antigua) y una tabla sin RLS → el diagnóstico SÍ las ve.
+#   3. El diagnóstico guardado en el repositorio está al día (es el que genera el script ahora).
+# Conexión: las variables estándar de PostgreSQL, como test-db.sh. La usa la integración continua.
+# =====================================================================
+set -euo pipefail
+cd "$(dirname "$0")/.."
+
+saved=$(mktemp)
+cp database/diagnostico-supabase.sql "$saved"
+bash scripts/generar-diagnostico.sh > /dev/null
+if ! diff -q "$saved" database/diagnostico-supabase.sql > /dev/null; then
+  cp "$saved" database/diagnostico-supabase.sql
+  echo "✗ database/diagnostico-supabase.sql no está al día: ejecuta bash scripts/generar-diagnostico.sh"; exit 1
+fi
+
+db="t_diagnostico"
+dropdb --if-exists "$db" >/dev/null 2>&1
+createdb "$db"
+trap 'dropdb --if-exists "$db" >/dev/null 2>&1; rm -f "$saved"' EXIT
+{
+  psql -q -X -v ON_ERROR_STOP=1 -d "$db" -f database/tests/supabase_stub.sql
+  for f in database/migrations/*.sql; do psql -q -X -v ON_ERROR_STOP=1 -d "$db" -f "$f"; done
+} > /dev/null 2>&1
+
+rows=$(psql -X -At -v ON_ERROR_STOP=1 -d "$db" -f database/diagnostico-supabase.sql)
+[[ -z "$rows" ]] || { echo "✗ base al día, pero el diagnóstico devuelve filas:"; echo "$rows"; exit 1; }
+echo "✓ base al día: el diagnóstico no devuelve ninguna fila"
+
+psql -q -X -v ON_ERROR_STOP=1 -d "$db" -c "
+  grant insert, update, delete on erp.company_users to authenticated;
+  create policy manage on erp.company_users for all to authenticated using (true);
+  alter table erp.ai_feedback disable row level security;" > /dev/null
+rows=$(psql -X -At -v ON_ERROR_STOP=1 -d "$db" -f database/diagnostico-supabase.sql)
+for want in "permisos de authenticated en company_users" "política company_users.manage|sobra" "tabla ai_feedback|sin RLS"; do
+  grep -qF "$want" <<< "$rows" || { echo "✗ el diagnóstico no ve: $want"; echo "$rows"; exit 1; }
+done
+echo "✓ permisos de más, una política que sobra y una tabla sin RLS: el diagnóstico los ve"

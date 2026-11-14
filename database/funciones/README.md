@@ -1,6 +1,6 @@
 # Funciones del esquema erp (versión vigente)
 
-Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0092`.
+Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0094`.
 No se edita a mano: el código fuente son las migraciones. Esto es para **estudiar** cada función en su forma
 actual sin rastrear sus redefiniciones.
 
@@ -9,7 +9,7 @@ actual sin rastrear sus redefiniciones.
 - **Tipo:** *invoker* (se ejecuta con los permisos de quien llama: manda la RLS), *security definer* (con los del
   dueño: comprueba ella misma los permisos) o *trigger*.
 
-369 funciones.
+370 funciones.
 
 | Función | Versiones | Vigente en | Tipo |
 |---|---|---|---|
@@ -342,7 +342,7 @@ actual sin rastrear sus redefiniciones.
 | [`tg_entry_payment_reverse`](tg_entry_payment_reverse.sql) | 1 | 0035_payments | trigger |
 | [`tg_entry_prevent_delete`](tg_entry_prevent_delete.sql) | 1 | 0004_journal_entries | trigger |
 | [`tg_entry_pro_rata_reverse`](tg_entry_pro_rata_reverse.sql) | 1 | 0020_pro_rata | trigger |
-| [`tg_entry_validate`](tg_entry_validate.sql) | 1 | 0004_journal_entries | trigger |
+| [`tg_entry_validate`](tg_entry_validate.sql) | 2 | 0094_integrity_hardening | trigger |
 | [`tg_entry_work_month`](tg_entry_work_month.sql) | 1 | 0069_monthly_accounting | trigger |
 | [`tg_fiscal_year_status`](tg_fiscal_year_status.sql) | 1 | 0017_year_closing | trigger |
 | [`tg_gl_account_block_default`](tg_gl_account_block_default.sql) | 1 | 0013_balance_rules | trigger |
@@ -356,7 +356,8 @@ actual sin rastrear sus redefiniciones.
 | [`tg_line_set_partner`](tg_line_set_partner.sql) | 1 | 0009_partners | trigger |
 | [`tg_line_set_tax_code`](tg_line_set_tax_code.sql) | 2 | 0021_journal_import | trigger |
 | [`tg_line_tax_period_lock`](tg_line_tax_period_lock.sql) | 3 | 0021_journal_import | trigger |
-| [`tg_line_validate`](tg_line_validate.sql) | 3 | 0092_balance_and_permissions_fixes | trigger |
+| [`tg_line_validate`](tg_line_validate.sql) | 4 | 0094_integrity_hardening | trigger |
+| [`tg_partner_account`](tg_partner_account.sql) | 1 | 0094_integrity_hardening | trigger |
 | [`tg_partner_equivalence`](tg_partner_equivalence.sql) | 1 | 0019_reverse_charge_surcharge | trigger |
 | [`tg_partner_sync_account_name`](tg_partner_sync_account_name.sql) | 1 | 0009_partners | trigger |
 | [`tg_partner_validate`](tg_partner_validate.sql) | 1 | 0009_partners | trigger |

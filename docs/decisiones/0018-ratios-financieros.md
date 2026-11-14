@@ -19,7 +19,8 @@ El objetivo es aprender a leerlos, no solo a calcularlos. Por eso cada ratio tie
    total A) del estado de flujos. Cualquier mejora en la clasificación de cuentas llega sola a los ratios.
 3. **Se usan saldos de cierre, no medias.** Así cada ratio se comprueba con el balance que hay en pantalla.
    Los manuales usan a veces saldos medios para la rotación y los periodos medios; se anota como mejora futura.
-4. **Las zonas de referencia son las de los manuales españoles** (Amat, Rivero…) y son orientativas.
+4. **Las zonas de referencia son las habituales de los manuales españoles de análisis de estados financieros** y son
+   orientativas. *(Revisión ética, v0.60.5: sin nombres de autores.)*
    Fuera de la zona, el ratio se marca como bajo o alto, pero no como "malo": depende del sector, y así se dice
    en pantalla.
 5. **Cada ratio devuelve su numerador y su denominador**, para que la pantalla muestre la fórmula con los
@@ -37,7 +38,7 @@ El objetivo es aprender a leerlos, no solo a calcularlos. Por eso cada ratio tie
 ## Consecuencias
 
 - El Modo auditor queda completo: importar → balance y PyG → flujos de efectivo → ratios.
-- Los ratios de las empresas reales enseñan cosas que no se ven en los estados financieros, por ejemplo:
+- Los ratios de los diarios de estudio enseñan cosas que no se ven en los estados financieros, por ejemplo:
   - periodos de cobro por encima del máximo legal de 60 días;
   - beneficio que no llega a la caja;
   - empresas que ganan por rotación y no por margen.

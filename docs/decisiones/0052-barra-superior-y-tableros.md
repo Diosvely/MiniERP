@@ -26,7 +26,7 @@ validó antes de construir (`diseno-v0.52.0.md`).
 4. **Una sola llamada**, `erp.dashboard_data`: cada cifra a la fecha elegida y a la misma fecha del año anterior, y las
    series de cada fin de mes de los dos ejercicios (con «lo de cada mes» ya calculado para las barras).
 5. **Una pasada por el diario para todas las fechas.** El tablero necesita el balance y la PyG a 26 fechas. Llamar 26
-   veces a la clasificación de siempre tardaba 18 s con 60.000 asientos. `erp.fs_classified_at` clasifica las cuentas
+   veces a la clasificación de siempre tardaba 18 s con un diario grande. `erp.fs_classified_at` clasifica las cuentas
    a varias fechas de una vez. `erp.fs_classified_accounts` y `erp.fs_amounts` pasan a ser el caso de una fecha, con la
    misma firma y el mismo resultado, así que la regla sigue en un solo sitio: 2,6 s.
 6. **Primer tablero, «Resumen de dirección»** (decisión de Diosvely): cifra de negocios, resultado, tesorería y fondo de
@@ -50,7 +50,7 @@ validó antes de construir (`diseno-v0.52.0.md`).
 - **Escalable:** los tableros de tesorería y cobros, rentabilidad y ventas y gastos serán filas nuevas del catálogo (y
   alguna métrica nueva).
 - **Limitaciones conocidas:**
-  - con 60.000 asientos el tablero tarda unos 2,6 s; la mayor parte es la seguridad fila a fila de Supabase, que ya
+  - con un diario grande el tablero tarda unos 2,6 s; la mayor parte es la seguridad fila a fila de Supabase, que ya
     pesaba en el Balance (1 s con esos datos);
   - las barras enseñan solo el ejercicio elegido; el año anterior está en «Ver como tabla» y en el Excel;
   - el catálogo lo rellenan las migraciones; no hay todavía pantalla para editarlo.

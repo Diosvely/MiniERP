@@ -44,7 +44,7 @@ importación.
    - si se llega a uno de ellos, «ahora hay muchas empresas de prueba, prueba en un rato».
 5. **IA:** el registrado la tiene en su temporal, con **5 consultas al día**; los miembros, 10; el owner, sin límite.
 6. **En la web:**
-   - «Prueba el ERP con tu diario» en la lista de empresas, con lo que dura y sus topes;
+   - «Prueba el ERP con un diario de práctica» (antes, «con tu diario») en la lista de empresas, con lo que dura y sus topes;
    - el aviso antes de subir, y el tope de líneas comprobado antes de subir;
    - «⏳ Temporal» en la lista y una franja en la empresa que dice cuándo se borra.
 

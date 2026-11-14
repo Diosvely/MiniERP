@@ -136,7 +136,7 @@ insert into erp.dash_widgets (dashboard, sort, kind, size, mode, label, label_en
 -- ---------- Cálculo ----------
 -- LA MISMA REGLA, PARA VARIAS FECHAS EN UNA PASADA. Un tablero necesita el balance y la PyG a 26 fechas (cada fin de
 -- mes de dos ejercicios y la fecha elegida); llamar 26 veces a erp.fs_classified_accounts recorre el diario 26 veces
--- (18 s con 60.000 asientos). erp.fs_classified_at suma el diario UNA vez por cuenta y día y saca el saldo a cada
+-- (18 s con un diario grande). erp.fs_classified_at suma el diario UNA vez por cuenta y día y saca el saldo a cada
 -- fecha. erp.fs_classified_accounts y erp.fs_amounts pasan a ser el caso de una sola fecha: la regla sigue en un sitio.
 --   p_dates: las fechas de corte (null = el ejercicio entero)
 create or replace function erp.fs_classified_at(p_company uuid, p_year integer, p_statement text, p_dates date[])

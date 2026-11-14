@@ -5,7 +5,7 @@
 -- y el estado de flujos de efectivo (0022) del propio ERP:
 --   liquidez · solvencia y endeudamiento · rentabilidad · actividad (periodos medios) · flujos de caja
 -- Cada ratio guarda su fórmula, su interpretación y su zona de referencia (las de los manuales españoles:
--- Amat, Rivero, Garrido…). La referencia es ORIENTATIVA: depende del sector, y así se explica en pantalla.
+-- análisis de estados financieros). La referencia es ORIENTATIVA: depende del sector, y así se explica en pantalla.
 -- Se calculan con los saldos de cierre (no con medias) para que cada ratio se pueda comprobar a mano con el balance.
 -- =====================================================================
 

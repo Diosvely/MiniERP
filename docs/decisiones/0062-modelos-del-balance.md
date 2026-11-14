@@ -67,13 +67,24 @@ Su próximo vídeo trata del Balance, y quería enseñar esa diferencia con el E
   - «A-2) Ajustes por cambios de valor» (133, 1340, 137). Por eso las subvenciones son A-2 en PYMES y A-3 en el general.
 - **Por qué las Existencias son I o II:** el PGC de PYMES no tiene la partida de activos mantenidos para la venta, y todo
   el activo corriente sube un número. Lo mismo pasa con el pasivo corriente.
-- **Quién usa cada modelo** (pendiente de validar por Diosvely: art. 257 de la LSC y art. 2 del RD 1515/2007):
-  - el de PYMES y el abreviado, las empresas que no superan dos de tres límites (activo, cifra de negocios y plantilla
-    media);
-  - el normal, las demás.
+- **Quién usa cada modelo** (validado por auditoría fiscal el 10-11-2026, AF-07; norma vigente a esa fecha):
+  - **Balance abreviado** (art. 257.1 LSC): las sociedades que durante dos ejercicios consecutivos reúnan, al cierre
+    de cada uno, al menos dos de estas tres circunstancias: activo ≤ 4.000.000 €, cifra anual de negocios
+    ≤ 8.000.000 € y plantilla media ≤ 50. En el primer ejercicio basta con cumplirlas al cierre.
+  - **PGC de PYMES** (RD 1515/2007, art. 2): los mismos límites y la misma regla. Si la empresa es de un grupo, se
+    suman las cifras del grupo. No pueden aplicarlo las entidades de interés público, las empresas de un grupo que
+    formule o deba formular cuentas consolidadas, las de moneda funcional distinta del euro ni las entidades
+    financieras. La opción se mantiene al menos tres ejercicios.
+  - **Normal:** las demás.
+  - La **PyG abreviada** tiene límites propios (art. 258 LSC: 11.400.000 €, 22.800.000 € y 250 trabajadores). El
+    Mini ERP presenta siempre la PyG de PYMES (decisión 6).
+  - Hay un proyecto de ley que sube los límites del abreviado y del PGC de PYMES (activo 7.500.000 € y cifra de
+    negocios 15.000.000 €; AF-08). Mientras no se publique en el BOE, valen estos.
 - **Fuentes:**
   - RD 1514/2007, tercera parte: modelos normales y abreviados;
-  - RD 1515/2007, tercera parte: modelos de PYMES.
+  - RD 1515/2007, tercera parte: modelos de PYMES;
+  - límites: art. 257 y 258 LSC (consolidado del BOE, 03-01-2025) y art. 2 del RD 1515/2007 (consolidado del BOE,
+    30-01-2021), consultados el 10-11-2026.
   **Abreviado validado** (auditoría fiscal, 09-11-2026): partidas y cuentas comparadas con el «Balance abreviado» del
   RD 1514/2007, tercera parte, texto consolidado del BOE (última actualización 21-12-2024).
 

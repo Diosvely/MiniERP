@@ -7,7 +7,7 @@
 
 ## Contexto
 
-Las contabilidades reales del Modo auditor son de profesionales que compartieron sus datasets en cursos. La idea
+Los diarios de estudio del Modo auditor son de profesionales que compartieron sus datasets en cursos. La idea
 es colaborar con ellos: decirles "tus datos están montados en mi ERP; revisa cómo los analiza y contabiliza la
 IA y dame tu criterio". Para eso, quien cede los datos tiene que poder:
 - entrar **solo en su empresa**;

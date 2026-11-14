@@ -1,4 +1,4 @@
-# Modelo de datos · Data model (v0.57.1)
+# Modelo de datos · Data model (revisado en la v0.60.x)
 
 Todo vive en el schema `erp` de PostgreSQL (Supabase), salvo el puente a Power BI, que está en el schema `bi`. Los
 nombres van en inglés, al estilo de BC y SAP; el vocabulario está en [glosario.md](glosario.md).

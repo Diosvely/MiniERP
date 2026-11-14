@@ -13,7 +13,7 @@ antes de los módulos auxiliares (inmovilizado, inventario, nóminas), que será
 Hay tres condiciones:
 - **gratis**;
 - **solo para el propietario**;
-- **sin exponer las contabilidades reales**, que son privadas.
+- **sin exponer los diarios de estudio**, que son privados.
 
 ## Decisión
 
@@ -48,7 +48,7 @@ Hay tres condiciones:
 
 ## Consecuencias
 
-- La primera prueba con datos reales no inventó ninguna cifra. Sí destapó un **fallo nuestro**:
+- La primera prueba con un diario de estudio no inventó ninguna cifra. Sí destapó un **fallo nuestro**:
   - con pérdidas, la *calidad del resultado* dividía dos negativos y daba un positivo engañoso; lo mismo pasaba
     con el ROE si el patrimonio neto era negativo;
   - ahora esos ratios quedan sin valor.

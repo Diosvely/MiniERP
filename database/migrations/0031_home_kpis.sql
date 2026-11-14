@@ -16,7 +16,7 @@
 --     a Hacienda; si no, la liquidación del trimestre anterior restaría en este.
 --   · Tesorería inicial = la que trae el asiento de apertura (0 si el ejercicio no tiene apertura).
 -- Permisos: comprueba erp.can_read (dueño, miembro, lector o demo publicada) y después lee sin RLS fila a fila,
--- como el EFE y los ratios. Agrega primero por cuenta y mes (pocas filas): rápido también con 120.000 apuntes.
+-- como el EFE y los ratios. Agrega primero por cuenta y mes (pocas filas): rápido también con un diario grande.
 -- Re-ejecutable.
 -- =====================================================================
 

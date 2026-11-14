@@ -25,7 +25,7 @@ empresa.
 > - a guided home screen, a Basic / Auditor menu, plain-language error messages, journal-entry templates and an
 >   in-app glossary with Business Central / SAP equivalents. Accessible: no axe-core issues (WCAG 2 A/AA);
 > - an audit trail (ledger → journal entry → ledger of each account), a per-company work date, and fast reports
->   on real multi-year journals (tens of thousands of lines);
+>   on large multi-year journals;
 > - a home dashboard (cash, result, VAT, receivables, payables and month-end cash chart), comparative statements with
 >   horizontal analysis, a cash-flow waterfall, ratio trends, and Excel export / print for every report.
 >
@@ -51,7 +51,7 @@ española y el funcionamiento real de un ERP. Los ERP comerciales son caros y di
 propia, así que decidí **construir uno**. Diseñar la tabla de asientos obliga a entender *por qué* un ERP impone
 cada regla. Además, todo el código está en inglés para practicar el vocabulario técnico de BC y SAP.
 
-## ¿Qué hace hoy? (v0.60.4)
+## ¿Qué hace hoy? (v0.60.5)
 
 **Primeros pasos y navegación**
 - **Pantalla de Inicio** en cada empresa:
@@ -213,7 +213,7 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
 - **Rastro contable:** el nº de asiento del mayor abre la **ficha del asiento**, y cada cuenta de la ficha (y del
   diario) abre su libro mayor; una anulación lleva a su pareja. Como el FBL3N → FB03 de SAP. "Volver" y el botón
   atrás deshacen el camino.
-- **Rápido con diarios grandes:** el mayor filtra antes de calcular el saldo (0,2 s con 120.000 apuntes) y
+- **Rápido con diarios grandes:** el mayor filtra antes de calcular el saldo (0,2 s con un diario grande) y
   las listas largas se leen por páginas, sin el corte de 1.000 filas de Supabase.
 
 **Modo auditor: practicar con diarios importados**
@@ -282,7 +282,7 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
 | Web | **React + Vite** | Componentes por pantalla, i18n propio (es/en), rutas con almohadilla, iconos `lucide-react` |
 | IA | **Cloudflare Workers AI** + Pages Functions | `/api/ai` (Mistral Small 3.1) y `/api/tutor` (gpt-oss-120b); la clave nunca llega al navegador |
 | Despliegue | **Cloudflare Pages** | Despliegue automático desde `main`, dirección de prueba por rama y cabeceras de seguridad (`_headers`) |
-| Calidad | **GitHub Actions** + **Vitest** + Dependabot | 83 pruebas SQL, 341 tests de la web, lint, build y auditoría de dependencias en cada Pull Request |
+| Calidad | **GitHub Actions** + **Vitest** + Dependabot | 83 pruebas SQL, la prueba del diagnóstico, 345 tests de la web, lint, build y auditoría de dependencias en cada Pull Request |
 | Versionado | Git + GitHub | Ramas, Pull Requests, `main` protegida, versiones etiquetadas y decisiones documentadas (ADR) |
 
 **Principio clave:** la web nunca es la única barrera. Aunque alguien manipule el navegador, PostgreSQL rechaza:
@@ -403,14 +403,14 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
     matriz de permisos y la 80, la guardiana, prueba todas las funciones contra las empresas de otro usuario; la 81,
     que la misma semilla da la misma contabilidad y que cada empresa sintética cuadra; la 82, que los tres modelos
     del Balance suman lo mismo; y la 83, que ningún texto de la base de datos nombra un programa comercial);
-  - **341 tests de la web con Vitest**: formatos, rutas, importadores, errores, idiomas (español e inglés con las
+  - **345 tests de la web con Vitest**: formatos, rutas, importadores, errores, idiomas (español e inglés con las
     mismas claves), glosario, plantillas, la defensa de las funciones de IA, la lectura por páginas, el borrado por
     tandas, la fecha de trabajo, los gráficos, el análisis horizontal, la exportación a Excel y los tableros (unidades,
     trimestres, rankings, lista de control y saldos al revés) y que la tabla de roles dice lo mismo que la matriz de
     permisos;
   - lint, build y auditoría de dependencias de la web.
 - **Accesibilidad** comprobada con axe-core (WCAG 2 A/AA) en las pantallas principales, en modo claro y oscuro.
-- **Rendimiento** probado en local con una contabilidad de 120.000 apuntes antes de cada entrega.
+- **Rendimiento** probado en local con un diario grande antes de cada entrega.
 - La rama `main` está protegida: solo se fusiona con los checks en verde.
 
 ## Instalación propia
@@ -513,7 +513,7 @@ cuadrados. El ERP también lee directamente los diarios en Excel y los de Busine
 - [x] **v0.26.0**: errores en lenguaje claro, pantalla de entrada y plantillas de asientos
 - [x] **v0.27.0**: glosario en la app, accesibilidad, colores e iconos, capturas en el README
 - [x] **v0.28.0**: seguridad (cabeceras, IA endurecida, CAPTCHA, limpieza de invitados y tests de la web)
-- [x] **v0.29.0**: libro mayor rápido con datos reales, borrar empresa, fecha de trabajo y rastro contable
+- [x] **v0.29.0**: libro mayor rápido con diarios grandes, borrar empresa, fecha de trabajo y rastro contable
 - [x] **v0.29.1**: seguridad (solo el propietario nombra titulares de los datos), licencia MIT, SECURITY.md y Dependabot
 - [x] **v0.30.0**: Inicio con indicadores, Balance y PyG comparativos, cascada del EFE, evolución de ratios, Excel e imprimir
 - [x] **v0.31.0**: IA guiada por reglas (retenciones calculadas por el ERP desde la ficha del tercero) y panel de uso de la web
@@ -555,8 +555,9 @@ cuadrados. El ERP también lee directamente los diarios en Excel y los de Busine
 - [x] **v0.60.0**: el Balance en los tres modelos del PGC (PYMES, abreviado y normal)
 - [x] **v0.60.1**: revisión ética de los textos (sin nombres de programas comerciales; control antes o después)
 - [x] **v0.60.2**: correcciones del Impuesto sobre Sociedades (microempresa 2025 y desde 2027; período impositivo de menos de un año) y prueba del borrado completo
-- [x] **v0.60.3**: correctoras del activo en el Balance, escrituras directas por la API cerradas (la guardiana vigila también las tablas) y bitácora sin cifras de diarios reales
+- [x] **v0.60.3**: correctoras del activo en el Balance, escrituras directas por la API cerradas (la guardiana vigila también las tablas) y bitácora sin cifras de diarios de estudio
 - [x] **v0.60.4**: logo nuevo, grupos 8 y 9 en «Ajustes por cambios de valor» y correcciones del vídeo 02
+- [x] **v0.60.5**: nadie toca los asientos por la puerta de atrás (líneas, contabilizar, terceros), avisos de la IA, diagnóstico con la seguridad y textos sin los diarios de estudio
 - [ ] Más botones en la barra superior
 - [ ] Ontología contable y chat con la IA (consulta, nunca calcula)
 - [ ] Más informes en Power BI e incrustarlos en el ERP con RLS por empresa

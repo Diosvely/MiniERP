@@ -49,7 +49,7 @@ Diosvely pidió dos mejoras de uso en los informes (diseño validado antes de co
 ## Consecuencias
 - Se ve el efecto de un asiento antes de contabilizarlo, en los mismos informes de siempre.
 - La web actual seguía funcionando con la 0074 aplicada: el parámetro es opcional.
-- **Rendimiento:** con 60.000 asientos, el mayor de una cuenta pasa de unos 0,1 s a unos 0,2 s.
+- **Rendimiento:** con un diario grande, el mayor de una cuenta pasa de unos 0,1 s a unos 0,2 s.
 - **Limitaciones conocidas:**
   - la franja de Flujos y Ratios cuenta los borradores del ejercicio elegido; la columna del anterior también los
     incluye si los hay;

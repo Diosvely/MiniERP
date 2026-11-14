@@ -19,20 +19,31 @@ trabajar, no para aprender: no explican el porqué, requieren licencia o instala
 ## Consecuencias
 - No se aceptan contabilidades reales de empresas en el ERP.
 
-## Actualización (2026-10-15): contabilidades reales
+## Actualización (2026-10-15): diarios de estudio
 Una revisión externa señaló que esta consecuencia («no se aceptan contabilidades reales») contradice la ADR 0016
-(importación de diarios reales). Las dos se refieren a cosas distintas, y queda así:
+(importación de diarios). Las dos se refieren a cosas distintas, y queda así:
 
 1. **Lo que sigue en pie:** el Mini ERP **no es el programa oficial** con el que una empresa lleva y presenta su
    contabilidad. No hay libros legalizados, ni presentación a la AEAT (SII, Verifactu, modelos), ni garantía. Para
    eso están los programas contables profesionales.
-2. **Lo que sí se permite:** **estudiar** contabilidades reales con las herramientas del laboratorio (ADR 0016):
-   importar el diario de otro ERP o registrar operaciones reales para practicar y encontrar fallos.
+2. **Lo que sí se permite:** **estudiar** diarios de estudio con las herramientas del laboratorio (ADR 0016):
+   importar el diario de otro ERP o registrar operaciones de práctica para encontrar fallos.
    - Siempre en una empresa **privada** de quien la importa.
-   - Los datos reales **nunca entran en el repositorio**; las pruebas usan datos inventados.
+   - Esos datos **nunca entran en el repositorio**; las pruebas usan datos inventados.
    - Solo se publica como demo si su **titular** lo decide, **anonimizada** y con su **mención** (ADR 0021 y 0027).
 
 *Revisión ética (v0.60.1, 2026-11-08): se quitan los nombres de programas comerciales (ADR 0063). La decisión y sus consecuencias no cambian.*
 
 *Política de uso (v0.60.3, 2026-11-09): el Mini ERP es para practicar y aprender. No invita a usarlo con datos reales de
 empresas y su autor no se responsabiliza si alguien lo hace. La importación de diarios sigue existiendo para practicar.*
+
+## Actualización (v0.60.5, 2026-11-14): los diarios de estudio de terceros
+Decisión de Diosvely. **Los diarios de estudio de terceros** son diarios ficticios que compartieron profesionales y que
+Diosvely importa en empresas privadas **solo para estudiarlos**. No son suyos y no se pueden usar:
+- en el repositorio **no se nombran** («Empresa 1», «Empresa 2»…), **no se dan sus cifras** (número de asientos o
+  apuntes, importes, porcentajes) y **no se llaman «contabilidad real»**;
+- **nunca son demo**;
+- lo que se aprende de ellos se cuenta sin sus cifras («una empresa importada grande»).
+Se quitaron de la bitácora, el CHANGELOG, las decisiones y los comentarios de las migraciones (los comentarios no cambian
+nada en la base de datos). El historial de git conserva los textos antiguos.
+

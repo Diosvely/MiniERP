@@ -410,7 +410,7 @@ recargo de equivalencia y prorrata.
   - 10 cuentas del PGC que faltaban en la plantilla (633, 638, 644, 259, 293, 297, 598, 673, 796, 799);
   - sumas y saldos y saldos anómalos sin el asiento de cierre (opción "excluir cierre").
 - Web: convertidores de diario en Excel, de Dynamics 365 Business Central y de la plantilla (`importers.js`) y pantalla Importar diario.
-- Probado con varios diarios reales de práctica (privados, nunca en el repositorio): resultados y balances iguales a los
+- Probado con varios diarios de estudio (privados, nunca en el repositorio): resultados y balances iguales a los
   del programa de origen.
 - Pruebas: `test_fase16_import.sql` (con datos inventados).
 
@@ -446,8 +446,9 @@ recargo de equivalencia y prorrata.
 - El indirecto mira **variaciones de saldo**; el directo mira **cobros y pagos**. Por actividades solo difieren
   por los asientos sin dinero que mezclan actividades.
 - La importancia de la **523 "Proveedores de inmovilizado"**:
-  - Si una empresa compra inmovilizado a un proveedor normal (400) en lugar de a la 523, el método directo no ve la
-    inversión y el indirecto sí.
+  - Si una empresa compra inmovilizado a un proveedor normal (400) en lugar de a la 523, en esta versión el método
+    directo del ERP miraba la cuenta del tercero y lo clasificaba como explotación. Se corrigió en la v0.45.0: el pago
+    se clasifica por lo que se compra, no por la cuenta del proveedor (ADR 0045).
   - Si paga a proveedores con una póliza de crédito, es explotación para el indirecto y financiación para el directo.
 - La línea 1 del indirecto es el **resultado antes de impuestos**. El impuesto (630) va al punto 4 por lo
   realmente pagado (4752).
@@ -513,7 +514,7 @@ mensual a contabilidad, como el módulo de Activos Fijos de BC o AA de SAP.
 
 **Lo que se aprende en esta fase**
 - Cómo integrar IA en un ERP sin perder el control: los cálculos en la base de datos y la interpretación en el modelo.
-- Con datos reales, la IA no inventó cifras, pero una mala definición nuestra la llevó a una conclusión falsa:
+- Con un diario de estudio, la IA no inventó cifras, pero una mala definición nuestra la llevó a una conclusión falsa:
   "calidad del resultado buena" con pérdidas y caja negativa. **Un ratio con dos negativos puede engañar**,
   y eso vale también para un analista humano.
 - "Fuera de la zona de referencia" no siempre significa "malo": un endeudamiento bajo es menos riesgo.
@@ -739,7 +740,7 @@ asientos frecuentes.
 
 **Qué se hizo**
 - **Libro mayor rápido:** función `erp.general_ledger` (migración 0029). Primero filtra y después calcula el saldo:
-  de 6,9 s (timeout en Supabase) a 0,2 s con 120.000 apuntes.
+  de 6,9 s (timeout en Supabase) a 0,2 s con un diario grande.
 - **Índices en todas las claves foráneas:** borrar una empresa grande pasa de 148 s a tandas de 0,5 s.
 - **Lecturas de más de 1.000 filas** por páginas (`fetchAll`) en el diario, el mayor, sumas y saldos y las cuentas.
 - **Borrar empresa:** zona de peligro con resumen de lo que se borra, confirmación escribiendo el nombre y barra de
@@ -750,7 +751,7 @@ asientos frecuentes.
 - Prueba SQL fase 23 y 15 tests nuevos de la web (62 en total).
 
 **Lo que se aprende en esta fase**
-- **Probar con datos reales:** todo funcionaba con 20 asientos. Con 60.000 aparecieron el timeout, el límite de
+- **Probar con volumen:** todo funcionaba con 20 asientos. Con un diario grande aparecieron el timeout, el límite de
   1.000 filas y el borrado lento. Ahora se prueba en local con un volumen grande antes de entregar.
 - **El orden importa en SQL:** una función de ventana sobre una vista se calcula *antes* del `where`. Filtrar
   primero es la diferencia entre 7 s y 0,2 s.
@@ -818,7 +819,7 @@ asientos frecuentes.
 
 **Decisiones:** ADR 0028 · Bloque visual: indicadores, estados comparativos, gráficos con criterio y exportación.
 
-**Siguiente paso:** usar el ERP con contabilidad real y pulir lo que salga. Después, el **Inmovilizado**.
+**Siguiente paso:** usar el ERP con diarios de estudio y pulir lo que salga. Después, el **Inmovilizado**.
 
 ## 2026-10-13 · v0.31.0 · IA guiada por reglas (retenciones) y panel de uso de la web
 
@@ -848,7 +849,7 @@ asientos frecuentes.
 
 **Decisiones:** ADR 0029 · IA guiada por reglas (retenciones) y panel de uso de la web.
 
-**Siguiente paso:** usar el ERP con contabilidad real y anotar cada fallo de la IA: cada uno será una regla o un caso
+**Siguiente paso:** usar el ERP con diarios de estudio y anotar cada fallo de la IA: cada uno será una regla o un caso
 de prueba de las fases 2 a 4. Después, el **Inmovilizado**.
 
 ## 2026-10-14 · v0.32.0 · Cobros y pagos contra la factura (Tesorería I)
@@ -916,7 +917,7 @@ dos fallos reales y una debilidad de fondo.
 - **Fallo 2:** una cuota incoherente (base 100 × 21 % con cuota 500) se aceptaba sin aviso. Ahora es una comprobación
   del auditor, y en modo estricto ese asiento ya no se contabilizaba (v0.33.0).
 - Pruebas de regresión (fase 33): fallan sin el arreglo y pasan con él. 33 pruebas SQL y 98 tests de la web.
-- ADR en UTF-8, la ADR 0010 matizada sobre contabilidades reales y el volcado de las 145 funciones en
+- ADR en UTF-8, la ADR 0010 matizada sobre los diarios de estudio y el volcado de las 145 funciones en
   `database/funciones/` para estudiarlas.
 
 **Lo que se aprende**
@@ -1082,7 +1083,7 @@ el 111.
   0,20 + 0,60 + 0,75 + 1,00 de AT = 31,65 %) y la trabajadora 151,67 (6,50 %). Coste del mes: 2.333,33 + 738,50.
 - **El asiento de enero:** 640 D 2.000 · 640 D 333,33 (paga devengada) · 642 D 738,50 / 476 H 890,17 · 4751 H 240 ·
   465 H 1.608,33 (líquido) · 465 H 333,33 (paga). En junio la 465 se carga con los 2.000 de la paga, que se cobra con
-  la nómina y paga su IRPF (480), pero no cotiza otra vez.
+  la nómina y paga su IRPF (480 € ese mes), pero no cotiza otra vez.
 - **El redondeo se cuadra en el mes de la paga:** 5 × 333,33 + 333,35 = 2.000, al céntimo.
 - **Temporal o indefinido cambia el desempleo:** Luis (temporal) paga 1,60 % y la empresa 6,70 %, frente a 1,55 % y
   5,50 % de un indefinido.
@@ -1442,7 +1443,7 @@ fichas por pantalla.
   - los topes en una tabla de ajustes;
   - la IA a 5 consultas al día para los registrados.
 - **Pantallas:**
-  - «Prueba el ERP con tu diario»;
+  - «Prueba el ERP con tu diario» (desde la v0.60.5, «con un diario de práctica»);
   - el aviso y el tope de líneas;
   - «⏳ Temporal» y su franja;
   - el latido y el aviso al cerrar la pestaña.
@@ -1463,7 +1464,7 @@ fichas por pantalla.
 ## 2026-10-27 · v0.50.0 · Puente a Power BI
 
 **Qué se hizo**
-- **Para la charla de datos de Microsoft:** un diario de un cliente se importa en el ERP y Claude Code, con el MCP de
+- **Para la charla de datos de Microsoft:** un diario de ejemplo (datos ficticios) se importa en el ERP y Claude Code, con el MCP de
   Power BI, construye el informe en PBIP, que se comprueba al céntimo contra el ERP. Diseño validado antes de
   construir.
 - **Motor:** 0073, con el esquema `bi` de solo lectura (modelo en estrella de las empresas demo, saldos con la línea del
@@ -1511,7 +1512,7 @@ fichas por pantalla.
 - **Primer tablero, «Resumen de dirección»:** cifras clave, ingresos y gastos de cada mes, resultado acumulado,
   tesorería y salud financiera, con los filtros de los informes. Diseño validado antes de construir.
 - **Motor:** 0075, con el catálogo (métricas, tableros y tarjetas) y `erp.dashboard_data`. La clasificación del balance
-  a varias fechas va en una sola pasada (de 18 s a 2,6 s con 60.000 asientos).
+  a varias fechas va en una sola pasada (de 18 s a 2,6 s con un diario grande).
 - **Pruebas:** 69 SQL y 289 tests de la web.
 - **Rama:** `feat/v0.52.0-tableros`, que entra en `main` con un Pull Request.
 
@@ -1550,7 +1551,7 @@ sin el arreglo. Pruebas: 70 SQL.
 - Tras la v0.52.1, Comprobaciones y Caso iban bien en empresas pequeñas, pero en empresas grandes importadas de varios
   años seguía saliendo «La consulta ha tardado demasiado».
 
-**Causa** (reproducida con una empresa importada de 6 años: 108.000 asientos y 272.000 apuntes; Comprobaciones, 9,9 s)
+**Causa** (reproducida con una empresa importada grande de varios años; Comprobaciones, 9,9 s)
 - `erp.audit_lines`, que Comprobaciones usa 7 veces, hacía hasta 19 búsquedas por apunte para saber su origen.
 - Con asientos manuales, la comprobación de cuentas controladas revisaba asiento por asiento: 20 s.
 - La seguridad fila a fila se evaluaba en cada fila leída, y algunas funciones leían el diario de todos los años.
@@ -1592,8 +1593,8 @@ vez) y la fase 72, que falla sin el arreglo (97 ms → 870 ms al crecer otra emp
   «La consulta ha tardado demasiado».
 
 **Causa:** en Supabase todo va entre 6 y 15 veces más lento que en local, y con la memoria fría lo que cuesta es leer
-del disco. Comprobaciones leía todos los apuntes del ejercicio (43.564 en Empresa 1) y solo usa los de las cuentas 47,
-los que llevan impuesto y los de asientos manuales (10.508).
+del disco. Comprobaciones leía todos los apuntes del ejercicio y solo usa los de las cuentas 47, los que llevan impuesto y los
+de asientos manuales (en una empresa importada grande, una cuarta parte).
 
 **Arreglo:** 0079 (`erp.audit_lines_checks` lee solo esos, con un índice parcial) y la fase 73. Mismos resultados.
 Pruebas: 73 SQL.
@@ -1892,8 +1893,8 @@ de las funciones (fases 68 y 78) o el número de fuentes (fase 49).
 **Pantallas pendientes de diálogo:** ninguna; el Balance no crea nada.
 
 **Lo que se aprende**
-- **El BOE pone la 1034 y la 1044 en el pasivo:** el capital pendiente de inscripción es una deuda hasta que se
-  inscribe. Fue lo único que la prueba de cobertura encontró en otra masa.
+- **El BOE pone la (1034) y la (1044) en el pasivo, restando:** la deuda es la 194 (capital emitido pendiente de
+  inscripción); la 1034 y la 1044 la minoran hasta que se inscribe. Fue lo único que la prueba de cobertura encontró en otra masa.
 
 ## 2026-11-08 · v0.60.1 · Revisión ética de los textos
 
@@ -1944,7 +1945,7 @@ web.
 - **Una prueba que vigila todas las tablas** sigue valiendo cuando el proyecto crece: no hay que acordarse de añadir
   cada tabla nueva.
 
-## 2026-11-09 · v0.60.3 · Correctoras del activo, escrituras directas y bitácora sin cifras reales
+## 2026-11-09 · v0.60.3 · Correctoras del activo, escrituras directas y bitácora sin cifras de diarios de estudio
 
 **De dónde viene:** la tercera versión de la etapa de correcciones, con todo lo que Diosvely aprobó del buzón el
 09-11-2026: auditoría fiscal (AF-04 a AF-06), seguridad (SEG-09 a SEG-12) y redacción (H-23, H-24, H-27, H-28, H-30 a
@@ -1969,7 +1970,7 @@ H-32). Tres correcciones de redacción (H-25, H-26 y H-29) se reservan para hace
   tenga su saldo normal.
 - **Dos puertas a la misma casa:** la web entra por las funciones; la API, también por las tablas. La seguridad tiene
   que estar en la RLS y en los disparadores, y la prueba tiene que intentar entrar por las dos.
-- **Lo que se aprende de un diario real se cuenta sin sus cifras.**
+- **Lo que se aprende de un diario de estudio se cuenta sin sus cifras.**
 
 ## 2026-11-10 · v0.60.4 · Logo, grupos 8 y 9 y la corrección en directo
 
@@ -1991,4 +1992,27 @@ plazo de pago (H-26) queda pendiente: Diosvely quiere que auditoría fiscal la r
   por cambios de valor».
 - **Un archivo generado también envejece:** el diagnóstico comparaba con la migración 0089 y daba diferencias que no
   eran errores. Se regenera al cerrar cada versión.
+
+## 2026-11-14 · v0.60.5 · Nadie toca los asientos por la puerta de atrás
+
+**De dónde viene:** los hallazgos del chat de seguridad (SEG-13 a SEG-20), de redacción y de auditoría fiscal que
+Diosvely aprobó el 14-11-2026. Primera de las dos versiones para cerrar lo pendiente de los chats: esta no cambia ningún
+cálculo contable; la siguiente (operaciones societarias) espera las respuestas de auditoría fiscal.
+
+**Qué se hizo:**
+- Migración 0094: una línea no cambia de asiento; un asiento solo se contabiliza con las condiciones de
+  `erp.post_entry`; la subcuenta de un tercero, de su empresa y de su tipo; tope de tamaño en las opiniones de la IA.
+- Avisos en el panel de IA y cabeceras de seguridad en sus respuestas.
+- El diagnóstico de Supabase compara también la RLS, las políticas y los permisos, con su prueba en la CI.
+- Textos: la regla de los diarios de estudio de terceros (sin nombres, sin cifras, nunca demo; ADR 0010), «un diario de
+  práctica», sin autores de manuales y las correcciones menores de redacción. Límites del Balance abreviado (AF-07) y
+  reserva legal validada (AF-10).
+
+**Pruebas:** 83 de 83 (la fase 80 con cuatro regresiones nuevas), la prueba del diagnóstico y 345 tests.
+
+**Lo que se aprende**
+- **La regla tiene que estar donde se escribe el dato:** la pantalla solo contabiliza con `erp.post_entry`, pero la API
+  deja escribir en la tabla. Si la condición vive en la función, una escritura directa se la salta; en el disparador, no.
+- **Un archivo generado tiene que salir igual cada vez:** el diagnóstico ordenaba algunas listas «por 1», que en
+  PostgreSQL es ordenar por una constante. Con un orden explícito, la CI puede comprobar que está al día.
 

@@ -721,6 +721,7 @@ export default {
   // ---- Tutor de asientos (paso 126) ----
   tutorTitle: 'Tutor de asientos',
   tutorIntro: 'Describe una operación con tus palabras y la IA te propone el asiento según el PGC. El ERP lo comprueba: pone el IVA / IGIC vigente, usa tus subcuentas y avisa de lo que no cuadra. Nada se contabiliza hasta que tú lo revises.',
+  tutorNotice: 'Lo que escribas se envía a un modelo de IA abierto para proponer el asiento. Usa datos inventados: no escribas nombres ni datos de personas reales.',
   tutorPlaceholder: 'Ejemplo: Compro un ordenador de 1.200 € más IVA a Informática Pérez; pago la mitad hoy por banco y el resto a 60 días.',
   tutorPropose: 'Proponer asiento',
   tutorThinking: 'Pensando el asiento',
@@ -812,6 +813,7 @@ export default {
   feedbackKind: { tutor: 'Tutor de asientos', analyst: 'Analista IA' },
   feedbackShowAnswer: 'Ver la respuesta de la IA',
   feedbackAsk: '¿Es correcta esta respuesta de la IA?',
+  feedbackNotice: 'Si opinas, se guardan tu pregunta y la respuesta para mejorar la IA. Las puede leer el administrador del Mini ERP.',
   feedbackCommentOptional: 'Comentario (opcional)',
   feedbackCommentWrong: '¿Qué está mal y cómo sería lo correcto?',
   feedbackSend: 'Enviar opinión',
@@ -1742,7 +1744,7 @@ export default {
   tmp: {
     badge: 'Temporal',
     headerHelp: 'Empresa de prueba: se borra tras {idle} sin usar la aplicación o, como muy tarde, el {date}. Exporta a Excel lo que quieras guardar.',
-    importTitle: 'Prueba el ERP con tu diario',
+    importTitle: 'Prueba el ERP con un diario de práctica',
     importHelp: 'Importa un diario (en Excel, de Business Central o con la plantilla) y trabaja con él, con la IA incluida ({ai} consultas al día). Va a una empresa temporal: se borra tras {idle} sin usar la aplicación y, como muy tarde, a las {hours} h. Hasta {lines} líneas. No gasta tu empresa propia. No subas datos personales reales.',
     importWarning: 'Empresa temporal: se borra tras {idle} sin usar la aplicación y, como muy tarde, a las {hours} h. Exporta a Excel lo que quieras guardar y no subas datos personales reales.',
     hasTemp: 'Ya tienes una empresa temporal, {name}: se borra tras {idle} sin usar la aplicación o el {date}. Cuando se borre podrás importar otra.',
@@ -1992,7 +1994,7 @@ export default {
     tmpAlready: { title: 'Ya tienes una empresa temporal', hint: 'Se borra sola tras 2 h sin usar la aplicación; después podrás importar otra.' },
     tmpFull: { title: 'Ahora mismo hay muchas empresas de prueba', hint: 'Prueba en un rato: las temporales se borran solas.' },
     tmpTooMany: { title: 'El fichero tiene {1} líneas y en una empresa temporal caben {2}', hint: 'Prueba con un año o un trimestre.' },
-    tmpOnlyTemp: { title: 'Lo que importas va a una empresa temporal', hint: 'Usa «Prueba el ERP con tu diario» en la lista de empresas.' },
+    tmpOnlyTemp: { title: 'Lo que importas va a una empresa temporal', hint: 'Usa «Prueba el ERP con un diario de práctica» en la lista de empresas.' },
     tmpPermanent: { title: 'Una empresa temporal no se puede hacer permanente ni alargar', hint: 'Exporta a Excel lo que quieras guardar.' },
     // v0.59.0 · Empresas sintéticas
     synSeed: { title: 'La semilla tiene que ser un número del 1 al 999.999', hint: '' },
@@ -2061,7 +2063,7 @@ export default {
     dashboards: { title: '6 tableros', text: 'Dirección, rentabilidad, tesorería, impuestos, ventas y gastos, y calidad de la contabilidad, con su lista de control.' },
     ai: { title: 'Asistente de IA', text: 'Un tutor que revisa tus asientos y te explica el porqué, con un número de consultas al día.' },
     trace: { title: 'Trazabilidad', text: 'Cada cifra lleva a su origen: de la partida a sus cuentas, al libro mayor y al asiento.' },
-    import: { title: 'Importa tu diario', text: 'Sube un libro diario en Excel o CSV y obtén el balance, la cuenta de resultados y los ratios.' },
+    import: { title: 'Importa un diario de práctica', text: 'Sube un libro diario en Excel o CSV y obtén el balance, la cuenta de resultados y los ratios.' },
   },
   landingWhyTitle: '¿Por qué MiniERP?',
   landingWhy: {

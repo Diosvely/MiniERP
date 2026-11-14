@@ -7,7 +7,7 @@
 ## Contexto
 
 El objetivo del Modo auditor es que el ERP saque por sí mismo lo que los profesionales construyen en Power BI
-a partir de un diario importado: balance, PyG, **flujos de efectivo** y ratios. Con las 4 contabilidades reales
+a partir de un diario importado: balance, PyG, **flujos de efectivo** y ratios. Con los diarios de estudio
 importadas en la v0.19.0 (3 en Excel y 1 de Dynamics BC) ya hay datos suficientes para el estado de flujos.
 
 El PGC solo exige el EFE en el modelo normal, y lo presenta por el **método indirecto**. La NIC 7 recomienda el
@@ -35,7 +35,7 @@ El PGC solo exige el EFE en el modelo normal, y lo presenta por el **método ind
      actividades**, y se listan junto con la diferencia que explican.
 7. **Rendimiento:** las funciones internas son `SECURITY DEFINER` y no se exponen a la web. Las tres públicas
    (`cash_flow_statement`, `cf_line_accounts` y `cash_flow_check`) comprueban `can_read`. Con la empresa más
-   grande (115.000 apuntes), el estado tarda 0,4 s y el cuadre 1,7 s, dentro del límite de 8 s de Supabase.
+   grande, el estado tarda 0,4 s y el cuadre 1,7 s, dentro del límite de 8 s de Supabase.
 
 ## Alternativas descartadas
 
@@ -49,9 +49,9 @@ El PGC solo exige el EFE en el modelo normal, y lo presenta por el **método ind
 
 ## Consecuencias
 
-- Con los datos reales salen hallazgos de auditor:
-  - **Empresa 3:** inmovilizado comprado a proveedores de explotación en lugar de la 523.
-  - **Empresa 2:** pagos a proveedores con cargo a la póliza de crédito.
+- Con los diarios de estudio salen hallazgos de auditor:
+  - inmovilizado comprado a proveedores de explotación en lugar de la 523;
+  - pagos a proveedores con cargo a la póliza de crédito.
 - **Limitación conocida:** en el indirecto, un dividendo acordado (129 → 526) y pagado en el mismo año aparece
   en patrimonio (IC1) y no en "Pagos por dividendos". El directo sí lo muestra como pago de dividendos.
   El total de financiación es igual por los dos métodos.

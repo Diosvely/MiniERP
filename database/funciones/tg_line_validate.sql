@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.tg_line_validate · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0004_journal_entries 0021_journal_import 0092_balance_and_permissions_fixes   →   la vigente es la de 0092_balance_and_permissions_fixes
+-- Definida en: 0004_journal_entries 0021_journal_import 0092_balance_and_permissions_fixes 0094_integrity_hardening   →   la vigente es la de 0094_integrity_hardening
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.tg_line_validate()
@@ -18,6 +18,11 @@ begin
   -- Importación: el motor ya ha validado empresa, cuentas y número de línea (miles de apuntes por llamada)
   if tg_op = 'INSERT' and coalesce(current_setting('erp.import_engine', true), '') = 'on' then
     return new;
+  end if;
+
+  -- 0) v0.60.5 (SEG-13) · una línea no se mueve de un asiento a otro: se borra y se crea de nuevo
+  if tg_op = 'UPDATE' and new.entry_id is distinct from old.entry_id then
+    raise exception 'A line cannot be moved to another entry: delete it and add it again';
   end if;
 
   -- 1) El asiento debe estar en borrador (vale para INSERT, UPDATE y DELETE)

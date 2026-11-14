@@ -89,6 +89,7 @@ export default function EntryTutor({ company, onLoad }) {
   return (
     <div className="chat-ia">
       <p className="ayuda">{t('tutorIntro')}</p>
+      <p className="ayuda">{t('tutorNotice')}</p>
       <ol className="chat-mensajes" aria-live="polite">
         {msgs.map((msg) => (
           <li key={msg.id} className="chat-turno">

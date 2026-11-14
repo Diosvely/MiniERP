@@ -722,6 +722,7 @@ export default {
 // ---- Entry tutor (step 126) ----
   tutorTitle: 'Entry tutor',
   tutorIntro: 'Describe a transaction in your own words and the AI proposes the journal entry under Spanish GAAP. The ERP checks it: it applies the current VAT / IGIC, uses your sub-accounts and flags anything that does not add up. Nothing is posted until you review it.',
+  tutorNotice: 'What you write is sent to an open AI model to propose the entry. Use made-up data: do not write names or details of real people.',
   tutorPlaceholder: 'Example: I buy a computer for €1,200 plus VAT from Informática Pérez; I pay half today by bank and the rest in 60 days.',
   tutorPropose: 'Propose entry',
   tutorThinking: 'Working out the entry',
@@ -813,6 +814,7 @@ export default {
   feedbackKind: { tutor: 'Entry tutor', analyst: 'AI analyst' },
   feedbackShowAnswer: 'Show the AI answer',
   feedbackAsk: 'Is this AI answer correct?',
+  feedbackNotice: 'If you give your opinion, your question and the answer are stored to improve the AI. The Mini ERP administrator can read them.',
   feedbackCommentOptional: 'Comment (optional)',
   feedbackCommentWrong: 'What is wrong and what would be correct?',
   feedbackSend: 'Send feedback',
@@ -1743,7 +1745,7 @@ export default {
   tmp: {
     badge: 'Temporary',
     headerHelp: 'Trial company: deleted after {idle} without using the app or, at the latest, on {date}. Export to Excel anything you want to keep.',
-    importTitle: 'Try the ERP with your journal',
+    importTitle: 'Try the ERP with a practice journal',
     importHelp: 'Import a journal (in Excel, from Business Central or with the template) and work with it, AI included ({ai} questions a day). It goes into a temporary company: deleted after {idle} without using the app and, at the latest, after {hours} h. Up to {lines} lines. It does not use up your own company. Do not upload real personal data.',
     importWarning: 'Temporary company: deleted after {idle} without using the app and, at the latest, after {hours} h. Export to Excel anything you want to keep and do not upload real personal data.',
     hasTemp: 'You already have a temporary company, {name}: deleted after {idle} without using the app or on {date}. Once it is deleted you can import another one.',
@@ -1993,7 +1995,7 @@ export default {
     tmpAlready: { title: 'You already have a temporary company', hint: 'It is deleted after 2 h without using the app; then you can import another one.' },
     tmpFull: { title: 'There are many trial companies right now', hint: 'Try again in a while: temporary companies delete themselves.' },
     tmpTooMany: { title: 'The file has {1} lines and a temporary company holds {2}', hint: 'Try one year or one quarter.' },
-    tmpOnlyTemp: { title: 'What you import goes into a temporary company', hint: 'Use «Try the ERP with your journal» in the company list.' },
+    tmpOnlyTemp: { title: 'What you import goes into a temporary company', hint: 'Use «Try the ERP with a practice journal» in the company list.' },
     tmpPermanent: { title: 'A temporary company cannot be made permanent or extended', hint: 'Export to Excel anything you want to keep.' },
     // v0.59.0 · Synthetic companies
     synSeed: { title: 'The seed must be a number from 1 to 999,999', hint: '' },
@@ -2062,7 +2064,7 @@ export default {
     dashboards: { title: '6 dashboards', text: 'Management, profitability, cash, taxes, sales and expenses, and accounting quality, with its checklist.' },
     ai: { title: 'AI assistant', text: 'A tutor that reviews your entries and explains why, with a number of questions per day.' },
     trace: { title: 'Traceability', text: 'Every figure leads to its source: from the line to its accounts, to the ledger and to the entry.' },
-    import: { title: 'Import your journal', text: 'Upload a journal in Excel or CSV and get the balance sheet, the income statement and the ratios.' },
+    import: { title: 'Import a practice journal', text: 'Upload a journal in Excel or CSV and get the balance sheet, the income statement and the ratios.' },
   },
   landingWhyTitle: 'Why MiniERP?',
   landingWhy: {

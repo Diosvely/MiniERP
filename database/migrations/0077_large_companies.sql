@@ -2,7 +2,7 @@
 -- 0077 · Rendimiento con empresas grandes de varios años (v0.52.2)
 -- ---------------------------------------------------------------------
 -- Después de la 0076, Comprobaciones seguía superando el límite de 8 s de Supabase en empresas grandes importadas de
--- varios años. Reproducido en local con una empresa importada de 6 años (108.000 asientos, 272.000 apuntes):
+-- varios años. Reproducido en local con una empresa importada grande de varios años:
 --
 --   · erp.audit_lines (la base de Comprobaciones, que la llama 7 veces): para cada apunte hacía hasta 19 búsquedas
 --     (factura, liquidación, nómina, pago…) antes de llegar a «importado», y la seguridad fila a fila se evaluaba en

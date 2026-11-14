@@ -4,7 +4,7 @@
 
 ## Contexto
 Se quiere compartir la web en LinkedIn. Los visitantes deben poder probarla sin llenar la base de datos
-gratuita (500 MB) y ver ejemplos reales, mientras el propietario estudia con libertad.
+gratuita (500 MB) y ver ejemplos completos, mientras el propietario estudia con libertad.
 
 ## Decisión (opción A)
 - `erp.app_profiles`: perfil de aplicación. `owner` = sin límite y puede publicar demos; el resto es

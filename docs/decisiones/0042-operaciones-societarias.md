@@ -78,8 +78,9 @@ para los asientos.
 - **Limitaciones conocidas:**
   - no hay acciones propias (108 / 109), ni reducción con devolución a los socios, ni aportaciones de socios (118);
   - el modelo 123 no se genera: solo queda la 47512 para cuadrarlo;
-  - la reserva legal se calcula sobre el beneficio del ejercicio aunque haya pérdidas pendientes (**pendiente de
-    validar por Diosvely** con la doctrina del ICAC);
+  - la reserva legal es el 10 % del beneficio del ejercicio entero, aunque haya pérdidas pendientes (art. 274.1 LSC;
+    validado por auditoría fiscal el 11-11-2026, AF-10). Las pérdidas no cambian la base: cambian el orden (art. 273.2
+    LSC y art. 28.3 de la Resolución del ICAC de 5-3-2019);
   - el patrimonio neto del art. 273 es el del balance aprobado, sin ajustes por cambios de valor.
 - **Pruebas:** 56 de 56 en la base de datos y 200 tests en la web. Los seis supuestos de referencia (S1 a S6) se
   calcularon a mano antes de programar y coincidieron. **Fallos que salieron al probar:**

@@ -1,3 +1,4 @@
+# No se aplica a /api/* (Pages Functions): esas cabeceras van en frontend/functions/api (v0.60.5, SEG-20).
 # Cabeceras de seguridad para todas las páginas (Cloudflare Pages las aplica solas al desplegar)
 # CSP ajustada al código real: solo Supabase (datos y sesión) y Cloudflare Turnstile (CAPTCHA).
 # 'unsafe-inline' en estilos: React usa style={{…}} en algunas barras (progreso). No hay scripts en línea.

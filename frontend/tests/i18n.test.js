@@ -53,3 +53,16 @@ describe('plantillas de asientos', () => {
     }
   })
 })
+
+describe('avisos del panel de IA (v0.60.5, SEG-17)', () => {
+  it('el Tutor avisa de que el texto va a un modelo externo y pide datos inventados', () => {
+    expect(es.tutorNotice).toMatch(/modelo de IA/)
+    expect(es.tutorNotice).toMatch(/datos inventados/)
+    expect(en.tutorNotice).toMatch(/made-up data/)
+  })
+  it('la opinión avisa de qué se guarda y de quién lo lee', () => {
+    expect(es.feedbackNotice).toMatch(/se guardan tu pregunta y la respuesta/)
+    expect(es.feedbackNotice).toMatch(/administrador/)
+    expect(en.feedbackNotice).toMatch(/administrator/)
+  })
+})

@@ -72,3 +72,23 @@ describe('defensa de /api/ai y /api/tutor (v0.28.0)', () => {
     expect(r.status).toBe(401)
   })
 })
+
+describe('cabeceras de seguridad de /api (v0.60.5, SEG-20)', () => {
+  // Cloudflare no aplica public/_headers a las Pages Functions: las ponen ellas
+  const check = (r) => {
+    expect(r.headers.get('Cache-Control')).toBe('no-store')
+    expect(r.headers.get('X-Content-Type-Options')).toBe('nosniff')
+    expect(r.headers.get('Referrer-Policy')).toBe('no-referrer')
+    expect(r.headers.get('Content-Security-Policy')).toContain("frame-ancestors 'none'")
+  }
+  it('el Analista: también en un 401', async () => {
+    const r = await analyst({ request: new Request('https://x/api', { method: 'POST', body: '{}' }), env })
+    expect(r.status).toBe(401)
+    check(r)
+  })
+  it('el Tutor: también en un 401', async () => {
+    const r = await tutor({ request: new Request('https://x/api', { method: 'POST', body: '{}' }), env })
+    expect(r.status).toBe(401)
+    check(r)
+  })
+})

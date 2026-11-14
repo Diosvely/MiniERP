@@ -1,7 +1,7 @@
 -- =====================================================================
 -- 0029 · RENDIMIENTO CON MUCHOS DATOS (v0.29.0)
 -- ---------------------------------------------------------------------
--- Con una empresa importada de varios años (decenas de miles de apuntes) aparecieron dos problemas:
+-- Con una empresa importada grande de varios años aparecieron dos problemas:
 --
 --   1) El LIBRO MAYOR no cargaba nunca ("canceling statement due to statement timeout").
 --      La vista v_general_ledger (0005) calcula el saldo acumulado con una función de ventana sobre TODOS
@@ -13,11 +13,11 @@
 --
 --   2) BORRAR UNA EMPRESA grande tardaba minutos. Al borrar cada asiento, PostgreSQL comprueba las claves
 --      foráneas que apuntan a él (anulaciones, facturas, liquidaciones, cierres…). Esas columnas no tenían
---      índice: cada comprobación recorría la tabla entera (60.000 asientos × 60.000 filas).
+--      índice: cada comprobación recorría la tabla entera (cada asiento × todas las filas).
 --      → Índices en todas las claves foráneas que no los tenían (es lo que recomienda el "Performance
 --        Advisor" de Supabase: "unindexed foreign keys").
 --
---      Aun con índices, borrar 60.000 asientos de una vez tarda unos 4-5 s (9 comprobaciones por asiento),
+--      Aun con índices, borrar los asientos de una empresa grande de una vez tarda unos 4-5 s (9 comprobaciones por asiento),
 --      demasiado cerca del límite de 8 s de la web, y el límite no se puede subir desde una función.
 --      → erp.delete_company_step(empresa): borra la empresa POR TANDAS de 5.000 asientos y devuelve cuántos
 --        quedan; la web lo llama en bucle con una barra de progreso, igual que la importación mes a mes.

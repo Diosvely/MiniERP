@@ -3,8 +3,10 @@
 **Fecha:** 2026-10-06 · **Estado:** aceptada
 
 ## Contexto
-Los ERP resuelven el cierre de dos formas: unos (BC y SAP) arrastran saldos sin asiento de cierre visible;
-otros generan los asientos de regularización, cierre y apertura, que es como se enseña en España.
+El cierre se puede resolver de dos formas: arrastrar los saldos sin un asiento de cierre visible, o generar los
+asientos de regularización, cierre y apertura, que es como se enseña en España.
+
+*Revisión ética (v0.60.5, 2026-11-14): la comparación ya no enfrenta a dos grupos de programas. La decisión no cambia.*
 
 ## Decisión
 1. Se generan los tres asientos clásicos (regularización, cierre y apertura) de tipos `closing_pl`, `closing` y `opening`,

@@ -2,7 +2,7 @@
 -- PRUEBAS FASE 55 · Operaciones societarias (migración 0060 · v0.42.0)
 -- ---------------------------------------------------------------------
 -- Supuestos de referencia calculados a mano desde la LSC y el PGC antes de programar (docs del proyecto:
--- supuestos-v0.42.0.md). La reserva legal sobre el beneficio aunque haya pérdidas: PENDIENTE DE VALIDAR POR DIOSVELY.
+-- supuestos-v0.42.0.md). La reserva legal sobre el beneficio aunque haya pérdidas: validado, art. 274.1 LSC (auditoría fiscal, 11-11-2026).
 --   S1  SA: capital 60.000, 25 % desembolsado → 190/194 · 572 15.000 + 1030 45.000 / 190 · 194/100; gastos de
 --       constitución 1.200 contra la 113; se exige la mitad (22.500) y se cobra → patrimonio neto 36.300
 --   S2  SA: ampliación de 100.000 nominal con 20.000 de prima → 190 120.000 / 194 100.000 + 110 20.000

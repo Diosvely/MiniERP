@@ -3,7 +3,7 @@
 **Fecha:** 2026-10-08 · **Estado:** aceptada
 
 ## Contexto
-Queremos estudiar contabilidades reales exportadas de otros programas (un diario en Excel, Dynamics BC) con las mismas herramientas
+Queremos estudiar diarios exportados de otros programas (un diario en Excel, Dynamics BC) con las mismas herramientas
 del laboratorio, sin Power BI de por medio, y con varios ejercicios por fichero.
 
 ## Decisión
@@ -14,7 +14,7 @@ del laboratorio, sin Power BI de por medio, y con varios ejercicios por fichero.
 4. Importación por meses y cierre por ejercicios, en llamadas cortas (límite de tiempo de Supabase), con funciones
    SECURITY DEFINER que comprueban primero el permiso de administrador.
 5. Los asientos históricos no se bloquean por saldos inversos: se señalan en el informe de saldos anómalos.
-6. Los datos reales se quedan en empresas privadas y nunca entran en el repositorio (las pruebas usan datos inventados).
+6. Los diarios de estudio se quedan en empresas privadas y nunca entran en el repositorio (las pruebas usan datos inventados).
 
 ## Consecuencias
 - Balance, PyG, sumas y saldos, mayor, anómalos y cierre funcionan igual con datos importados.
@@ -22,7 +22,11 @@ del laboratorio, sin Power BI de por medio, y con varios ejercicios por fichero.
 
 ## Relación con la ADR 0010 (2026-10-15)
 La ADR 0010 dice que el ERP no es un software contable para empresas reales: no sustituye al programa oficial.
-Importar un diario real **para estudiarlo** es compatible con eso, con las condiciones del punto 6 y de la ADR 0021.
+Importar un diario **para estudiarlo** es compatible con eso, con las condiciones del punto 6 y de la ADR 0021.
 Detalle en la actualización al final de la ADR 0010.
+
+*Política de uso (v0.60.5, 2026-11-14): el Mini ERP es para practicar y aprender. No invita a usarlo con datos reales
+de una empresa y su autor no se hace responsable si alguien lo hace. Los diarios que se importan para estudiar son de
+práctica; los diarios de estudio de terceros no se nombran ni se dan sus cifras en el repositorio.*
 
 *Revisión ética (v0.60.1, 2026-11-08): se quitan los nombres de programas comerciales (ADR 0063). La decisión y sus consecuencias no cambian.*

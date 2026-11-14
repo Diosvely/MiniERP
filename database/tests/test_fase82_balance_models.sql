@@ -4,7 +4,7 @@
 -- Diseño validado por Diosvely (diseno-v0.60.0.md, 06-11-2026). Se comprueba:
 --   · cobertura: cada cuenta del PGC de estudio, deudora y acreedora, tiene partida en cada modelo y en la MISMA masa
 --     que en PYMES (salvo las que el BOE mueve a propósito: 1034 y 1044, capital pendiente de inscripción);
---   · el mismo Balance en los tres modelos: mismos totales y cada cuenta una sola vez, en empresas sintéticas reales;
+--   · el mismo Balance en los tres modelos: mismos totales y cada cuenta una sola vez, en empresas sintéticas completas;
 --   · casos concretos del BOE (Existencias II.1, 407, proveedor deudor, banco en descubierto, 580…);
 --   · PYMES no cambia: sin p_model es lo de antes, y la PyG no tiene otros modelos.
 -- =====================================================================
@@ -152,7 +152,7 @@ begin
   raise notice 'OK  · AF-06: grupos 80-82 y 90-92 en A-2; las subvenciones, en A-3';
 end $$;
 
--- ---------- 2. El mismo Balance en los tres modelos, con empresas reales ----------
+-- ---------- 2. El mismo Balance en los tres modelos, con empresas sintéticas completas ----------
 set role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a1', false);
 select set_config('request.jwt.claims', '{"sub":"00000000-0000-0000-0000-0000000000a1"}', false);

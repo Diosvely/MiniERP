@@ -8,7 +8,7 @@
 
 Diosvely va a dar una charla técnica de unos 20 minutos sobre tecnología de datos de Microsoft (finales de noviembre de
 2026). La demo:
-1. un cliente da su diario en CSV y pide un balance, una cuenta de pérdidas y ganancias y un estado de flujos;
+1. un cliente ficticio da un diario de práctica en CSV y pide un balance, una cuenta de pérdidas y ganancias y un estado de flujos;
 2. se importa y se valida en el Mini ERP;
 3. Claude Code, con un servidor MCP de Power BI, construye el informe en un proyecto PBIP;
 4. se comprueba que cuadra con el ERP al céntimo.

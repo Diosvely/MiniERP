@@ -36,7 +36,8 @@ export default function AiFeedback({ company, kind, prompt, answer, model }) {
       </div>
       {verdict && (
         <>
-          <textarea rows={2} maxLength={2000} value={comment} onChange={(e) => setComment(e.target.value)}
+          <p className="ayuda">{t('feedbackNotice')}</p>
+          <textarea rows={2} maxLength={1000} value={comment} onChange={(e) => setComment(e.target.value)}
                     placeholder={verdict === 'correct' ? t('feedbackCommentOptional') : t('feedbackCommentWrong')} />
           <button type="button" onClick={send}>{t('feedbackSend')}</button>
         </>

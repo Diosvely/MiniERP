@@ -2,6 +2,40 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.60.5] - 2026-11-14
+### Corregido
+- **Nadie toca los asientos por la puerta de atrás** (migración 0094, hallazgos de seguridad aprobados por Diosvely;
+  ninguno dejaba ver ni cambiar datos de otros, y la web nunca hacía nada de esto):
+  - SEG-13: una línea ya no se puede mover de un asiento a otro (antes, sacar una línea de un asiento contabilizado lo
+    dejaba descuadrado). Se bloquea siempre, también entre borradores;
+  - SEG-14: un asiento solo pasa a contabilizado con las condiciones de `erp.post_entry` (dos líneas, Debe = Haber,
+    ejercicio y período abiertos y el número siguiente), también con una escritura directa;
+  - SEG-18: la subcuenta de un tercero tiene que ser de su empresa, de detalle y de su tipo (430, 400, 410 o 440);
+  - SEG-19: las opiniones sobre la IA tienen tope: 1.000 caracteres de texto del usuario (pregunta y comentario), para
+    todos, y 32 KB de respuesta.
+- **Textos** (hallazgos de redacción aprobados por Diosvely):
+  - los diarios de estudio de terceros: sin nombres («Empresa 1/2/3»), sin sus cifras y sin llamarlos «contabilidad
+    real» en la bitácora, el CHANGELOG, el README, las decisiones y los comentarios de las migraciones (H-33, H-44); la
+    regla queda en la ADR 0010;
+  - «Importa un diario de práctica» y «Prueba el ERP con un diario de práctica» en lugar de «tu diario» (H-34);
+  - la ADR 0018 y la migración 0023 sin nombres de autores de manuales (H-42); la ADR 0012 sin enfrentar a dos grupos
+    de programas (H-45); nota de política de uso en la ADR 0016 y «ejemplos completos» en la ADR 0004 (H-43);
+  - bitácora: el fallo del método directo con la 523, contado como fallo corregido en la v0.45.0 (H-36); la (1034) y la
+    (1044) restan en el pasivo (H-38); «480 € ese mes» (H-40). Modelo de datos «revisado en la v0.60.x» (H-39).
+### Añadido
+- **Avisos en el panel de IA** (SEG-17): qué se envía al modelo (usa datos inventados) y qué se guarda con una opinión.
+- **Cabeceras de seguridad en las respuestas de la IA** (SEG-20): Cloudflare no aplica `_headers` a las Pages
+  Functions; ahora las ponen ellas (`no-store`, `nosniff`…).
+- **El diagnóstico de Supabase revisa también la seguridad** (SEG-15): tablas sin RLS, políticas que faltan, son
+  distintas o sobran, y permisos de más o de menos de `anon` y `authenticated`. `scripts/test-diagnostico.sh` lo prueba
+  en la integración continua (y que el archivo esté al día). El orden del archivo ya no cambia de una vez a otra.
+- **La auditoría de dependencias incluye las de desarrollo** (SEG-16); `xlsx` se revisa a mano.
+- ADR 0062 con los límites del Balance abreviado y del PGC de PYMES validados (AF-07) y el proyecto de ley que los
+  subiría (AF-08). ADR 0042: la reserva legal, validada (AF-10).
+### Pruebas
+- 83 de 83 en la base de datos (fase 80 con las regresiones de SEG-13, SEG-14, SEG-18 y SEG-19), la prueba del
+  diagnóstico y 345 tests de la web.
+
 ## [0.60.4] - 2026-11-10
 ### Añadido
 - **Logo nuevo** en la cabecera de la portada (SVG, versión clara y oscura) con «Aprende · Analiza · Aporta», e icono
@@ -27,7 +61,7 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y 
   - no se puede cambiar quién creó una empresa (cuenta para el límite de empresas), ni la semilla de una sintética, ni
     publicar una sintética como demo;
   - el tercero de un apunte tiene que ser de la misma empresa.
-- **Bitácora:** sin cifras sacadas de los diarios reales de práctica (resultados, flujos, ratios y periodos medios); la
+- **Bitácora:** sin cifras sacadas de los diarios de estudio (resultados, flujos, ratios y periodos medios); la
   frase cortada del recargo de equivalencia, terminada; «algunos diarios en Excel» en lugar de comparar un formato con un
   programa; sin las notas de la revisión externa; la empresa de prueba del plan de cuentas, como inventada; y el número
   de versión en las primeras entradas (v0.2.0 y v0.3.0).
@@ -300,7 +334,7 @@ Con esta versión termina el plan de los cinco tableros (v0.53.0 a v0.57.0).
 - **Comprobaciones, aún lenta la primera vez en Supabase** (migración `0079_checks_relevant_lines.sql`). Con la 0078
   bajó a 2,3 s con la memoria caliente, pero en frío la web aún podía pasar del límite de 8 s.
   - Comprobaciones lee solo los apuntes que usa (cuentas 47, con código de impuesto y asientos manuales) con
-    `erp.audit_lines_checks`: en Empresa 1, el 24 % de los apuntes del ejercicio. `erp.audit_lines` sigue igual.
+    `erp.audit_lines_checks`: en una empresa importada grande, una cuarta parte de los apuntes del ejercicio. `erp.audit_lines` sigue igual.
   - Índice parcial de los apuntes con código de impuesto.
   - En local: de 0,8 s a 0,4 s en caliente y de 0,9 s a 0,56 s en frío.
 - Prueba de la base de datos `fase 73`.
@@ -316,7 +350,7 @@ Con esta versión termina el plan de los cinco tableros (v0.53.0 a v0.57.0).
     los asientos; Comprobaciones la calcula una sola vez y comprueba el permiso una vez (`erp.can_report`).
   - Balance y PyG, flujos, ratios, tablero, Inicio, comprobaciones de integridad y antigüedad de saldos filtran también
     los apuntes por la empresa.
-  - En local, con PostgreSQL 17.6 (el de Supabase) y Empresa 1 junto a otras dos empresas grandes: Comprobaciones, de
+  - En local, con PostgreSQL 17.6 (el de Supabase) y varias empresas grandes en la base: Comprobaciones, de
     2,5 s a 0,8 s. Una empresa pequeña tarda lo mismo aunque otra de la base tenga 300.000 apuntes.
 - Prueba de la base de datos `fase 72` (regresión: el tiempo de una empresa no depende del tamaño de las demás).
 
@@ -324,7 +358,7 @@ Con esta versión termina el plan de los cinco tableros (v0.53.0 a v0.57.0).
 ## [0.52.2] - 2026-10-29
 ### Corregido
 - **Comprobaciones seguía tardando demasiado en empresas grandes de varios años** (migración
-  `0077_large_companies.sql`). Reproducido con una empresa importada de 6 años (108.000 asientos, 272.000 apuntes):
+  `0077_large_companies.sql`). Reproducido con una empresa importada grande de varios años:
   - `erp.audit_lines` calcula el origen de todos los asientos de una vez (antes, hasta 19 búsquedas por apunte);
   - la comprobación de cuentas controladas va en bloque (antes, asiento por asiento);
   - el balance, la PyG, sumas y saldos, el mayor y los flujos leen solo los asientos del ejercicio;
@@ -814,7 +848,7 @@ que falla sin el arreglo):
   donde se definió, para estudiarlas sin rastrear migraciones. Lo genera `scripts/volcar-funciones.sh`.
 ### Cambiado
 - La ADR 0010 se matiza (con la 0016 y la 0021): el ERP no es el programa oficial de una empresa, pero sí se pueden
-  **estudiar** contabilidades reales, en privado y nunca en el repositorio.
+  **estudiar** diarios de estudio de terceros, en privado y nunca en el repositorio.
 
 ## [0.33.0] - 2026-10-15
 ### Añadido

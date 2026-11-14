@@ -9,7 +9,7 @@
 -- =====================================================================
 
 -- ---------------------------------------------------------------------
--- Corrección de los ratios detectada al probar la IA con las empresas reales:
+-- Corrección de los ratios detectada al probar la IA con los diarios de estudio:
 --   con pérdidas (o patrimonio neto negativo) la calidad del resultado y el ROE dividían dos negativos
 --   y salía un valor positivo que parecía bueno. Ahora quedan sin valor (—).
 -- Este fichero se puede volver a ejecutar entero: todo es create or replace / update.

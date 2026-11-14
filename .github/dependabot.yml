@@ -12,7 +12,9 @@ updates:
       dependencias-menores:
         update-types: [minor, patch]
     ignore:
-      # xlsx se instala desde el CDN oficial de SheetJS, no desde npm: Dependabot no puede actualizarlo
+      # xlsx se instala desde el CDN oficial de SheetJS, no desde npm: Dependabot no puede actualizarlo.
+      # Ni npm audit ni Dependabot lo vigilan: se revisa a mano en cada versión menor del Mini ERP (avisos en
+      # https://git.sheetjs.com/sheetjs/sheetjs/issues y en la página de versiones de SheetJS). v0.60.5, SEG-16.
       - dependency-name: xlsx
   - package-ecosystem: github-actions
     directory: /

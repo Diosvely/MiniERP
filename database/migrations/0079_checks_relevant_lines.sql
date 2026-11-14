@@ -6,10 +6,10 @@
 -- más lento que en local y leer del disco es lo que más cuesta.
 --
 -- Comprobaciones solo usa los apuntes de las cuentas 47 (IVA / IGIC, retenciones), los que llevan código de impuesto y
--- los de los asientos manuales: en Empresa 1, 10.508 de 43.564 (el 24 %). erp.audit_lines_checks (nueva) lee solo esos,
+-- los de los asientos manuales: en una empresa importada grande, una cuarta parte. erp.audit_lines_checks (nueva) lee solo esos,
 -- con el mismo origen y las mismas columnas que erp.audit_lines (que sigue igual), y Comprobaciones la usa.
 --
--- Mismos resultados (comprobado con Empresa 1 y el caso completo). En local, Empresa 1 con otras dos empresas grandes:
+-- Mismos resultados (comprobado con una empresa importada grande y el caso completo). En local, con varias grandes:
 -- de 0,8 s a 0,4 s en caliente y de 0,9 s a 0,56 s en frío. Se puede ejecutar dos veces.
 -- =====================================================================
 

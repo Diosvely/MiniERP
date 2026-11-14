@@ -7,7 +7,7 @@
 
 ## Contexto
 
-Al usar el ERP con una contabilidad real importada (de 2019 a 2024, decenas de miles de apuntes) aparecieron cinco
+Al usar el ERP con un diario de estudio grande importado (varios años) aparecieron cinco
 problemas que con pocos datos no se veían:
 1. **El libro mayor no cargaba nunca:** *"canceling statement due to statement timeout"*. La vista `v_general_ledger`
    calcula el saldo acumulado con una función de ventana sobre **todos** los apuntes visibles y solo después filtra
@@ -15,7 +15,7 @@ problemas que con pocos datos no se veían:
 2. **Supabase devuelve como máximo 1.000 filas por consulta, sin avisar:** el diario, el mayor de cuentas con mucho
    movimiento y el plan de cuentas se cortaban, y los totales salían mal.
 3. **No se podía borrar una empresa desde la web.** Hacía falta para enseñar una importación y después quitarla.
-   Además, en local, borrar 60.000 asientos tardaba **148 s**: a 27 claves foráneas les faltaba índice.
+   Además, en local, borrar una empresa grande tardaba **148 s**: a 27 claves foráneas les faltaba índice.
 4. **Todas las fechas por defecto eran las de hoy:** una empresa de 2019-2024 se abría en un 2026 vacío.
 5. **No se podía seguir el rastro contable:** desde el mayor no había forma de ver el asiento completo.
 
@@ -25,7 +25,7 @@ problemas que con pocos datos no se veían:
    - **primero filtra** (índice por cuenta) y **después** calcula el saldo, como el FBL3N de SAP o los movimientos de
      una cuenta en Business Central;
    - es `security invoker`, así que RLS sigue decidiendo quién ve qué;
-   - en 120.000 apuntes tarda 0,2 s, frente a 6,9 s de la vista. La vista se mantiene para el SQL Editor.
+   - con un diario grande tarda 0,2 s, frente a 6,9 s de la vista. La vista se mantiene para el SQL Editor.
 2. **Índices en todas las claves foráneas** de datos de empresa (el aviso *"unindexed foreign keys"* del Advisor de
    Supabase). Una prueba los vigila: si una clave foránea nueva nace sin índice, la CI falla.
 3. **Lecturas por páginas (`src/paging.js`):** `fetchAll()` pide de 1.000 en 1.000 hasta el final. Si una página
@@ -67,7 +67,7 @@ problemas que con pocos datos no se veían:
 
 ## Consecuencias
 
-- El ERP funciona con contabilidades reales de varios años sin cortes ni totales incompletos.
+- El ERP funciona con diarios grandes de varios años sin cortes ni totales incompletos.
 - Toda pantalla nueva que lea listas largas debe usar `fetchAll`, y toda clave foránea nueva necesita su índice (lo
   vigila la prueba de la fase 23).
 - La ficha del asiento abre la puerta a navegar desde una factura o una liquidación a su asiento.

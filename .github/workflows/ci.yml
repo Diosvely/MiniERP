@@ -41,6 +41,8 @@ jobs:
           sudo apt-get install -y -qq postgresql-client
       - name: Pruebas SQL
         run: bash scripts/test-db.sh   # con "bash": no depende del permiso de ejecución (Windows no lo guarda)
+      - name: Diagnóstico de Supabase (al día y ve los permisos)
+        run: bash scripts/test-diagnostico.sh
 
   frontend:
     name: Web (lint y build)   # nombre exigido por la protección de main: no cambiarlo (también ejecuta los tests)
@@ -66,4 +68,5 @@ jobs:
           VITE_SUPABASE_URL: https://example.supabase.co
           VITE_SUPABASE_KEY: sb_publishable_ci
       - name: Auditoría de dependencias
-        run: npm audit --omit=dev --audit-level=high
+        # v0.60.5 (SEG-16): también las de desarrollo (vite, vitest…), que se ejecutan en la CI y al compilar
+        run: npm audit --audit-level=high

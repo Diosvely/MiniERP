@@ -14,8 +14,8 @@
 --     calcula erp.audit_lines una sola vez para todas sus comprobaciones (antes, 7 veces).
 --   · Afecta a: Comprobaciones (también la antigüedad de saldos de los terceros), balance y PyG, estado de flujos, ratios, tablero, Inicio y comprobaciones de integridad.
 --
--- Mismos resultados (comprobado con Empresa 1 y el caso completo). En local, Empresa 1 con otras dos empresas grandes
--- en la base: Comprobaciones, de 2,5 s a 0,8 s. Se puede ejecutar dos veces.
+-- Mismos resultados (comprobado con una empresa importada grande y el caso completo). En local, con varias empresas
+-- grandes en la base: Comprobaciones, de 2,5 s a 0,8 s. Se puede ejecutar dos veces.
 -- =====================================================================
 
 

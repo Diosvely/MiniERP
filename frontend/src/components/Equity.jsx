@@ -4,7 +4,7 @@ import { useI18n } from '../i18n'
 import { money, shortDate } from '../format'
 import { companyPath } from '../router'
 import { workDate } from '../workDate'
-import { KINDS, PREVIEW_RPC, RPC, STATUS_ROWS, balanced, emptyForm, payload, previewEntries, undoable } from '../equity'
+import { INFO_WARNINGS, KINDS, LOSS_RESERVES, PREVIEW_RPC, RPC, STATUS_ROWS, balanced, emptyForm, payload, previewEntries, undoable } from '../equity'
 import Link from './Link'
 import Sources from './Sources'
 import ErrorBox from './ErrorBox'
@@ -176,6 +176,11 @@ export default function Equity({ company, readOnly }) {
               {!form.withholding && <label>{t('eq.f.no_withholding_reason')}
                 <input maxLength={200} value={form.no_withholding_reason} placeholder={t('eq.f.reasonPlaceholder')} onChange={(e) => setForm({ ...form, no_withholding_reason: e.target.value })} /></label>}</>}
             {(kind === 'loss_offset' || kind === 'capital_reduction') && field('amount', t('eq.f.amount'))}
+            {kind === 'loss_offset' && <label>{t('eq.f.reserve')}
+              <select value={form.reserve} onChange={(e) => setForm({ ...form, reserve: e.target.value })}>
+                {LOSS_RESERVES.map((r) => <option key={r} value={r}>{r} · {t(`eq.account.${r}`)}</option>)}
+              </select>
+            </label>}
           </div>
 
           {kind === 'distribution' && prev && Number(prev.result) !== 0 && (
@@ -212,7 +217,8 @@ export default function Equity({ company, readOnly }) {
           )}
           {warnings.length > 0 && (
             <ul className="comprobaciones">
-              {warnings.map((w, i) => <li key={i} className={w.code === 'losses_left' ? 'info' : 'warning'}><span className="icono">{w.code === 'losses_left' ? 'ℹ' : '⚠'}</span> {warnText(w)}</li>)}
+              {warnings.map((w, i) => { const info = INFO_WARNINGS.includes(w.code)
+                return <li key={i} className={info ? 'info' : 'warning'}><span className="icono">{info ? 'ℹ' : '⚠'}</span> {warnText(w)}</li> })}
             </ul>
           )}
 

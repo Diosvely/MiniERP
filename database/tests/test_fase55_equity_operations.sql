@@ -209,8 +209,10 @@ begin
   assert (g->>'offset_losses')::numeric = 20000 and (g->>'legal_reserve')::numeric = 5000 and (g->>'available')::numeric = 25000
      and (g->>'net_worth_after')::numeric = 35000 and (g->>'ok')::boolean, 'dividendo máximo 25.000: ' || g::text;
   assert not (erp.equity_distribution_preview(jsonb_build_object('company_id', e, 'date', '2028-05-20', 'dividend', 25000.01))->>'ok')::boolean;
-  assert not (erp.equity_distribution_preview(jsonb_build_object('company_id', e, 'date', '2028-05-20', 'dividend', 1000, 'offset_losses', 10000))->>'ok')::boolean,
-         'sin compensar todas las pérdidas no hay dividendo (art. 273.2)';
+  -- v0.60.6 (AF-15, opción b): el patrimonio neto (60.000) no queda por debajo del capital: hay dividendo aunque queden
+  -- pérdidas sin compensar (art. 273.2 LSC)
+  g := erp.equity_distribution_preview(jsonb_build_object('company_id', e, 'date', '2028-05-20', 'dividend', 1000, 'offset_losses', 10000));
+  assert (g->>'ok')::boolean and (g->>'net_worth_after')::numeric = 59000, 'AF-15: dividendo con pérdidas pendientes: ' || g::text;
   g := erp.equity_distribution(jsonb_build_object('company_id', e, 'date', '2028-05-20'));
   assert public.asiento(e, (g->>'code'), 1) = '12900000 D 50000.00 | 12100001 H 20000.00 | 11200001 H 5000.00 | 11300001 H 25000.00', public.asiento(e, (g->>'code'), 1);
   assert public.st(e, '2028-05-31', 'prior_losses') = 0 and public.st(e, '2028-05-31', 'net_worth') = 60000;
@@ -225,17 +227,92 @@ begin
   perform public.manual(e, '2026-06-30', '[["62900001", 18000, 0], ["57200001", 0, 18000]]');
   perform erp.close_fiscal_year(e, 2026, true);
   perform erp.equity_distribution(jsonb_build_object('company_id', e, 'date', '2027-05-20'));
-  assert public.falla(format($q$select erp.equity_loss_offset('{"company_id": "%s", "date": "2027-06-01", "amount": 18000}')$q$, e), 'Not enough voluntary reserves');
+  assert public.falla(format($q$select erp.equity_loss_offset('{"company_id": "%s", "date": "2027-06-01", "amount": 18000}')$q$, e), 'Not enough balance in reserve 113');
   assert public.falla(format($q$select erp.equity_capital_reduction('{"company_id": "%s", "date": "2027-06-01", "amount": 20000}')$q$, e), 'between 0 and the pending losses');
   g := erp.equity_capital_reduction(jsonb_build_object('company_id', e, 'date', '2027-06-01', 'amount', 18000));
   assert public.asiento(e, (g->>'code'), 1) = '10000001 D 18000.00 | 12100001 H 18000.00', public.asiento(e, (g->>'code'), 1);
   assert public.st(e, '2027-06-30', 'capital') = 12000 and public.st(e, '2027-06-30', 'prior_losses') = 0;
   -- con reservas voluntarias, primero ellas (art. 322): la empresa del S3 tiene 18.000 en la 113
   perform public.manual(r, '2027-07-01', '[["12100001", 5000, 0], ["57200001", 0, 5000]]');   -- (pérdidas de otro origen, para el supuesto)
-  assert public.falla(format($q$select erp.equity_capital_reduction('{"company_id": "%s", "date": "2027-07-02", "amount": 5000}')$q$, r), 'voluntary reserves first');
+  assert public.falla(format($q$select erp.equity_capital_reduction('{"company_id": "%s", "date": "2027-07-02", "amount": 5000}')$q$, r), 'any reserves');   -- SL (v0.60.6, AF-12)
   g := erp.equity_loss_offset(jsonb_build_object('company_id', r, 'date', '2027-07-02', 'amount', 5000));
   assert public.asiento(r, (g->>'code'), 1) = '11300001 D 5000.00 | 12100001 H 5000.00', public.asiento(r, (g->>'code'), 1);
-  raise notice 'OK  · S6: reducción de capital por pérdidas (capital 12.000); con reservas voluntarias, primero ellas';
+  -- v0.60.6 (AF-13, art. 326 LSC): después de reducir el capital (12.000), dividendo solo con la reserva legal al 10 % (1.200)
+  perform public.manual(e, '2027-09-30', '[["57200001", 10000, 0], ["70500001", 0, 10000]]');
+  perform erp.close_fiscal_year(e, 2027, true);
+  g := erp.equity_distribution_preview(jsonb_build_object('company_id', e, 'date', '2028-05-20', 'dividend', 9000));
+  assert not (g->>'ok')::boolean and g->'warnings' @> '[{"code": "legal_reserve_below_10_after_reduction", "min": 1200}]', 'AF-13: ' || g::text;
+  g := erp.equity_distribution_preview(jsonb_build_object('company_id', e, 'date', '2028-05-20', 'dividend', 8800, 'legal_reserve', 1200));
+  assert (g->>'ok')::boolean, 'AF-13: con 1.200 a la reserva legal, sí: ' || g::text;
+  g := erp.equity_interim_preview(jsonb_build_object('company_id', e, 'date', '2028-03-31', 'amount', 100));
+  assert g->'warnings' @> '[{"code": "legal_reserve_below_10_after_reduction"}]', 'AF-13 (a cuenta): ' || g::text;
+  raise notice 'OK  · S6: reducción de capital por pérdidas (capital 12.000); con reservas, primero ellas; después, dividendo solo con la reserva legal al 10 %% (art. 326)';
+end $$;
+
+-- ---------- S5a, S5b y S6b · v0.60.6 (AF-11, AF-14, AF-12) ----------
+do $$
+declare e uuid := public.empresa('Pérdidas grandes SL'); g jsonb;
+begin
+  -- S5a · caso A: capital 30.000, pérdidas 25.000, beneficio 21.000 → patrimonio neto 26.000 < 30.000: todo a compensar
+  perform erp.equity_incorporation(jsonb_build_object('company_id', e, 'date', '2026-01-02', 'capital', 30000));
+  perform public.manual(e, '2026-06-30', '[["62900001", 25000, 0], ["57200001", 0, 25000]]');
+  perform erp.close_fiscal_year(e, 2026, true);
+  perform erp.equity_distribution(jsonb_build_object('company_id', e, 'date', '2027-05-20'));
+  perform public.manual(e, '2027-06-30', '[["57200001", 21000, 0], ["70500001", 0, 21000]]');
+  perform erp.close_fiscal_year(e, 2027, true);
+  g := erp.equity_distribution_preview(jsonb_build_object('company_id', e, 'date', '2028-05-20'));
+  assert (g->>'offset_losses')::numeric = 21000 and (g->>'legal_reserve')::numeric = 0 and (g->>'ok')::boolean
+     and g->'warnings' @> '[{"code": "losses_before_legal_reserve"}]', 'S5a: ' || g::text;
+  g := erp.equity_distribution_preview(jsonb_build_object('company_id', e, 'date', '2028-05-20', 'offset_losses', 18900));
+  assert not (g->>'ok')::boolean and g->'warnings' @> '[{"code": "losses_must_be_offset"}]', 'S5a: compensar menos no vale: ' || g::text;
+  g := erp.equity_distribution(jsonb_build_object('company_id', e, 'date', '2028-05-20'));
+  assert public.asiento(e, (g->>'code'), 1) = '12900000 D 21000.00 | 12100001 H 21000.00', public.asiento(e, (g->>'code'), 1);
+  assert public.st(e, '2028-05-31', 'prior_losses') = 4000;
+  raise notice 'OK  · S5a: pérdidas que dejan el patrimonio por debajo del capital: el beneficio compensa primero (art. 273.2)';
+end $$;
+
+do $$
+declare e uuid := public.empresa('Pérdidas pequeñas SL'); g jsonb;
+begin
+  -- S5b · caso B: capital 30.000, pérdidas 20.000, beneficio 21.000 → patrimonio neto 31.000: primero la reserva legal
+  perform erp.equity_incorporation(jsonb_build_object('company_id', e, 'date', '2026-01-02', 'capital', 30000));
+  perform public.manual(e, '2026-06-30', '[["62900001", 20000, 0], ["57200001", 0, 20000]]');
+  perform erp.close_fiscal_year(e, 2026, true);
+  perform erp.equity_distribution(jsonb_build_object('company_id', e, 'date', '2027-05-20'));
+  perform public.manual(e, '2027-06-30', '[["57200001", 21000, 0], ["70500001", 0, 21000]]');
+  perform erp.close_fiscal_year(e, 2027, true);
+  g := erp.equity_distribution_preview(jsonb_build_object('company_id', e, 'date', '2028-05-20'));
+  assert (g->>'legal_reserve')::numeric = 2100 and (g->>'offset_losses')::numeric = 18900 and (g->>'ok')::boolean
+     and g->'warnings' @> '[{"code": "losses_left", "left": 1100}]', 'S5b: ' || g::text;
+  -- S5c · AF-15 (opción b): dividendo de 1.000 compensando 17.900 → patrimonio neto 30.000, igual al capital: se puede
+  g := erp.equity_distribution_preview(jsonb_build_object('company_id', e, 'date', '2028-05-20', 'dividend', 1000, 'offset_losses', 17900));
+  assert (g->>'ok')::boolean and (g->>'net_worth_after')::numeric = 30000, 'S5c: ' || g::text;
+  g := erp.equity_distribution_preview(jsonb_build_object('company_id', e, 'date', '2028-05-20', 'dividend', 1100, 'offset_losses', 17900));
+  assert not (g->>'ok')::boolean, 'S5c: 1.100 deja el patrimonio por debajo del capital: ' || g::text;
+  g := erp.equity_distribution(jsonb_build_object('company_id', e, 'date', '2028-05-20'));
+  assert public.asiento(e, (g->>'code'), 1) = '12900000 D 21000.00 | 12100001 H 18900.00 | 11200001 H 2100.00', public.asiento(e, (g->>'code'), 1);
+  raise notice 'OK  · S5b y S5c: sin quedar por debajo del capital, primero la reserva legal (art. 274.1); dividendo si el patrimonio no baja del capital';
+end $$;
+
+do $$
+declare e uuid := public.empresa('Reservas SL'); g jsonb;
+begin
+  -- S6b · AF-12: SL con reserva legal 1.000, voluntarias 500 y pérdidas 18.000
+  perform erp.equity_incorporation(jsonb_build_object('company_id', e, 'date', '2026-01-02', 'capital', 30000));
+  perform public.manual(e, '2026-03-01', '[["57200001", 1500, 0], ["11200001", 0, 1000], ["11300001", 0, 500]]');
+  perform public.manual(e, '2026-06-30', '[["62900001", 18000, 0], ["57200001", 0, 18000]]');
+  perform erp.close_fiscal_year(e, 2026, true);
+  perform erp.equity_distribution(jsonb_build_object('company_id', e, 'date', '2027-05-20'));
+  -- con cualquier reserva, la SL no reduce capital (art. 322.1)
+  assert public.falla(format($q$select erp.equity_capital_reduction('{"company_id": "%s", "date": "2027-06-01", "amount": 16500}')$q$, e), 'any reserves'), 'S6b: SL con reservas';
+  -- la reserva legal solo compensa si no hay otras reservas disponibles (art. 274.2)
+  assert public.falla(format($q$select erp.equity_loss_offset('{"company_id": "%s", "date": "2027-06-01", "amount": 1000, "reserve": "112"}')$q$, e), 'other available reserves first'), 'S6b: primero la 113';
+  perform erp.equity_loss_offset(jsonb_build_object('company_id', e, 'date', '2027-06-01', 'amount', 500));
+  g := erp.equity_loss_offset(jsonb_build_object('company_id', e, 'date', '2027-06-01', 'amount', 1000, 'reserve', '112'));
+  assert public.asiento(e, (g->>'code'), 1) = '11200001 D 1000.00 | 12100001 H 1000.00', public.asiento(e, (g->>'code'), 1);
+  g := erp.equity_capital_reduction(jsonb_build_object('company_id', e, 'date', '2027-06-02', 'amount', 16500));
+  assert public.st(e, '2027-06-30', 'capital') = 13500 and public.st(e, '2027-06-30', 'prior_losses') = 0, erp.equity_status(e, '2027-06-30')::text;
+  raise notice 'OK  · S6b: la SL no reduce capital con reservas (art. 322.1); la reserva legal compensa cuando no hay otras (art. 274.2)';
 end $$;
 
 -- ---------- Deshacer, módulo propio e invariantes ----------

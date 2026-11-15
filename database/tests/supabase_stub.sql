@@ -36,3 +36,16 @@ begin
   insert into erp.company_users (company_id, user_id, role, data_owner) values (p_company, p_user, p_role, p_data_owner);
 end $$;
 grant execute on function public.dar_acceso(uuid, uuid, text, boolean) to authenticated;
+
+-- public.como_bd(sql): ejecuta una sentencia como el administrador de la base (sin sesión de usuario), lo que hace
+-- Diosvely en el SQL Editor de Supabase. Solo para preparar escenarios en las pruebas (v0.60.6: desde SEG-21 y SEG-22
+-- los usuarios ya no cambian directamente los meses ni los ajustes de la empresa). No existe en Supabase.
+create or replace function public.como_bd(p_sql text) returns void language plpgsql security definer as $$
+declare s text := current_setting('request.jwt.claim.sub', true); c text := current_setting('request.jwt.claims', true);
+begin
+  perform set_config('request.jwt.claim.sub', '', true); perform set_config('request.jwt.claims', '', true);
+  execute p_sql;
+  perform set_config('request.jwt.claim.sub', coalesce(s, ''), true); perform set_config('request.jwt.claims', coalesce(c, ''), true);
+end $$;
+grant execute on function public.como_bd(text) to authenticated;
+

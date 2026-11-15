@@ -51,7 +51,7 @@ española y el funcionamiento real de un ERP. Los ERP comerciales son caros y di
 propia, así que decidí **construir uno**. Diseñar la tabla de asientos obliga a entender *por qué* un ERP impone
 cada regla. Además, todo el código está en inglés para practicar el vocabulario técnico de BC y SAP.
 
-## ¿Qué hace hoy? (v0.60.5)
+## ¿Qué hace hoy? (v0.60.6)
 
 **Primeros pasos y navegación**
 - **Pantalla de Inicio** en cada empresa:
@@ -282,7 +282,7 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
 | Web | **React + Vite** | Componentes por pantalla, i18n propio (es/en), rutas con almohadilla, iconos `lucide-react` |
 | IA | **Cloudflare Workers AI** + Pages Functions | `/api/ai` (Mistral Small 3.1) y `/api/tutor` (gpt-oss-120b); la clave nunca llega al navegador |
 | Despliegue | **Cloudflare Pages** | Despliegue automático desde `main`, dirección de prueba por rama y cabeceras de seguridad (`_headers`) |
-| Calidad | **GitHub Actions** + **Vitest** + Dependabot | 83 pruebas SQL, la prueba del diagnóstico, 345 tests de la web, lint, build y auditoría de dependencias en cada Pull Request |
+| Calidad | **GitHub Actions** + **Vitest** + Dependabot | 83 pruebas SQL, la prueba del diagnóstico, 351 tests de la web, lint, build y auditoría de dependencias en cada Pull Request |
 | Versionado | Git + GitHub | Ramas, Pull Requests, `main` protegida, versiones etiquetadas y decisiones documentadas (ADR) |
 
 **Principio clave:** la web nunca es la única barrera. Aunque alguien manipule el navegador, PostgreSQL rechaza:
@@ -346,7 +346,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 ├── scripts/generar-diagnostico.sh  genera database/diagnostico-supabase.sql (¿le falta algo a tu Supabase?)
 ├── scripts/generar-permisos.mjs    genera docs/permisos.md desde la prueba de permisos (fase 79)
 ├── database/
-│   ├── migrations/            0001 → 0093, se ejecutan en orden en Supabase
+│   ├── migrations/            0001 → 0095, se ejecutan en orden en Supabase
 │   ├── funciones/             versión vigente de cada función, para estudiarla (generado)
 │   ├── diagnostico-supabase.sql  consulta de solo lectura: qué le falta a tu Supabase (generado)
 │   ├── reset/                 reset del schema antiguo (solo histórico)
@@ -403,7 +403,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
     matriz de permisos y la 80, la guardiana, prueba todas las funciones contra las empresas de otro usuario; la 81,
     que la misma semilla da la misma contabilidad y que cada empresa sintética cuadra; la 82, que los tres modelos
     del Balance suman lo mismo; y la 83, que ningún texto de la base de datos nombra un programa comercial);
-  - **345 tests de la web con Vitest**: formatos, rutas, importadores, errores, idiomas (español e inglés con las
+  - **351 tests de la web con Vitest**: formatos, rutas, importadores, errores, idiomas (español e inglés con las
     mismas claves), glosario, plantillas, la defensa de las funciones de IA, la lectura por páginas, el borrado por
     tandas, la fecha de trabajo, los gráficos, el análisis horizontal, la exportación a Excel y los tableros (unidades,
     trimestres, rankings, lista de control y saldos al revés) y que la tabla de roles dice lo mismo que la matriz de
@@ -558,6 +558,7 @@ cuadrados. El ERP también lee directamente los diarios en Excel y los de Busine
 - [x] **v0.60.3**: correctoras del activo en el Balance, escrituras directas por la API cerradas (la guardiana vigila también las tablas) y bitácora sin cifras de diarios de estudio
 - [x] **v0.60.4**: logo nuevo, grupos 8 y 9 en «Ajustes por cambios de valor» y correcciones del vídeo 02
 - [x] **v0.60.5**: nadie toca los asientos por la puerta de atrás (líneas, contabilizar, terceros), avisos de la IA, diagnóstico con la seguridad y textos sin los diarios de estudio
+- [x] **v0.60.6**: operaciones societarias según la LSC (reparto con pérdidas, reducción de capital, art. 326), ajustes de la empresa y meses protegidos, cuota de IA devuelta si falla
 - [ ] Más botones en la barra superior
 - [ ] Ontología contable y chat con la IA (consulta, nunca calcula)
 - [ ] Más informes en Power BI e incrustarlos en el ERP con RLS por empresa

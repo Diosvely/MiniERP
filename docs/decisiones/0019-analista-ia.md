@@ -40,8 +40,8 @@ Hay tres condiciones:
 ## Alternativas descartadas
 
 - **APIs de pago** (Claude, OpenAI). Tienen más calidad, pero cuestan dinero y exigen guardar una clave secreta.
-- **Gemini y OpenRouter gratuitos.** Su privacidad no es adecuada para datos reales: en el plan gratuito de Gemini
-  los datos pueden usarse para mejorar productos, y en OpenRouter depende del proveedor de cada modelo.
+- **Otros servicios gratuitos de IA.** Se descartaron por sus condiciones de uso de los datos en el plan gratuito
+  (consultadas el 08-10-2026). *(Revisión ética, v0.60.6: sin nombres ni juicios sobre otros servicios.)*
 - **Ollama en local.** Es perfecto para la privacidad, pero no funciona en la web publicada. Queda como
   opción para estudiar en el ordenador.
 - **Dejar que la IA consulte la base de datos con SQL.** Es un riesgo de seguridad y de cifras inventadas.

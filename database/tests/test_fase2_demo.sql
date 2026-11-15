@@ -91,7 +91,8 @@ begin
   perform public.debe_fallar(format('select erp.create_posting_account(%L, %L, %L)', d, '43000001', 'x'),
                              'row-level security', 'no crea subcuentas en la demo');
   update erp.companies set name = 'hackeada' where id = d;   -- RLS: 0 filas afectadas, sin error
-  update erp.accounting_periods set status = 'closed' where fiscal_year_id = ej;
+  perform public.debe_fallar(format('update erp.accounting_periods set status = %L where fiscal_year_id = %L', 'closed', ej),
+                             'permission denied', 'no cierra meses de la demo');
   perform public.debe_fallar(format('select erp.delete_company(%L)', d), 'Only the company admin', 'no borra la demo');
   raise notice 'OK  · el visitante no puede modificar nada de la demo';
 

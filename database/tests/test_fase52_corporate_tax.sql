@@ -151,7 +151,7 @@ begin
   g := erp.corporate_tax_calc(e, 2026);
   assert g->>'period_start' = '2026-01-01' and (g->>'period_days')::int = 365 and g->'suggested_start' = 'null'::jsonb,
          'por defecto, el ejercicio entero y sin sugerencia: ' || g::text;
-  update erp.companies set start_date = '2026-07-01' where id = e;
+  perform public.como_bd(format('update erp.companies set start_date = %L where id = %L', '2026-07-01', e));
   assert erp.corporate_tax_calc(e, 2026)->>'suggested_start' = '2026-07-01', 'la fecha de inicio de la contabilidad se sugiere';
   assert (erp.corporate_tax_calc(e, 2026)->>'quota')::numeric = 37976, 'pero no se aplica sola';
   perform erp.corporate_tax_period(v_ret, '2026-07-01');
@@ -163,7 +163,7 @@ begin
   perform erp.corporate_tax_period(v_ret, '2026-01-01');
   assert (select period_start from erp.corporate_tax_returns where id = v_ret) is null
      and (erp.corporate_tax_calc(e, 2026)->>'quota')::numeric = 37976, 'el 1 de enero = el ejercicio entero, como antes';
-  update erp.companies set start_date = null where id = e;
+  perform public.como_bd(format('update erp.companies set start_date = null where id = %L', e));
   raise notice 'OK  · período impositivo del 01-07 al 31-12: 184 días, tramo de 25.205,48 y cuota 38.471,89; por defecto, el año entero';
 
   -- ---------- 7. Ajustes manuales ----------

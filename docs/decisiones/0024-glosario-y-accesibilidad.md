@@ -46,7 +46,7 @@
 
 - Cada pantalla enseña su concepto en un clic, con el vocabulario de los ERP reales.
 - La accesibilidad tiene una cifra (0 fallos con axe-core) que se puede volver a medir tras cada cambio.
-- El README muestra capturas reales de la app (`docs/capturas/`).
+- El README muestra capturas de la aplicación, con datos ficticios (`docs/capturas/`).
 - **Pendiente:**
   - llevar los iconos a las pantallas antiguas;
   - añadir más términos al glosario (amortización por métodos, provisiones, periodificaciones) cuando llegue el    módulo de Inmovilizado.

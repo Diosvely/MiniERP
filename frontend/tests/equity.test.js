@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { balanced, legalReserve, payload, previewEntries, undoable } from '../src/equity'
+import { INFO_WARNINGS, LOSS_RESERVES, balanced, legalReserve, payload, previewEntries, undoable } from '../src/equity'
 import es from '../src/i18n/es.js'
 import en from '../src/i18n/en.js'
 
@@ -99,5 +99,23 @@ describe('operaciones societarias · errores en lenguaje claro', () => {
     }
     expect(friendlyError('Not enough voluntary reserves (balance 1200.00)', t, 'es').hint).toMatch(/1\.200,00/)
     expect(friendlyError('There is no result to distribute on 2027-05-20: close the previous year first', t, 'es').to).toBe('closing')
+  })
+})
+
+describe('v0.60.6 · compensar pérdidas con otras reservas y avisos nuevos (AF-11 a AF-14)', () => {
+  it('la compensación lleva la reserva elegida al asiento y a la llamada', () => {
+    expect(payload('loss_offset', { amount: '1000', reserve: '112' }, 'c', '2027-06-01')).toMatchObject({ amount: 1000, reserve: '112' })
+    expect(previewEntries('loss_offset', { amount: '1000', reserve: '112' })[0].lines).toEqual([
+      { account: '112', debit: 1000, credit: 0 }, { account: '121', debit: 0, credit: 1000 }])
+    expect(previewEntries('loss_offset', { amount: '500', reserve: 'x' })[0].lines[0].account).toBe('113')   // lo desconocido, a la 113
+    expect(LOSS_RESERVES).toContain('112')
+  })
+  it('los avisos nuevos están en los dos idiomas; «primero compensar» solo informa', () => {
+    for (const k of ['losses_must_be_offset', 'losses_before_legal_reserve', 'legal_reserve_below_10_after_reduction']) {
+      expect(es.eq.warn[k]).toBeTruthy()
+      expect(en.eq.warn[k]).toBeTruthy()
+    }
+    expect(INFO_WARNINGS).toEqual(['losses_left', 'losses_before_legal_reserve'])
+    expect(es.eq.f.reserve && en.eq.f.reserve).toBeTruthy()
   })
 })

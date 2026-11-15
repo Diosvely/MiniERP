@@ -69,4 +69,15 @@ describe('readJournal · errores claros', () => {
     const csv = 'fecha;asiento;tipo;cuenta;nombre;debe;haber;concepto;documento\nmañana;1;normal;57200001;B;1;0;x;\n'
     await expect(readJournal(fakeFile('x.csv', csv))).rejects.toThrow(/Fecha no reconocida/)
   })
+  it('importe que no es un número: error con la fila y el valor, no un 0 escondido (v0.60.6, H-072)', async () => {
+    const csv = 'fecha;asiento;tipo;cuenta;nombre;debe;haber;concepto;documento\n01/01/2025;1;normal;57200001;B;10;0;x;\n01/01/2025;1;normal;70000000;V;0;abc;x;\n'
+    await expect(readJournal(fakeFile('x.csv', csv))).rejects.toThrow('Fila 3: importe no reconocido: "abc"')
+    const otro = 'fecha;asiento;tipo;cuenta;nombre;debe;haber;concepto;documento\n01/01/2025;1;normal;57200001;B;1.2.3;0;x;\n'
+    await expect(readJournal(fakeFile('x.csv', otro))).rejects.toThrow(/Fila 2/)
+  })
+  it('importe con el símbolo del euro o espacios: se entiende (v0.60.6)', async () => {
+    const csv = 'fecha;asiento;tipo;cuenta;nombre;debe;haber;concepto;documento\n01/01/2025;1;normal;57200001;B;1.234,56 €;0;x;\n'
+    const { rows } = await readJournal(fakeFile('x.csv', csv))
+    expect(rows[0].debit).toBe(1234.56)
+  })
 })

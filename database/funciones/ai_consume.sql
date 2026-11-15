@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.ai_consume · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0027_members 0072_temporary_companies   →   la vigente es la de 0072_temporary_companies
+-- Definida en: 0027_members 0072_temporary_companies 0095_equity_and_company_rules   →   la vigente es la de 0095_equity_and_company_rules
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.ai_consume(p_company uuid)
@@ -13,18 +13,22 @@ AS $function$
 declare
   v_limit int;
   v_used  int;
+  v_call  uuid;
 begin
   if not erp.ai_allowed(p_company) then raise exception 'The AI is not enabled for you in this company'; end if;
   insert into erp.ai_usage (user_id, used_on, calls) values (auth.uid(), current_date, 1)
   on conflict (user_id, used_on) do update set calls = erp.ai_usage.calls + 1
   returning calls into v_used;
+  -- v0.60.6 (H-079) · el justificante para devolverla si el modelo falla
+  delete from erp.ai_calls where created_at < now() - interval '2 days';
+  insert into erp.ai_calls (user_id, used_on) values (auth.uid(), current_date) returning id into v_call;
   if erp.is_owner() then
-    return jsonb_build_object('used', v_used, 'limit', null, 'remaining', null);
+    return jsonb_build_object('used', v_used, 'limit', null, 'remaining', null, 'call_id', v_call);
   end if;
   v_limit := erp.ai_daily_limit();
   if v_used > v_limit then
     raise exception 'Daily AI limit reached (% per day)', v_limit;
   end if;
-  return jsonb_build_object('used', v_used, 'limit', v_limit, 'remaining', v_limit - v_used);
+  return jsonb_build_object('used', v_used, 'limit', v_limit, 'remaining', v_limit - v_used, 'call_id', v_call);
 end $function$
 ;

@@ -299,7 +299,7 @@ begin
 
     elsif r.code = 'controlled' then
       -- Manuales sin anular que tocan una cuenta controlada; no cuentan los vinculados a un pago (ya están conciliados)
-      -- v0.52.2: en bloque (antes, erp.entry_controlled_lines asiento por asiento: 20 s con 18.000 asientos manuales).
+      -- v0.52.2: en bloque (antes, erp.entry_controlled_lines asiento por asiento: 20 s con muchos asientos manuales).
       -- Las reglas de las cuentas de la empresa, en un mapa { cuenta: { modules, side } } (una búsqueda por cuenta), y
       -- cada asiento se queda con su primera línea (por su orden) que toca una cuenta controlada por el lado que controla.
       select coalesce(jsonb_object_agg(d.account_no, jsonb_build_object('modules', to_jsonb(x.modules), 'side', x.side)), '{}')

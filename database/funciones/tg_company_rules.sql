@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.tg_company_rules · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0007_demo_and_limits 0015_guest_access 0027_members 0072_temporary_companies 0092_balance_and_permissions_fixes   →   la vigente es la de 0092_balance_and_permissions_fixes
+-- Definida en: 0007_demo_and_limits 0015_guest_access 0027_members 0072_temporary_companies 0092_balance_and_permissions_fixes 0095_equity_and_company_rules   →   la vigente es la de 0095_equity_and_company_rules
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.tg_company_rules()
@@ -38,6 +38,25 @@ begin
         or new.synthetic_profile is distinct from old.synthetic_profile
         or new.synthetic_months is distinct from old.synthetic_months) then
       raise exception 'The seed of a synthetic company cannot be changed';
+    end if;
+    -- v0.60.6 (SEG-21) · los ajustes que dan forma a la contabilidad, con las mismas reglas que sus funciones
+    if new.tax_territory is distinct from old.tax_territory then
+      raise exception 'The tax territory cannot be changed after the company is created';
+    end if;
+    if new.posting_account_digits is distinct from old.posting_account_digits then
+      raise exception 'The digits of the posting accounts cannot be changed after the company is created';
+    end if;
+    if new.legal_form is distinct from old.legal_form
+       and exists (select 1 from erp.equity_operations where company_id = new.id and status = 'posted') then
+      raise exception 'The company already has equity operations: undo them before changing the legal form';
+    end if;
+    if (new.start_date is distinct from old.start_date or new.monthly is distinct from old.monthly)
+       and exists (select 1 from erp.journal_entries j where j.company_id = new.id) then
+      raise exception 'The company already has entries: the start date can only be set in a new company';
+    end if;
+    if (new.case_key is distinct from old.case_key or new.case_mode is distinct from old.case_mode)
+       and old.case_key is not null then
+      raise exception 'The practice case of a company cannot be changed';
     end if;
   elsif new.temporary then
     select * into v_s from erp.temp_settings;

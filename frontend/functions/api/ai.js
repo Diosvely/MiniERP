@@ -174,6 +174,7 @@ export async function onRequestPost({ request, env }) {
     if (!/limit/i.test(q.message ?? '')) logError('ai_consume', q.message)
     return json({ error: /limit/i.test(q.message ?? '') ? 'ai_user_limit' : 'context_denied' }, 429)
   }
+  const callId = (await quota.json().catch(() => ({}))).call_id
 
   const model = env.AI_MODEL || DEFAULT_MODEL
   let out
@@ -190,6 +191,7 @@ export async function onRequestPost({ request, env }) {
     // Límite diario gratuito agotado (se reinicia a las 00:00 UTC) u otro fallo del modelo
     const quota = /limit|quota|neuron|429/i.test(String(e?.message ?? e))
     logError(`modelo ${model}`, e?.message ?? e)
+    await refund(env, auth, callId)   // v0.60.6 (H-079): si el modelo falla, la consulta se devuelve
     return json({ error: quota ? 'ai_quota' : 'ai_failed' }, quota ? 429 : 502)
   }
 
@@ -197,4 +199,21 @@ export async function onRequestPost({ request, env }) {
   const analysis = parseAnalysis(text)
   // Si el modelo no devolvió JSON válido, se muestra su texto tal cual (mejor que nada)
   return json({ model, year, analysis, raw: analysis ? null : text.slice(0, 6000) })
+}
+
+// v0.60.6 (H-079) · Devuelve la consulta de IA gastada si el modelo falla (erp.ai_refund, una sola vez por justificante)
+export async function refund(env, auth, callId) {
+  if (!callId) return false
+  try {
+    const r = await fetch(`${env.VITE_SUPABASE_URL}/rest/v1/rpc/ai_refund`, {
+      method: 'POST',
+      headers: { apikey: env.VITE_SUPABASE_KEY, Authorization: auth, 'Content-Type': 'application/json',
+                 'Content-Profile': 'erp', 'Accept-Profile': 'erp' },
+      body: JSON.stringify({ p_call: callId }),
+    })
+    return r.ok
+  } catch (e) {
+    logError('ai_refund', e?.message ?? e)
+    return false
+  }
 }

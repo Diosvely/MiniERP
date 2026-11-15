@@ -26,7 +26,7 @@ Las demos eran hasta ahora exclusivas del owner.
 2. **El acceso se da por email** (`grant_company_access`, solo el owner). El usuario tiene que existir: o se
    registra él, o el owner lo crea en Supabase con una contraseña provisional que el usuario cambia desde la web.
    Para alguien nuevo: se registra, envía su fichero, el owner lo importa y le da acceso.
-3. **El titular publica su demo** (`set_company_demo`), con una **mención** visible ("Datos del curso de…") y
+3. **El titular publica su demo** (`set_company_demo`), con una **mención** visible (por ejemplo, "Datos de práctica cedidos por su titular") y
    aceptando expresamente que los datos serán públicos. El owner conserva el control de **qué datos entran**,
    porque los importa él.
 4. **La IA deja de ser solo del owner** (`ai_allowed`): el owner sin límite, en sus empresas; el titular, en la
@@ -58,3 +58,5 @@ Las demos eran hasta ahora exclusivas del owner.
   - una pantalla global de opiniones para todas las empresas.
 
 *Revisión ética (v0.60.1, 2026-11-08): se quita el lenguaje de captación («un gancho de colaboración») (ADR 0063). La decisión y sus consecuencias no cambian.*
+
+*Actualización (v0.60.6, 2026-11-14): los diarios de estudio de terceros nunca son demo ni se nombran (ADR 0010). La vía del titular queda para datos de práctica que alguien cede con permiso; la mención no nombra cursos ni personas.*

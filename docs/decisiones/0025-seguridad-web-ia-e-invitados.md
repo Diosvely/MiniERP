@@ -46,7 +46,7 @@ El análisis técnico del repositorio (plan de mejoras, bloques 2 a 5) señaló 
 - **CSP con `unsafe-eval` o dominios genéricos (`*`):** innecesario; el código no usa `eval` ni recursos externos.
 - **Quitar `'unsafe-inline'` de `style-src`:** React usa `style={{…}}` en las barras de progreso. Es un riesgo bajo
   (estilos, no scripts) y se acepta.
-- **reCAPTCHA de Google:** Turnstile es gratuito, no rastrea al usuario y casi nunca pide resolver nada.
+- **Otro CAPTCHA:** Turnstile es gratuito y casi nunca pide resolver nada. *(Revisión ética, v0.60.6.)*
 - **Clave foránea con `on delete cascade` hacia `auth.users`:** acoplaría el esquema `erp` al de Supabase Auth. Una
   función explícita, probada y llamada desde `pg_cron` es más clara.
 - **Tests de interfaz (React Testing Library) ya:** se empezó por la lógica pura, que es donde están las reglas.

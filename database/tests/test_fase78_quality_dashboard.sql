@@ -201,7 +201,7 @@ begin
   perform erp.cancel_tax_settlement((select id from erp.tax_settlements where company_id = c and year = 2026 and quarter = 4 and status = 'posted'));
   perform erp.cancel_tax_settlement((select id from erp.tax_settlements where company_id = c and year = 2026 and quarter = 3 and status = 'posted'));
 end $$;
-update erp.companies set monthly = true where id = (select e from public.ctx where k = 'abierta');
+select public.como_bd(format('update erp.companies set monthly = true where id = %L', (select e from public.ctx where k = 'abierta')));
 set role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a1', false) \gset
 do $$

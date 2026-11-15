@@ -16,7 +16,7 @@ problemas que con pocos datos no se veían:
    movimiento y el plan de cuentas se cortaban, y los totales salían mal.
 3. **No se podía borrar una empresa desde la web.** Hacía falta para enseñar una importación y después quitarla.
    Además, en local, borrar una empresa grande tardaba **148 s**: a 27 claves foráneas les faltaba índice.
-4. **Todas las fechas por defecto eran las de hoy:** una empresa de 2019-2024 se abría en un 2026 vacío.
+4. **Todas las fechas por defecto eran las de hoy:** una empresa con ejercicios antiguos se abría en un año vacío.
 5. **No se podía seguir el rastro contable:** desde el mayor no había forma de ver el asiento completo.
 
 ## Decisión

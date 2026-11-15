@@ -1563,7 +1563,7 @@ Mismos resultados. Pruebas: 71 SQL.
 **Lo que se aprende**
 - **Probar con volumen real:** con datos pequeños todo va rápido; los problemas salen con años de historia.
 - **Pensar en conjuntos, no en filas:** calcular una vez para todos en lugar de una vez por cada uno.
-- **Las estimaciones del planificador importan:** si cree que hay una fila, puede cruzar 18.000 × 18.000.
+- **Las estimaciones del planificador importan:** si cree que hay una fila, puede cruzar miles de filas por miles.
 
 ## 2026-11-01 · v0.52.3 · Cada empresa, independiente del tamaño de las demás
 
@@ -2015,4 +2015,22 @@ cálculo contable; la siguiente (operaciones societarias) espera las respuestas 
   deja escribir en la tabla. Si la condición vive en la función, una escritura directa se la salta; en el disparador, no.
 - **Un archivo generado tiene que salir igual cada vez:** el diagnóstico ordenaba algunas listas «por 1», que en
   PostgreSQL es ordenar por una constante. Con un orden explícito, la CI puede comprobar que está al día.
+
+## 2026-11-15 · v0.60.6 · Operaciones societarias según la ley y ajustes protegidos
+
+**De dónde viene:** los hallazgos de auditoría fiscal (AF-11 a AF-15), seguridad (SEG-21, SEG-22), redacción (H-49 a
+H-54) y dos puntos del informe externo (H-072, H-079), aprobados por Diosvely el 15-11-2026.
+
+**Qué se hizo:** migración 0095 (reparto del resultado con pérdidas, reducción de capital de la SL, art. 326, ajustes
+de la empresa, ejercicios y meses, devolución de la consulta de IA); el importador avisa de un importe que no es un
+número; textos.
+
+**Lo que se aprende**
+- **El orden del reparto depende de las pérdidas:** con capital 30.000, pérdidas 20.000 y beneficio 21.000, el
+  patrimonio (31.000) no baja del capital: 2.100 a reserva legal y 18.900 a compensar. Con pérdidas de 25.000 sí baja
+  (26.000): los 21.000 compensan y la reserva legal espera.
+- **Ser más estricto que la ley también es un error en un laboratorio:** el ERP prohibía dividendos con cualquier
+  pérdida pendiente y enseñaba una regla que no existe.
+- **Un arreglo de seguridad puede abrir un hueco nuevo:** la comprobación de la v0.60.5 daba por bueno un asiento sin
+  mes. La revisión diaria lo encontró al día siguiente.
 

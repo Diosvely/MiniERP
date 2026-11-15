@@ -2,6 +2,37 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.60.6] - 2026-11-15
+### Corregido
+- **Operaciones societarias** (migración 0095; hallazgos de auditoría fiscal aprobados por Diosvely):
+  - AF-11 y AF-14 · reparto del resultado: si las pérdidas dejan el patrimonio neto por debajo del capital, el beneficio
+    compensa primero y la reserva legal se dota con lo que queda (art. 273.2 LSC); si no, primero la reserva legal
+    (art. 274.1) y el resto puede compensar pérdidas. Antes el ERP compensaba siempre primero y bloqueaba repartos
+    correctos;
+  - AF-15 · el dividendo solo exige que el patrimonio neto no quede por debajo del capital (art. 273.2): quedar pérdidas
+    sin compensar ya no lo impide por sí solo;
+  - AF-12 · una SL no reduce capital por pérdidas mientras tenga cualquier reserva (art. 322.1); las pérdidas se
+    compensan también con la prima, la 115, la 119 o, si no quedan otras, la reserva legal (art. 274.2);
+  - AF-13 · después de reducir el capital por pérdidas, no hay dividendo (ni a cuenta) hasta que la reserva legal llegue
+    al 10 % del capital (art. 326).
+- **Ajustes de la empresa, ejercicios y meses por la puerta de atrás** (hallazgos de seguridad; solo en la empresa
+  propia):
+  - SEG-21 · el territorio, los dígitos, la forma jurídica, la fecha de inicio, el mes a mes y el caso de práctica solo
+    cambian con sus reglas, también con una escritura directa;
+  - SEG-22 · los meses solo cambian con el cierre y la reapertura; el ejercicio va de enero a diciembre y no cambia sus
+    fechas; un asiento solo se contabiliza en una fecha con su mes (cierra un hueco de la v0.60.5).
+- **La consulta de IA se devuelve si el modelo falla** (H-079): el Analista y el Tutor la devuelven una vez con
+  `erp.ai_refund`.
+- **El importador ya no convierte en 0 un importe que no es un número** (H-072): da error con la fila y el valor;
+  entiende «1.234,56 €».
+- **Textos** (hallazgos de redacción): los diarios de estudio de terceros nunca son demo ni se nombran (ADR 0010 y 0021,
+  pantalla de publicar, H-50); sin cifras de esos diarios en comentarios, la ADR 0026 y la bitácora (H-49, también en
+  `erp.run_audit_checks`, sin cambiar lo que hace); ADR 0017 (H-51), 0019 y 0025 sin juicios sobre otros servicios
+  (H-52), README con la migración 0095 (H-53) y capturas «con datos ficticios» (H-54). ADR 0042 al día.
+### Pruebas
+- Fase 55 con los supuestos S5a, S5b, S5c y S6b y el art. 326 en el S6; fase 80 con SEG-21, SEG-22 y H-079. Las pruebas
+  preparan con `public.como_bd` lo que antes hacía la sesión directamente. 351 tests de la web.
+
 ## [0.60.5] - 2026-11-14
 ### Corregido
 - **Nadie toca los asientos por la puerta de atrás** (migración 0094, hallazgos de seguridad aprobados por Diosvely;

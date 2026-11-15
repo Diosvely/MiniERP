@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.run_audit_checks · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0037_audit_checks 0039_review_fixes 0042_assets_integration 0044_adjustments_integration 0046_asset_impairment 0048_closing_integration 0050_payroll_integration 0053_forms_integration 0061_equity_integration 0063_financing_integration 0065_grants_integration 0077_large_companies 0078_company_isolation 0079_checks_relevant_lines   →   la vigente es la de 0079_checks_relevant_lines
+-- Definida en: 0037_audit_checks 0039_review_fixes 0042_assets_integration 0044_adjustments_integration 0046_asset_impairment 0048_closing_integration 0050_payroll_integration 0053_forms_integration 0061_equity_integration 0063_financing_integration 0065_grants_integration 0077_large_companies 0078_company_isolation 0079_checks_relevant_lines 0095_equity_and_company_rules   →   la vigente es la de 0095_equity_and_company_rules
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.run_audit_checks(p_company uuid, p_year integer, p_to_date date DEFAULT NULL::date)
@@ -214,7 +214,7 @@ begin
 
     elsif r.code = 'controlled' then
       -- Manuales sin anular que tocan una cuenta controlada; no cuentan los vinculados a un pago (ya están conciliados)
-      -- v0.52.2: en bloque (antes, erp.entry_controlled_lines asiento por asiento: 20 s con 18.000 asientos manuales).
+      -- v0.52.2: en bloque (antes, erp.entry_controlled_lines asiento por asiento: 20 s con muchos asientos manuales).
       -- Las reglas de las cuentas de la empresa, en un mapa { cuenta: { modules, side } } (una búsqueda por cuenta), y
       -- cada asiento se queda con su primera línea (por su orden) que toca una cuenta controlada por el lado que controla.
       select coalesce(jsonb_object_agg(d.account_no, jsonb_build_object('modules', to_jsonb(x.modules), 'side', x.side)), '{}')

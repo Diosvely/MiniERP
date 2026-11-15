@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.equity_capital_reduction · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0060_equity_operations   →   la vigente es la de 0060_equity_operations
+-- Definida en: 0060_equity_operations 0095_equity_and_company_rules   →   la vigente es la de 0095_equity_and_company_rules
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.equity_capital_reduction(p jsonb)
@@ -12,16 +12,25 @@ CREATE OR REPLACE FUNCTION erp.equity_capital_reduction(p jsonb)
 AS $function$
 declare
   v_company uuid := (p->>'company_id')::uuid; v_date date := (p->>'date')::date; v_code text; v_amt numeric; v_losses numeric;
-  v_cap numeric; v_form text; e1 uuid;
+  v_cap numeric; v_form text; e1 uuid; v_reserves numeric;
 begin
   v_code := erp.equity_start(v_company, v_date);
   select legal_form into v_form from erp.companies where id = v_company;
   v_amt := round(coalesce((p->>'amount')::numeric, 0), 2);
   v_losses := -erp.equity_bal(v_company, '121', v_date); v_cap := erp.equity_bal(v_company, '100', v_date);
   if v_amt <= 0 or v_amt > v_losses then raise exception 'The reduction must be between 0 and the pending losses (%)', v_losses; end if;
-  if erp.equity_bal(v_company, '113', v_date) > 0 then raise exception 'Use the voluntary reserves first: capital cannot be reduced for losses while there are reserves (art. 322 LSC)'; end if;
-  if erp.equity_bal(v_company, '112', v_date) > round((v_cap - v_amt) * 0.10, 2) then
-    raise exception 'The legal reserve would exceed 10 %% of the new capital: use it first (art. 322 LSC)';
+  if v_form = 'sl' then
+    -- v0.60.6 (AF-12): art. 322.1 LSC, la SL no reduce capital por pérdidas con cualquier clase de reservas
+    select coalesce(sum(greatest(erp.equity_bal(v_company, r, v_date), 0)), 0) into v_reserves
+    from unnest(array['110', '112', '113', '114', '115', '119']) r;
+    if v_reserves > 0 then
+      raise exception 'An SL cannot reduce capital for losses while it has any reserves (% in reserves; art. 322.1 LSC): offset the losses with them first', v_reserves;
+    end if;
+  else
+    if erp.equity_bal(v_company, '113', v_date) > 0 then raise exception 'Use the voluntary reserves first: capital cannot be reduced for losses while there are reserves (art. 322 LSC)'; end if;
+    if erp.equity_bal(v_company, '112', v_date) > round((v_cap - v_amt) * 0.10, 2) then
+      raise exception 'The legal reserve would exceed 10 %% of the new capital: use it first (art. 322 LSC)';
+    end if;
   end if;
   if v_cap - v_amt < (case v_form when 'sa' then 60000 else 1 end) then
     raise exception 'The capital would be below the legal minimum (art. 4 LSC)';

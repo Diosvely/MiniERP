@@ -1,6 +1,6 @@
 # Funciones del esquema erp (versión vigente)
 
-Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0094`.
+Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0095`.
 No se edita a mano: el código fuente son las migraciones. Esto es para **estudiar** cada función en su forma
 actual sin rastrear sus redefiniciones.
 
@@ -9,7 +9,7 @@ actual sin rastrear sus redefiniciones.
 - **Tipo:** *invoker* (se ejecuta con los permisos de quien llama: manda la RLS), *security definer* (con los del
   dueño: comprueba ella misma los permisos) o *trigger*.
 
-370 funciones.
+373 funciones.
 
 | Función | Versiones | Vigente en | Tipo |
 |---|---|---|---|
@@ -24,10 +24,11 @@ actual sin rastrear sus redefiniciones.
 | [`adjust_reverse`](adjust_reverse.sql) | 1 | 0043_year_end_adjustments | security definer |
 | [`aging`](aging.sql) | 2 | 0078_company_isolation | invoker |
 | [`ai_allowed`](ai_allowed.sql) | 3 | 0085_permissions_ownership | security definer |
-| [`ai_consume`](ai_consume.sql) | 2 | 0072_temporary_companies | security definer |
+| [`ai_consume`](ai_consume.sql) | 3 | 0095_equity_and_company_rules | security definer |
 | [`ai_context`](ai_context.sql) | 2 | 0027_members | security definer |
 | [`ai_daily_limit`](ai_daily_limit.sql) | 1 | 0072_temporary_companies | security definer |
 | [`ai_ratio_value`](ai_ratio_value.sql) | 1 | 0024_ai_context | invoker |
+| [`ai_refund`](ai_refund.sql) | 1 | 0095_equity_and_company_rules | security definer |
 | [`ai_status`](ai_status.sql) | 2 | 0072_temporary_companies | security definer |
 | [`apply_provision`](apply_provision.sql) | 1 | 0045_provisions | security definer |
 | [`asset_account_pair`](asset_account_pair.sql) | 1 | 0041_fixed_assets | security definer |
@@ -142,17 +143,17 @@ actual sin rastrear sus redefiniciones.
 | [`equity_call`](equity_call.sql) | 1 | 0060_equity_operations | security definer |
 | [`equity_cancel`](equity_cancel.sql) | 1 | 0060_equity_operations | security definer |
 | [`equity_capital_increase`](equity_capital_increase.sql) | 1 | 0060_equity_operations | security definer |
-| [`equity_capital_reduction`](equity_capital_reduction.sql) | 1 | 0060_equity_operations | security definer |
+| [`equity_capital_reduction`](equity_capital_reduction.sql) | 2 | 0095_equity_and_company_rules | security definer |
 | [`equity_distribution`](equity_distribution.sql) | 1 | 0060_equity_operations | security definer |
-| [`equity_distribution_preview`](equity_distribution_preview.sql) | 1 | 0060_equity_operations | security definer |
+| [`equity_distribution_preview`](equity_distribution_preview.sql) | 2 | 0095_equity_and_company_rules | security definer |
 | [`equity_dividend_payment`](equity_dividend_payment.sql) | 1 | 0060_equity_operations | security definer |
 | [`equity_entry`](equity_entry.sql) | 1 | 0060_equity_operations | security definer |
 | [`equity_incorporation`](equity_incorporation.sql) | 1 | 0060_equity_operations | security definer |
 | [`equity_interim_dividend`](equity_interim_dividend.sql) | 1 | 0060_equity_operations | security definer |
-| [`equity_interim_preview`](equity_interim_preview.sql) | 1 | 0060_equity_operations | security definer |
+| [`equity_interim_preview`](equity_interim_preview.sql) | 2 | 0095_equity_and_company_rules | security definer |
 | [`equity_legal_reserve`](equity_legal_reserve.sql) | 1 | 0060_equity_operations | invoker |
 | [`equity_line`](equity_line.sql) | 1 | 0060_equity_operations | invoker |
-| [`equity_loss_offset`](equity_loss_offset.sql) | 1 | 0060_equity_operations | security definer |
+| [`equity_loss_offset`](equity_loss_offset.sql) | 2 | 0095_equity_and_company_rules | security definer |
 | [`equity_net_worth`](equity_net_worth.sql) | 1 | 0060_equity_operations | invoker |
 | [`equity_reserves_to_capital`](equity_reserves_to_capital.sql) | 1 | 0060_equity_operations | security definer |
 | [`equity_save`](equity_save.sql) | 1 | 0060_equity_operations | security definer |
@@ -290,7 +291,7 @@ actual sin rastrear sus redefiniciones.
 | [`reverse_impairment`](reverse_impairment.sql) | 1 | 0043_year_end_adjustments | security definer |
 | [`revise_provision`](revise_provision.sql) | 1 | 0045_provisions | security definer |
 | [`revoke_company_access`](revoke_company_access.sql) | 2 | 0085_permissions_ownership | security definer |
-| [`run_audit_checks`](run_audit_checks.sql) | 14 | 0079_checks_relevant_lines | security definer |
+| [`run_audit_checks`](run_audit_checks.sql) | 15 | 0095_equity_and_company_rules | security definer |
 | [`run_payroll`](run_payroll.sql) | 1 | 0049_payroll | security definer |
 | [`save_draft`](save_draft.sql) | 1 | 0070_entries_screen | security definer |
 | [`save_employee`](save_employee.sql) | 1 | 0049_payroll | security definer |
@@ -332,7 +333,7 @@ actual sin rastrear sus redefiniciones.
 | [`tf_row`](tf_row.sql) | 1 | 0051_tax_forms | invoker |
 | [`tg_company_add_admin`](tg_company_add_admin.sql) | 1 | 0001_core | trigger |
 | [`tg_company_copy_coa`](tg_company_copy_coa.sql) | 1 | 0002_chart_of_accounts | trigger |
-| [`tg_company_rules`](tg_company_rules.sql) | 5 | 0092_balance_and_permissions_fixes | trigger |
+| [`tg_company_rules`](tg_company_rules.sql) | 6 | 0095_equity_and_company_rules | trigger |
 | [`tg_company_vat_regime`](tg_company_vat_regime.sql) | 1 | 0019_reverse_charge_surcharge | trigger |
 | [`tg_entry_adjust_reverse`](tg_entry_adjust_reverse.sql) | 8 | 0064_grants | trigger |
 | [`tg_entry_asset_reverse`](tg_entry_asset_reverse.sql) | 2 | 0046_asset_impairment | trigger |
@@ -342,8 +343,9 @@ actual sin rastrear sus redefiniciones.
 | [`tg_entry_payment_reverse`](tg_entry_payment_reverse.sql) | 1 | 0035_payments | trigger |
 | [`tg_entry_prevent_delete`](tg_entry_prevent_delete.sql) | 1 | 0004_journal_entries | trigger |
 | [`tg_entry_pro_rata_reverse`](tg_entry_pro_rata_reverse.sql) | 1 | 0020_pro_rata | trigger |
-| [`tg_entry_validate`](tg_entry_validate.sql) | 2 | 0094_integrity_hardening | trigger |
+| [`tg_entry_validate`](tg_entry_validate.sql) | 3 | 0095_equity_and_company_rules | trigger |
 | [`tg_entry_work_month`](tg_entry_work_month.sql) | 1 | 0069_monthly_accounting | trigger |
+| [`tg_fiscal_year_rules`](tg_fiscal_year_rules.sql) | 1 | 0095_equity_and_company_rules | trigger |
 | [`tg_fiscal_year_status`](tg_fiscal_year_status.sql) | 1 | 0017_year_closing | trigger |
 | [`tg_gl_account_block_default`](tg_gl_account_block_default.sql) | 1 | 0013_balance_rules | trigger |
 | [`tg_gl_account_validate`](tg_gl_account_validate.sql) | 1 | 0002_chart_of_accounts | trigger |
@@ -362,6 +364,7 @@ actual sin rastrear sus redefiniciones.
 | [`tg_partner_sync_account_name`](tg_partner_sync_account_name.sql) | 1 | 0009_partners | trigger |
 | [`tg_partner_validate`](tg_partner_validate.sql) | 1 | 0009_partners | trigger |
 | [`tg_partner_withholding_validate`](tg_partner_withholding_validate.sql) | 1 | 0033_withholding_rules | trigger |
+| [`tg_period_insert`](tg_period_insert.sql) | 1 | 0095_equity_and_company_rules | trigger |
 | [`tg_pro_rata_protect`](tg_pro_rata_protect.sql) | 1 | 0020_pro_rata | trigger |
 | [`tg_protect_data_owner`](tg_protect_data_owner.sql) | 1 | 0030_protect_data_owner | trigger |
 | [`tg_tax_settlement_protect`](tg_tax_settlement_protect.sql) | 1 | 0012_tax_settlement | trigger |

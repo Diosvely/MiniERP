@@ -28,19 +28,27 @@ para los asientos.
      79). En la ampliación, la prima (110) se desembolsa entera;
    - **ampliación con cargo a reservas o a la prima** (art. 303), y **dividendos pasivos** (1030 → 5580 → 572);
    - **reparto del resultado** (arts. 273 y 274):
-     - primero las pérdidas pendientes (121);
-     - después la reserva legal: el 10 % del beneficio hasta el 20 % del capital. En una SL de menos de 3.000 € es al
+     - si las pérdidas pendientes (121) dejan el patrimonio neto por debajo del capital, primero se compensan (art. 273.2
+       LSC; art. 28.3 Resolución ICAC 5-3-2019) y la reserva legal se dota solo con lo que quede; si no, primero la
+       reserva legal, que se dota en todo caso (art. 274.1), y el resto puede compensar pérdidas (validado por auditoría
+       fiscal el 15-11-2026, AF-14; v0.60.6);
+     - la reserva legal: el 10 % del beneficio hasta el 20 % del capital. En una SL de menos de 3.000 € es al
        menos el 20 %, hasta que capital y reserva sumen 3.000 (art. 4.2);
      - después el dividendo (526), con lo pagado a cuenta (557) incluido;
      - y el resto, a reservas voluntarias (113).
      - Si queda una pérdida, va a la 121.
-     - No hay dividendo si el patrimonio neto quedaría por debajo del capital o si quedan pérdidas sin compensar;
+     - No hay dividendo si el patrimonio neto quedaría por debajo del capital (art. 273.2). Quedar pérdidas sin
+       compensar no lo impide por sí solo (v0.60.6, AF-15: antes el ERP era más estricto que la ley);
+     - después de una reducción de capital por pérdidas, siempre, no hay dividendo si la reserva legal no llega al 10 %
+       del capital (art. 326; v0.60.6, AF-13);
    - **dividendo a cuenta** (art. 277): el límite es el resultado desde el cierre menos las pérdidas anteriores, el
      impuesto estimado (25 % por defecto) y la reserva legal, y además tiene que haber tesorería;
    - **pago del dividendo:** retención del 19 % a una subcuenta propia, la **47512** (modelo 123), para que no se
      mezcle con la 4751 del 111. Sin retención solo con su motivo;
-   - **pérdidas:** compensarlas con reservas voluntarias, o reducir el capital (arts. 320 y 322). La reducción no se
-     permite mientras haya reservas voluntarias.
+   - **pérdidas:** compensarlas con reservas (voluntarias, prima, 115 o 119; la legal solo si no quedan otras, art.
+     274.2), o reducir el capital (arts. 320 y 322). La SL no puede reducir capital por pérdidas mientras tenga
+     cualquier reserva (art. 322.1); la SA, mientras tenga reservas voluntarias o la legal supere el 10 % del capital
+     nuevo (art. 322.2) (v0.60.6, AF-12).
 3. **La propuesta de reparto la calcula la base de datos** (`equity_distribution_preview`). La pantalla la enseña con
    su asiento y desactiva «Contabilizar» si incumple la ley. La misma función comprueba al contabilizar.
 4. **Módulo propio:**
@@ -91,8 +99,10 @@ para los asientos.
 
 ## Cómo explicarlo
 - **El resultado no es de la empresa hasta que la junta decide.** Al cerrar, el beneficio queda en la 129, que es un
-  saldo pendiente de destino. La junta lo reparte: primero lo que obliga la ley (compensar pérdidas, la reserva
-  legal), después lo que decide (dividendos) y el resto se queda en la empresa como reservas voluntarias.
+  saldo pendiente de destino. La junta lo reparte: primero lo que obliga la ley, después lo que decide (dividendos) y
+  el resto se queda en la empresa como reservas voluntarias. El orden de lo obligatorio depende de las pérdidas: si
+  dejan el patrimonio por debajo del capital, compensarlas va antes que la reserva legal; si no, la reserva legal va
+  antes (ejemplo: capital 30.000, pérdidas 20.000, beneficio 21.000 → 2.100 a reserva legal y 18.900 a compensar).
 - **La reserva legal es un colchón para los acreedores:** la sociedad responde solo con su patrimonio, así que la ley
   obliga a guardar una parte del beneficio, el 10 % hasta el 20 % del capital. Por eso el art. 273 impide repartir si
   el patrimonio neto queda por debajo del capital.

@@ -1,5 +1,5 @@
 -- =====================================================================
--- DIAGNÓSTICO DE SUPABASE · migraciones 0001 … 0094 (GENERADO por scripts/generar-diagnostico.sh: no editar)
+-- DIAGNÓSTICO DE SUPABASE · migraciones 0001 … 0095 (GENERADO por scripts/generar-diagnostico.sh: no editar)
 -- ---------------------------------------------------------------------
 -- Pégalo en el SQL Editor de Supabase y pulsa Run. SOLO LEE: no cambia nada.
 -- Devuelve una fila por cada diferencia con el repositorio. Ninguna fila («No rows returned») = todo al día.
@@ -7,7 +7,7 @@
 -- pide una reparación con solo lo que falta, en su versión vigente (como reparacion-paso204.sql en la v0.40.0).
 -- =====================================================================
 with
-r(name, kind) as (values ('accounting_periods', 'tabla'), ('accruals', 'tabla'), ('ai_feedback', 'tabla'), ('ai_usage', 'tabla'), ('app_profiles', 'tabla'), ('asset_depreciations', 'tabla'), ('asset_events', 'tabla'), ('audit_checks', 'tabla'), ('balance_rules', 'tabla'), ('business_partners', 'tabla'), ('case_entries', 'tabla'), ('case_expected', 'tabla'), ('case_steps', 'tabla'), ('cases', 'tabla'), ('cf_lines', 'tabla'), ('cf_mapping', 'tabla'), ('coa_template', 'tabla'), ('companies', 'tabla'), ('company_users', 'tabla'), ('concepts', 'tabla'), ('control_rules', 'tabla'), ('corporate_tax_adjustments', 'tabla'), ('corporate_tax_rates', 'tabla'), ('corporate_tax_returns', 'tabla'), ('dash_metrics', 'tabla'), ('dash_widgets', 'tabla'), ('dashboards', 'tabla'), ('depreciation_classes', 'tabla'), ('employees', 'tabla'), ('equity_operations', 'tabla'), ('exercise_attempts', 'tabla'), ('exercises', 'tabla'), ('fiscal_years', 'tabla'), ('fixed_assets', 'tabla'), ('fs_lines', 'tabla'), ('fs_mapping', 'tabla'), ('fs_model_lines', 'tabla'), ('fs_model_mapping', 'tabla'), ('fs_models', 'tabla'), ('gl_accounts', 'tabla'), ('grant_events', 'tabla'), ('grants', 'tabla'), ('guest_history', 'tabla'), ('import_batches', 'tabla'), ('import_lines', 'tabla'), ('inventory_count_lines', 'tabla'), ('inventory_counts', 'tabla'), ('invoice_lines', 'tabla'), ('invoice_tax_lines', 'tabla'), ('invoices', 'tabla'), ('journal_entries', 'tabla'), ('journal_lines', 'tabla'), ('loan_events', 'tabla'), ('loan_schedule', 'tabla'), ('loans', 'tabla'), ('operations', 'tabla'), ('payment_applications', 'tabla'), ('payments', 'tabla'), ('payroll_runs', 'tabla'), ('payslips', 'tabla'), ('pgc_accounts', 'tabla'), ('pgc_cards', 'tabla'), ('pgc_distinct_accounts', 'tabla'), ('pgc_groups', 'tabla'), ('pgc_principles', 'tabla'), ('pgc_subgroups', 'tabla'), ('pgc_valuation_rules', 'tabla'), ('pro_rata', 'tabla'), ('provision_movements', 'tabla'), ('provisions', 'tabla'), ('quality_check_defs', 'tabla'), ('ratio_defs', 'tabla'), ('receivable_impairments', 'tabla'), ('receivable_writeoffs', 'tabla'), ('sources', 'tabla'), ('ss_limits', 'tabla'), ('ss_rates', 'tabla'), ('synthetic_plan', 'tabla'), ('tax_codes', 'tabla'), ('tax_settlement_setup', 'tabla'), ('tax_settlements', 'tabla'), ('tax_setup', 'tabla'), ('temp_settings', 'tabla'), ('user_settings', 'tabla'), ('v_accruals', 'vista'), ('v_exercise_progress', 'vista'), ('v_fixed_assets', 'vista'), ('v_general_journal', 'vista'), ('v_general_ledger', 'vista'), ('v_import_batches', 'vista'), ('v_invoice_register', 'vista'), ('v_invoices', 'vista'), ('v_my_companies', 'vista'), ('v_partners', 'vista'), ('v_payments', 'vista'), ('v_payroll_runs', 'vista'), ('v_pro_rata', 'vista'), ('v_provisions', 'vista'), ('v_receivable_impairments', 'vista'), ('v_receivable_writeoffs', 'vista'), ('v_tax_book', 'vista'), ('v_tax_settlement_setup', 'vista'), ('v_tax_settlements', 'vista'), ('v_tax_setup', 'vista'), ('v_withholding_register', 'vista'), ('v_withholding_setup', 'vista'), ('v_year_closings', 'vista'), ('valuation_rules', 'tabla'), ('withholding_codes', 'tabla'), ('withholding_rules', 'tabla'), ('withholding_setup', 'tabla'), ('year_closings', 'tabla')),
+r(name, kind) as (values ('accounting_periods', 'tabla'), ('accruals', 'tabla'), ('ai_calls', 'tabla'), ('ai_feedback', 'tabla'), ('ai_usage', 'tabla'), ('app_profiles', 'tabla'), ('asset_depreciations', 'tabla'), ('asset_events', 'tabla'), ('audit_checks', 'tabla'), ('balance_rules', 'tabla'), ('business_partners', 'tabla'), ('case_entries', 'tabla'), ('case_expected', 'tabla'), ('case_steps', 'tabla'), ('cases', 'tabla'), ('cf_lines', 'tabla'), ('cf_mapping', 'tabla'), ('coa_template', 'tabla'), ('companies', 'tabla'), ('company_users', 'tabla'), ('concepts', 'tabla'), ('control_rules', 'tabla'), ('corporate_tax_adjustments', 'tabla'), ('corporate_tax_rates', 'tabla'), ('corporate_tax_returns', 'tabla'), ('dash_metrics', 'tabla'), ('dash_widgets', 'tabla'), ('dashboards', 'tabla'), ('depreciation_classes', 'tabla'), ('employees', 'tabla'), ('equity_operations', 'tabla'), ('exercise_attempts', 'tabla'), ('exercises', 'tabla'), ('fiscal_years', 'tabla'), ('fixed_assets', 'tabla'), ('fs_lines', 'tabla'), ('fs_mapping', 'tabla'), ('fs_model_lines', 'tabla'), ('fs_model_mapping', 'tabla'), ('fs_models', 'tabla'), ('gl_accounts', 'tabla'), ('grant_events', 'tabla'), ('grants', 'tabla'), ('guest_history', 'tabla'), ('import_batches', 'tabla'), ('import_lines', 'tabla'), ('inventory_count_lines', 'tabla'), ('inventory_counts', 'tabla'), ('invoice_lines', 'tabla'), ('invoice_tax_lines', 'tabla'), ('invoices', 'tabla'), ('journal_entries', 'tabla'), ('journal_lines', 'tabla'), ('loan_events', 'tabla'), ('loan_schedule', 'tabla'), ('loans', 'tabla'), ('operations', 'tabla'), ('payment_applications', 'tabla'), ('payments', 'tabla'), ('payroll_runs', 'tabla'), ('payslips', 'tabla'), ('pgc_accounts', 'tabla'), ('pgc_cards', 'tabla'), ('pgc_distinct_accounts', 'tabla'), ('pgc_groups', 'tabla'), ('pgc_principles', 'tabla'), ('pgc_subgroups', 'tabla'), ('pgc_valuation_rules', 'tabla'), ('pro_rata', 'tabla'), ('provision_movements', 'tabla'), ('provisions', 'tabla'), ('quality_check_defs', 'tabla'), ('ratio_defs', 'tabla'), ('receivable_impairments', 'tabla'), ('receivable_writeoffs', 'tabla'), ('sources', 'tabla'), ('ss_limits', 'tabla'), ('ss_rates', 'tabla'), ('synthetic_plan', 'tabla'), ('tax_codes', 'tabla'), ('tax_settlement_setup', 'tabla'), ('tax_settlements', 'tabla'), ('tax_setup', 'tabla'), ('temp_settings', 'tabla'), ('user_settings', 'tabla'), ('v_accruals', 'vista'), ('v_exercise_progress', 'vista'), ('v_fixed_assets', 'vista'), ('v_general_journal', 'vista'), ('v_general_ledger', 'vista'), ('v_import_batches', 'vista'), ('v_invoice_register', 'vista'), ('v_invoices', 'vista'), ('v_my_companies', 'vista'), ('v_partners', 'vista'), ('v_payments', 'vista'), ('v_payroll_runs', 'vista'), ('v_pro_rata', 'vista'), ('v_provisions', 'vista'), ('v_receivable_impairments', 'vista'), ('v_receivable_writeoffs', 'vista'), ('v_tax_book', 'vista'), ('v_tax_settlement_setup', 'vista'), ('v_tax_settlements', 'vista'), ('v_tax_setup', 'vista'), ('v_withholding_register', 'vista'), ('v_withholding_setup', 'vista'), ('v_year_closings', 'vista'), ('valuation_rules', 'tabla'), ('withholding_codes', 'tabla'), ('withholding_rules', 'tabla'), ('withholding_setup', 'tabla'), ('year_closings', 'tabla')),
 f(sig, hash) as (values
   ('erp.account_balance_in_year(uuid,uuid,date)', '2e57240eaf505397ff79987708d47b9b'),
   ('erp.account_matches(text,text)', '39cf5188fc0722bd209e89462f735921'),
@@ -20,10 +20,11 @@ f(sig, hash) as (values
   ('erp.adjust_reverse(uuid,date,text)', '2a3173db1eba0e92f6a4a8e82be5dccd'),
   ('erp.aging(uuid,text,date)', '2b479b18f7b61fda9fe7ecbc5ff7ff5a'),
   ('erp.ai_allowed(uuid)', 'dd99e27b16e066991eedb6510c93f844'),
-  ('erp.ai_consume(uuid)', 'd74e0a286d1bceae151c7d3f02e7149d'),
+  ('erp.ai_consume(uuid)', 'eda691eb8a5004b0826deb5f817e2b57'),
   ('erp.ai_context(uuid,integer,text)', '92f55522b09b19a774d724ec4dc24a06'),
   ('erp.ai_daily_limit()', 'f138526bb66b448b7b65353ceb07aece'),
   ('erp.ai_ratio_value(numeric,text)', '83e993b00218191455ffbfe10e4cdc41'),
+  ('erp.ai_refund(uuid)', '391e70503518be1554461e3d7d1a1144'),
   ('erp.ai_status(uuid)', '54432aa4d8a11f961af04c6c8fecfc1f'),
   ('erp.apply_provision(jsonb)', '2175407fddbd6f5e70a202c2eb620da5'),
   ('erp.asset_account_pair(uuid,text,text)', '6905ccf081032c9bec101ec0f5ad763f'),
@@ -138,17 +139,17 @@ f(sig, hash) as (values
   ('erp.equity_call(jsonb)', '9db5caf80f28dc7605919c01cac54294'),
   ('erp.equity_cancel(uuid)', '83b52eb61a0759792d3051c6277b4207'),
   ('erp.equity_capital_increase(jsonb)', 'cb505207adcc44aa0d1357c1c2c36182'),
-  ('erp.equity_capital_reduction(jsonb)', 'fde89204836efbafa6e8b52f2d76ae25'),
+  ('erp.equity_capital_reduction(jsonb)', 'bce2b307c2690497e2d17f13ef19a693'),
   ('erp.equity_distribution(jsonb)', '8aa46cc84d03846bb86901d7c780ceb5'),
-  ('erp.equity_distribution_preview(jsonb)', '2eefc43369fe6e1297c4c6c1ac6ec8bf'),
+  ('erp.equity_distribution_preview(jsonb)', '094c5bbe66a72b3d71d019bbf8edf7f1'),
   ('erp.equity_dividend_payment(jsonb)', 'eede711876b8a3865fb94cc7df70b453'),
   ('erp.equity_entry(uuid,date,text,text,jsonb)', '3c8ad1388dd459a0c40d6f0d688865b4'),
   ('erp.equity_incorporation(jsonb)', '5383c79ab0f24e6cb01a9bf33c1ad5be'),
   ('erp.equity_interim_dividend(jsonb)', '59b76495e7860482d42d4c901e2eb725'),
-  ('erp.equity_interim_preview(jsonb)', '3e3b367f4d3e800f0f2c84ea1e7c42c0'),
+  ('erp.equity_interim_preview(jsonb)', '1e5a89efb8fbded39df0fe102b49f615'),
   ('erp.equity_legal_reserve(text,numeric,numeric,numeric)', '203b69507598b7a662fe4649c4a20fb2'),
   ('erp.equity_line(uuid,numeric,numeric)', 'e3d58a53499ac96f4795461c3c27d411'),
-  ('erp.equity_loss_offset(jsonb)', '0d9631216097cad1259915ff09b2c4fb'),
+  ('erp.equity_loss_offset(jsonb)', 'cc1b13ef86744c755f3c0f1672abbef4'),
   ('erp.equity_net_worth(uuid,date,boolean)', 'a1ab9ae64de459fc2fa71c5c8c29797d'),
   ('erp.equity_reserves_to_capital(jsonb)', 'd924b5827ecba43b32142a9188a55d53'),
   ('erp.equity_save(uuid,text,text,date,text,jsonb,jsonb,uuid[])', '7ae790d20b081a9423b9a5221cdab77f'),
@@ -286,7 +287,7 @@ f(sig, hash) as (values
   ('erp.reverse_impairment(uuid,date)', 'de9ecc969d920a3242d72733ca86364a'),
   ('erp.revise_provision(jsonb)', '9a6c130742dfc9b7b69a5aa827dffc50'),
   ('erp.revoke_company_access(uuid,uuid)', '6715de3545c1c029331c53fc32347806'),
-  ('erp.run_audit_checks(uuid,integer,date)', '2d4a356989395f9711a98c88d192b484'),
+  ('erp.run_audit_checks(uuid,integer,date)', '422ec7b8044aca68cdd875185b3fb03c'),
   ('erp.run_payroll(jsonb)', 'ebe4a6d202cfab34f704c18907b95355'),
   ('erp.save_draft(jsonb)', '9d9890314b43b226a226681a9ec2fddd'),
   ('erp.save_employee(jsonb)', '18eb3d4e095bd39f669b45caedc64280'),
@@ -328,7 +329,7 @@ f(sig, hash) as (values
   ('erp.tf_row(integer,text,text,text,text,text,numeric)', '0868e3c2e4fcea2a501fa0e26535782e'),
   ('erp.tg_company_add_admin()', '61534513dc242f3be42a22e646404ef6'),
   ('erp.tg_company_copy_coa()', '5108b781b52893b9f5b5eff4cc62462d'),
-  ('erp.tg_company_rules()', '345a3529072a342b085fd584897bc758'),
+  ('erp.tg_company_rules()', '3a2e2192254441989d2b11c1ef16f41e'),
   ('erp.tg_company_vat_regime()', 'aa9136e3eea2ed3c743e00fd0bc62201'),
   ('erp.tg_entry_adjust_reverse()', '3e3eae876c48bbd4aa172e738c9b55a0'),
   ('erp.tg_entry_asset_reverse()', '40766bf69db825da77129cb1b9dca023'),
@@ -338,8 +339,9 @@ f(sig, hash) as (values
   ('erp.tg_entry_payment_reverse()', '96da1f490ac01116da91db422da04317'),
   ('erp.tg_entry_prevent_delete()', 'd3b10b008068da35ea719ec0b5d21e42'),
   ('erp.tg_entry_pro_rata_reverse()', '7b054c7062e13227e46db642e5825314'),
-  ('erp.tg_entry_validate()', 'cbc24ab931f1b5829f48ff4a6764fda2'),
+  ('erp.tg_entry_validate()', '6f8dc6c8f10b112e3aa605d8a80bf4f2'),
   ('erp.tg_entry_work_month()', 'c85934ea8555f2ce13410e114c5bb88e'),
+  ('erp.tg_fiscal_year_rules()', 'a5d3c28e304f861f3e2819b2812f3fd8'),
   ('erp.tg_fiscal_year_status()', 'd1f919961950cb72df44491d5b56ed7b'),
   ('erp.tg_gl_account_block_default()', 'ec248053291f6d6d99422c3863e7bff0'),
   ('erp.tg_gl_account_validate()', '6825c78d3cfe0ff35b4b8e3685a45634'),
@@ -358,6 +360,7 @@ f(sig, hash) as (values
   ('erp.tg_partner_sync_account_name()', '1704f429e4e9d8bf3e1188f63260b2cd'),
   ('erp.tg_partner_validate()', 'ac563add12522d8642fb5ebaac519f04'),
   ('erp.tg_partner_withholding_validate()', 'f29aa9369987084ebba7c10ce09a2eb9'),
+  ('erp.tg_period_insert()', '4e8acb83ec033a6a068239d8004aba34'),
   ('erp.tg_pro_rata_protect()', '8fe993e477ab8a9c62adc32945d7c7cf'),
   ('erp.tg_protect_data_owner()', 'bd517a0735bdcf06c36a2cfab6e79fd4'),
   ('erp.tg_tax_settlement_protect()', '78b2036691dd270aca342a231e776984'),
@@ -382,7 +385,7 @@ f(sig, hash) as (values
 c(key) as (values ('debit'), ('credit'), ('doubleEntry'), ('entry'), ('draft'), ('posting'), ('reversal'), ('subaccount'), ('chart'), ('partner'), ('fiscalYear'), ('closing'), ('journal'), ('ledger'), ('trialBalance'), ('inverseBalance'), ('balance'), ('pyg'), ('equity'), ('cashflow'), ('ratio'), ('workingCapital'), ('depreciation'), ('vat'), ('igic'), ('inputTax'), ('outputTax'), ('taxBase'), ('invoice'), ('creditMemo'), ('settlement'), ('prorata'), ('reverseCharge'), ('surcharge'), ('withholding'), ('openItem'), ('aging'), ('controlledAccount'), ('controlMode'), ('auditCheck'), ('fixedAsset'), ('netBookValue'), ('deferral'), ('badDebt'), ('provision'), ('assetImpairment'), ('inventoryChange'), ('accrual'), ('payroll'), ('socialSecurity'), ('taxForm'), ('thirdPartyReturn'), ('exercise'), ('operationCatalog'), ('taxableBase'), ('temporaryDifference'), ('currentTax'), ('deferredTax'), ('legalReserve'), ('interimDividend'), ('sharePremium'), ('uncalledCapital'), ('amortizedCost'), ('effectiveRate'), ('financeLease'), ('debtMaturity'), ('capitalGrant'), ('refundableGrant'), ('groupsEightNine'), ('equityStatement')),
 k(code) as (values ('vat_input'), ('vat_output'), ('tax_forms_settlements'), ('tax_quota'), ('withholdings'), ('partners'), ('form347_missing_vat'), ('anomalies'), ('assets_ledger'), ('assets_pending'), ('adjustments_ledger'), ('accruals_unreversed'), ('impairments_collected'), ('provisions_ledger'), ('provisions_review'), ('inventory_ledger'), ('payroll_ledger'), ('financing_ledger'), ('tax_territory'), ('grants_ledger'), ('controlled'), ('sources_review')),
 s(key) as (values ('aeat303'), ('aeat347faq'), ('aeat390'), ('aeat390manual'), ('atc420'), ('atc425'), ('cotizacion2026'), ('ley20_1991'), ('lgss'), ('lirpf'), ('lis'), ('liva'), ('lsc'), ('pgc'), ('pgcmodelos'), ('pgcpymes'), ('rd1065'), ('rirpf'), ('riva')),
-rls(name) as (values ('accounting_periods'), ('accruals'), ('ai_feedback'), ('ai_usage'), ('app_profiles'), ('asset_depreciations'), ('asset_events'), ('audit_checks'), ('balance_rules'), ('business_partners'), ('case_entries'), ('case_expected'), ('case_steps'), ('cases'), ('cf_lines'), ('cf_mapping'), ('coa_template'), ('companies'), ('company_users'), ('concepts'), ('control_rules'), ('corporate_tax_adjustments'), ('corporate_tax_rates'), ('corporate_tax_returns'), ('dash_metrics'), ('dash_widgets'), ('dashboards'), ('depreciation_classes'), ('employees'), ('equity_operations'), ('exercise_attempts'), ('exercises'), ('fiscal_years'), ('fixed_assets'), ('fs_lines'), ('fs_mapping'), ('fs_model_lines'), ('fs_model_mapping'), ('fs_models'), ('gl_accounts'), ('grant_events'), ('grants'), ('guest_history'), ('import_batches'), ('import_lines'), ('inventory_count_lines'), ('inventory_counts'), ('invoice_lines'), ('invoice_tax_lines'), ('invoices'), ('journal_entries'), ('journal_lines'), ('loan_events'), ('loan_schedule'), ('loans'), ('operations'), ('payment_applications'), ('payments'), ('payroll_runs'), ('payslips'), ('pgc_accounts'), ('pgc_cards'), ('pgc_distinct_accounts'), ('pgc_groups'), ('pgc_principles'), ('pgc_subgroups'), ('pgc_valuation_rules'), ('pro_rata'), ('provision_movements'), ('provisions'), ('quality_check_defs'), ('ratio_defs'), ('receivable_impairments'), ('receivable_writeoffs'), ('sources'), ('ss_limits'), ('ss_rates'), ('synthetic_plan'), ('tax_codes'), ('tax_settlement_setup'), ('tax_settlements'), ('tax_setup'), ('temp_settings'), ('user_settings'), ('valuation_rules'), ('withholding_codes'), ('withholding_rules'), ('withholding_setup'), ('year_closings')),
+rls(name) as (values ('accounting_periods'), ('accruals'), ('ai_calls'), ('ai_feedback'), ('ai_usage'), ('app_profiles'), ('asset_depreciations'), ('asset_events'), ('audit_checks'), ('balance_rules'), ('business_partners'), ('case_entries'), ('case_expected'), ('case_steps'), ('cases'), ('cf_lines'), ('cf_mapping'), ('coa_template'), ('companies'), ('company_users'), ('concepts'), ('control_rules'), ('corporate_tax_adjustments'), ('corporate_tax_rates'), ('corporate_tax_returns'), ('dash_metrics'), ('dash_widgets'), ('dashboards'), ('depreciation_classes'), ('employees'), ('equity_operations'), ('exercise_attempts'), ('exercises'), ('fiscal_years'), ('fixed_assets'), ('fs_lines'), ('fs_mapping'), ('fs_model_lines'), ('fs_model_mapping'), ('fs_models'), ('gl_accounts'), ('grant_events'), ('grants'), ('guest_history'), ('import_batches'), ('import_lines'), ('inventory_count_lines'), ('inventory_counts'), ('invoice_lines'), ('invoice_tax_lines'), ('invoices'), ('journal_entries'), ('journal_lines'), ('loan_events'), ('loan_schedule'), ('loans'), ('operations'), ('payment_applications'), ('payments'), ('payroll_runs'), ('payslips'), ('pgc_accounts'), ('pgc_cards'), ('pgc_distinct_accounts'), ('pgc_groups'), ('pgc_principles'), ('pgc_subgroups'), ('pgc_valuation_rules'), ('pro_rata'), ('provision_movements'), ('provisions'), ('quality_check_defs'), ('ratio_defs'), ('receivable_impairments'), ('receivable_writeoffs'), ('sources'), ('ss_limits'), ('ss_rates'), ('synthetic_plan'), ('tax_codes'), ('tax_settlement_setup'), ('tax_settlements'), ('tax_setup'), ('temp_settings'), ('user_settings'), ('valuation_rules'), ('withholding_codes'), ('withholding_rules'), ('withholding_setup'), ('year_closings')),
 pol(tbl, name, cmd, hash) as (values
   ('accounting_periods', 'manage', 'ALL', '5784762a1033af00550a9e2438251ac3'),
   ('accounting_periods', 'read', 'SELECT', '7388075b3fbe2874581bf4d66f3c1492'),
@@ -497,9 +500,11 @@ pol(tbl, name, cmd, hash) as (values
   ('year_closings', 'write', 'ALL', 'f7af8c79bb24f173f1c46915760bcfb7')),
 tg(tbl, rol, privs) as (values
   ('accounting_periods', 'anon', ''),
-  ('accounting_periods', 'authenticated', 'select,insert,update,delete'),
+  ('accounting_periods', 'authenticated', 'select,insert'),
   ('accruals', 'anon', ''),
   ('accruals', 'authenticated', 'select'),
+  ('ai_calls', 'anon', ''),
+  ('ai_calls', 'authenticated', ''),
   ('ai_feedback', 'anon', ''),
   ('ai_feedback', 'authenticated', 'select,insert'),
   ('ai_usage', 'anon', ''),
@@ -730,6 +735,7 @@ fg(sig, rol) as (values
   ('erp.ai_consume(uuid)', 'authenticated'),
   ('erp.ai_context(uuid,integer,text)', 'authenticated'),
   ('erp.ai_daily_limit()', 'authenticated'),
+  ('erp.ai_refund(uuid)', 'authenticated'),
   ('erp.ai_status(uuid)', 'authenticated'),
   ('erp.apply_provision(jsonb)', 'authenticated'),
   ('erp.asset_accumulated_at(numeric,numeric,integer,date,date)', 'authenticated'),

@@ -92,3 +92,34 @@ describe('cabeceras de seguridad de /api (v0.60.5, SEG-20)', () => {
     check(r)
   })
 })
+
+describe('cuota de IA cuando el modelo falla (v0.60.6, H-079)', () => {
+  const ok = (body) => new Response(JSON.stringify(body), { status: 200 })
+  it('el Analista devuelve la consulta si el modelo falla', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    const calls = []
+    vi.spyOn(globalThis, 'fetch').mockImplementation(async (url, init) => {
+      calls.push([String(url).split('/rpc/')[1], init?.body])
+      if (String(url).endsWith('ai_context')) return ok({ company: 'x' })
+      if (String(url).endsWith('ai_consume')) return ok({ used: 1, call_id: 'c-1' })
+      return ok(true)
+    })
+    const failing = { ...env, AI: { run: vi.fn().mockRejectedValue(new Error('boom')) } }
+    const r = await analyst({ request: post({ company_id: UUID, year: 2025 }), env: failing })
+    expect(r.status).toBe(502)
+    expect(calls.find(([fn]) => fn === 'ai_refund')?.[1]).toBe(JSON.stringify({ p_call: 'c-1' }))
+  })
+  it('el Tutor también', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    const calls = []
+    vi.spyOn(globalThis, 'fetch').mockImplementation(async (url, init) => {
+      calls.push([String(url).split('/rpc/')[1], init?.body])
+      if (String(url).endsWith('ai_consume')) return ok({ used: 1, call_id: 'c-2' })
+      return ok({ accounts: [] })
+    })
+    const failing = { ...env, AI: { run: vi.fn().mockRejectedValue(new Error('boom')) } }
+    const r = await tutor({ request: post({ company_id: UUID, text: 'Pago el alquiler del local' }), env: failing })
+    expect(r.status).toBe(502)
+    expect(calls.find(([fn]) => fn === 'ai_refund')?.[1]).toBe(JSON.stringify({ p_call: 'c-2' }))
+  })
+})

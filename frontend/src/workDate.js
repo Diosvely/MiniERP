@@ -3,7 +3,7 @@
 // el trimestre de las liquidaciones y la fecha de los asientos y facturas nuevos.
 //   · Empresa al día (tiene un ejercicio ABIERTO que incluye hoy) → hoy.
 //   · Empresa importada o histórica → la fecha de su ÚLTIMO asiento contabilizado
-//     (una empresa de 2019-2024 se abre en diciembre de 2024, no en un 2026 vacío).
+//     (una empresa con ejercicios antiguos se abre en el último mes con asientos, no en un año vacío).
 //   · Empresa sin ejercicios ni asientos → hoy.
 // Se calcula al abrir la empresa (CompanyView) y viaja dentro de company.work_date.
 

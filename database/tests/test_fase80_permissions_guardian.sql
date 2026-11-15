@@ -116,8 +116,11 @@ insert into public.mapa (param, tabla) values
   ('p_impairment', 'receivable_impairments'), ('p_writeoff', 'receivable_writeoffs'), ('p_employee', 'employees'),
   ('p_count', 'inventory_counts'), ('p_settlement', 'tax_settlements'), ('p_payment', 'payments'),
   ('p_operation', 'equity_operations'), ('p_grant', 'grants'), ('p_run', 'payroll_runs'), ('p_user', 'auth.users'),
-  ('p_adjustment', 'corporate_tax_adjustments');
+  ('p_adjustment', 'corporate_tax_adjustments'), ('p_call', 'ai_calls');
+-- v0.60.6 (H-079): un justificante de IA de la víctima (erp.ai_refund no debe devolvérselo a otro)
+insert into erp.ai_calls (user_id, used_on) values ('00000000-0000-0000-0000-0000000000b1', current_date);
 update public.mapa m set real = case
+  when m.param = 'p_call' then (select id from erp.ai_calls where user_id = '00000000-0000-0000-0000-0000000000b1' limit 1)
   when m.param = 'p_company' then (select e from public.ctx where k = 'Z')
   when m.param = 'p_batch'   then (select e from public.ctx where k = 'LOTE')
   when m.param in ('p_entry', 'e') then (select e from public.ctx where k = 'BORRADOR')
@@ -578,6 +581,78 @@ begin
                            z, 'tutor', repeat('x', 1000), '{"lines": []}', 'partial', 'Falta el IGIC'));
   assert e is null, 'control: una opinión normal: ' || coalesce(e, '');
   raise notice 'OK  · SEG-19: las opiniones sobre la IA tienen tope de tamaño';
+end $$;
+reset role;
+select set_config('request.jwt.claim.sub', '', false) \gset
+select set_config('request.jwt.claims', '', false) \gset
+
+-- ---------- v0.60.6 · SEG-21, SEG-22 y H-079 (regresión) ----------
+call public.ser('authenticated', '00000000-0000-0000-0000-0000000000b1');
+do $$
+declare z uuid := (select e from public.ctx where k = 'Z2'); z1 uuid := (select e from public.ctx where k = 'Z');
+        fy uuid; e text; c uuid; antes int;
+begin
+  -- SEG-21 · los ajustes de la empresa, con sus reglas
+  e := public.falla(format('update erp.companies set tax_territory = %L where id = %L', 'canary', z));
+  assert e like '%tax territory cannot be changed%', 'SEG-21: territorio: ' || coalesce(e, 'lo dejó hacer');
+  e := public.falla(format('update erp.companies set posting_account_digits = 10 where id = %L', z));
+  assert e like '%digits of the posting accounts%', 'SEG-21: dígitos: ' || coalesce(e, 'lo dejó hacer');
+  e := public.falla(format('update erp.companies set legal_form = case legal_form when %L then %L else %L end where id = %L', 'sa', 'sl', 'sa', z1));
+  assert e like '%equity operations%', 'SEG-21: forma jurídica con operaciones societarias: ' || coalesce(e, 'lo dejó hacer');
+  e := public.falla(format('update erp.companies set start_date = %L where id = %L', '2026-02-01', z));
+  assert e like '%already has entries%', 'SEG-21: fecha de inicio con asientos: ' || coalesce(e, 'lo dejó hacer');
+  e := public.falla(format('update erp.companies set case_key = %L where id = %L', 'otro_caso', z));
+  assert e like '%practice case%', 'SEG-21: caso de práctica: ' || coalesce(e, 'lo dejó hacer');
+  -- control: cambiar el nombre sigue funcionando
+  e := public.falla(format('update erp.companies set name = name where id = %L', z));
+  assert e is null, 'control: el nombre: ' || coalesce(e, '');
+  raise notice 'OK  · SEG-21: los ajustes de la empresa solo cambian con sus reglas';
+
+  -- SEG-22 · los meses y los ejercicios
+  select id into fy from erp.fiscal_years where company_id = z order by year desc limit 1;
+  e := public.falla(format('update erp.accounting_periods set status = %L where fiscal_year_id = %L and period_no = 12', 'closed', fy));
+  assert e like '%permission denied%', 'SEG-22: cerrar un mes directo: ' || coalesce(e, 'lo dejó hacer');
+  e := public.falla(format('delete from erp.accounting_periods where fiscal_year_id = %L and period_no = 3', fy));
+  assert e like '%permission denied%', 'SEG-22: borrar un mes: ' || coalesce(e, 'lo dejó hacer');
+  e := public.falla(format('update erp.fiscal_years set ending_date = ending_date + 365 where id = %L', fy));
+  assert e like '%cannot be changed%', 'SEG-22: alargar el ejercicio: ' || coalesce(e, 'lo dejó hacer');
+  e := public.falla(format('insert into erp.fiscal_years (company_id, year, starting_date, ending_date, status) values (%L, 2031, %L, %L, %L)',
+                           z, '2031-02-01', '2032-01-31', 'open'));
+  assert e like '%1 January to 31 December%', 'SEG-22: ejercicio que no es el año natural: ' || coalesce(e, 'lo dejó hacer');
+  -- control: erp.create_fiscal_year sigue funcionando (con sus 12 meses)
+  e := public.falla(format('select erp.create_fiscal_year(%L, 2032)', z));
+  assert e is null, 'control: create_fiscal_year: ' || coalesce(e, '');
+  assert (select count(*) from erp.accounting_periods p join erp.fiscal_years y on y.id = p.fiscal_year_id where y.company_id = z and y.year = 2032) = 12;
+  raise notice 'OK  · SEG-22: los meses y los ejercicios solo cambian con sus funciones';
+
+  -- H-079 · la consulta de IA se devuelve una vez, solo a su usuario
+  c := (erp.ai_consume(z)->>'call_id')::uuid;
+  antes := (select calls from erp.ai_usage where user_id = auth.uid() and used_on = current_date);
+  assert erp.ai_refund(c), 'H-079: devuelve la consulta';
+  assert (select calls from erp.ai_usage where user_id = auth.uid() and used_on = current_date) = antes - 1, 'H-079: una menos';
+  assert not erp.ai_refund(c), 'H-079: solo una vez';
+  e := public.falla('select * from erp.ai_calls');
+  assert e like '%permission denied%', 'H-079: nadie lee los justificantes: ' || coalesce(e, 'los pudo leer');
+  raise notice 'OK  · H-079: la consulta de IA se devuelve una vez si el modelo falla';
+end $$;
+reset role;
+select set_config('request.jwt.claim.sub', '', false) \gset
+select set_config('request.jwt.claims', '', false) \gset
+
+-- SEG-22 · con un mes que falta (solo lo puede borrar el administrador de la base), no se contabiliza en sus fechas
+delete from erp.accounting_periods where period_no = 3
+  and fiscal_year_id = (select id from erp.fiscal_years where company_id = (select e from public.ctx where k = 'Z2') and year = 2032);
+call public.ser('authenticated', '00000000-0000-0000-0000-0000000000b1');
+do $$
+declare z uuid := (select e from public.ctx where k = 'Z2'); fy uuid; d uuid; e text;
+begin
+  select id into fy from erp.fiscal_years where company_id = z and year = 2032;
+  insert into erp.journal_entries (company_id, fiscal_year_id, posting_date, description) values (z, fy, '2032-03-15', 'SEG-22 sin mes') returning id into d;
+  insert into erp.journal_lines (entry_id, gl_account_id, debit) values (d, (select id from erp.gl_accounts where company_id = z and account_no = '62300001'), 10);
+  insert into erp.journal_lines (entry_id, gl_account_id, credit) values (d, (select id from erp.gl_accounts where company_id = z and account_no = '57200001'), 10);
+  e := public.falla(format('update erp.journal_entries set status = %L, entry_no = 1 where id = %L', 'posted', d));
+  assert e like '%no accounting period%', 'SEG-22: fecha sin mes: ' || coalesce(e, 'lo dejó hacer');
+  raise notice 'OK  · SEG-22: no se contabiliza en una fecha sin mes';
 end $$;
 reset role;
 select set_config('request.jwt.claim.sub', '', false) \gset

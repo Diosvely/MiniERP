@@ -9,14 +9,14 @@
 --     cada fila. Ahora el origen de todos los asientos se calcula de una vez (cada tabla de documentos se lee una vez,
 --     filtrada por la empresa) y el permiso se comprueba una sola vez.
 --   · La comprobación de cuentas controladas llamaba a erp.entry_controlled_lines asiento por asiento (20 s con
---     18.000 asientos manuales). Ahora va en bloque, con un mapa de las reglas de las cuentas de la empresa.
+--     muchos asientos manuales). Ahora va en bloque, con un mapa de las reglas de las cuentas de la empresa.
 --   · La clasificación del balance y la PyG, sumas y saldos, el mayor y las funciones de flujos leen primero los
 --     asientos del ejercicio (por su índice) y después sus apuntes, en vez de todo el diario de la empresa; y la línea
 --     de flujos de cada cuenta se busca una vez por cuenta, no una vez por asiento.
 --   · El permiso, una vez por llamada: erp.can_report (nueva) hace lo mismo que la seguridad fila a fila, pero una vez:
 --     se aplica a los usuarios de la web (authenticated, anon); el administrador de la base lo ve todo, como antes.
 --
--- Mismos resultados (comprobado con el caso completo y con la empresa grande). En local, con la empresa de 6 años:
+-- Mismos resultados (comprobado con el caso completo y con la empresa grande). En local, con la empresa importada grande:
 -- Comprobaciones, de 9,9 s (importada) y 20 s (manual) a 1,2–1,5 s; tablero, de 3 s a 1 s; comprobaciones de
 -- integridad, de 3,5 s a 1,6 s. Se puede ejecutar dos veces.
 -- =====================================================================
@@ -519,7 +519,7 @@ begin
 
     elsif r.code = 'controlled' then
       -- Manuales sin anular que tocan una cuenta controlada; no cuentan los vinculados a un pago (ya están conciliados)
-      -- v0.52.2: en bloque (antes, erp.entry_controlled_lines asiento por asiento: 20 s con 18.000 asientos manuales).
+      -- v0.52.2: en bloque (antes, erp.entry_controlled_lines asiento por asiento: 20 s con muchos asientos manuales).
       -- Las reglas de las cuentas de la empresa, en un mapa { cuenta: { modules, side } } (una búsqueda por cuenta), y
       -- cada asiento se queda con su primera línea (por su orden) que toca una cuenta controlada por el lado que controla.
       select coalesce(jsonb_object_agg(d.account_no, jsonb_build_object('modules', to_jsonb(x.modules), 'side', x.side)), '{}')

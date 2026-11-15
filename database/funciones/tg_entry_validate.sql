@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.tg_entry_validate · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0004_journal_entries 0094_integrity_hardening   →   la vigente es la de 0094_integrity_hardening
+-- Definida en: 0004_journal_entries 0094_integrity_hardening 0095_equity_and_company_rules   →   la vigente es la de 0095_equity_and_company_rules
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.tg_entry_validate()
@@ -56,6 +56,10 @@ begin
     end if;
     select * into v_period from erp.accounting_periods
     where fiscal_year_id = new.fiscal_year_id and new.posting_date between starting_date and ending_date;
+    -- v0.60.6 (SEG-22) · sin mes para esa fecha, tampoco
+    if not found then
+      raise exception 'There is no accounting period for %', new.posting_date;
+    end if;
     if v_period.status <> 'open' then
       raise exception 'Period % of % is closed', v_period.period_no, v_fy.year;
     end if;

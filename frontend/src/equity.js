@@ -24,7 +24,7 @@ export const emptyForm = (kind, legalForm) => ({
   distribution: { dividend: '', legal_reserve: '' },
   interim_dividend: { amount: '', estimated_tax: '' },
   dividend_payment: { amount: '', withholding: true, no_withholding_reason: '' },
-  loss_offset: { amount: '' },
+  loss_offset: { amount: '', reserve: '113' },
   capital_reduction: { amount: '' },
 }[kind])
 
@@ -47,8 +47,14 @@ export function payload(kind, form, companyId, date) {
     if (!form.withholding) set('no_withholding_reason', String(form.no_withholding_reason ?? '').trim())
   }
   if (kind === 'loss_offset' || kind === 'capital_reduction') set('amount', num(form.amount))
+  if (kind === 'loss_offset') p.reserve = form.reserve || '113'   // v0.60.6 (AF-12): también 110, 115, 119 o la reserva legal
   return p
 }
+
+// Reservas con las que se compensan pérdidas (v0.60.6, AF-12): la 112, solo si no hay otras (art. 274.2 LSC)
+export const LOSS_RESERVES = ['113', '110', '115', '119', '112']
+// Avisos que solo informan (no impiden contabilizar)
+export const INFO_WARNINGS = ['losses_left', 'losses_before_legal_reserve']
 
 // Reserva legal que toca (art. 274 LSC; SL de menos de 3.000 €: art. 4.2) — la misma regla que erp.equity_legal_reserve
 export function legalReserve(form, capital, reserve, profit) {
@@ -97,7 +103,7 @@ export function previewEntries(kind, form, status = {}, prev = null) {
     const wh = form.withholding ? r2(gross * 0.19) : 0
     return [out('dividend_payment', [L('526', gross, 0), L('47512', 0, wh), L('572', 0, gross - wh)])]
   }
-  if (kind === 'loss_offset') return amount > 0 ? [out('loss_offset', [L('113', amount, 0), L('121', 0, amount)])] : []
+  if (kind === 'loss_offset') return amount > 0 ? [out('loss_offset', [L(LOSS_RESERVES.includes(form.reserve) ? form.reserve : '113', amount, 0), L('121', 0, amount)])] : []
   if (kind === 'capital_reduction') return amount > 0 ? [out('capital_reduction', [L('100', amount, 0), L('121', 0, amount)])] : []
   return []
 }

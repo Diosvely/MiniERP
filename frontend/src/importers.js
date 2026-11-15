@@ -10,15 +10,20 @@ const TEMPLATE_TYPES = {
   cierre: 'closing', closing: 'closing',
 }
 
-// "1.234,56" · "1234,56" · "1234.56" · 1234.56 → 1234.56
-const num = (v) => {
+// "1.234,56" · "1234,56" · "1234.56" · 1234.56 · "1.234,56 €" → 1234.56
+// v0.60.6 (H-072): un importe que no es un número ya no se convierte en 0 sin avisar: da error con la fila y el valor
+export const num = (v, row = null) => {
   if (v == null || v === '') return 0
   if (typeof v === 'number') return Math.round(v * 100) / 100
-  let s = String(v).trim()
+  let s = String(v).trim().replace(/[€\s]/g, '')
+  if (s === '') return 0
   if (s.includes(',')) s = s.replace(/\./g, '').replace(',', '.')
   const n = Number(s)
-  return Number.isFinite(n) ? Math.round(n * 100) / 100 : 0
+  if (!Number.isFinite(n)) throw new Error(`${row != null ? `Fila ${row}: ` : ''}importe no reconocido: "${String(v).trim()}"`)
+  return Math.round(n * 100) / 100
 }
+// La fila del fichero tal como la ve el usuario (la 1 es la cabecera)
+const fila = (i) => i + 2
 const pad = (n) => String(n).padStart(2, '0')
 // Date de Excel · "dd/mm/aaaa" · "aaaa-mm-dd" → "aaaa-mm-dd"
 const isoDate = (v) => {
@@ -51,14 +56,14 @@ function parseCsv(text) {
 // Diario en Excel (el que exportan muchos programas contables con estas columnas): Fecha, Asiento, Cuenta, Nombre, Debe, Haber, Concepto, Tipo Asiento
 // ---------------------------------------------------------------------------
 function fromSage(rows) {
-  return rows.map((r) => ({
+  return rows.map((r, i) => ({
     entry_date: isoDate(r.Fecha),
     entry_ref: String(r.Asiento),
     entry_type: TYPES[Number(r['Tipo Asiento'] ?? 1)] ?? 'normal',
     account_no: String(r.Cuenta).trim(),
     account_name: String(r.Nombre ?? '').trim(),
-    debit: num(r.Debe),
-    credit: num(r.Haber),
+    debit: num(r.Debe, fila(i)),
+    credit: num(r.Haber, fila(i)),
     description: String(r.Concepto ?? '').trim(),
     document_no: '',
   }))
@@ -78,8 +83,8 @@ function fromDynamics(rows) {
     const t = r['Transaction No_']
     if (!last[t] || d > last[t]) last[t] = d
   }
-  return rows.map((r) => {
-    const amount = num(r.Amount)
+  return rows.map((r, i) => {
+    const amount = num(r.Amount, fila(i))
     const closing = (r['Source Code'] ?? '').toLowerCase().includes('regulariz')
     const date = last[r['Transaction No_']]
     return {
@@ -100,14 +105,14 @@ function fromDynamics(rows) {
 // Plantilla del laboratorio (CSV o Excel): fecha, asiento, tipo, cuenta, nombre, debe, haber, concepto, documento
 // ---------------------------------------------------------------------------
 function fromTemplate(rows) {
-  return rows.map((r) => ({
+  return rows.map((r, i) => ({
     entry_date: isoDate(r.fecha),
     entry_ref: String(r.asiento),
     entry_type: TEMPLATE_TYPES[String(r.tipo ?? 'normal').trim().toLowerCase()] ?? 'normal',
     account_no: String(r.cuenta).trim(),
     account_name: String(r.nombre ?? '').trim(),
-    debit: num(r.debe),
-    credit: num(r.haber),
+    debit: num(r.debe, fila(i)),
+    credit: num(r.haber, fila(i)),
     description: String(r.concepto ?? '').trim(),
     document_no: String(r.documento ?? '').trim(),
   }))

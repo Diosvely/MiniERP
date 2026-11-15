@@ -160,15 +160,17 @@ begin
                              'posted', 'no se borra un asiento contabilizado');
   perform public.debe_fallar(format('select erp.post_entry(%L)', a3), 'already posted', 'no se contabiliza dos veces');
 
-  -- Periodo cerrado (lo cierra la admin)
-  update erp.accounting_periods set status = 'closed' where fiscal_year_id = ej and period_no = 6;
+  -- Periodo cerrado (lo cierra el administrador de la base: desde la v0.60.6, SEG-22, la admin usa erp.close_month)
+  perform public.debe_fallar(format('update erp.accounting_periods set status = %L where fiscal_year_id = %L and period_no = 6', 'closed', ej),
+                             'permission denied', 'la admin no cierra un mes directamente (SEG-22)');
+  perform public.como_bd(format('update erp.accounting_periods set status = %L where fiscal_year_id = %L and period_no = 6', 'closed', ej));
   insert into erp.journal_entries (company_id, fiscal_year_id, posting_date, description)
   values (e, ej, '2026-06-10', 'En junio') returning id into a;
   insert into erp.journal_lines (entry_id, gl_account_id, debit)  values (a, cb, 1);
   insert into erp.journal_lines (entry_id, gl_account_id, credit) values (a, cc, 1);
   perform public.debe_fallar(format('select erp.post_entry(%L)', a), 'Period 6', 'no contabiliza en periodo cerrado');
   delete from erp.journal_entries where id = a;
-  update erp.accounting_periods set status = 'open' where fiscal_year_id = ej and period_no = 6;
+  perform public.como_bd(format('update erp.accounting_periods set status = %L where fiscal_year_id = %L and period_no = 6', 'open', ej));
 end $$;
 
 -- ---------- Anulación con contraasiento ----------

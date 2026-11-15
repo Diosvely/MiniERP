@@ -250,6 +250,9 @@ export async function onRequestPost({ request, env }) {
     if (!/limit/i.test(quota.body?.message ?? '')) logError('ai_consume', quota.body?.message)
     return json({ error: /limit/i.test(quota.body?.message ?? '') ? 'ai_user_limit' : 'context_denied' }, 429)
   }
+  // v0.60.6 (H-079): si el modelo falla o no da una respuesta usable, la consulta se devuelve
+  const callId = quota.body?.call_id
+  const giveBack = () => (callId ? rpc(env, auth, 'ai_refund', { p_call: callId }).catch(() => null) : null)
 
   let model = env.TUTOR_MODEL || DEFAULT_MODEL
   const messages = [
@@ -275,6 +278,7 @@ export async function onRequestPost({ request, env }) {
       if (!out) {
         const q = /limit|quota|neuron|429/i.test(String(failure?.message ?? failure))
         logError(`modelo ${model}`, failure?.message ?? failure)
+        await giveBack()
         return json({ error: q ? 'ai_quota' : 'ai_failed' }, q ? 429 : 502)
       }
     }
@@ -282,6 +286,7 @@ export async function onRequestPost({ request, env }) {
     proposal = parseProposal(answer)
     if (!proposal) {
       if (rounds === 0) { messages.push({ role: 'assistant', content: answer }, { role: 'user', content: REPAIR[language]('not valid JSON') }); continue }
+      await giveBack()
       return json({ error: 'ai_bad_answer', raw: answer.slice(0, 3000), model }, 502)
     }
     const v = await rpc(env, auth, 'validate_proposed_entry', {
@@ -290,6 +295,7 @@ export async function onRequestPost({ request, env }) {
     })
     if (!v.ok) {
       logError('validate_proposed_entry', v.body?.message)
+      await giveBack()
       return json({ error: 'validation_failed' }, 502)
     }
     validation = v.body

@@ -26,11 +26,12 @@ Una revisión externa señaló que esta consecuencia («no se aceptan contabilid
 1. **Lo que sigue en pie:** el Mini ERP **no es el programa oficial** con el que una empresa lleva y presenta su
    contabilidad. No hay libros legalizados, ni presentación a la AEAT (SII, Verifactu, modelos), ni garantía. Para
    eso están los programas contables profesionales.
-2. **Lo que sí se permite:** **estudiar** diarios de estudio con las herramientas del laboratorio (ADR 0016):
+2. **Lo que sí se permite:** **estudiar** diarios con las herramientas del laboratorio (ADR 0016):
    importar el diario de otro ERP o registrar operaciones de práctica para encontrar fallos.
    - Siempre en una empresa **privada** de quien la importa.
    - Esos datos **nunca entran en el repositorio**; las pruebas usan datos inventados.
-   - Solo se publica como demo si su **titular** lo decide, **anonimizada** y con su **mención** (ADR 0021 y 0027).
+   - Un diario de estudio de terceros **nunca** es demo (actualización v0.60.5, al final). Otro diario importado solo
+     se publica como demo si su **titular** lo decide, **anonimizado** y con su **mención** (ADR 0021 y 0027).
 
 *Revisión ética (v0.60.1, 2026-11-08): se quitan los nombres de programas comerciales (ADR 0063). La decisión y sus consecuencias no cambian.*
 

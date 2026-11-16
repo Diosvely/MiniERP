@@ -120,3 +120,24 @@ export function checkDetail(r, language, t) {
   return `${main} ${tpl.replace('{x}', r.unit === 'eur' ? fmtMetric(extra, 'eur', language) : extra.toLocaleString(language === 'en' ? 'en-GB' : 'es-ES'))}`
 }
 
+
+// v0.60.7 · MENÚ «AUDITORÍAS» (ADR 0064): cada tablero del catálogo lleva su grupo (erp.dashboards.area). La barra
+// superior enseña un botón por grupo: «Tableros» (gestión) y «Auditorías». Sin grupo (antes de la 0096): tablero.
+export const DASH_AREAS = ['tablero', 'auditoria']
+export function groupDashboards(list) {
+  const out = { tablero: [], auditoria: [] }
+  for (const d of list ?? []) (out[d.area === 'auditoria' ? 'auditoria' : 'tablero']).push(d)
+  return out
+}
+
+// v0.60.7 · TABLERO «SALDOS AL REVÉS»: las tarjetas de erp.reverse_cards
+//   resumen: cuántas, cuántas imposibles (error) y cuántas por revisar (warning)
+export function reverseSummary(cards) {
+  const list = cards ?? []
+  const errors = list.filter((c) => c.severity === 'error').length
+  return { total: list.length, errors, review: list.length - errors }
+}
+//   filtro: 'all' · 'error' (imposibles) · 'warning' (por revisar)
+export const filterCards = (cards, f) => (cards ?? []).filter((c) => f === 'all' || c.severity === f)
+//   la partida en la que la presenta el Balance en el modelo elegido (el de la pantalla del Balance); si no, PYMES
+export const cardLine = (card, model) => card?.lines?.[model] ?? card?.lines?.pymes ?? null

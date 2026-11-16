@@ -1,5 +1,5 @@
 -- =====================================================================
--- DIAGNÓSTICO DE SUPABASE · migraciones 0001 … 0095 (GENERADO por scripts/generar-diagnostico.sh: no editar)
+-- DIAGNÓSTICO DE SUPABASE · migraciones 0001 … 0096 (GENERADO por scripts/generar-diagnostico.sh: no editar)
 -- ---------------------------------------------------------------------
 -- Pégalo en el SQL Editor de Supabase y pulsa Run. SOLO LEE: no cambia nada.
 -- Devuelve una fila por cada diferencia con el repositorio. Ninguna fila («No rows returned») = todo al día.
@@ -120,7 +120,7 @@ f(sig, hash) as (values
   ('erp.dash_quarters(date[],jsonb,jsonb,date,text)', '2b819c8c6337de32b22fc3eadf3438cd'),
   ('erp.dash_ranking(uuid,integer,date,text)', 'b2bf8d883c1b1beca51d469ed40e7cde'),
   ('erp.dash_ranking_card(uuid,integer,date,date,boolean,text,integer,numeric,numeric)', '410a5dcd437d8831962aac07739554d7'),
-  ('erp.dashboard_data(uuid,text,integer,date,boolean)', '5be45e5c9506b9de792355966a11e12b'),
+  ('erp.dashboard_data(uuid,text,integer,date,boolean)', '5b15714d61da8db98f9b2021ef617a03'),
   ('erp.delete_company(uuid)', 'b8909d45c67d75b34080e784cb423291'),
   ('erp.delete_company_step(uuid,integer)', 'acac93b47ec194cc249ce6b60011e079'),
   ('erp.delete_draft(uuid)', 'c4b82bcb8f533c8c1072c4f2592a82c0'),
@@ -170,6 +170,8 @@ f(sig, hash) as (values
   ('erp.fs_check_model(text,text)', 'ac2706b6afc7d49186f6b6d52d365ce5'),
   ('erp.fs_classified_accounts(uuid,integer,text,date)', 'd08cfe357e9f622576f727542db66b31'),
   ('erp.fs_classified_at(uuid,integer,text,date[])', '54af0bdbb9dc56f1d36d5d039e3714e7'),
+  ('erp.fs_compensated(uuid,integer,date,boolean,text)', '33687b3222b1a4dcacb68d47889beae8'),
+  ('erp.fs_compensated_ratios(uuid,integer,date,boolean,text)', '18f6251467a8b1ee1b51f24b68afaa1c'),
   ('erp.fs_line_accounts(uuid,integer,text,text,date,boolean,text)', 'e37edb15a6b126533301f93b248e6be5'),
   ('erp.fs_line_anomalies(uuid,integer,date,boolean,text)', 'd47a1e9d604cc6f9d61d1044ce326ebe'),
   ('erp.fs_model_amounts(uuid,integer,text,date)', 'bb6510bbd7d916c7f4edc4cf217fecd3'),
@@ -283,6 +285,7 @@ f(sig, hash) as (values
   ('erp.reverse_accrual(uuid,date)', 'ff8b6b4620da4d5a7fba9e99d9be5025'),
   ('erp.reverse_accruals(uuid,date)', '9878065d662e04bf256b8dac3c4ea921'),
   ('erp.reverse_asset_impairment(jsonb)', 'aad8865856fd02aecf33d83359d27906'),
+  ('erp.reverse_cards(uuid,integer,date,boolean)', '16ea484f5abbd5acd4fc8db8f48a7a50'),
   ('erp.reverse_entry(uuid,date,text)', '2ffcc988f7362b3acf4f8757b3f9bac5'),
   ('erp.reverse_impairment(uuid,date)', 'de9ecc969d920a3242d72733ca86364a'),
   ('erp.revise_provision(jsonb)', '9a6c130742dfc9b7b69a5aa827dffc50'),
@@ -860,6 +863,8 @@ fg(sig, rol) as (values
   ('erp.fs_check_model(text,text)', 'authenticated'),
   ('erp.fs_classified_accounts(uuid,integer,text,date)', 'authenticated'),
   ('erp.fs_classified_at(uuid,integer,text,date[])', 'authenticated'),
+  ('erp.fs_compensated(uuid,integer,date,boolean,text)', 'authenticated'),
+  ('erp.fs_compensated_ratios(uuid,integer,date,boolean,text)', 'authenticated'),
   ('erp.fs_line_accounts(uuid,integer,text,text,date,boolean,text)', 'authenticated'),
   ('erp.fs_line_anomalies(uuid,integer,date,boolean,text)', 'authenticated'),
   ('erp.fs_model_amounts(uuid,integer,text,date)', 'authenticated'),
@@ -959,6 +964,7 @@ fg(sig, rol) as (values
   ('erp.reverse_accrual(uuid,date)', 'authenticated'),
   ('erp.reverse_accruals(uuid,date)', 'authenticated'),
   ('erp.reverse_asset_impairment(jsonb)', 'authenticated'),
+  ('erp.reverse_cards(uuid,integer,date,boolean)', 'authenticated'),
   ('erp.reverse_entry(uuid,date,text)', 'authenticated'),
   ('erp.reverse_impairment(uuid,date)', 'authenticated'),
   ('erp.revise_provision(jsonb)', 'authenticated'),

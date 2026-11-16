@@ -201,7 +201,9 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
   cada trimestre, igual que la liquidación) y **«Ventas y gastos»** (ventas frente al año anterior, los 10 clientes y
   proveedores con más volumen y los gastos por naturaleza) y **«Calidad de la contabilidad»** (una lista de control a
   una fecha: saldos al revés, borradores, meses sin cerrar, liquidaciones pendientes, vencidos y terceros sin
-  conciliar). Las cifras salen de
+  conciliar). Al lado, el botón **«Auditorías»** con «Calidad de la contabilidad» y **«Saldos al revés»** (una tarjeta
+  por cada subcuenta con saldo contrario a su naturaleza: imposible o por revisar, dónde la pone el Balance, la
+  pregunta de un auditor y su libro mayor). Las cifras salen de
   un **catálogo en la base de datos** con las mismas reglas que el Balance y la PyG, así que cuadran al céntimo.
 - **Exportar a Excel** (importes como números y fechas como fechas, listos para una tabla dinámica o Power BI) e
   **imprimir / guardar en PDF** el Balance, la PyG, el EFE, sumas y saldos, el mayor y el diario.
@@ -282,7 +284,7 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
 | Web | **React + Vite** | Componentes por pantalla, i18n propio (es/en), rutas con almohadilla, iconos `lucide-react` |
 | IA | **Cloudflare Workers AI** + Pages Functions | `/api/ai` (Mistral Small 3.1) y `/api/tutor` (gpt-oss-120b); la clave nunca llega al navegador |
 | Despliegue | **Cloudflare Pages** | Despliegue automático desde `main`, dirección de prueba por rama y cabeceras de seguridad (`_headers`) |
-| Calidad | **GitHub Actions** + **Vitest** + Dependabot | 83 pruebas SQL, la prueba del diagnóstico, 351 tests de la web, lint, build y auditoría de dependencias en cada Pull Request |
+| Calidad | **GitHub Actions** + **Vitest** + Dependabot | 84 pruebas SQL, la prueba del diagnóstico, 358 tests de la web, lint, build y auditoría de dependencias en cada Pull Request |
 | Versionado | Git + GitHub | Ramas, Pull Requests, `main` protegida, versiones etiquetadas y decisiones documentadas (ADR) |
 
 **Principio clave:** la web nunca es la única barrera. Aunque alguien manipule el navegador, PostgreSQL rechaza:
@@ -346,7 +348,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 ├── scripts/generar-diagnostico.sh  genera database/diagnostico-supabase.sql (¿le falta algo a tu Supabase?)
 ├── scripts/generar-permisos.mjs    genera docs/permisos.md desde la prueba de permisos (fase 79)
 ├── database/
-│   ├── migrations/            0001 → 0095, se ejecutan en orden en Supabase
+│   ├── migrations/            0001 → 0096, se ejecutan en orden en Supabase
 │   ├── funciones/             versión vigente de cada función, para estudiarla (generado)
 │   ├── diagnostico-supabase.sql  consulta de solo lectura: qué le falta a tu Supabase (generado)
 │   ├── reset/                 reset del schema antiguo (solo histórico)
@@ -390,20 +392,21 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
     ├── seguridad-supabase.md  lista de ajustes de seguridad del panel de Supabase
     ├── powerbi/GUIA.md        guía para conectar Power BI al esquema bi
     ├── capturas/              capturas de la app para el README
-    └── decisiones/            ADR 0001 → 0063
+    └── decisiones/            ADR 0001 → 0064
 ```
 
 ## Calidad
 
 - **Integración continua** (GitHub Actions) en cada Pull Request:
-  - las 83 pruebas de la base de datos sobre PostgreSQL 16, cada una en una base limpia con todas las migraciones
+  - las 84 pruebas de la base de datos sobre PostgreSQL 16, cada una en una base limpia con todas las migraciones
     (la fase 23 vigila también que toda clave foránea tenga índice; la 34 lanza unas 300 operaciones al azar por
     empresa y exige nueve invariantes contables; la 35 compara al céntimo cinco supuestos calculados desde la norma;
     de la 69 a la 78, cada tablero cuadra al céntimo con su informe: PyG, Balance, Ratios y liquidación; la 79 exige la
     matriz de permisos y la 80, la guardiana, prueba todas las funciones contra las empresas de otro usuario; la 81,
     que la misma semilla da la misma contabilidad y que cada empresa sintética cuadra; la 82, que los tres modelos
-    del Balance suman lo mismo; y la 83, que ningún texto de la base de datos nombra un programa comercial);
-  - **351 tests de la web con Vitest**: formatos, rutas, importadores, errores, idiomas (español e inglés con las
+    del Balance suman lo mismo; la 83, que ningún texto de la base de datos nombra un programa comercial; y la 84,
+    que el Balance compensado, sus ratios y las tarjetas de saldos al revés dan lo que se calcula a mano);
+  - **358 tests de la web con Vitest**: formatos, rutas, importadores, errores, idiomas (español e inglés con las
     mismas claves), glosario, plantillas, la defensa de las funciones de IA, la lectura por páginas, el borrado por
     tandas, la fecha de trabajo, los gráficos, el análisis horizontal, la exportación a Excel y los tableros (unidades,
     trimestres, rankings, lista de control y saldos al revés) y que la tabla de roles dice lo mismo que la matriz de
@@ -468,7 +471,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 Con PostgreSQL instalado (Linux, WSL o Git Bash):
 
 ```bash
-bash scripts/test-db.sh            # las 83 pruebas, cada una en una base limpia
+bash scripts/test-db.sh            # las 84 pruebas, cada una en una base limpia
 bash scripts/test-db.sh fase25     # solo las que contienen "fase25"
 ```
 
@@ -559,6 +562,7 @@ cuadrados. El ERP también lee directamente los diarios en Excel y los de Busine
 - [x] **v0.60.4**: logo nuevo, grupos 8 y 9 en «Ajustes por cambios de valor» y correcciones del vídeo 02
 - [x] **v0.60.5**: nadie toca los asientos por la puerta de atrás (líneas, contabilizar, terceros), avisos de la IA, diagnóstico con la seguridad y textos sin los diarios de estudio
 - [x] **v0.60.6**: operaciones societarias según la LSC (reparto con pérdidas, reducción de capital, art. 326), ajustes de la empresa y meses protegidos, cuota de IA devuelta si falla
+- [x] **v0.60.7**: el Balance «comparado con el compensado» (lo que esconde y sus ratios), el menú «Auditorías» con el tablero «Saldos al revés» y la caja en negativo en el activo, restando en la tesorería
 - [ ] Más botones en la barra superior
 - [ ] Ontología contable y chat con la IA (consulta, nunca calcula)
 - [ ] Más informes en Power BI e incrustarlos en el ERP con RLS por empresa

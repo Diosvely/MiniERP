@@ -2034,3 +2034,24 @@ número; textos.
 - **Un arreglo de seguridad puede abrir un hueco nuevo:** la comprobación de la v0.60.5 daba por bueno un asiento sin
   mes. La revisión diaria lo encontró al día siguiente.
 
+## 2026-11-16 · v0.60.7 · El Balance que cuadra y engaña
+
+**De dónde viene:** el vídeo 03. Una empresa de práctica, ficticia, con un banco con dinero, otro en descubierto y la
+caja en negativo: compensado, su Balance cuadra y la prueba ácida sale 19,46; sin compensar, 3,87. Diosvely pidió que
+el Mini ERP enseñara esa diferencia y separar los tableros de auditor en su propio menú. Al preparar el caso, auditoría
+fiscal encontró que la caja en negativo salía como una deuda con un banco (AF-19).
+
+**Qué se hizo:** migración 0096 (la caja y la 576 siempre en el activo; `erp.fs_compensated`,
+`erp.fs_compensated_ratios` y `erp.reverse_cards`; el grupo de cada tablero y el tablero «Saldos al revés»); en el
+Balance, «Comparar con» el compensado; en la barra superior, «Auditorías». ADR 0064; ADR 0008 y 0062 con la fuente del
+descubierto.
+
+**Pruebas:** la fase 84 nueva y las fases 78 y 82 al día; 358 tests.
+
+**Lo que se aprende**
+- **Cuadrar no es estar bien:** compensar resta lo mismo del activo y del pasivo, así que el fondo de maniobra no
+  cambia y el error no se ve con él. Se ve en los ratios, porque el pasivo corriente encoge.
+- **Un descubierto y una caja en negativo no son lo mismo:** el primero es una deuda real con el banco; el segundo, un
+  error de registro. Meterlos en la misma partida inflaba la deuda bancaria y la tesorería a la vez.
+- **Un caso preparado para enseñar también revisa el programa:** la empresa del vídeo destapó el fallo de la caja antes
+  de grabar.

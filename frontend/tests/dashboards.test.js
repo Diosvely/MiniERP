@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest'
 import es from '../src/i18n/es.js'
 import en from '../src/i18n/en.js'
-import { dashPath, fmtMetric, change, zoneStatus, axis, hasData, seriesRows, textOf, periods, periodLabel, taxName, tableLink, hasZones, rankingRows, checkDetail, CHECK_ICON } from '../src/dashboards.js'
+import { dashPath, fmtMetric, change, zoneStatus, axis, hasData, seriesRows, textOf, periods, periodLabel, taxName, tableLink, hasZones, rankingRows, checkDetail, CHECK_ICON, groupDashboards, reverseSummary, filterCards, cardLine } from '../src/dashboards.js'
 
 describe('tableros · formato y comparación', () => {
   it('la dirección de un tablero', () => {
@@ -164,5 +164,38 @@ describe('tableros · gráficos', () => {
     expect(textOf(o, 'label', 'es')).toBe('Tesorería')
     expect(textOf(o, 'label', 'en')).toBe('Cash')
     expect(textOf({ label: 'Solo es' }, 'label', 'en')).toBe('Solo es')
+  })
+})
+
+// v0.60.7 · Menú «Auditorías» y tablero «Saldos al revés» (ADR 0064)
+describe('menú Auditorías: cada tablero en su grupo', () => {
+  it('reparte por area; sin area (antes de la 0096), como tablero', () => {
+    const g = groupDashboards([{ code: 'resumen', area: 'tablero' }, { code: 'calidad', area: 'auditoria' },
+      { code: 'saldos_reves', area: 'auditoria' }, { code: 'viejo' }])
+    expect(g.tablero.map((d) => d.code)).toEqual(['resumen', 'viejo'])
+    expect(g.auditoria.map((d) => d.code)).toEqual(['calidad', 'saldos_reves'])
+    expect(groupDashboards(null)).toEqual({ tablero: [], auditoria: [] })
+  })
+})
+
+describe('tarjetas de saldos al revés', () => {
+  const cards = [
+    { account_no: '57000000', severity: 'error', lines: { pymes: { code: 'AC.VI' }, normal: { code: 'AC.VII.1' } } },
+    { account_no: '57200001', severity: 'warning', lines: { pymes: { code: 'PC.II.1' } } },
+    { account_no: '40000001', severity: 'warning' },
+  ]
+  it('resume: total, imposibles y por revisar', () => {
+    expect(reverseSummary(cards)).toEqual({ total: 3, errors: 1, review: 2 })
+    expect(reverseSummary(undefined)).toEqual({ total: 0, errors: 0, review: 0 })
+  })
+  it('filtra por gravedad', () => {
+    expect(filterCards(cards, 'all')).toHaveLength(3)
+    expect(filterCards(cards, 'error').map((c) => c.account_no)).toEqual(['57000000'])
+    expect(filterCards(cards, 'warning')).toHaveLength(2)
+  })
+  it('la partida del modelo elegido; si no la hay, la de PYMES', () => {
+    expect(cardLine(cards[0], 'normal').code).toBe('AC.VII.1')
+    expect(cardLine(cards[1], 'normal').code).toBe('PC.II.1')
+    expect(cardLine(cards[2], 'normal')).toBeNull()
   })
 })

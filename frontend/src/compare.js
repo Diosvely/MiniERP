@@ -17,3 +17,15 @@ export function changePct(amount, prev, language = 'es') {
   const n = Math.abs(v).toLocaleString(language === 'en' ? 'en-GB' : 'es-ES', { maximumFractionDigits: 1 })
   return `${v > 0.05 ? '+' : v < -0.05 ? '−' : ''}${n} %`
 }
+
+// v0.60.7 · BALANCE COMPENSADO (ADR 0064): «Comparar con» el ejercicio anterior (lo de siempre) o con el Balance que
+// saldría compensando las subcuentas de un mismo subgrupo (erp.fs_compensated).
+export const COMPARE_WITH = ['prev', 'comp']
+// Los ratios de los dos Balances (erp.fs_compensated_ratios), en el orden de las tarjetas, y cuántas veces exagera el
+// compensado (null si no se puede calcular)
+export const COMP_RATIOS = ['LIQ', 'QR', 'CASH', 'DEBT']
+export function timesBigger(amount, comp) {
+  const a = Number(amount), c = Number(comp)
+  if (amount == null || comp == null || !Number.isFinite(a) || !Number.isFinite(c) || Math.abs(a) < 0.00005) return null
+  return c / a
+}

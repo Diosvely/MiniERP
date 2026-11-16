@@ -1,6 +1,6 @@
 # Funciones del esquema erp (versión vigente)
 
-Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0095`.
+Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0096`.
 No se edita a mano: el código fuente son las migraciones. Esto es para **estudiar** cada función en su forma
 actual sin rastrear sus redefiniciones.
 
@@ -9,7 +9,7 @@ actual sin rastrear sus redefiniciones.
 - **Tipo:** *invoker* (se ejecuta con los permisos de quien llama: manda la RLS), *security definer* (con los del
   dueño: comprueba ella misma los permisos) o *trigger*.
 
-373 funciones.
+376 funciones.
 
 | Función | Versiones | Vigente en | Tipo |
 |---|---|---|---|
@@ -124,7 +124,7 @@ actual sin rastrear sus redefiniciones.
 | [`dash_quarters`](dash_quarters.sql) | 1 | 0082_tax_dashboard | invoker |
 | [`dash_ranking`](dash_ranking.sql) | 2 | 0084_quality_dashboard | security definer |
 | [`dash_ranking_card`](dash_ranking_card.sql) | 2 | 0084_quality_dashboard | invoker |
-| [`dashboard_data`](dashboard_data.sql) | 4 | 0084_quality_dashboard | invoker |
+| [`dashboard_data`](dashboard_data.sql) | 5 | 0096_compensated_balance_and_audits | invoker |
 | [`delete_company`](delete_company.sql) | 1 | 0004_journal_entries | security definer |
 | [`delete_company_step`](delete_company_step.sql) | 12 | 0072_temporary_companies | security definer |
 | [`delete_draft`](delete_draft.sql) | 1 | 0070_entries_screen | security definer |
@@ -174,6 +174,8 @@ actual sin rastrear sus redefiniciones.
 | [`fs_check_model`](fs_check_model.sql) | 1 | 0089_balance_models | invoker |
 | [`fs_classified_accounts`](fs_classified_accounts.sql) | 4 | 0075_dashboards | invoker |
 | [`fs_classified_at`](fs_classified_at.sql) | 3 | 0078_company_isolation | security definer |
+| [`fs_compensated`](fs_compensated.sql) | 1 | 0096_compensated_balance_and_audits | invoker |
+| [`fs_compensated_ratios`](fs_compensated_ratios.sql) | 1 | 0096_compensated_balance_and_audits | invoker |
 | [`fs_line_accounts`](fs_line_accounts.sql) | 3 | 0089_balance_models | invoker |
 | [`fs_line_anomalies`](fs_line_anomalies.sql) | 2 | 0089_balance_models | invoker |
 | [`fs_model_amounts`](fs_model_amounts.sql) | 1 | 0089_balance_models | invoker |
@@ -287,6 +289,7 @@ actual sin rastrear sus redefiniciones.
 | [`reverse_accrual`](reverse_accrual.sql) | 1 | 0043_year_end_adjustments | security definer |
 | [`reverse_accruals`](reverse_accruals.sql) | 1 | 0043_year_end_adjustments | security definer |
 | [`reverse_asset_impairment`](reverse_asset_impairment.sql) | 1 | 0046_asset_impairment | security definer |
+| [`reverse_cards`](reverse_cards.sql) | 1 | 0096_compensated_balance_and_audits | invoker |
 | [`reverse_entry`](reverse_entry.sql) | 3 | 0017_year_closing | invoker |
 | [`reverse_impairment`](reverse_impairment.sql) | 1 | 0043_year_end_adjustments | security definer |
 | [`revise_provision`](revise_provision.sql) | 1 | 0045_provisions | security definer |

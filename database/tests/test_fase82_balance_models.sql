@@ -86,6 +86,16 @@ begin
   assert public.partida('normal', '43000001', false) = 'PC.V.7', 'cliente acreedor: 7. Anticipos de clientes';
   assert public.partida('normal', '57200000', false) = 'PC.III.2', 'banco en descubierto: III. 2. Deudas con entidades de crédito';
   assert public.partida('abreviado', '57200000', false) = 'PC.III.1', 'en el abreviado: III. 1. Deudas con entidades de crédito';
+  -- v0.60.7 (AF-19): la caja y la 576 no pasan nunca al pasivo (el descubierto, solo 572-575)
+  assert public.partida('normal', '57000000', false) = 'AC.VII.1' and public.partida('abreviado', '57000000', false) = 'AC.VII'
+     and public.partida('pymes', '57000000', false) = 'AC.VI', 'caja acreedora: resta en Tesorería / Efectivo (AF-19)';
+  assert public.partida('normal', '57100000', false) = 'AC.VII.1' and public.partida('pymes', '57100000', false) = 'AC.VI',
+     'caja en moneda extranjera acreedora: también en el activo';
+  assert public.partida('normal', '57600000', false) = 'AC.VII.2' and public.partida('normal', '57600000', true) = 'AC.VII.2'
+     and public.partida('abreviado', '57600000', false) = 'AC.VII' and public.partida('pymes', '57600000', false) = 'AC.VI',
+     '576: 2. Otros activos líquidos equivalentes, con cualquier saldo';
+  assert public.partida('normal', '57300000', false) = 'PC.III.2' and public.partida('pymes', '57200000', false) = 'PC.II.1',
+     'el descubierto bancario sigue en el pasivo corriente (AF-18)';
   assert public.partida('normal', '58000000', true) = 'AC.I', '580: I. Activos no corrientes mantenidos para la venta';
   assert public.partida('normal', '58500000', false) = 'PC.I', '585: I. Pasivos vinculados';
   assert public.partida('normal', '47090000', true) = 'AC.III.5' and public.partida('normal', '47200000', true) = 'AC.III.6'

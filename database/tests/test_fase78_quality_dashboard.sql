@@ -187,9 +187,10 @@ declare c uuid := (select e from public.ctx where k = 'abierta');
 begin
   -- 2) una caja acreedora: imposible → error
   assert public.q(c, 2026, 'anomalies') ->> 'severity' = 'error' and (public.q(c, 2026, 'anomalies') ->> 'extra')::int = 1, 'caja acreedora: error';
-  assert exists (select 1 from erp.fs_line_anomalies(c, 2026) a where a.account_no = '57000001' and a.severity = 'error' and a.line_code like 'PC%'),
-         'su ⚠ cae en el pasivo corriente';
-  raise notice 'OK  · caja acreedora importada: error, con su ⚠ en el pasivo corriente';
+  -- v0.60.7 (AF-19): la caja no es una deuda con un banco; resta en el efectivo del activo, con su ⚠
+  assert exists (select 1 from erp.fs_line_anomalies(c, 2026) a where a.account_no = '57000001' and a.severity = 'error' and a.line_code = 'AC.VI'),
+         'su ⚠ cae en el efectivo del activo (AF-19)';
+  raise notice 'OK  · caja acreedora importada: error, con su ⚠ en el efectivo del activo (AF-19)';
 end $$;
 
 -- 4) un trimestre sin liquidar (se anula la del 3T) y 5) la contabilidad mes a mes
@@ -259,7 +260,7 @@ reset role;
 do $$
 begin
   assert (select count(*) from erp.quality_check_defs) = 7, 'los textos de las 7 filas';
-  assert (select count(*) from erp.dashboards) = 6, 'el Resumen de dirección y los cinco tableros nuevos';
+  assert (select count(*) from erp.dashboards) = 7, 'el Resumen de dirección, los cinco tableros nuevos y «Saldos al revés» (v0.60.7)';
   assert public.falla($q$insert into erp.dash_widgets (dashboard, sort, kind, source, label, label_en, metrics) values ('calidad', 99, 'checklist', 'anomalies', 'x', 'x', '{}')$q$,
                       'dash_widgets_source_check'), 'la lista de control no tiene fuente';
   assert not has_function_privilege('anon', 'erp.quality_checks(uuid, integer, date, boolean)', 'execute');

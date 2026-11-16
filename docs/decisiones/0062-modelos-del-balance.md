@@ -117,3 +117,19 @@ Su próximo vídeo trata del Balance, y quería enseñar esa diferencia con el E
 ### Cómo explicarlo
 - **No todo el grupo 9 es una subvención.** Si unas acciones a valor razonable suben de valor, la ganancia todavía no
   realizada va al patrimonio neto (900), pero no es una ayuda pública: es un ajuste por cambio de valor (A-2).
+
+## Actualización (v0.60.7, 2026-11-16)
+
+- **El descubierto bancario, validado frente al PGC** (AF-18 de auditoría fiscal): un banco con saldo acreedor
+  (572-575) va a «Deudas con entidades de crédito» del pasivo corriente en los tres modelos. Fuente: RD 1514/2007 y
+  RD 1515/2007, quinta parte, cuentas 572-575 («los descubiertos bancarios […] figurarán en todo caso en el pasivo
+  corriente del balance»), y el contenido de la partida en los modelos (cuentas 5105, 520 y 527). Texto consolidado
+  del BOE: https://www.boe.es/eli/es/rd/2007/11/16/1514/con.
+- **La caja (570, 571) y la 576 no pasan nunca al pasivo** (AF-19, decisión de Diosvely: opción 1). Una caja acreedora
+  es un error de registro, no una deuda con un banco: se presenta en Tesorería / Efectivo, restando, con su ⚠. La
+  576 acreedora, igual, en «2. Otros activos líquidos equivalentes». Migración 0096, con la regresión en la fase 82.
+  Detalle en la ADR 0064.
+
+### Cómo explicarlo
+- **Al banco se le debe; a la caja, no.** Un descubierto es dinero que el banco te ha prestado: pasivo. Una caja en
+  negativo significa que se apuntó una salida de dinero que no estaba: hay que corregir el registro.

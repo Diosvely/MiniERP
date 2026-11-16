@@ -16,6 +16,7 @@ import Link from './Link'
 import DashChart from './DashChart'
 import DashRanking from './DashRanking'
 import DashChecklist from './DashChecklist'
+import DashReverse from './DashReverse'
 
 // UN TABLERO (v0.52.0 · ADR 0052): la web dibuja lo que dice el catálogo de la base de datos (0075). Una sola llamada,
 // erp.dashboard_data, trae cada cifra con el año anterior a la misma fecha y las series de cada fin de mes, calculadas
@@ -67,6 +68,12 @@ export default function Dashboard({ company, code }) {
         for (const r of w.checklist ?? []) {
           rows.push({ a: `${textOf(r, 'label', language)} · ${t(`dash.check.${r.severity}`)} · ${checkDetail(r, language, t)}`,
             b: r.value == null ? null : Number(r.value), c: null })
+        }
+      } else if (w.kind === 'reverse_cards') {
+        // v0.60.7: cada cuenta con saldo al revés, su gravedad y su saldo (Debe − Haber)
+        for (const c of w.cards ?? []) {
+          rows.push({ a: `${c.account_no} ${textOf(c, 'name', language)} · ${t(c.severity === 'error' ? 'rev.chipError' : 'rev.chipReview')}`,
+            b: Number(c.balance), c: null })
         }
       } else if (w.kind === 'ranking') {
         // v0.56.0: cada tercero o subgrupo con su importe y el del año anterior, y el total
@@ -142,6 +149,7 @@ export default function Dashboard({ company, code }) {
               {w.kind === 'table' && <Health company={company} data={data} widget={w} />}
               {w.kind === 'ranking' && <DashRanking company={company} data={data} widget={w} />}
               {w.kind === 'checklist' && <DashChecklist company={company} widget={w} />}
+              {w.kind === 'reverse_cards' && <DashReverse company={company} data={data} widget={w} />}
             </section>
           ))}
         </div>

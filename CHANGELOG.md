@@ -2,6 +2,26 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.60.7] - 2026-11-16
+### Añadido
+- **Balance «comparado con el compensado»** (migración 0096, ADR 0064): en el Balance, «Comparar con» el ejercicio
+  anterior (por defecto) o con el Balance que saldría compensando las subcuentas de un mismo subgrupo. Columnas sin
+  compensar · compensado · diferencia · %, un aviso con lo que la compensación esconde y cuatro tarjetas de ratios
+  (liquidez general, prueba ácida, tesorería inmediata y endeudamiento). El ERP sigue sin compensar: solo lo enseña.
+- **Menú «Auditorías»** en la barra superior, al lado de «Tableros», con «Calidad de la contabilidad» (el de siempre) y
+  el tablero nuevo **«Saldos al revés»**: una tarjeta por cada subcuenta con saldo contrario a su naturaleza
+  (imposible o por revisar, dónde la pone el Balance en el modelo elegido, la nota de la regla, la pregunta de un
+  auditor y su libro mayor), con un resumen que filtra. Las direcciones de los tableros no cambian.
+### Corregido
+- **La caja en negativo ya no sale como una deuda con un banco** (AF-19 de auditoría fiscal, opción 1 elegida por
+  Diosvely): la caja (570, 571) y la 576 se quedan siempre en Tesorería / Efectivo del activo, restando, con su ⚠, en
+  los tres modelos. El descubierto bancario (572-575) sigue en «Deudas con entidades de crédito», como manda el PGC
+  (AF-18, validado; fuente citada en las ADR 0008 y 0062).
+### Pruebas
+- Fase 84 nueva (un diario importado con cifras que se rehacen a mano: el Balance compensado en los tres modelos, sus
+  ratios, la simulación, las tarjetas y los permisos); fase 82 con AF-19 y fase 78 con el ⚠ de la caja en el activo.
+  358 tests de la web.
+
 ## [0.60.6] - 2026-11-15
 ### Corregido
 - **Operaciones societarias** (migración 0095; hallazgos de auditoría fiscal aprobados por Diosvely):

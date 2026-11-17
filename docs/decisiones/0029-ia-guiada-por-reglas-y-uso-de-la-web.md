@@ -21,7 +21,7 @@ Es el mismo reparto que en los ERP grandes: los **grupos contables** de Business
 cuentas** de SAP (OBYC) deciden las cuentas a partir de datos maestros, no del texto.
 
 - **La ficha del tercero manda**, como el maestro del acreedor en SAP:
-  - **forma jurídica**, que por defecto sale del NIF (NIF / NIE → persona física; CIF → entidad);
+  - **forma jurídica**, que por defecto sale del NIF (NIF de persona física o NIE → persona física; NIF de una entidad → entidad);
   - **retención por defecto** (IRPF15, IRPF7, IRPF19).
 
   La base de datos rechaza lo que no tiene sentido: la retención de profesionales a una entidad, o cualquier
@@ -65,7 +65,7 @@ cuentas** de SAP (OBYC) deciden las cuentas a partir de datos maestros, no del t
   la RGPD se complica.
 
 ## Consecuencias
-- El Tutor deja de alucinar en el caso de las retenciones. Es la **fase 1** del plan «IA guiada por reglas»
+- El Tutor ya no depende de que el modelo se acuerde de la retención: el ERP la comprueba y avisa. Es la **fase 1** del plan «IA guiada por reglas»
   (`ideas-pendientes.md`). Las siguientes fases van en el mismo sentido: catálogo de operaciones, controles de auditor
   como datos, banco de casos y, al final, una ontología contable con chat.
 - **Nuevos datos en la ficha del tercero** (`legal_form`, `withholding_code`) y en la vista `v_partners`.

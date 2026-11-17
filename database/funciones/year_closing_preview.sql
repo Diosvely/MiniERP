@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.year_closing_preview · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0017_year_closing 0042_assets_integration 0044_adjustments_integration 0046_asset_impairment 0048_closing_integration 0059_corporate_tax_integration 0061_equity_integration 0065_grants_integration   →   la vigente es la de 0065_grants_integration
+-- Definida en: 0017_year_closing 0042_assets_integration 0044_adjustments_integration 0046_asset_impairment 0048_closing_integration 0059_corporate_tax_integration 0061_equity_integration 0065_grants_integration 0097_closing_ecpn_and_fixes   →   la vigente es la de 0097_closing_ecpn_and_fixes
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.year_closing_preview(p_company uuid, p_year integer)
@@ -149,8 +149,17 @@ begin
                       'debit', greatest(-v_result, 0), 'credit', greatest(v_result, 0));
   end if;
 
-  -- 2b) v0.44.0 · REGULARIZACIÓN DE LOS GRUPOS 8 Y 9: cada cuenta se salda contra su 13x (94x / 84x → 13 del mismo
-  --     tercer dígito; 83x, el efecto impositivo, → 130). La subcuenta 13x: la primera que haya o, si no, se crea al cerrar
+  -- 2b) v0.44.0 · REGULARIZACIÓN DE LOS GRUPOS 8 Y 9: cada cuenta se salda contra su 13x. La subcuenta 13x: la primera
+  --     que haya o, si no, se crea al cerrar.
+  --     v0.60.8 (AF-16): la 13x la decide erp.closing_equity_target (800/802/900/902 → 133; 810/812/910/912 → 1340;
+  --     811/813/911/913 → 1341; 82/92 → 135; 84/94 → 13 del mismo tercer dígito; 83 → 130). Una cuenta 8 o 9 sin regla
+  --     no se adivina: error group_89_without_rule (se regulariza a mano antes de cerrar)
+  select string_agg(b.account_no, ', ' order by b.account_no) into v_txt
+  from erp.year_account_balances(v_fy.id) b
+  where left(b.account_no, 1) in ('8', '9') and b.balance <> 0 and erp.closing_equity_target(b.account_no) is null;
+  if v_txt is not null then
+    v_checks := v_checks || jsonb_build_object('code', 'group_89_without_rule', 'severity', 'error', 'detail', v_txt);
+  end if;
   select coalesce(jsonb_agg(jsonb_build_object('account_no', r.account_no, 'account_name', r.account_name, 'balance', r.balance,
                     'target', coalesce((select min(g.account_no) from erp.gl_accounts g where g.company_id = p_company and g.account_type = 'posting'
                                          and g.account_no like r.tp || '%'),
@@ -158,13 +167,14 @@ begin
                   order by r.account_no), '[]')
     into v_reg
   from (select b.account_no, b.account_name, b.balance,
-               case when b.account_no like '83%' then '130' else '13' || substr(b.account_no, 3, 1) end as tp
-        from erp.year_account_balances(v_fy.id) b where left(b.account_no, 1) in ('8', '9')) r;
+               erp.closing_equity_target(b.account_no) as tp
+        from erp.year_account_balances(v_fy.id) b where left(b.account_no, 1) in ('8', '9')) r
+  where r.tp is not null;
   v_pl := v_pl
     || (select coalesce(jsonb_agg(jsonb_build_object('account_no', x->>'account_no', 'account_name', x->>'account_name',
                   'debit', greatest(-(x->>'balance')::numeric, 0), 'credit', greatest((x->>'balance')::numeric, 0)) order by x->>'account_no'), '[]')
         from jsonb_array_elements(v_reg) x)
-    || (select coalesce(jsonb_agg(jsonb_build_object('account_no', t.target, 'account_name', 'Subvenciones, donaciones y legados',
+    || (select coalesce(jsonb_agg(jsonb_build_object('account_no', t.target, 'account_name', erp.closing_equity_name(t.target),
                   'debit', greatest(t.bal, 0), 'credit', greatest(-t.bal, 0)) order by t.target), '[]')
         from (select x->>'target' as target, sum((x->>'balance')::numeric) as bal from jsonb_array_elements(v_reg) x group by 1) t where t.bal <> 0);
 
@@ -183,7 +193,7 @@ begin
     where v_result <> 0
       and not exists (select 1 from erp.year_account_balances(v_fy.id) b where b.account_no = v_res_no)
     union all   -- v0.44.0: la 13x aún sin movimientos
-    select t.target, 'Subvenciones, donaciones y legados', t.bal
+    select t.target, erp.closing_equity_name(t.target), t.bal
     from (select x->>'target' as target, sum((x->>'balance')::numeric) as bal from jsonb_array_elements(v_reg) x group by 1) t
     where t.bal <> 0 and not exists (select 1 from erp.year_account_balances(v_fy.id) b where b.account_no = t.target)
   ) c

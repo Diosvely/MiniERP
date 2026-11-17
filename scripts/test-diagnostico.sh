@@ -40,3 +40,14 @@ for want in "permisos de authenticated en company_users" "política company_user
   grep -qF "$want" <<< "$rows" || { echo "✗ el diagnóstico no ve: $want"; echo "$rows"; exit 1; }
 done
 echo "✓ permisos de más, una política que sobra y una tabla sin RLS: el diagnóstico los ve"
+
+# v0.60.8 (SEG-25) · Power BI: un rol de lectura que entra en erp y una vista de bi abierta a la web
+psql -q -X -v ON_ERROR_STOP=1 -d "$db" -c "
+  grant usage on schema erp to powerbi_reader;
+  grant usage on schema bi to authenticated;
+  grant select on all tables in schema bi to authenticated;" > /dev/null
+rows=$(psql -X -At -v ON_ERROR_STOP=1 -d "$db" -f database/diagnostico-supabase.sql)
+for want in "el rol powerbi_reader entra en el esquema erp" "el rol authenticated entra en el esquema bi" "(anon o authenticated)|permiso de más"; do
+  grep -qF "$want" <<< "$rows" || { echo "✗ el diagnóstico no ve: $want"; echo "$rows"; exit 1; }
+done
+echo "✓ Power BI: un rol de lectura en erp y bi abierto a la web, el diagnóstico los ve"

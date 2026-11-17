@@ -70,8 +70,9 @@ validó antes de construir (`diseno-v0.54.0.md`), con tres decisiones de Diosvel
 - **Liquidez general, prueba ácida y disponibilidad:** tres escalones de «¿puedo pagar lo que vence pronto?»: con todo
   el activo corriente, sin vender el almacén y solo con lo que hay en el banco.
 - **Periodos medios de cobro y de pago:** los días que se tarda en cobrar y en pagar. Si se cobra más tarde de lo que se
-  paga, la empresa financia a sus clientes con su propia caja. El límite legal de pago a proveedores es, en general, de
-  60 días (Ley 3/2004 de morosidad). *(Pendiente de validar por Diosvely.)*
+  paga, la empresa financia a sus clientes con su propia caja. El plazo legal de pago entre empresas es de 30 días
+  naturales si no se pacta otro, y por contrato nunca más de 60 (art. 4.1 y 4.3 de la Ley 3/2004, en la redacción de la
+  Ley 11/2013; BOE consolidado). *(Validado por auditoría fiscal, AF-23, v0.60.8.)*
 - **Por qué asiento a asiento:** un traspaso del banco a la caja no es dinero que entre ni que salga de la empresa; en
   su asiento, lo que sale de una cuenta 57 entra en otra y suma cero.
 - **En BC y SAP:** Business Central tiene las *cues* de efectivo del *Role Center*, el *Cash Flow Forecast* y los

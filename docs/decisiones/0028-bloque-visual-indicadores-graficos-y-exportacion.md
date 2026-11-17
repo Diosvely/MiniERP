@@ -6,8 +6,7 @@
 
 ## Contexto
 
-Tres revisiones externas del proyecto coincidieron: el dominio contable y la documentación son lo más fuerte (9 a
-9,5 sobre 10), y lo **visual** es donde más margen hay (6,8 a 8,5). La decisión fue un bloque visual con una premisa:
+Varias revisiones externas del proyecto coincidieron en que lo **visual** era donde más margen de mejora había. La decisión fue un bloque visual con una premisa:
 **menos es más**. Solo los gráficos que dan información útil de un vistazo; nada de gráficos por hacer gráficos.
 
 ## Decisión

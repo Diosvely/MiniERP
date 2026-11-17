@@ -482,8 +482,10 @@ recargo de equivalencia y prorrata.
   - ROA ≈ margen × rotación;
   - una empresa puede ganar por **rotación** (mucho volumen y poco margen);
   - el ROE sube con la deuda si el ROA supera el coste de la deuda (apalancamiento).
-- **Periodos medios:** la Ley 15/2010 fija 60 días entre empresas. Un periodo medio de cobro o de pago por
-  encima del plazo legal es una pregunta para el auditor.
+- **Periodos medios:** entre empresas, si no se pacta otra cosa, se paga a 30 días naturales, y por contrato no se
+  puede pasar de 60 (art. 4 de la Ley 3/2004, en la redacción de la Ley 11/2013). Un periodo medio de cobro o de pago
+  por encima de 60 días es una pregunta para el auditor. *(Corregido en la v0.60.8, H-26: antes citaba la Ley 15/2010,
+  que fijó los 60 días entre 2010 y 2013.)*
 - **Calidad del resultado** (flujo de explotación / beneficio): mide si el beneficio llega al banco.
   Una empresa puede tener beneficio y flujo de explotación negativo.
 - Un ratio fuera de la zona de referencia es una **pregunta**, no una conclusión: depende del sector.
@@ -2055,3 +2057,22 @@ descubierto.
   error de registro. Meterlos en la misma partida inflaba la deuda bancaria y la tesorería a la vez.
 - **Un caso preparado para enseñar también revisa el programa:** la empresa del vídeo destapó el fallo de la caja antes
   de grabar.
+
+## 2026-11-17 · v0.60.8 · Lo que estaba listo, de una vez
+
+**De dónde viene:** lo pendiente del buzón que ya no necesitaba más estudio: dos fichas aprobadas de auditoría fiscal
+(AF-16 y AF-17), su respuesta al plazo de pago (AF-21 a AF-23), los textos de redacción y tres mejoras de seguridad.
+Diosvely decidió hacerlo en una sola versión para gastar menos en revisiones.
+
+**Qué se hizo:** migración 0097 (cierre de los grupos 8 y 9, ECPN, ayuda de los ratios, nota del banco acreedor y tope de
+devoluciones de IA); el Tutor; la integración continua; el diagnóstico; los textos de la web, el README y nueve ADR.
+
+**Pruebas:** fases 60, 18, 80, 1 y 2 al día; la del diagnóstico con dos casos nuevos; 360 tests.
+
+**Lo que se aprende**
+- **Cada ajuste vuelve a su casa al cerrar:** la plusvalía de unas acciones (133), una cobertura (1340) o una diferencia
+  de conversión (135) no son subvenciones. Si el cierre las mezcla, el Balance del año siguiente cuenta otra historia.
+- **Una norma cambia:** los 60 días de la Ley 15/2010 fueron verdad entre 2010 y 2013. Por eso se cita siempre la versión
+  vigente.
+- **Un ERP que no adivina:** una cuenta 8 o 9 sin regla no se cierra contra una cuenta cualquiera; se avisa y se decide a
+  mano.

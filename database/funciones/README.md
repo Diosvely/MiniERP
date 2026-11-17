@@ -1,6 +1,6 @@
 # Funciones del esquema erp (versión vigente)
 
-Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0096`.
+Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0097`.
 No se edita a mano: el código fuente son las migraciones. Esto es para **estudiar** cada función en su forma
 actual sin rastrear sus redefiniciones.
 
@@ -9,7 +9,7 @@ actual sin rastrear sus redefiniciones.
 - **Tipo:** *invoker* (se ejecuta con los permisos de quien llama: manda la RLS), *security definer* (con los del
   dueño: comprueba ella misma los permisos) o *trigger*.
 
-376 funciones.
+378 funciones.
 
 | Función | Versiones | Vigente en | Tipo |
 |---|---|---|---|
@@ -28,7 +28,7 @@ actual sin rastrear sus redefiniciones.
 | [`ai_context`](ai_context.sql) | 2 | 0027_members | security definer |
 | [`ai_daily_limit`](ai_daily_limit.sql) | 1 | 0072_temporary_companies | security definer |
 | [`ai_ratio_value`](ai_ratio_value.sql) | 1 | 0024_ai_context | invoker |
-| [`ai_refund`](ai_refund.sql) | 1 | 0095_equity_and_company_rules | security definer |
+| [`ai_refund`](ai_refund.sql) | 2 | 0097_closing_ecpn_and_fixes | security definer |
 | [`ai_status`](ai_status.sql) | 2 | 0072_temporary_companies | security definer |
 | [`apply_provision`](apply_provision.sql) | 1 | 0045_provisions | security definer |
 | [`asset_account_pair`](asset_account_pair.sql) | 1 | 0041_fixed_assets | security definer |
@@ -86,9 +86,11 @@ actual sin rastrear sus redefiniciones.
 | [`check_payment_applications`](check_payment_applications.sql) | 1 | 0035_payments | invoker |
 | [`check_tax_account`](check_tax_account.sql) | 1 | 0010_tax_setup | invoker |
 | [`cleanup_guests`](cleanup_guests.sql) | 2 | 0034_web_usage | security definer |
-| [`close_fiscal_year`](close_fiscal_year.sql) | 2 | 0065_grants_integration | invoker |
+| [`close_fiscal_year`](close_fiscal_year.sql) | 3 | 0097_closing_ecpn_and_fixes | invoker |
 | [`close_month`](close_month.sql) | 1 | 0069_monthly_accounting | security definer |
 | [`closing_checklist`](closing_checklist.sql) | 5 | 0065_grants_integration | invoker |
+| [`closing_equity_name`](closing_equity_name.sql) | 1 | 0097_closing_ecpn_and_fixes | invoker |
+| [`closing_equity_target`](closing_equity_target.sql) | 1 | 0097_closing_ecpn_and_fixes | invoker |
 | [`company_access`](company_access.sql) | 2 | 0085_permissions_ownership | security definer |
 | [`company_fingerprint`](company_fingerprint.sql) | 1 | 0086_synthetic_companies | invoker |
 | [`company_tax_type`](company_tax_type.sql) | 1 | 0082_tax_dashboard | invoker |
@@ -158,7 +160,7 @@ actual sin rastrear sus redefiniciones.
 | [`equity_reserves_to_capital`](equity_reserves_to_capital.sql) | 1 | 0060_equity_operations | security definer |
 | [`equity_save`](equity_save.sql) | 1 | 0060_equity_operations | security definer |
 | [`equity_start`](equity_start.sql) | 1 | 0060_equity_operations | security definer |
-| [`equity_statement`](equity_statement.sql) | 1 | 0065_grants_integration | security definer |
+| [`equity_statement`](equity_statement.sql) | 2 | 0097_closing_ecpn_and_fixes | security definer |
 | [`equity_statement_column`](equity_statement_column.sql) | 1 | 0065_grants_integration | invoker |
 | [`equity_statement_lines`](equity_statement_lines.sql) | 1 | 0065_grants_integration | security definer |
 | [`equity_status`](equity_status.sql) | 1 | 0060_equity_operations | security definer |
@@ -388,4 +390,4 @@ actual sin rastrear sus redefiniciones.
 | [`work_period`](work_period.sql) | 1 | 0069_monthly_accounting | security definer |
 | [`write_off_receivable`](write_off_receivable.sql) | 1 | 0043_year_end_adjustments | security definer |
 | [`year_account_balances`](year_account_balances.sql) | 1 | 0017_year_closing | invoker |
-| [`year_closing_preview`](year_closing_preview.sql) | 8 | 0065_grants_integration | invoker |
+| [`year_closing_preview`](year_closing_preview.sql) | 9 | 0097_closing_ecpn_and_fixes | invoker |

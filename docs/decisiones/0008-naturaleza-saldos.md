@@ -23,10 +23,22 @@ Un auditor revisa las cuentas con saldo contrario a su naturaleza y propone recl
   entidades de crédito», porque el PGC lo manda (quinta parte, cuentas 572-575: «los descubiertos bancarios […]
   figurarán en todo caso en el pasivo corriente del balance»; AF-18). La caja (570, 571) y la 576 **no** pasan al
   pasivo: una caja acreedora es un error de registro y se presenta restando en la tesorería, con su ⚠ de error (AF-19,
-  opción 1; ADR 0064). Al cierre, una caja acreedora sigue siendo un aviso que no impide cerrar (AF-20, pendiente de
-  decidir en la v0.60.8).
+  opción 1; ADR 0064). Al cierre, una caja acreedora sigue siendo un aviso que no impide cerrar (AF-20, decidido en la
+  v0.60.8: ver abajo).
 - Nota de la regla 572: para un descubierto simple, la cuenta del PGC es la 520; la 5201 es para una póliza de crédito.
 
 ### Cómo explicarlo
 - **El bloqueo y la presentación son dos cosas.** El ERP impide contabilizar una caja en negativo; si llega en un diario
   importado, no la esconde en las deudas: la enseña restando en la tesorería y la marca como error.
+
+## Actualización (v0.60.8, 2026-11-17)
+
+- **Cerrar con la caja en negativo (AF-20, decisión de Diosvely del 17-11-2026: opción a):** la vista previa del cierre
+  sigue dando un **aviso**, no un error. Los diarios de práctica traen la caja en negativo a propósito y se tienen que
+  poder cerrar para estudiarlos; el error ya se ve en el Balance, en las comprobaciones del auditor y en «Saldos al
+  revés».
+- **La nota de la regla 572** dice ahora «un descubierto (520) o una póliza de crédito (5201)» (H-66, v0.60.8).
+
+### Cómo explicarlo
+- **Avisar no es bloquear.** Un saldo imposible se señala en todas partes, pero el cierre no se para: en un diario de
+  práctica, el error es justo lo que se estudia.

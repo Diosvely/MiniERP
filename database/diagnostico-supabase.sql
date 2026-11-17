@@ -1,5 +1,5 @@
 -- =====================================================================
--- DIAGNÓSTICO DE SUPABASE · migraciones 0001 … 0096 (GENERADO por scripts/generar-diagnostico.sh: no editar)
+-- DIAGNÓSTICO DE SUPABASE · migraciones 0001 … 0097 (GENERADO por scripts/generar-diagnostico.sh: no editar)
 -- ---------------------------------------------------------------------
 -- Pégalo en el SQL Editor de Supabase y pulsa Run. SOLO LEE: no cambia nada.
 -- Devuelve una fila por cada diferencia con el repositorio. Ninguna fila («No rows returned») = todo al día.
@@ -24,7 +24,7 @@ f(sig, hash) as (values
   ('erp.ai_context(uuid,integer,text)', '92f55522b09b19a774d724ec4dc24a06'),
   ('erp.ai_daily_limit()', 'f138526bb66b448b7b65353ceb07aece'),
   ('erp.ai_ratio_value(numeric,text)', '83e993b00218191455ffbfe10e4cdc41'),
-  ('erp.ai_refund(uuid)', '391e70503518be1554461e3d7d1a1144'),
+  ('erp.ai_refund(uuid)', 'ab9ada23cb88a757ba052dede5c93d5c'),
   ('erp.ai_status(uuid)', '54432aa4d8a11f961af04c6c8fecfc1f'),
   ('erp.apply_provision(jsonb)', '2175407fddbd6f5e70a202c2eb620da5'),
   ('erp.asset_account_pair(uuid,text,text)', '6905ccf081032c9bec101ec0f5ad763f'),
@@ -82,9 +82,11 @@ f(sig, hash) as (values
   ('erp.check_payment_applications(uuid,uuid,text,jsonb)', '48d6071b4a12ce381dc421a03508f0a5'),
   ('erp.check_tax_account(uuid,uuid,text,text)', '2920ef5258cb2046d5deb941c32fbd2a'),
   ('erp.cleanup_guests(integer)', '2aa89be4ae879ffc3242083c523e953f'),
-  ('erp.close_fiscal_year(uuid,integer,boolean)', '70406b73056eb11bc0c14dbc0d288246'),
+  ('erp.close_fiscal_year(uuid,integer,boolean)', 'c335614e86cadbd79c5c929739bbd1b9'),
   ('erp.close_month(uuid,boolean)', '57517566fe80507388516df0675147a6'),
   ('erp.closing_checklist(uuid,integer)', 'cf249dfafdec763b82a1eedb216e070f'),
+  ('erp.closing_equity_name(text)', '7cc0f441424da1c0123a33f50fcf4fd8'),
+  ('erp.closing_equity_target(text)', 'd9fbeb2e4047002ea4299f6f69327486'),
   ('erp.company_access(uuid)', '1618039de7501ec273b28b023e698f48'),
   ('erp.company_fingerprint(uuid)', '61f8a52138c375ecf1c037c1b234e86f'),
   ('erp.company_tax_type(uuid)', 'a3d91e4e0fa648637c3a1c773e841b5f'),
@@ -154,7 +156,7 @@ f(sig, hash) as (values
   ('erp.equity_reserves_to_capital(jsonb)', 'd924b5827ecba43b32142a9188a55d53'),
   ('erp.equity_save(uuid,text,text,date,text,jsonb,jsonb,uuid[])', '7ae790d20b081a9423b9a5221cdab77f'),
   ('erp.equity_start(uuid,date)', '2d498e28a7464b3e33f443fa0f931c74'),
-  ('erp.equity_statement(uuid,integer)', '3e4f17a99afecebc0657ca6a24bac044'),
+  ('erp.equity_statement(uuid,integer)', '9f65e725e1cf1234a03318d113f56c74'),
   ('erp.equity_statement_column(text)', '36efd6bf4f03c5a94913550b4c75e444'),
   ('erp.equity_statement_lines(uuid,integer)', '2f8e232a22c938f3d954160047dd43f5'),
   ('erp.equity_status(uuid,date)', '96d18318f628a1461dc47caa0e80bab0'),
@@ -384,7 +386,7 @@ f(sig, hash) as (values
   ('erp.work_period(uuid)', '6263e0d23141bd2a8d5a2e8211c4e02b'),
   ('erp.write_off_receivable(jsonb)', '6e03255e649268233e9707bfd141fe42'),
   ('erp.year_account_balances(uuid)', 'cf8aba8d6821e92e0b7818c3092732a7'),
-  ('erp.year_closing_preview(uuid,integer)', '3b177f8a388c02978318c1286b135ec1')),
+  ('erp.year_closing_preview(uuid,integer)', 'a82457a20fdd601ee947e6e34b691ded')),
 c(key) as (values ('debit'), ('credit'), ('doubleEntry'), ('entry'), ('draft'), ('posting'), ('reversal'), ('subaccount'), ('chart'), ('partner'), ('fiscalYear'), ('closing'), ('journal'), ('ledger'), ('trialBalance'), ('inverseBalance'), ('balance'), ('pyg'), ('equity'), ('cashflow'), ('ratio'), ('workingCapital'), ('depreciation'), ('vat'), ('igic'), ('inputTax'), ('outputTax'), ('taxBase'), ('invoice'), ('creditMemo'), ('settlement'), ('prorata'), ('reverseCharge'), ('surcharge'), ('withholding'), ('openItem'), ('aging'), ('controlledAccount'), ('controlMode'), ('auditCheck'), ('fixedAsset'), ('netBookValue'), ('deferral'), ('badDebt'), ('provision'), ('assetImpairment'), ('inventoryChange'), ('accrual'), ('payroll'), ('socialSecurity'), ('taxForm'), ('thirdPartyReturn'), ('exercise'), ('operationCatalog'), ('taxableBase'), ('temporaryDifference'), ('currentTax'), ('deferredTax'), ('legalReserve'), ('interimDividend'), ('sharePremium'), ('uncalledCapital'), ('amortizedCost'), ('effectiveRate'), ('financeLease'), ('debtMaturity'), ('capitalGrant'), ('refundableGrant'), ('groupsEightNine'), ('equityStatement')),
 k(code) as (values ('vat_input'), ('vat_output'), ('tax_forms_settlements'), ('tax_quota'), ('withholdings'), ('partners'), ('form347_missing_vat'), ('anomalies'), ('assets_ledger'), ('assets_pending'), ('adjustments_ledger'), ('accruals_unreversed'), ('impairments_collected'), ('provisions_ledger'), ('provisions_review'), ('inventory_ledger'), ('payroll_ledger'), ('financing_ledger'), ('tax_territory'), ('grants_ledger'), ('controlled'), ('sources_review')),
 s(key) as (values ('aeat303'), ('aeat347faq'), ('aeat390'), ('aeat390manual'), ('atc420'), ('atc425'), ('cotizacion2026'), ('ley20_1991'), ('lgss'), ('lirpf'), ('lis'), ('liva'), ('lsc'), ('pgc'), ('pgcmodelos'), ('pgcpymes'), ('rd1065'), ('rirpf'), ('riva')),
@@ -787,6 +789,8 @@ fg(sig, rol) as (values
   ('erp.close_fiscal_year(uuid,integer,boolean)', 'authenticated'),
   ('erp.close_month(uuid,boolean)', 'authenticated'),
   ('erp.closing_checklist(uuid,integer)', 'authenticated'),
+  ('erp.closing_equity_name(text)', 'authenticated'),
+  ('erp.closing_equity_target(text)', 'authenticated'),
   ('erp.company_access(uuid)', 'authenticated'),
   ('erp.company_fingerprint(uuid)', 'authenticated'),
   ('erp.company_tax_type(uuid)', 'authenticated'),
@@ -1019,6 +1023,7 @@ fg(sig, rol) as (values
   ('erp.write_off_receivable(jsonb)', 'authenticated'),
   ('erp.year_account_balances(uuid)', 'authenticated'),
   ('erp.year_closing_preview(uuid,integer)', 'authenticated')),
+bi(name, kind) as (values ('bi.demo_companies()', 'función'), ('bi.f_control_estados()', 'función'), ('bi.f_flujos()', 'función'), ('control_estados', 'vista'), ('dim_cuenta', 'vista'), ('dim_empresa', 'vista'), ('dim_fecha', 'vista'), ('dim_linea', 'vista'), ('dim_ratio', 'vista'), ('fact_apuntes', 'vista'), ('fact_flujos', 'vista'), ('fact_saldos_mes', 'vista'), ('puente_linea', 'vista')),
 mine as (select p.oid::regprocedure::text sig, md5(replace(p.prosrc, E'\r', '')) hash from pg_proc p where p.pronamespace = 'erp'::regnamespace),
 rel as (select c.relname from pg_class c where c.relnamespace = 'erp'::regnamespace and c.relkind in ('r', 'v', 'p'))
 select r.kind as tipo, r.name as nombre, 'falta' as problema from r where r.name not in (select relname from rel)
@@ -1068,4 +1073,43 @@ union all
 select 'seguridad', 'ejecutar ' || fg.sig || ' (' || fg.rol || ')', 'permiso de menos'
 from fg join mine m on m.sig = fg.sig
 where not has_function_privilege(fg.rol, fg.sig::regprocedure, 'execute')
+-- v0.60.8 (SEG-25) · nadie más entra en erp, nadie de la web entra en bi, y powerbi_reader solo lee bi
+union all
+select 'seguridad', 'el rol ' || r.rolname || ' entra en el esquema erp', 'no debe (solo authenticated y los roles del sistema)'
+from pg_roles r
+where has_schema_privilege(r.oid, 'erp', 'usage') and not r.rolsuper and not r.rolbypassrls
+  and r.rolname not in ('authenticated', 'service_role', 'postgres', 'supabase_admin', 'dashboard_user')
+  and r.rolname not like 'pg\_%' and r.rolname not like 'supabase\_%'
+  and r.oid <> (select nspowner from pg_namespace where nspname = 'erp')
+union all
+select 'seguridad', 'el rol ' || w.rol || ' entra en el esquema bi', 'no debe (solo powerbi_reader)'
+from (values ('anon'), ('authenticated')) w(rol)
+where to_regnamespace('bi') is not null and has_schema_privilege(w.rol, 'bi', 'usage')
+union all
+select 'seguridad', 'el esquema bi abierto a public', 'no debe'
+from pg_namespace n cross join lateral aclexplode(n.nspacl) a
+where n.nspname = 'bi' and a.grantee = 0 and a.privilege_type = 'USAGE'
+union all
+select 'seguridad', 'powerbi_reader: ' || x.what, 'no debe'
+from pg_roles r cross join lateral (values
+    ('superusuario', r.rolsuper), ('salta el RLS', r.rolbypassrls), ('crea roles', r.rolcreaterole),
+    ('es miembro de otro rol', exists (select 1 from pg_auth_members m where m.member = r.oid))) x(what, bad)
+where r.rolname = 'powerbi_reader' and x.bad
+union all
+select 'seguridad', 'bi: ' || bi.kind || ' ' || bi.name, 'falta, o powerbi_reader no la puede leer'
+from bi
+where bi.name is not null and exists (select 1 from pg_roles where rolname = 'powerbi_reader')
+  and not case bi.kind
+        when 'vista' then to_regclass('bi.' || quote_ident(bi.name)) is not null
+                          and has_table_privilege('powerbi_reader', to_regclass('bi.' || quote_ident(bi.name)), 'select')
+        else to_regprocedure(bi.name) is not null and has_function_privilege('powerbi_reader', to_regprocedure(bi.name), 'execute') end
+union all
+select 'seguridad', 'bi: ' || o.kind || ' ' || o.name || ' (anon o authenticated)', 'permiso de más'
+from (select c.relname as name, 'vista' as kind, c.oid as id, true as rel from pg_class c
+      where to_regnamespace('bi') is not null and c.relnamespace = to_regnamespace('bi') and c.relkind in ('v', 'r', 'm')
+      union all
+      select p.oid::regprocedure::text, 'función', p.oid, false from pg_proc p
+      where to_regnamespace('bi') is not null and p.pronamespace = to_regnamespace('bi')) o
+where case when o.rel then has_table_privilege('anon', o.id, 'select') or has_table_privilege('authenticated', o.id, 'select')
+           else has_function_privilege('anon', o.id, 'execute') or has_function_privilege('authenticated', o.id, 'execute') end
 order by 1, 2;

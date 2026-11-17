@@ -39,7 +39,7 @@ El objetivo es aprender a leerlos, no solo a calcularlos. Por eso cada ratio tie
 
 - El Modo auditor queda completo: importar → balance y PyG → flujos de efectivo → ratios.
 - Los ratios de los diarios de estudio enseñan cosas que no se ven en los estados financieros, por ejemplo:
-  - periodos de cobro por encima del máximo legal de 60 días;
+  - periodos de cobro por encima del máximo legal de 60 días (art. 4.3 de la Ley 3/2004);
   - beneficio que no llega a la caja;
   - empresas que ganan por rotación y no por margen.
 - **Limitaciones conocidas:**

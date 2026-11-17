@@ -250,7 +250,9 @@ export async function onRequestPost({ request, env }) {
     if (!/limit/i.test(quota.body?.message ?? '')) logError('ai_consume', quota.body?.message)
     return json({ error: /limit/i.test(quota.body?.message ?? '') ? 'ai_user_limit' : 'context_denied' }, 429)
   }
-  // v0.60.6 (H-079): si el modelo falla o no da una respuesta usable, la consulta se devuelve
+  // v0.60.6 (H-079): si el modelo falla, la consulta se devuelve.
+  // v0.60.8 (SEG-23): solo si el modelo no llegó a responder o la base no pudo validar la propuesta. Si el modelo
+  // respondió (aunque no en JSON), la consulta cuenta: el usuario recibe su texto. La base pone además un tope diario.
   const callId = quota.body?.call_id
   const giveBack = () => (callId ? rpc(env, auth, 'ai_refund', { p_call: callId }).catch(() => null) : null)
 
@@ -286,7 +288,6 @@ export async function onRequestPost({ request, env }) {
     proposal = parseProposal(answer)
     if (!proposal) {
       if (rounds === 0) { messages.push({ role: 'assistant', content: answer }, { role: 'user', content: REPAIR[language]('not valid JSON') }); continue }
-      await giveBack()
       return json({ error: 'ai_bad_answer', raw: answer.slice(0, 3000), model }, 502)
     }
     const v = await rpc(env, auth, 'validate_proposed_entry', {

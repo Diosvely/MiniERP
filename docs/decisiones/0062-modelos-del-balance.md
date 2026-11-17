@@ -111,8 +111,9 @@ Su próximo vídeo trata del Balance, y quería enseñar esa diferencia con el E
   El total del patrimonio neto no cambia. Migración 0093, con la prueba en la fase 82. El modelo de PYMES no cambia.
 - **Las cuentas de los subgrupos 80-82 y 90-92 entran en la plantilla del plan de cuentas,** para poder usarlas (antes
   un diario con una 900 no se podía importar).
-- **Limitación conocida:** el cierre del ERP regulariza los grupos 8 y 9 contra la 130; para 80-82 y 90-92 la
-  contrapartida sería la 133, la 1340 o la 135. Queda para auditoría fiscal.
+- ~~**Limitación conocida:** el cierre del ERP regulariza los grupos 8 y 9 contra la 130; para 80-82 y 90-92 la
+  contrapartida sería la 133, la 1340 o la 135. Queda para auditoría fiscal.~~ **Resuelta en la v0.60.8 (AF-16):** ver la
+  ADR 0044, «Actualización (v0.60.8)».
 
 ### Cómo explicarlo
 - **No todo el grupo 9 es una subvención.** Si unas acciones a valor razonable suben de valor, la ganancia todavía no

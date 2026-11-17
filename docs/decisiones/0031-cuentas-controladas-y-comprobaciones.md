@@ -60,8 +60,8 @@ auditor (`docs/cuentas-controladas.md`).
    - cuentas del PGC en el glosario, que también se busca por cuenta.
 
 ## Alternativas descartadas
-- **Solo avisar (sin modo estricto):** no enseña la disciplina de SAP/BC, que es justo lo que pide el mercado.
-- **Solo bloquear:** rompería la contabilidad importada y no enseña los cuadres de un auditor español.
+- **Solo avisar (sin modo estricto):** no enseña la disciplina del control antes de contabilizar (preventivo).
+- **Solo bloquear:** rompería la contabilidad importada y no enseña los cuadres del control después (posterior).
 - **Una marca por subcuenta** en `gl_accounts`: duplicaría la regla en cada empresa. Por prefijo y como datos se
   cambia en un sitio.
 - **La web lee el glosario de la base de datos:** habría que abrir la tabla a anónimos y esperar una consulta para

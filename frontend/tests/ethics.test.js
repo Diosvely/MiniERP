@@ -32,7 +32,9 @@ function repoFiles() {
 const FILES = repoFiles()
 
 export const NAMES = /\b(ContaSol|Sage|SAGE|A3ECO|ContaPlus|Versat|DELSOL)\b|\bA3\b(?!\))/
-export const CONTRAST = /ERPs? español(es)?|Spanish ERPs?|estilo español/i
+// v0.60.8 (H-57, H-64 y H-70): también «del mercado español», «auditor español», «lo que pide el mercado» y los
+// nombres de los asistentes de IA de los ERP comerciales
+export const CONTRAST = /ERPs? español(es)?|Spanish ERPs?|estilo español|ERPs? del mercado español|auditor español|pide el mercado|\bCopilot\b|\bJoule\b/i
 const ALLOWED = [/regla A3/i, /\(A3\)/, /PN\.A3/, /A-3\)/]
 
 const ALLOWED_G = ALLOWED.map((re) => new RegExp(re.source, re.flags + 'g'))   // compiladas una sola vez
@@ -52,6 +54,9 @@ describe('revisión ética: sin nombres de programas comerciales', () => {
   it('detecta un nombre y deja pasar las excepciones (regresión, regla A1)', () => {
     expect(offending('Fecha rápida como ContaSol')).toHaveLength(1)
     expect(offending('Guiado (como los ERP españoles)')).toHaveLength(1)
+    expect(offending('como en los ERP del mercado español')).toHaveLength(1)   // v0.60.8 (H-64)
+    expect(offending('los cuadres de un auditor español')).toHaveLength(1)     // v0.60.8 (H-57)
+    expect(offending('En BC el equivalente es Copilot')).toHaveLength(1)        // v0.60.8 (H-70)
     expect(offending("importSource: { sage: 'Diario en Excel' }")).toHaveLength(0)
     expect(offending('const rows = fromSage(sheet)')).toHaveLength(0)
     expect(offending('pendientes de validar (regla A3)')).toHaveLength(0)

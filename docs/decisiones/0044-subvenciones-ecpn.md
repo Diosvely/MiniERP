@@ -122,3 +122,32 @@ Las normas que se aplican son:
   serlo.
 - **En BC y SAP** no hay módulo estándar de subvenciones: se registran en el diario y el ECPN se monta con un informe.
   Aquí sale del diario solo, comprobado contra el balance.
+
+## Actualización (v0.60.8, 2026-11-17) · El cierre y el ECPN de los grupos 80-82 y 90-92
+
+- **AF-16 (auditoría fiscal):** al cerrar, cada cuenta de los grupos 8 y 9 se regulariza contra **su** cuenta del PGC
+  (5.ª parte, regla «al cierre del ejercicio» de cada cuenta), con `erp.closing_equity_target` (migración 0097):
+
+  | Cuentas | Contra |
+  |---|---|
+  | 800, 802, 900, 902 | 133 Ajustes por valoración en activos financieros a valor razonable con cambios en el patrimonio neto |
+  | 810, 812, 910, 912 | 1340 Cobertura de flujos de efectivo |
+  | 811, 813, 911, 913 | 1341 Cobertura de una inversión neta en un negocio en el extranjero |
+  | 82, 92 | 135 Diferencias de conversión |
+  | 84, 94 | 130, 131 o 132 (el mismo tercer dígito), como antes |
+  | 83 (efecto impositivo) | 130: criterio del ERP, porque la 83 solo la mueve el módulo de subvenciones, que usa la 130 |
+
+  Cualquier otra cuenta 8 o 9 con saldo (85, 86, 89, 95, 96, 99, que solo llegan en diarios importados) **no se
+  adivina**: la vista previa del cierre da el error `group_89_without_rule` y se regulariza a mano. La subcuenta 13x que
+  se crea lleva el nombre del PGC. Fuente: PGC (RD 1514/2007), 5.ª parte, grupos 8 y 9
+  (https://www.boe.es/eli/es/rd/2007/11/16/1514/con). Prueba: fase 60.
+- **AF-17:** la parte A del ECPN separa en B (imputados) la valoración (800, 900), las coberturas (810, 910) y las
+  diferencias de conversión (820, 920), y en C (transferencias) las suyas (802, 902; 812, 912; 821, 921). Antes las
+  transferencias salían como ingresos imputados. Las 811 y 911 siguen en «Otros» de B y las 813 y 913 en «Otras
+  transferencias» de C, hasta validar su línea. Fuente: PGC, 3.ª parte, y la tabla de equivalencias de la AEAT para el
+  modelo 200. Prueba: fase 60.
+
+### Cómo explicarlo
+- **Cada ajuste vuelve a su casa.** Lo que se gana o se pierde por valorar unas acciones a valor razonable se acumula en
+  la 133; lo de las coberturas, en la 134; lo de la conversión de moneda, en la 135; las subvenciones, en la 130. Si al
+  cerrar todo fuera a la 130, el Balance del año siguiente llamaría «subvención» a una plusvalía de unas acciones.

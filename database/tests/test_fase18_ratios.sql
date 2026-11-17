@@ -129,4 +129,13 @@ begin
   perform set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-0000000000a1', true);
 end $$;
 
+-- v0.60.8 (AF-22) · el plazo de pago en la ayuda de los ratios: Ley 3/2004 (30 días si no se pacta; nunca más de 60)
+do $$
+begin
+  assert (select bool_and(help like '%Ley 3/2004%' and help not like '%15/2010%' and help_en like '%3/2004%' and help_en not like '%15/2010%')
+          from erp.ratio_defs where code in ('DSO', 'DPO')), 'DSO y DPO citan la Ley 3/2004';
+  assert (select count(*) from erp.ratio_defs where code in ('DSO', 'DPO') and ref_max = 60) = 2, 'el umbral de 60 días se queda';
+  raise notice 'OK  · AF-22: la ayuda del plazo de pago cita el art. 4 de la Ley 3/2004';
+end $$;
+
 \echo '=========== TODAS LAS PRUEBAS DE LA FASE 18 (RATIOS FINANCIEROS) PASARON ==========='

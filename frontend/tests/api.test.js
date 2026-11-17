@@ -122,4 +122,19 @@ describe('cuota de IA cuando el modelo falla (v0.60.6, H-079)', () => {
     expect(r.status).toBe(502)
     expect(calls.find(([fn]) => fn === 'ai_refund')?.[1]).toBe(JSON.stringify({ p_call: 'c-2' }))
   })
+  // v0.60.8 (SEG-23): si el modelo respondió (aunque no en JSON), la consulta no se devuelve
+  it('el Tutor no la devuelve si el modelo respondió sin JSON', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    const calls = []
+    vi.spyOn(globalThis, 'fetch').mockImplementation(async (url, init) => {
+      calls.push([String(url).split('/rpc/')[1], init?.body])
+      if (String(url).endsWith('ai_consume')) return ok({ used: 1, call_id: 'c-3' })
+      return ok({ accounts: [] })
+    })
+    const chatty = { ...env, AI: { run: vi.fn().mockResolvedValue({ response: 'Te lo explico con palabras, sin JSON.' }) } }
+    const r = await tutor({ request: post({ company_id: UUID, text: 'Pago el alquiler del local' }), env: chatty })
+    expect(r.status).toBe(502)
+    expect((await r.json()).error).toBe('ai_bad_answer')
+    expect(calls.some(([fn]) => fn === 'ai_refund')).toBe(false)
+  })
 })

@@ -12,6 +12,10 @@ on:
   pull_request:
     branches: [main]
 
+# v0.60.8 (SEG-24): el token de la CI solo puede leer. Ningún paso escribe en el repositorio: prueba, compila y audita
+permissions:
+  contents: read
+
 jobs:
   database:
     name: Pruebas de la base de datos

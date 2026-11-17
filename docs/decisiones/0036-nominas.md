@@ -69,7 +69,7 @@ Los empleados son **ficticios**: no se guarda ni DNI ni IBAN ni ningún dato per
   aquí no se guardan a propósito.
 - **Incapacidad temporal, horas extra, embargos, atrasos y finiquitos:** fuera de alcance. El alta o la baja a mitad de
   mes se avisa y se prorratea a mano.
-- **Una nómina por empleado** en vez de una por mes: en el PGC lo habitual es un asiento por mes con el resumen de la
+- **Una nómina por empleado** en vez de una por mes: en la práctica lo habitual es un asiento por mes con el resumen de la
   nómina. Cada línea del asiento lleva el código del empleado.
 - **Pagar los seguros sociales en el mismo asiento:** se ingresan el mes siguiente, y la 476 a fin de año enseña lo que
   se debe a la Seguridad Social.

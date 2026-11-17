@@ -78,7 +78,7 @@ Las cuatro mejoras se anotan en un documento privado del proyecto (`mejoras-de-u
 - **El Debe es el primer sitio por defecto, no el lado que «toca».** El ERP no sabe si la línea siguiente es otro
   cargo (el IVA) o el abono que cuadra. Proponer es ayudar; decidir por ti sería un error.
 - **La IA a un lado, no encima.** El Tutor propone y el formulario decide: la propuesta solo llega a Nuevo asiento
-  cuando pulsas «Pasar al asiento», y nada se contabiliza sin revisarlo. En BC el equivalente es Copilot en un panel
-  lateral, y en SAP, Joule.
+  cuando pulsas «Pasar al asiento», y nada se contabiliza sin revisarlo. Es la misma idea que los asistentes de IA de
+  los ERP: un panel al lado que propone y no contabiliza.
 
 *Revisión ética (v0.60.1, 2026-11-08): se quitan los nombres de programas comerciales (ADR 0063). La decisión y sus consecuencias no cambian.*

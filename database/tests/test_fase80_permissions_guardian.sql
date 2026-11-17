@@ -634,6 +634,15 @@ begin
   e := public.falla('select * from erp.ai_calls');
   assert e like '%permission denied%', 'H-079: nadie lee los justificantes: ' || coalesce(e, 'los pudo leer');
   raise notice 'OK  · H-079: la consulta de IA se devuelve una vez si el modelo falla';
+
+  -- v0.60.8 (SEG-23) · como mucho 3 devoluciones por usuario y día (la primera ya la hizo H-079)
+  assert erp.ai_refund((erp.ai_consume(z)->>'call_id')::uuid), 'SEG-23: la segunda del día';
+  assert erp.ai_refund((erp.ai_consume(z)->>'call_id')::uuid), 'SEG-23: la tercera del día';
+  c := (erp.ai_consume(z)->>'call_id')::uuid;
+  antes := (select calls from erp.ai_usage where user_id = auth.uid() and used_on = current_date);
+  assert not erp.ai_refund(c), 'SEG-23: la cuarta del día no se devuelve';
+  assert (select calls from erp.ai_usage where user_id = auth.uid() and used_on = current_date) = antes, 'SEG-23: la cuota no baja';
+  raise notice 'OK  · SEG-23: como mucho 3 consultas de IA devueltas por usuario y día';
 end $$;
 reset role;
 select set_config('request.jwt.claim.sub', '', false) \gset

@@ -69,9 +69,16 @@ export const balanced = (lines) => lines.reduce((s, l) => s + Math.round(l.debit
 
 // ---------- ECPN ----------
 // Parte A: [{ key, amount, level }] en el orden del modelo del PGC (las de nivel 0 son totales)
-export const PART_A = [['result', 0], ['b_grants', 1], ['b_tax', 1], ['b_other', 1], ['b_total', 0], ['c_grants', 1], ['c_tax', 1], ['c_total', 0], ['total', 0]]
+// v0.60.8 (AF-17): valoración, coberturas y diferencias de conversión, imputadas (B) y transferidas (C). Las líneas que
+// solo tienen las empresas con grupos 80-82 y 90-92 se enseñan si tienen importe
+export const PART_A = [['result', 0],
+  ['b_valuation', 1], ['b_hedges', 1], ['b_grants', 1], ['b_translation', 1], ['b_tax', 1], ['b_other', 1], ['b_total', 0],
+  ['c_valuation', 1], ['c_hedges', 1], ['c_grants', 1], ['c_translation', 1], ['c_tax', 1], ['c_other', 1], ['c_total', 0],
+  ['total', 0]]
+export const PART_A_OPTIONAL = ['b_valuation', 'b_hedges', 'b_translation', 'b_other', 'c_valuation', 'c_hedges', 'c_translation', 'c_other']
 export function partA(a = {}) {
-  return PART_A.filter(([k]) => k !== 'b_other' || Number(a.b_other)).map(([key, level]) => ({ key, level, amount: Number(a[key] ?? 0) }))
+  return PART_A.filter(([k]) => !PART_A_OPTIONAL.includes(k) || Number(a[k]))
+    .map(([key, level]) => ({ key, level, amount: Number(a[key] ?? 0) }))
 }
 
 // Parte B: filas (saldo inicial, ingresos y gastos reconocidos, operaciones con socios, otras variaciones, saldo final)

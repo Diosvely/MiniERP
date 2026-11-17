@@ -7,6 +7,8 @@
 --       43.500; parte B: capital 60.000 · reservas 18.000 · resultado 30.000 · subvenciones 13.500 = 121.500, igual que
 --       el balance
 --   El cierre de 2026 regulariza los grupos 8 y 9 contra la 130 (13.500) y la apertura de 2027 la lleva
+--   v0.60.8 (AF-16 y AF-17): 900 → 133, 810 → 1340, 920 → 135 al cerrar; una 950 sin regla es un error; el ECPN separa
+--   valoración, coberturas y conversión en B (imputadas) y en C (transferencias)
 --   S1b con la baja desde Inmovilizado: lo que queda pasa a resultados; al anular la baja, se deshace
 -- =====================================================================
 \set ON_ERROR_STOP 1
@@ -16,6 +18,10 @@ insert into auth.users (id, email) values ('00000000-0000-0000-0000-0000000000a1
                                           ('00000000-0000-0000-0000-0000000000b2', 'otro@test.local');
 insert into erp.app_profiles (user_id, app_role, max_companies) values ('00000000-0000-0000-0000-0000000000a1', 'owner', null);
 create table public.ctx (k text primary key, e uuid);
+-- v0.60.8 (AF-16): una cuenta 9 que el PGC tiene pero la plantilla no (llegaría en un diario importado), para la prueba
+insert into erp.coa_template (account_no, name, name_en, account_category) values
+  ('95', 'Ingresos por activos no corrientes en venta', 'Income from non-current assets held for sale', 'equity'),
+  ('950', 'Ganancias en activos no corrientes y grupos enajenables de elementos mantenidos para la venta', 'Gains on non-current assets held for sale', 'equity');
 grant all on public.ctx to authenticated;
 
 create or replace function public.falla(sql text, texto text) returns boolean language plpgsql as $$
@@ -187,6 +193,60 @@ begin
   x := erp.equity_statement(e, 2026);
   assert (x->>'start')::numeric = 0 and (x->'part_b'->'other'->>'capital')::numeric = 3000 and (x->>'end')::numeric = 3000 and (x->>'ok')::boolean, 'ECPN sencillo: ' || x::text;
   raise notice 'OK  · sin subvenciones el paso no aplica; el ECPN de una empresa sin grupos 8 y 9 también cuadra';
+end $$;
+
+-- ---------- v0.60.8 · AF-16: el cierre lleva cada cuenta 8 y 9 a su cuenta del PGC ----------
+do $$
+declare e uuid := public.empresa('Grupos 8 y 9 SL'); r record; c uuid; p jsonb;
+  t text;
+begin
+  perform erp.set_control_mode(e, 'guided');
+  perform public.manual(e, '2026-03-01', '[["25000001", 1000, 0], ["90000001", 0, 1000]]');   -- valoración: 133
+  perform public.manual(e, '2026-03-02', '[["81000001", 300, 0], ["57200001", 0, 300]]');     -- cobertura: 1340
+  perform public.manual(e, '2026-03-03', '[["57200001", 200, 0], ["92000001", 0, 200]]');     -- conversión: 135
+  perform public.manual(e, '2026-03-04', '[["47080001", 5000, 0], ["94000001", 0, 5000]]');   -- subvención: 130
+  perform public.manual(e, '2026-03-05', '[["83010001", 1250, 0], ["47900001", 0, 1250]]');   -- efecto impositivo: 130
+  select * into r from erp.close_fiscal_year(e, 2026, true);
+  c := (select closing_pl_entry_id from erp.year_closings where company_id = e and year = 2026 and status = 'posted');
+  select string_agg(g.account_no || case when l.debit <> 0 then ' D ' || l.debit else ' H ' || l.credit end, ' | ' order by g.account_no)
+    into t from erp.journal_lines l join erp.gl_accounts g on g.id = l.gl_account_id where l.entry_id = c and g.account_no like '13%';
+  assert t = '13000001 H 3750.00 | 13300001 H 1000.00 | 13400001 D 300.00 | 13500001 H 200.00', 'regularización: ' || coalesce(t, '∅');
+  assert (select name from erp.gl_accounts where company_id = e and account_no = '13400001') = 'Cobertura de flujos de efectivo'
+     and (select name from erp.gl_accounts where company_id = e and account_no = '13500001') = 'Diferencias de conversión'
+     and (select name from erp.gl_accounts where company_id = e and account_no = '13300001') like 'Ajustes por valoración en activos financieros a valor razonable%',
+     'las subcuentas nuevas, con el nombre del PGC';
+  assert (select amount from erp.fs_model_amounts(e, 2027, 'normal', '2027-01-01') where code = 'PN.A2.I') = 1000
+     and (select amount from erp.fs_model_amounts(e, 2027, 'normal', '2027-01-01') where code = 'PN.A2.II') = -300
+     and (select amount from erp.fs_model_amounts(e, 2027, 'normal', '2027-01-01') where code = 'PN.A2.III') = 200
+     and (select amount from erp.fs_model_amounts(e, 2027, 'normal', '2027-01-01') where code = 'PN.A3') = 3750,
+     'después de la apertura: A-2 (I 1.000, II −300, III 200) y A-3 3.750';
+  -- Una cuenta 9 sin regla: no se adivina
+  perform public.manual(e, '2027-02-01', '[["57200001", 400, 0], ["95000001", 0, 400]]');
+  p := erp.year_closing_preview(e, 2027);
+  assert exists (select 1 from jsonb_array_elements(p->'checks') x where x->>'code' = 'group_89_without_rule' and x->>'severity' = 'error'
+                 and x->>'detail' = '95000001') and not (p->>'can_close')::boolean, 'una 950 con saldo impide cerrar';
+  raise notice 'OK  · AF-16: 900 → 133, 810 → 1340, 920 → 135, 940 y 8301 → 130; una 950 sin regla, error';
+end $$;
+
+-- ---------- v0.60.8 · AF-17: el ECPN separa valoración, coberturas y conversión, imputadas y transferidas ----------
+do $$
+declare e uuid := public.empresa('ECPN grupos 8 y 9 SL'); x jsonb; a jsonb;
+begin
+  perform erp.set_control_mode(e, 'guided');
+  perform public.manual(e, '2026-04-01', '[["25000001", 1000, 0], ["90000001", 0, 1000]]');
+  perform public.manual(e, '2026-04-02', '[["90200001", 200, 0], ["25000001", 0, 200]]');
+  perform public.manual(e, '2026-04-03', '[["81000001", 300, 0], ["57200001", 0, 300]]');
+  perform public.manual(e, '2026-04-04', '[["57200001", 100, 0], ["81200001", 0, 100]]');
+  perform public.manual(e, '2026-04-05', '[["57200001", 200, 0], ["92000001", 0, 200]]');
+  perform public.manual(e, '2026-04-06', '[["92100001", 50, 0], ["57200001", 0, 50]]');
+  x := erp.equity_statement(e, 2026); a := x->'part_a';
+  assert (a->>'b_valuation')::numeric = 1000 and (a->>'b_hedges')::numeric = -300 and (a->>'b_translation')::numeric = 200
+     and (a->>'b_other')::numeric = 0, 'B: valoración 1.000, coberturas −300, conversión 200: ' || a::text;
+  assert (a->>'c_valuation')::numeric = -200 and (a->>'c_hedges')::numeric = 100 and (a->>'c_translation')::numeric = -50
+     and (a->>'c_other')::numeric = 0, 'C: valoración −200, coberturas 100, conversión −50: ' || a::text;
+  assert (a->>'b_total')::numeric = 900 and (a->>'c_total')::numeric = -150 and (a->>'total')::numeric = 750, 'totales';
+  assert (x->>'ok')::boolean, 'el ECPN sigue cuadrando: ' || x::text;
+  raise notice 'OK  · AF-17: las transferencias (802, 812, 821, 902, 912, 921) van a C y no a B';
 end $$;
 
 -- ---------- Seguridad ----------

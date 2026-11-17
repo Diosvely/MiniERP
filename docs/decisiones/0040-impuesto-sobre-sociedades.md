@@ -69,10 +69,9 @@ El impuesto se calcula con dos normas:
   (grupo, entidad patrimonial) que el ERP no conoce. Se sugiere y se avisa, pero decide la persona.
 - **Registrar siempre el crédito por bases negativas.** Contradice la NRV 13.ª. La probabilidad de recuperarlo es un
   juicio que tiene que hacer quien firma las cuentas.
-- **Un solo asiento** que mezcle corriente y diferido. Se ven peor las dos piezas del gasto que pide la NRV 13.ª, y
-  BC y SAP también las separan.
-- **Controlar también la 4752 y la 473.** Obligaría a pagar a Hacienda desde esta pantalla. En la práctica se paga con
-  un asiento de banco, como en los ERP del mercado español.
+- **Un solo asiento** que mezcle corriente y diferido. Se ven peor las dos piezas del gasto que pide la NRV 13.ª.
+- **Controlar también la 4752 y la 473.** Obligaría a pagar a Hacienda desde esta pantalla. En la práctica, el pago a Hacienda y
+  los pagos fraccionados se registran con un asiento de banco.
 - **La RIC y la ZEC** (fiscalidad canaria). Se dejan para un bloque propio, porque tienen sus propias reglas y sus
   propios ajustes.
 
@@ -80,8 +79,8 @@ El impuesto se calcula con dos normas:
 - El cierre ya da el **resultado después de impuestos**, y el modo estricto no deja cerrar sin el impuesto.
 - **Limitaciones conocidas:**
   - Las diferencias temporarias y el crédito se valoran al **tipo marginal del propio ejercicio**. La NRV 13.ª pide
-    el tipo esperado cuando reviertan. Es lo mismo mientras el tipo no cambie, pero en reducida dimensión y en
-    microempresa el tipo baja cada año hasta 2029, y ahí la cifra es aproximada.
+    el tipo esperado cuando reviertan. Es lo mismo mientras el tipo no cambie, pero el tipo baja cada año: en
+    reducida dimensión hasta 2029 y en microempresa hasta 2027. Ahí la cifra es aproximada.
   - No hay deducciones en cuota (I+D, empleo…), ni pagos fraccionados calculados (modelo 202), ni la reserva de
     capitalización (art. 25), ni la RIC o la ZEC.
   - Las diferencias permanentes que el ERP no conoce se añaden a mano.
@@ -108,9 +107,7 @@ El impuesto se calcula con dos normas:
   revierte. Así el gasto del año queda proporcionado al resultado contable.
 - **El crédito por pérdidas es un juicio.** Una pérdida da derecho a pagar menos en el futuro. Solo es un activo
   (4745) si es probable que haya beneficios con los que usarlo. Por eso la casilla empieza desmarcada.
-- **Business Central y SAP** no calculan el impuesto de sociedades: el asiento lo prepara el asesor fiscal y se
-  registra a mano (BC, diario general; SAP, con la herramienta de impuestos diferidos o un asiento manual). Aquí se
-  calcula para aprender de dónde sale cada cifra.
+- Aquí se calcula para aprender de dónde sale cada cifra.
 
 ## Actualización (v0.60.2, 2026-11-09)
 

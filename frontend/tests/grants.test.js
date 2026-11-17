@@ -55,6 +55,13 @@ describe('ECPN · supuesto S4', () => {
     expect(partA(data.part_a).map((r) => `${r.key}:${r.amount}`).join(' '))
       .toBe('result:30000 b_grants:20000 b_tax:-5000 b_total:15000 c_grants:-2000 c_tax:500 c_total:-1500 total:43500')
   })
+  // v0.60.8 (AF-17): con grupos 80-82 y 90-92, valoración, coberturas y conversión, en B (imputadas) y en C (transferidas)
+  it('parte A con grupos 8 y 9: las transferencias van a C', () => {
+    const a = { result: 0, b_valuation: 1000, b_hedges: -300, b_translation: 200, b_grants: 0, b_tax: 0, b_other: 0, b_total: 900,
+      c_valuation: -200, c_hedges: 100, c_translation: -50, c_grants: 0, c_tax: 0, c_other: 0, c_total: -150, total: 750 }
+    expect(partA(a).map((r) => `${r.key}:${r.amount}`).join(' ')).toBe('result:0 b_valuation:1000 b_hedges:-300 b_grants:0 '
+      + 'b_translation:200 b_tax:0 b_total:900 c_valuation:-200 c_hedges:100 c_grants:0 c_translation:-50 c_tax:0 c_total:-150 total:750')
+  })
   it('parte B: 78.000 → 121.500 por columnas', () => {
     const { cols, rows } = partB(data)
     expect(cols).toEqual(['capital', 'reserves', 'result', 'grants'])
@@ -75,7 +82,7 @@ describe('subvenciones y ECPN · textos', () => {
   })
   it('cada cuenta del asiento y cada fila y columna del ECPN tienen su nombre', () => {
     for (const k of ['4708', '47089', '940', '740', '522', '172', '8301', '479', '840', '746', '572']) expect(es.gr.account[k], k).toBeTruthy()
-    for (const k of ['result', 'b_grants', 'b_tax', 'b_other', 'b_total', 'c_grants', 'c_tax', 'c_total', 'total']) expect(es.ecpn.a[k], k).toBeTruthy()
+    for (const k of ['result', 'b_valuation', 'b_hedges', 'b_grants', 'b_translation', 'b_tax', 'b_other', 'b_total', 'c_valuation', 'c_hedges', 'c_grants', 'c_translation', 'c_tax', 'c_other', 'c_total', 'total']) expect(es.ecpn.a[k], k).toBeTruthy()
     for (const k of ['start', 'recognised', 'owners', 'other', 'end']) expect(es.ecpn.row[k], k).toBeTruthy()
     for (const k of ['capital', 'premium', 'reserves', 'prior_results', 'result', 'interim', 'grants']) expect(es.ecpn.col[k], k).toBeTruthy()
   })

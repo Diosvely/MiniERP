@@ -2,6 +2,29 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.60.8] - 2026-11-17
+### Corregido
+- **Cierre de los grupos 8 y 9** (AF-16 de auditoría fiscal, migración 0097): cada cuenta se regulariza contra su cuenta
+  del PGC (800/802/900/902 → 133; 810/812/910/912 → 1340; 811/813/911/913 → 1341; 82/92 → 135; 84/94 → 130-132), con el
+  nombre del PGC. Una cuenta 8 o 9 sin regla es un error que impide cerrar (se regulariza a mano). Las cuentas 133, 134,
+  1340, 1341 y 135 entran en la plantilla del plan de cuentas.
+- **ECPN, parte A** (AF-17): valoración, coberturas y diferencias de conversión, imputadas (B) y transferidas (C). Antes
+  las transferencias salían como ingresos imputados.
+- **Plazo de pago** (AF-21 a AF-23, H-26): 30 días si no se pacta otro y nunca más de 60 (art. 4 de la Ley 3/2004, en la
+  redacción de la Ley 11/2013), en la ayuda de los ratios, la bitácora y las ADR 0018 y 0054.
+- **Textos:** la ayuda del reparto del resultado con el orden de la LSC (H-56); «NIF / NIE» (H-60); la nota del banco
+  acreedor, «descubierto (520) o póliza de crédito (5201)» (H-66); frases de las ADR 0028, 0029, 0031, 0036, 0039, 0040
+  y 0041 sin comparaciones con programas comerciales ni afirmaciones sin fuente (H-57, H-58, H-61, H-62, H-64, H-65,
+  H-69, H-70); README (H-67, H-68).
+### Seguridad
+- La consulta de IA del Tutor solo se devuelve si el modelo no llegó a responder o la base no pudo validar la propuesta,
+  y como mucho 3 veces por usuario y día (SEG-23).
+- La integración continua funciona con permisos de solo lectura (SEG-24).
+- El diagnóstico de Supabase vigila también el puente de Power BI (SEG-25).
+### Pruebas
+- Fases 60 (cierre de los grupos 8 y 9 y ECPN), 18, 80, 1 y 2; la prueba del diagnóstico con dos casos nuevos; la prueba
+  ética detecta más expresiones; 360 tests de la web.
+
 ## [0.60.7] - 2026-11-16
 ### Añadido
 - **Balance «comparado con el compensado»** (migración 0096, ADR 0064): en el Balance, «Comparar con» el ejercicio

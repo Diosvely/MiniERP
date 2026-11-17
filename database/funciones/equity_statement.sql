@@ -1,6 +1,6 @@
 -- =====================================================================
 -- erp.equity_statement · versión vigente (GENERADO por scripts/volcar-funciones.sh: no editar)
--- Definida en: 0065_grants_integration   →   la vigente es la de 0065_grants_integration
+-- Definida en: 0065_grants_integration 0097_closing_ecpn_and_fixes   →   la vigente es la de 0097_closing_ecpn_and_fixes
 -- =====================================================================
 
 CREATE OR REPLACE FUNCTION erp.equity_statement(p_company uuid, p_year integer)
@@ -30,13 +30,23 @@ begin
     'result', coalesce(sum(amount) filter (where account_no ~ '^[67]'), 0),
     'b_grants', coalesce(sum(amount) filter (where account_no ~ '^94'), 0),
     'b_tax', coalesce(sum(amount) filter (where account_no ~ '^83' and (gk in ('concession', 'unconditional') or (gk is null and amount < 0))), 0),
-    'b_other', coalesce(sum(amount) filter (where account_no ~ '^[89]' and account_no !~ '^(94|84|83)'), 0),
+    -- v0.60.8 (AF-17): valoración, coberturas y diferencias de conversión, imputadas (B) y transferidas (C)
+    'b_valuation', coalesce(sum(amount) filter (where account_no ~ '^(800|900)'), 0),
+    'b_hedges', coalesce(sum(amount) filter (where account_no ~ '^(810|910)'), 0),
+    'b_translation', coalesce(sum(amount) filter (where account_no ~ '^(820|920)'), 0),
+    'b_other', coalesce(sum(amount) filter (where account_no ~ '^[89]' and account_no !~ '^(94|84|83|800|900|810|910|820|920|802|902|812|912|821|921|813|913)'), 0),
+    'c_valuation', coalesce(sum(amount) filter (where account_no ~ '^(802|902)'), 0),
+    'c_hedges', coalesce(sum(amount) filter (where account_no ~ '^(812|912)'), 0),
+    'c_translation', coalesce(sum(amount) filter (where account_no ~ '^(821|921)'), 0),
+    'c_other', coalesce(sum(amount) filter (where account_no ~ '^(813|913)'), 0),
     'c_grants', coalesce(sum(amount) filter (where account_no ~ '^84'), 0),
     'c_tax', coalesce(sum(amount) filter (where account_no ~ '^83' and (gk in ('imputation', 'disposal') or (gk is null and amount > 0))), 0))
   into a from l;
   a := a || jsonb_build_object(
-    'b_total', (a->>'b_grants')::numeric + (a->>'b_tax')::numeric + (a->>'b_other')::numeric,
-    'c_total', (a->>'c_grants')::numeric + (a->>'c_tax')::numeric);
+    'b_total', (a->>'b_valuation')::numeric + (a->>'b_hedges')::numeric + (a->>'b_grants')::numeric
+             + (a->>'b_translation')::numeric + (a->>'b_tax')::numeric + (a->>'b_other')::numeric,
+    'c_total', (a->>'c_valuation')::numeric + (a->>'c_hedges')::numeric + (a->>'c_grants')::numeric
+             + (a->>'c_translation')::numeric + (a->>'c_tax')::numeric + (a->>'c_other')::numeric);
   a := a || jsonb_build_object('total', (a->>'result')::numeric + (a->>'b_total')::numeric + (a->>'c_total')::numeric);
 
   -- Parte B: estado total, por columnas

@@ -64,5 +64,5 @@ En una herramienta para aprender, un corrector que aprueba un error enseña ese 
   llegado al cierre (devengo). Cuando llega la factura, la deuda pasa a la 400.
 - Por eso el corrector mira el significado, no solo los primeros dígitos. La 40000001 es una subcuenta de la 400;
   la 40090001 es una subcuenta de la 4009.
-- Business Central y SAP no tienen este problema porque no adivinan la cuenta: la eligen los *posting groups* (BC) o
-  la determinación de cuentas (SAP), y la cuenta de «facturas pendientes» es una cuenta aparte en su configuración.
+- En un ERP, la cuenta la eligen unas reglas de configuración (los *posting groups* de BC o la determinación de cuentas
+  de SAP, por ejemplo), y la de «facturas pendientes» es una cuenta aparte.

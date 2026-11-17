@@ -54,6 +54,13 @@ tgr=$(q "select string_agg(format('(%L, %L, %L)', c.relname, r.rol, x.privs), E'
 fgr=$(q "select string_agg(format('(%L, %L)', p.oid::regprocedure::text, r.rol), E',\n  ' order by p.oid::regprocedure::text collate \"C\", r.rol)
          from pg_proc p cross join (values ('anon'), ('authenticated')) r(rol)
          where p.pronamespace = 'erp'::regnamespace and has_function_privilege(r.rol, p.oid, 'execute')")
+# v0.60.8 (SEG-25) · el puente de Power BI: las vistas y funciones del esquema bi (las lee solo powerbi_reader)
+bis=$(q "select coalesce(string_agg(format('(%L, %L)', x.name, x.kind), ', ' order by x.name collate \"C\"), '(null, null)') from (
+           select c.relname as name, 'vista' as kind from pg_class c
+           where to_regnamespace('bi') is not null and c.relnamespace = to_regnamespace('bi') and c.relkind in ('v', 'r', 'm')
+           union all
+           select p.oid::regprocedure::text, 'función' from pg_proc p
+           where to_regnamespace('bi') is not null and p.pronamespace = to_regnamespace('bi')) x")
 
 cat > "$out" <<SQL
 -- =====================================================================
@@ -78,6 +85,7 @@ tg(tbl, rol, privs) as (values
   ${tgr}),
 fg(sig, rol) as (values
   ${fgr}),
+bi(name, kind) as (values ${bis}),
 mine as (select p.oid::regprocedure::text sig, md5(replace(p.prosrc, E'\\r', '')) hash from pg_proc p where p.pronamespace = 'erp'::regnamespace),
 rel as (select c.relname from pg_class c where c.relnamespace = 'erp'::regnamespace and c.relkind in ('r', 'v', 'p'))
 select r.kind as tipo, r.name as nombre, 'falta' as problema from r where r.name not in (select relname from rel)
@@ -127,6 +135,45 @@ union all
 select 'seguridad', 'ejecutar ' || fg.sig || ' (' || fg.rol || ')', 'permiso de menos'
 from fg join mine m on m.sig = fg.sig
 where not has_function_privilege(fg.rol, fg.sig::regprocedure, 'execute')
+-- v0.60.8 (SEG-25) · nadie más entra en erp, nadie de la web entra en bi, y powerbi_reader solo lee bi
+union all
+select 'seguridad', 'el rol ' || r.rolname || ' entra en el esquema erp', 'no debe (solo authenticated y los roles del sistema)'
+from pg_roles r
+where has_schema_privilege(r.oid, 'erp', 'usage') and not r.rolsuper and not r.rolbypassrls
+  and r.rolname not in ('authenticated', 'service_role', 'postgres', 'supabase_admin', 'dashboard_user')
+  and r.rolname not like 'pg\\_%' and r.rolname not like 'supabase\\_%'
+  and r.oid <> (select nspowner from pg_namespace where nspname = 'erp')
+union all
+select 'seguridad', 'el rol ' || w.rol || ' entra en el esquema bi', 'no debe (solo powerbi_reader)'
+from (values ('anon'), ('authenticated')) w(rol)
+where to_regnamespace('bi') is not null and has_schema_privilege(w.rol, 'bi', 'usage')
+union all
+select 'seguridad', 'el esquema bi abierto a public', 'no debe'
+from pg_namespace n cross join lateral aclexplode(n.nspacl) a
+where n.nspname = 'bi' and a.grantee = 0 and a.privilege_type = 'USAGE'
+union all
+select 'seguridad', 'powerbi_reader: ' || x.what, 'no debe'
+from pg_roles r cross join lateral (values
+    ('superusuario', r.rolsuper), ('salta el RLS', r.rolbypassrls), ('crea roles', r.rolcreaterole),
+    ('es miembro de otro rol', exists (select 1 from pg_auth_members m where m.member = r.oid))) x(what, bad)
+where r.rolname = 'powerbi_reader' and x.bad
+union all
+select 'seguridad', 'bi: ' || bi.kind || ' ' || bi.name, 'falta, o powerbi_reader no la puede leer'
+from bi
+where bi.name is not null and exists (select 1 from pg_roles where rolname = 'powerbi_reader')
+  and not case bi.kind
+        when 'vista' then to_regclass('bi.' || quote_ident(bi.name)) is not null
+                          and has_table_privilege('powerbi_reader', to_regclass('bi.' || quote_ident(bi.name)), 'select')
+        else to_regprocedure(bi.name) is not null and has_function_privilege('powerbi_reader', to_regprocedure(bi.name), 'execute') end
+union all
+select 'seguridad', 'bi: ' || o.kind || ' ' || o.name || ' (anon o authenticated)', 'permiso de más'
+from (select c.relname as name, 'vista' as kind, c.oid as id, true as rel from pg_class c
+      where to_regnamespace('bi') is not null and c.relnamespace = to_regnamespace('bi') and c.relkind in ('v', 'r', 'm')
+      union all
+      select p.oid::regprocedure::text, 'función', p.oid, false from pg_proc p
+      where to_regnamespace('bi') is not null and p.pronamespace = to_regnamespace('bi')) o
+where case when o.rel then has_table_privilege('anon', o.id, 'select') or has_table_privilege('authenticated', o.id, 'select')
+           else has_function_privilege('anon', o.id, 'execute') or has_function_privilege('authenticated', o.id, 'execute') end
 order by 1, 2;
 SQL
 echo "✔ ${out}: $(echo "$fns" | wc -l) funciones, $(echo "$rels" | grep -o "'tabla'\|'vista'" | wc -l) tablas y vistas (migraciones hasta ${last})"

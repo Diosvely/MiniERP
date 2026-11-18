@@ -51,7 +51,7 @@ española y el funcionamiento real de un ERP. Los ERP comerciales son caros y di
 propia, así que decidí **construir uno**. Diseñar la tabla de asientos obliga a entender *por qué* un ERP impone
 cada regla. Además, todo el código está en inglés para practicar el vocabulario técnico de BC y SAP.
 
-## ¿Qué hace hoy? (v0.60.9)
+## ¿Qué hace hoy? (v0.60.10)
 
 **Primeros pasos y navegación**
 - **Pantalla de Inicio** en cada empresa:
@@ -349,7 +349,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 ├── scripts/generar-diagnostico.sh  genera database/diagnostico-supabase.sql (¿le falta algo a tu Supabase?)
 ├── scripts/generar-permisos.mjs    genera docs/permisos.md desde la prueba de permisos (fase 79)
 ├── database/
-│   ├── migrations/            0001 → 0098, se ejecutan en orden en Supabase
+│   ├── migrations/            0001 → 0099, se ejecutan en orden en Supabase
 │   ├── funciones/             versión vigente de cada función, para estudiarla (generado)
 │   ├── diagnostico-supabase.sql  consulta de solo lectura: qué le falta a tu Supabase (generado)
 │   ├── reset/                 reset del schema antiguo (solo histórico)
@@ -393,7 +393,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
     ├── seguridad-supabase.md  lista de ajustes de seguridad del panel de Supabase
     ├── powerbi/GUIA.md        guía para conectar Power BI al esquema bi
     ├── capturas/              capturas de la app para el README
-    └── decisiones/            ADR 0001 → 0064
+    └── decisiones/            ADR 0001 → 0065
 ```
 
 ## Calidad
@@ -565,6 +565,7 @@ cuadrados. El ERP también lee directamente los diarios en Excel y los de Busine
 - [x] **v0.60.6**: operaciones societarias según la LSC (reparto con pérdidas, reducción de capital, art. 326), ajustes de la empresa y meses protegidos, cuota de IA devuelta si falla
 - [x] **v0.60.7**: el Balance «comparado con el compensado» (lo que esconde y sus ratios), el menú «Auditorías» con el tablero «Saldos al revés» y la caja en negativo en el activo, restando en la tesorería
 - [x] **v0.60.8**: correcciones de la etapa: el cierre de los grupos 8 y 9 contra su cuenta del PGC (133, 1340, 1341, 135), el ECPN con las transferencias en su sitio, el plazo de pago de la Ley 3/2004, textos y seguridad
+- [x] **v0.60.10**: partidas específicas del Balance de la norma 6.ª (diferencia de conversión y deuda con características especiales), cuentas con apuntes protegidas, el diagnóstico avisa de roles que saltan el RLS y la guía de Power BI corregida
 - [x] **v0.60.9**: cierre de la etapa de correcciones: la cifra de negocios de un año corto se eleva al año para sugerir el régimen del Impuesto sobre Sociedades, el aviso del primer período impositivo, la portada «Un laboratorio para aprender contabilidad española» y textos revisados contra la norma
 - [ ] Más botones en la barra superior
 - [ ] Ontología contable y chat con la IA (consulta, nunca calcula)

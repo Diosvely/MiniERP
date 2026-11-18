@@ -2,6 +2,20 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.60.10] - 2026-11-18
+### Corregido
+- **Partidas específicas del Balance** (AF-35, migración 0099, ADR 0065): «Diferencia de conversión» en A-2 (135, y 82/92
+  antes del cierre) y «Deuda con características especiales» a largo (15) y a corto plazo (502, 507), como manda la norma
+  6.ª de elaboración de las cuentas anuales (6.ª.14 y 6.ª.17). La 1341 va a «Operaciones de cobertura». Modelos normal y
+  abreviado; PYMES no cambia; ningún total cambia.
+- **Cuentas protegidas** (SEG-28): la empresa de una cuenta no cambia; su número y su tipo, solo si no tiene apuntes.
+- **Diagnóstico de Supabase** (SEG-26): avisa de un rol que salta el RLS (superusuario o bypassrls) y entra en `erp`.
+- **Power BI** (M-03 y M-04): `bi.dim_linea.orden_informe` con los totales al final; la guía, con las siete correcciones
+  del ensayo en Power BI Desktop.
+- **ADR 0051** (AF-34): sin la comparación con programas comerciales que quedaba.
+### Pruebas
+- Fases 60, 67, 80 y 82; prueba del diagnóstico (SEG-26).
+
 ## [0.60.9] - 2026-11-18
 ### Corregido
 - **Régimen sugerido del Impuesto sobre Sociedades** (AF-27, migración 0098): si el período del año anterior duró menos

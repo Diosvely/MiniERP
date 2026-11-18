@@ -1,5 +1,5 @@
 -- =====================================================================
--- DIAGNÓSTICO DE SUPABASE · migraciones 0001 … 0098 (GENERADO por scripts/generar-diagnostico.sh: no editar)
+-- DIAGNÓSTICO DE SUPABASE · migraciones 0001 … 0099 (GENERADO por scripts/generar-diagnostico.sh: no editar)
 -- ---------------------------------------------------------------------
 -- Pégalo en el SQL Editor de Supabase y pulsa Run. SOLO LEE: no cambia nada.
 -- Devuelve una fila por cada diferencia con el repositorio. Ninguna fila («No rows returned») = todo al día.
@@ -349,6 +349,7 @@ f(sig, hash) as (values
   ('erp.tg_fiscal_year_rules()', 'a5d3c28e304f861f3e2819b2812f3fd8'),
   ('erp.tg_fiscal_year_status()', 'd1f919961950cb72df44491d5b56ed7b'),
   ('erp.tg_gl_account_block_default()', 'ec248053291f6d6d99422c3863e7bff0'),
+  ('erp.tg_gl_account_protect()', 'e4cf0f2dc8e969e720d6d6458bab26e3'),
   ('erp.tg_gl_account_validate()', '6825c78d3cfe0ff35b4b8e3685a45634'),
   ('erp.tg_import_batch_temporary()', 'b43a852ba188d7fd81c5363df7c798e9'),
   ('erp.tg_import_lines_caps()', '7adbc941fecba6f7fa39dd5ae322fa1f'),
@@ -1081,6 +1082,13 @@ where has_schema_privilege(r.oid, 'erp', 'usage') and not r.rolsuper and not r.r
   and r.rolname not in ('authenticated', 'service_role', 'postgres', 'supabase_admin', 'dashboard_user')
   and r.rolname not like 'pg\_%' and r.rolname not like 'supabase\_%'
   and r.oid <> (select nspowner from pg_namespace where nspname = 'erp')
+-- v0.60.10 (SEG-26) · un rol que salta el RLS (superusuario o bypassrls) y entra en erp: solo los del sistema
+union all
+select 'seguridad', 'el rol ' || r.rolname || ' salta el RLS y entra en el esquema erp', 'no debe (solo los roles del sistema)'
+from pg_roles r
+where (r.rolsuper or (r.rolbypassrls and has_schema_privilege(r.oid, 'erp', 'usage')))
+  and r.rolname not in ('service_role', 'postgres', 'supabase_admin', 'dashboard_user') and r.rolname <> current_user
+  and r.rolname not like 'pg\_%' and r.rolname not like 'supabase\_%'
 union all
 select 'seguridad', 'el rol ' || w.rol || ' entra en el esquema bi', 'no debe (solo powerbi_reader)'
 from (values ('anon'), ('authenticated')) w(rol)

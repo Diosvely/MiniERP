@@ -667,4 +667,30 @@ reset role;
 select set_config('request.jwt.claim.sub', '', false) \gset
 select set_config('request.jwt.claims', '', false) \gset
 
+-- v0.60.10 · SEG-28 · una cuenta con apuntes no cambia de número, tipo ni empresa (escribiendo en su propia empresa)
+call public.ser('authenticated', '00000000-0000-0000-0000-0000000000b1');
+do $$
+declare z uuid := (select e from public.ctx where k = 'Z2'); z1 uuid := (select e from public.ctx where k = 'Z');
+        gasto uuid; nueva uuid; e text;
+begin
+  gasto := (select id from erp.gl_accounts where company_id = z and account_no = '62300001');
+  assert exists (select 1 from erp.journal_lines where gl_account_id = gasto), 'la 62300001 tiene apuntes';
+  e := public.falla(format('update erp.gl_accounts set account_no = %L where id = %L', '62300009', gasto));
+  assert e like '%has journal lines%', 'SEG-28: cambiar el número de una cuenta con apuntes: ' || coalesce(e, 'lo dejó hacer');
+  e := public.falla(format('update erp.gl_accounts set account_type = %L where id = %L', 'heading', gasto));
+  assert e like '%has journal lines%', 'SEG-28: cambiar el tipo: ' || coalesce(e, 'lo dejó hacer');
+  e := public.falla(format('update erp.gl_accounts set company_id = %L where id = %L', z1, gasto));
+  assert e like '%company of an account cannot be changed%', 'SEG-28: llevarla a otra empresa suya: ' || coalesce(e, 'lo dejó hacer');
+  -- control: el nombre y el bloqueo de saldo inverso sí; y el número de una cuenta sin apuntes, también
+  e := public.falla(format('update erp.gl_accounts set name = %L, block_inverse_balance = true where id = %L', 'Servicios (renombrada)', gasto));
+  assert e is null, 'control: renombrar: ' || coalesce(e, '');
+  insert into erp.gl_accounts (company_id, account_no, name, account_type) values (z, '62300077', 'Sin apuntes', 'posting') returning id into nueva;
+  e := public.falla(format('update erp.gl_accounts set account_no = %L where id = %L', '62300078', nueva));
+  assert e is null, 'control: una cuenta sin apuntes sí cambia de número: ' || coalesce(e, '');
+  raise notice 'OK  · SEG-28: una cuenta con apuntes no cambia de número, tipo ni empresa; el nombre, sí';
+end $$;
+reset role;
+select set_config('request.jwt.claim.sub', '', false) \gset
+select set_config('request.jwt.claims', '', false) \gset
+
 \echo 'FASE 80 OK'

@@ -2096,3 +2096,14 @@ portada; el glosario, el README y once ADR.
 - **Citar bien es parte de la norma:** el art. 27 LIS dice cuánto dura el período, no cuándo empieza el primero; lo que
   no está en la fuente se marca y se valida.
 - **Con esta versión termina la etapa de correcciones.** Lo siguiente es ordenar el trabajo por procesos.
+
+## 2026-11-18 · v0.60.10 · Lo que dijeron otros mapeos
+- **Por qué:** para el vídeo de Power BI, Diosvely quería un mapeo de cuentas en Excel con el criterio del Mini ERP, y
+  antes lo comparamos cuenta por cuenta con dos mapeos de referencia de profesionales. Los dos ponen cada cuenta en una
+  sola partida (compensan); el del ERP la pone según su saldo. Pero uno de ellos tenía la «Deuda con características
+  especiales» y eso destapó lo que faltaba.
+- **Qué se hizo:** las partidas específicas de la norma 6.ª (diferencia de conversión y deuda con características
+  especiales), la 1341 a coberturas, las cuentas con apuntes protegidas (SEG-28), el diagnóstico de roles que saltan el
+  RLS (SEG-26), `orden_informe` y la guía de Power BI corregida (M-03 y M-04), y la ADR 0051 sin comparaciones (AF-34).
+- **Lo aprendido:** la primera idea (copiar la estructura del modelo 200 de la AEAT) era excesiva. El PGC consolidado
+  tiene los epígrafes de siempre y la norma 6.ª dice cuándo crear los demás. Se comprobó en la fuente antes de construir.

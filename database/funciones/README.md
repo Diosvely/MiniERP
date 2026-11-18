@@ -1,6 +1,6 @@
 # Funciones del esquema erp (versión vigente)
 
-Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0098`.
+Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0099`.
 No se edita a mano: el código fuente son las migraciones. Esto es para **estudiar** cada función en su forma
 actual sin rastrear sus redefiniciones.
 
@@ -9,7 +9,7 @@ actual sin rastrear sus redefiniciones.
 - **Tipo:** *invoker* (se ejecuta con los permisos de quien llama: manda la RLS), *security definer* (con los del
   dueño: comprueba ella misma los permisos) o *trigger*.
 
-378 funciones.
+379 funciones.
 
 | Función | Versiones | Vigente en | Tipo |
 |---|---|---|---|
@@ -353,6 +353,7 @@ actual sin rastrear sus redefiniciones.
 | [`tg_fiscal_year_rules`](tg_fiscal_year_rules.sql) | 1 | 0095_equity_and_company_rules | trigger |
 | [`tg_fiscal_year_status`](tg_fiscal_year_status.sql) | 1 | 0017_year_closing | trigger |
 | [`tg_gl_account_block_default`](tg_gl_account_block_default.sql) | 1 | 0013_balance_rules | trigger |
+| [`tg_gl_account_protect`](tg_gl_account_protect.sql) | 1 | 0099_special_lines_and_account_guard | trigger |
 | [`tg_gl_account_validate`](tg_gl_account_validate.sql) | 1 | 0002_chart_of_accounts | trigger |
 | [`tg_import_batch_temporary`](tg_import_batch_temporary.sql) | 1 | 0072_temporary_companies | trigger |
 | [`tg_import_lines_caps`](tg_import_lines_caps.sql) | 1 | 0072_temporary_companies | trigger |

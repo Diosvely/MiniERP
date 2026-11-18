@@ -70,10 +70,11 @@ Diosvely pidió dos mejoras de uso en los informes (diseño validado antes de co
   efecto en el balance y los ratios, no solo en el asiento.
 - **Prueba de que la simulación dice la verdad:** el test compara el informe simulado con el que sale después de
   contabilizar de verdad. Tienen que ser iguales.
-- **En BC y SAP:** Business Central tiene la *vista previa de registro* (*Preview Posting*) y el informe de prueba del
-  diario; SAP permite *simular* un documento y dejarlo *aparcado* antes de contabilizarlo. Aquí se ve también el
-  efecto en los estados financieros. *(Pendiente de validar por Diosvely.)*
+- **Ver antes de registrar:** muchos sistemas contables dejan ver el asiento antes de contabilizarlo. Aquí se ve también
+  su efecto en el Balance, la cuenta de pérdidas y ganancias y los ratios.
 
 *Revisión ética (v0.60.1, 2026-11-08): se quitan los nombres de programas comerciales (ADR 0063). La decisión y sus consecuencias no cambian.*
 
 *Revisión ética (v0.60.9, 2026-11-18): «además» se cambia por una descripción (H-77). La decisión y sus consecuencias no cambian.*
+
+*Revisión ética (v0.60.10, 2026-11-18): se quita la comparación con programas comerciales que quedaba en «Cómo explicarlo» (AF-34). La decisión y sus consecuencias no cambian.*

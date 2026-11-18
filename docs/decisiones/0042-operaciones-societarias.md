@@ -11,7 +11,7 @@ viene después: la junta reparte ese resultado. También faltaba lo que hay ante
 amplía su capital.
 
 Sin esto, la 129 se quedaba con saldo año tras año, no había reserva legal ni dividendos, y el patrimonio neto del
-balance no se podía explicar. Son operaciones que BC y SAP registran con asientos manuales en el diario general.
+balance no se podía explicar.
 
 La norma es la **Ley de Sociedades de Capital** (RDLeg 1/2010, con la Ley 18/2022 «Crea y Crece»), con el PGC 2007
 para los asientos.
@@ -110,5 +110,6 @@ para los asientos.
   el impuesto y la reserva legal y se exige tesorería. La 557 resta del patrimonio neto hasta que la junta la aplica.
 - **Los gastos de constitución no son un gasto del año:** son el coste de conseguir fondos propios, así que van contra
   reservas (113). Fiscalmente sí se deducen, y el impuesto que ahorran también va a reservas.
-- **BC y SAP** registran todo esto con asientos manuales en el diario general. El valor de esta pantalla es que la ley
-  se comprueba antes, como haría el asesor que prepara la junta.
+- **La pantalla comprueba la ley antes de contabilizar,** como haría el asesor que prepara la junta.
+
+*Revisión ética (v0.60.9, 2026-11-18): se quitan dos frases que decían, sin fuente, cómo registran estas operaciones otros programas (H-73). La decisión y sus consecuencias no cambian.*

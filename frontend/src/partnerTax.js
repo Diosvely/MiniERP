@@ -4,7 +4,7 @@
 
 const clean = (v) => String(v ?? '').toUpperCase().replace(/[^A-Z0-9]/g, '')
 
-// NIF (12345678Z) o NIE (X1234567L) → persona física · CIF (B12345674) → entidad · otro → null (no se sabe)
+// NIF de persona (12345678Z) o NIE (X1234567L) → persona física · NIF de una entidad (B12345674) → entidad · otro → null
 export function legalFormFromTaxId(taxId) {
   const v = clean(taxId)
   if (/^([0-9]{8}|[KLMXYZ][0-9]{7})[A-Z]$/.test(v)) return 'individual'

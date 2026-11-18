@@ -122,7 +122,8 @@ export default function CorporateTax({ company, readOnly }) {
                 {REGIMES.map((r) => <option key={r} value={r}>{t(`ct.regime.${r}`)}</option>)}
               </select>
             </label>
-            {hint && <p className="ayuda">{t('ct.hint').replace('{m}', m(hint.turnover)).replace('{y}', hint.basis_year).replace('{r}', t(`ct.regime.${hint.suggested}`))}</p>}
+            {hint && <p className="ayuda">{t('ct.hint').replace('{m}', m(hint.turnover)).replace('{y}', hint.basis_year).replace('{r}', t(`ct.regime.${hint.suggested}`))}
+              {hint.annualized && <> {t('ct.hintAnnual').replace('{n}', hint.basis_days)}</>}</p>}
             {per && (
               <div className="periodo-impositivo">
                 <p>{t('ct.period').replace('{a}', shortDate(per.start)).replace('{b}', shortDate(per.end)).replace('{n}', per.days)}</p>
@@ -138,6 +139,7 @@ export default function CorporateTax({ company, readOnly }) {
                   </div>
                 )}
                 {per.short && <p className="ayuda">{t('ct.periodShort')}</p>}
+                <p className="ayuda">{t('ct.periodLimit')}</p>
                 {editable && per.suggested && (
                   <p className="ayuda">{t('ct.periodSuggest').replace('{d}', shortDate(per.suggested))}{' '}
                     <button type="button" className="enlace" disabled={busy} onClick={() => setPeriod(per.suggested)}>{t('ct.periodUse')}</button></p>

@@ -82,3 +82,5 @@ Las cuatro mejoras se anotan en un documento privado del proyecto (`mejoras-de-u
   los ERP: un panel al lado que propone y no contabiliza.
 
 *Revisión ética (v0.60.1, 2026-11-08): se quitan los nombres de programas comerciales (ADR 0063). La decisión y sus consecuencias no cambian.*
+
+*Revisión ética (v0.60.8, 2026-11-17): se quitan los nombres de dos asistentes de IA comerciales (H-70).*

@@ -8,7 +8,8 @@
 --     Coeficiente 100 / 4 = 25 % = máximo fiscal de «Equipos para procesos de información» (25 %): sin ajuste.
 --  B) Furgoneta: compra el 15/03/2026 por 18.000 + IVA. Vida útil 8 años (96 meses), valor residual 2.000.
 --     Base amortizable 18.000 − 2.000 = 16.000 · cuota mensual 16.000 / 96 = 166,666…
---     2026 (del 15/03 al 31/12): 9 meses completos (1.500) + 17 días de 31 del primer mes incompleto (91,40) = 1.591,40
+--     2026 (del 15/03 al 31/12): 9 meses enteros, del 15/03 al 14/12 (1.500) + 17 de los 31 días del mes que va del
+--     15/12 al 14/01 (91,40) = 1.591,40. Cada mes se cuenta desde el día 15 (v0.60.9, AF-28)
 --     Coeficiente 12,5 % ≤ 16 % (transporte externo): sin ajuste.
 --     Venta el 30/06/2027 por 14.000 + IVA 21 % (2.940):
 --       amortización acumulada al 30/06/2027: 15 meses (2.500) + 16/30 de mes (88,89) = 2.588,89

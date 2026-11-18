@@ -81,3 +81,5 @@ Los empleados son **ficticios**: no se guarda ni DNI ni IBAN ni ningún dato per
   - **Fase 44:** el supuesto de referencia (Ana y Luis), calculado a mano con los tipos de 2026.
   - **Fase 45:** la integración (comprobaciones y modelo 111).
   - **Fase 34:** doce meses de nóminas al azar en las dos empresas, con todo lo demás.
+
+*Corrección (v0.60.8, 2026-11-17): «en la práctica», no «en el PGC», el número de asientos de nómina (H-61). La decisión no cambia.*

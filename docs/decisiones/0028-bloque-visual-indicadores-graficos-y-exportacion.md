@@ -33,7 +33,8 @@ Varias revisiones externas del proyecto coincidieron en que lo **visual** era do
    - la columna del año anterior ya existía; se añade el **análisis horizontal**: variación en importe y en %, y el
      año anterior también al desplegar una partida;
    - **corregido:** a mitad de ejercicio, el Balance se comparaba con la misma fecha del año anterior. Ahora se compara
-     con el **cierre anterior**, y la PyG con el **mismo periodo** (NIC 34);
+     con el **cierre anterior**, y la PyG con el **mismo periodo**, como pide la NIC 34 a la información intermedia (el
+     PGC no regula los estados intermedios);
    - la variación va **sin color**: que suba un gasto o un ingreso no es bueno o malo por sí solo.
 3. **Gráficos con criterio:**
    - ✅ **cascada del EFE**: efectivo inicial → explotación → inversión → financiación → efectivo final. Resume más de
@@ -71,3 +72,5 @@ Varias revisiones externas del proyecto coincidieron en que lo **visual** era do
   - un fallo de contraste (opacidad en los pasos pendientes del recorrido);
   - el desfase de un día en las fechas.
 - Las ideas que quedan están en `docs/ideas-pendientes.md`.
+
+*Revisión ética (v0.60.8, 2026-11-17): se quitan las notas de revisiones externas sin fuente (H-58); v0.60.9: la NIC 34 se cita como lo que es (H-14). La decisión y sus consecuencias no cambian.*

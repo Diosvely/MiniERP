@@ -82,5 +82,6 @@ fallos que ningún módulo ve por separado.
   el patrimonio, pero no el banco. Si aparecen como flujos, alguien tiene que compensarlos en otra línea, y el EFE deja
   de explicar nada.
 - **El deterioro es como la amortización:** es un gasto sin dinero, así que se suma al resultado en los ajustes.
-- **En BC y SAP** el EFE suele salir de un informe configurado por cuentas: la 400 de un inmovilizado necesita la 523
-  o un ajuste a mano. Aquí sale de las facturas.
+- **Aquí el EFE clasifica por lo que dice la factura,** no por la cuenta del tercero.
+
+*Revisión ética (v0.60.9, 2026-11-18): se quita una frase que decía, sin fuente, cómo saca el EFE otro programa (H-73). La decisión y sus consecuencias no cambian.*

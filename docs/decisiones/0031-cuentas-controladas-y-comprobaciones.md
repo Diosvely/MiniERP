@@ -74,3 +74,5 @@ auditor (`docs/cuentas-controladas.md`).
 - **Pruebas:** 32 de 32 en la base de datos (fases 30, 31 y 32 nuevas) y 98 tests de la web.
 
 *Revisión ética (v0.60.1, 2026-11-08): se quitan los nombres de programas comerciales y la contraposición de los modos de control; cada modo se explica por lo que hace (control antes o después) (ADR 0063). La decisión y sus consecuencias no cambian.*
+
+*Revisión ética (v0.60.8, 2026-11-17): se termina de quitar la contraposición de los modos de control en las alternativas descartadas (H-57).*

@@ -159,10 +159,20 @@ begin
   assert (g->>'period_days')::int = 184 and (g->>'quota')::numeric = 38471.89 and g->'suggested_start' = 'null'::jsonb,
          '184 días: 25.205,48 × 19 % + 160.394,52 × 21 % = 38.471,89: ' || g::text;
   assert ((g->'brackets')->0->>'upto')::numeric = 25205.48, 'el tramo que enseña la pantalla';
+  -- v0.60.9 (AF-27): con 2026 de 184 días, la cifra de negocios (300.000) se eleva al año para sugerir el régimen de
+  -- 2027: 300.000 × 365 / 184 = 595.108,70 (art. 101.2 LIS)
+  perform erp.create_fiscal_year(e, 2027);
+  g := erp.corporate_tax_regime_hint(e, 2027);
+  assert (g->>'turnover')::numeric = 595108.70 and (g->>'annualized')::boolean and (g->>'basis_days')::int = 184
+     and g->>'suggested' = 'micro' and (g->>'basis_year')::int = 2026, 'AF-27: cifra elevada al año: ' || g::text;
+  -- AF-26: el mismo tramo por días con los tipos de 2028 (17 % / 20 %): 25.205,48 × 17 % + 14.794,52 × 20 %
+  assert (erp.corporate_tax_quota(2028, 'micro', 40000, 184)->>'quota')::numeric = 7243.83, 'AF-26: 184 días en 2028';
   assert public.falla(format($q$select erp.corporate_tax_period(%L, '2025-12-31')$q$, v_ret), 'within the fiscal year'), 'fuera del ejercicio: no';
   perform erp.corporate_tax_period(v_ret, '2026-01-01');
   assert (select period_start from erp.corporate_tax_returns where id = v_ret) is null
      and (erp.corporate_tax_calc(e, 2026)->>'quota')::numeric = 37976, 'el 1 de enero = el ejercicio entero, como antes';
+  g := erp.corporate_tax_regime_hint(e, 2027);
+  assert (g->>'turnover')::numeric = 300000 and not (g->>'annualized')::boolean, 'AF-27: con el año entero, la cifra tal cual';
   perform public.como_bd(format('update erp.companies set start_date = null where id = %L', e));
   raise notice 'OK  · período impositivo del 01-07 al 31-12: 184 días, tramo de 25.205,48 y cuota 38.471,89; por defecto, el año entero';
 

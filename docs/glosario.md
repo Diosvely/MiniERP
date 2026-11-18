@@ -17,7 +17,7 @@ los tableros. Las equivalencias con BC y SAP son orientativas *(pendiente de val
 | Cuenta contable | G/L account (`gl_accounts`) | G/L Account | G/L Account (SKB1) |
 | Cuenta de título | heading account | Account Type = Heading | — |
 | Subcuenta | posting account | Account Type = Posting | G/L account |
-| Masa patrimonial | account category | Account Category | Account Group |
+| Elemento de las cuentas anuales | account category | Account Category | Account Group |
 | Tercero | business partner (`business_partners`) | Customer / Vendor | Business Partner |
 | Cliente | customer | Customer | Customer |
 | Proveedor | vendor / supplier | Vendor | Vendor / Supplier |
@@ -72,7 +72,7 @@ los tableros. Las equivalencias con BC y SAP son orientativas *(pendiente de val
 | Península | mainland | — | — |
 | Canarias | Canary Islands | — | — |
 
-## Masas patrimoniales (account_category)
+## Elementos de las cuentas anuales (account_category)
 
 | Español | English |
 |---|---|

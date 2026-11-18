@@ -78,6 +78,14 @@ begin
   assert not exists (select 1 from bi.fact_flujos s where not exists (select 1 from bi.dim_linea l where l.clave_linea = s.clave_hoja)), 'cada flujo, su línea';
   assert (select count(distinct estado) from bi.dim_linea) = 4, 'balance, pyg y flujos por los dos métodos';
   assert (select count(*) from bi.dim_linea) = (select count(*) from erp.fs_lines) + (select count(*) from erp.cf_lines), 'todas las líneas';
+  -- v0.60.10 (M-04): los totales de nivel 1 van al final de sus líneas en orden_informe; orden no cambia
+  assert (select orden_informe from bi.dim_linea where clave_linea = 'balance|ACT')
+       > (select max(orden_informe) from bi.dim_linea where estado = 'balance' and clave_linea in (select clave_linea from bi.puente_linea where clave_linea <> 'balance|ACT' and clave_hoja in (select clave_hoja from bi.puente_linea where clave_linea = 'balance|ACT'))), 'TOTAL ACTIVO después de sus líneas';
+  assert (select orden_informe from bi.dim_linea where clave_linea = 'balance|ACT')
+       < (select min(orden_informe) from bi.dim_linea where clave_padre = 'balance|PNP'), 'y antes del patrimonio neto y pasivo';
+  assert (select orden_informe from bi.dim_linea where clave_linea = 'balance|PNP') = (select max(orden_informe) from bi.dim_linea where estado = 'balance'), 'TOTAL PN Y PASIVO, el último';
+  assert not exists (select 1 from bi.dim_linea where clave_padre is not null and orden_informe <> orden), 'el resto, como orden';
+  assert (select orden from bi.dim_linea where clave_linea = 'balance|ACT') = (select sort from erp.fs_lines where statement = 'balance' and code = 'ACT'), 'orden no cambia';
   assert (select count(*) from bi.dim_ratio where primera_entrega) = 8, 'los 8 ratios de la primera entrega';
   assert (select count(*) from bi.dim_fecha where es_fin_mes) >= 12, 'calendario';
   raise notice 'OK  · el modelo en estrella: claves completas y apuntes que cuadran';

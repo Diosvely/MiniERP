@@ -154,8 +154,8 @@ do $$
 begin
   assert public.partida('normal', '90000000', false) = 'PN.A2.I' and public.partida('normal', '80000000', true) = 'PN.A2.I',
      '80 y 90: valoración de activos a valor razonable (A-2 I)';
-  assert public.partida('normal', '91000000', false) = 'PN.A2.II' and public.partida('normal', '82000000', true) = 'PN.A2.III',
-     '81/91 coberturas (A-2 II) y 82/92 diferencias de conversión (A-2 III)';
+  assert public.partida('normal', '91000000', false) = 'PN.A2.II' and public.partida('normal', '82000000', true) = 'PN.A2.DC',
+     '81/91 coberturas (A-2 II) y 82/92 diferencias de conversión (A-2, «Diferencia de conversión» desde la v0.60.10)';
   assert public.partida('abreviado', '90000000', false) = 'PN.A2', 'en el abreviado, A-2';
   assert public.partida('normal', '94000000', false) = 'PN.A3' and public.partida('abreviado', '84000000', true) = 'PN.A3',
      'las subvenciones (84, 94) siguen en A-3';
@@ -242,6 +242,30 @@ begin
   assert public.falla(format('select * from erp.fs_line_anomalies(%L, 2026, null, false, %L)', w, 'otro'),
                       'Unknown balance sheet model'), 'modelo desconocido en el aviso';
   raise notice 'OK  · PYMES igual que antes; la PyG solo en PYMES; modelo desconocido, error';
+end $$;
+
+-- ---------- v0.60.10 · AF-35: partidas específicas de la norma 6.ª de elaboración (NECA 6.ª.14 y 6.ª.17) ----------
+do $$
+begin
+  assert public.partida('normal', '13500001', false) = 'PN.A2.DC' and public.partida('normal', '13500001', true) = 'PN.A2.DC',
+       '135: Diferencia de conversión (6.ª.14)';
+  assert public.partida('normal', '82000001', true) = 'PN.A2.DC' and public.partida('normal', '92000001', false) = 'PN.A2.DC',
+       '82 y 92 antes del cierre: también';
+  assert public.partida('normal', '13410001', false) = 'PN.A2.II' and public.partida('normal', '13400001', false) = 'PN.A2.II',
+       '1341 y 1340: operaciones de cobertura';
+  assert public.partida('normal', '13600001', false) = 'PN.A2.III' and public.partida('normal', '13700001', false) = 'PN.A2.III',
+       '136 y 137: III. Otros (el modelo no tiene más epígrafes)';
+  assert public.partida('normal', '15000001', false) = 'PNC.DE' and public.partida('normal', '50200001', false) = 'PC.DE'
+     and public.partida('normal', '50700001', false) = 'PC.DE', '15, 502 y 507: deuda con características especiales (6.ª.17)';
+  assert public.partida('normal', '50200001', true) = 'AC.V.5', '502 deudora: sigue en el activo, sin compensar';
+  assert public.partida('normal', '50000001', false) = 'PC.III.1', 'la 500 no cambia';
+  assert public.partida('abreviado', '13500001', false) = 'PN.A2' and public.partida('abreviado', '15000001', false) = 'PNC.DE'
+     and public.partida('abreviado', '50200001', false) = 'PC.DE', 'abreviado: A-2 sin dividir; deuda especial, sí';
+  assert (select array_agg(code order by sort) from erp.fs_model_lines where model = 'normal' and parent = 'PN.A2')
+       = array['PN.A2.I', 'PN.A2.II', 'PN.A2.DC', 'PN.A2.III'], 'orden en A-2: I, II, Diferencia de conversión, III. Otros';
+  assert (select max(sort) from erp.fs_model_lines where model = 'normal' and parent = 'PC') = 760
+     and (select code from erp.fs_model_lines where model = 'normal' and parent = 'PC' and sort = 760) = 'PC.DE', 'la de corto, la última del pasivo corriente';
+  raise notice 'OK  · AF-35: diferencia de conversión, coberturas y deuda con características especiales, en normal y abreviado';
 end $$;
 
 -- ---------- 4. Otro usuario no ve nada ----------

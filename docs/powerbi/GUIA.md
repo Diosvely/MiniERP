@@ -1,8 +1,12 @@
-# Guía · Power BI con el Mini ERP (v0.50.0)
+# Guía · Power BI con el Mini ERP (v0.50.0, corregida en la v0.60.10)
 
 Cómo conectar Power BI Desktop al **esquema `bi`** del Mini ERP y cómo construir, con Claude Code y un servidor MCP de
 Power BI, un proyecto **PBIP** con el balance, la cuenta de pérdidas y ganancias, el estado de flujos de efectivo y 8
 ratios que **cuadran al céntimo con el ERP**. Decisión de diseño: [ADR 0050](../decisiones/0050-puente-power-bi.md).
+
+> **v0.60.10 (M-03 y M-04):** siete correcciones que salieron al seguir esta guía en Power BI Desktop (nombres de
+> tabla, relaciones automáticas, camino ambiguo, textos repetidos, importes decimales, relación de fechas y detalle de
+> apuntes) y la columna nueva `dim_linea[orden_informe]`. Están marcadas con «v0.60.10» donde toca.
 
 > Reparto: **el ERP decide** (en qué línea va cada cuenta, cómo se clasifica cada flujo); **Power BI calcula y enseña**
 > (medidas DAX de fechas, comparativas y ratios, matrices y gráficos). Si una cifra no cuadra, la referencia es el ERP.
@@ -19,7 +23,7 @@ publicarla como demo y desaparece al quitarle la marca. Las temporales nunca lle
 | `dim_empresa` | una empresa demo | `empresa_id` · empresa, territorio, impuesto (IVA / IGIC), sector |
 | `dim_fecha` | un día | `fecha` · anio, trimestre, mes, nombre_mes, anio_mes, fin_mes, es_fin_mes |
 | `dim_cuenta` | una subcuenta | `cuenta_id` · empresa_id, subcuenta, nombre, cuenta_pgc (4 dígitos), subgrupo, grupo y sus nombres |
-| `dim_linea` | una línea de un estado | `clave_linea` (`estado\|código`, p. ej. `balance\|AC`) · estado (`balance`, `pyg`, `efe_indirecto`, `efe_directo`), codigo, clave_padre, orden, nivel, texto, texto_en, es_total |
+| `dim_linea` | una línea de un estado | `clave_linea` (`estado\|código`, p. ej. `balance\|AC`) · estado (`balance`, `pyg`, `efe_indirecto`, `efe_directo`), codigo, clave_padre, orden, **orden_informe** (v0.60.10: los totales de nivel 1 al final, como en el modelo del PGC), nivel, texto, texto_en, es_total |
 | `puente_linea` | línea → hoja | `clave_linea` (la línea que se enseña) · `clave_hoja` (cada línea de detalle que suma, ella incluida) |
 | `dim_ratio` | un ratio | `ratio` (WC, CR…) · grupo, orden, nombre, formula, unidad, referencia_min / max, `primera_entrega` |
 | `fact_apuntes` | una línea de asiento contabilizado | apunte_id · empresa_id, asiento_id, ejercicio, numero, fecha, tipo_asiento, concepto, cuenta_id, debe, haber, importe |
@@ -33,6 +37,9 @@ publicarla como demo y desaparece al quitarle la marca. Las temporales nunca lle
   asientos de regularización y de cierre (como el ERP).
 - La **línea del balance ya está decidida** según el signo: un banco en descubierto viene en el pasivo.
 - Los totales (`es_total`) no tienen importes propios: se obtienen sumando sus hojas con `puente_linea`.
+- **Detalle de apuntes (v0.60.10):** para que debe − haber de `fact_apuntes` cuadre con el saldo del balance, el
+  detalle excluye los asientos de **regularización** y de **cierre** (`tipo_asiento`) y mantiene la **apertura**: el mismo
+  criterio que los saldos del ERP.
 - `fact_flujos` es por **ejercicio**; `control_estados` trae el balance y la PyG por **fin de mes**, y los flujos y los
   ratios por **ejercicio** (con fecha = último día del ejercicio).
 
@@ -72,6 +79,10 @@ Debe dar `powerbi_reader · 122 · (tus demos) · false`.
      instalarlo en Windows en «Entidades de certificación raíz de confianza» (`certmgr.msc`). **Pendiente de
      comprobar por Diosvely.** Quitar el cifrado solo para una prueba en local con datos de demo, nunca para publicar.
 4. En el navegador, abrir el esquema **`bi`** y marcar las diez vistas.
+   - **v0.60.10 · Nombres:** Power BI las importa como `bi dim_empresa`, `bi fact_saldos_mes`… Hay que **renombrarlas
+     sin el prefijo** `bi ` (`dim_empresa`, `fact_saldos_mes`…): las medidas de esta guía usan esos nombres.
+   - **v0.60.10 · Tipos:** pasar todas las columnas de importes (`debe`, `haber`, `importe`, `saldo`, `numerador`,
+     `denominador`) a **Decimal fijo**. Llegan como coma flotante y las sumas salen con colas (10.067.239,159999998).
 5. **Archivo → Guardar como → Proyecto de Power BI (.pbip)**, con el modelo en **TMDL** y el informe en **PBIR**
    (en *Opciones → Características en versión preliminar* si no salen por defecto).
 
@@ -83,17 +94,33 @@ Debe dar `powerbi_reader · 122 · (tus demos) · false`.
 
 | Desde (1) | Hacia (*) |
 |---|---|
-| `dim_empresa[empresa_id]` | `fact_apuntes`, `fact_saldos_mes`, `fact_flujos`, `control_estados`, `dim_cuenta` (`empresa_id`) |
+| `dim_empresa[empresa_id]` | `fact_apuntes`, `fact_saldos_mes`, `fact_flujos`, `control_estados` (`empresa_id`) |
 | `dim_cuenta[cuenta_id]` | `fact_apuntes[cuenta_id]`, `fact_saldos_mes[cuenta_id]` |
-| `dim_fecha[fecha]` | `fact_apuntes[fecha]` |
+| `dim_fecha[fecha]` | `fact_apuntes[fecha]` · **inactiva** (v0.60.10) |
 | `dim_linea[clave_linea]` | `puente_linea[clave_linea]` |
+
+**v0.60.10 · Correcciones del modelo:**
+- **Sin `dim_empresa → dim_cuenta`.** Con ella y con `dim_empresa → hechos` y `dim_cuenta → hechos` hay dos caminos de
+  filtro y Power BI desactiva las relaciones de cuenta. La empresa filtra la cuenta a través de los hechos.
+- **Borrar las relaciones que Power BI crea solo** al cargar: `fact_flujos[subcuenta] → dim_cuenta[subcuenta]`
+  (peligrosa: la subcuenta no es única entre empresas) y `control_estados[clave_linea] → dim_linea` (se resuelve con
+  `TREATAS`). Al terminar, en la vista de modelo solo tienen que quedar las de esta tabla.
+- **`dim_fecha → fact_apuntes`, inactiva.** Activa, con el segmentador de fin de mes el detalle de apuntes solo enseña un
+  día. Para el detalle «saldo hasta la fecha» se filtra `fact_apuntes[fecha] <= [Fecha de corte]`; si una medida
+  necesita la fecha exacta, `USERELATIONSHIP`.
 
 **Sin relación** (se usan con `TREATAS` en las medidas): `fact_saldos_mes[clave_hoja]`, `fact_flujos[clave_hoja]`,
 `control_estados[clave_linea]` y `fact_saldos_mes[fin_mes]`. Así una línea de total suma sus hojas sin relaciones
 de muchos a muchos.
 
-Marcar `dim_fecha` como **tabla de fechas** (columna `fecha`). Ordenar `dim_linea[texto]` por `dim_linea[orden]` y
-`dim_fecha[nombre_mes]` por `dim_fecha[mes]`.
+Marcar `dim_fecha` como **tabla de fechas** (columna `fecha`). Ordenar `dim_linea[texto]` por
+`dim_linea[orden_informe]` (v0.60.10; con `orden`, TOTAL ACTIVO sale delante de sus líneas) y `dim_fecha[nombre_mes]`
+por `dim_fecha[mes]`.
+
+**v0.60.10 · Textos repetidos:** `dim_linea[texto]` tiene textos iguales en líneas distintas (por ejemplo, «1. Deudas con
+entidades de crédito» en el pasivo no corriente y en el corriente, y las cabeceras de los dos métodos de flujos). Si no
+se hace nada, una matriz junta las dos líneas en una fila con los importes sumados, sin dar error. En las propiedades de
+`texto`: **Group By Columns** = `clave_linea`.
 
 Las medidas DAX de esta guía se han escrito siguiendo la misma lógica que la prueba de la base de datos (fase 67,
 donde el balance, la PyG, los flujos y los ratios cuadran al céntimo), pero **se comprueban en Power BI en el primer
@@ -249,8 +276,10 @@ conectado:
 > `docs/powerbi/GUIA.md` del repositorio del Mini ERP y síguela al pie de la letra:
 > 1. Usa solo las diez vistas de `bi`. No inventes tablas ni columnas, no escribas SQL y no cambies los signos: los
 >    importes ya vienen como se enseñan.
-> 2. Crea las relaciones de la sección 4 y ninguna más; las líneas de los estados se suman con `TREATAS` sobre
->    `puente_linea`.
+> 2. Renombra las tablas sin el prefijo `bi `, pasa los importes a Decimal fijo y crea las relaciones de la sección 4 y
+>    ninguna más: borra las que Power BI haya creado solo y deja inactiva `dim_fecha → fact_apuntes`. Las líneas de los
+>    estados se suman con `TREATAS` sobre `puente_linea`; `texto` se agrupa por `clave_linea` y se ordena por
+>    `orden_informe`.
 > 3. Crea las medidas de la sección 4 en sus carpetas («Estados», «Ratios», «Comprobación»), con formato de número
 >    español (miles con punto, dos decimales; los ratios con 4 decimales o en %).
 > 4. Crea las páginas de la sección 5.

@@ -217,9 +217,9 @@ begin
      'las subcuentas nuevas, con el nombre del PGC';
   assert (select amount from erp.fs_model_amounts(e, 2027, 'normal', '2027-01-01') where code = 'PN.A2.I') = 1000
      and (select amount from erp.fs_model_amounts(e, 2027, 'normal', '2027-01-01') where code = 'PN.A2.II') = -300
-     and (select amount from erp.fs_model_amounts(e, 2027, 'normal', '2027-01-01') where code = 'PN.A2.III') = 200
+     and (select amount from erp.fs_model_amounts(e, 2027, 'normal', '2027-01-01') where code = 'PN.A2.DC') = 200   -- v0.60.10 (AF-35): «Diferencia de conversión»
      and (select amount from erp.fs_model_amounts(e, 2027, 'normal', '2027-01-01') where code = 'PN.A3') = 3750,
-     'después de la apertura: A-2 (I 1.000, II −300, III 200) y A-3 3.750';
+     'después de la apertura: A-2 (I 1.000, II −300, diferencia de conversión 200) y A-3 3.750';
   -- Una cuenta 9 sin regla: no se adivina
   perform public.manual(e, '2027-02-01', '[["57200001", 400, 0], ["95000001", 0, 400]]');
   p := erp.year_closing_preview(e, 2027);

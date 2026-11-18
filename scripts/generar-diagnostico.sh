@@ -10,7 +10,8 @@
 #   · comprobación      → comprobación del auditor que no está en erp.audit_checks
 #   · fuente            → fuente oficial que no está en erp.sources
 #   · seguridad (v0.60.5, SEG-15): tabla sin RLS; política que falta, es distinta o sobra; permiso de más o de menos
-#     de anon / authenticated sobre una tabla (select, insert, update, delete) o una función (execute)
+#     de anon / authenticated sobre una tabla (select, insert, update, delete) o una función (execute); v0.60.10 (SEG-26):
+#     un rol que salta el RLS (superusuario o bypassrls) y entra en erp, salvo los del sistema
 # Nació en la v0.40.0, cuando una migración antigua sin aplicar (0039, 0040, 0042) hizo fallar la 0054.
 # Se GENERA (no se edita a mano) y se regenera al cerrar cada versión:   bash scripts/generar-diagnostico.sh
 # Conexión: las variables estándar de PostgreSQL (PGHOST, PGPORT, PGUSER, PGPASSWORD), como test-db.sh.
@@ -143,6 +144,13 @@ where has_schema_privilege(r.oid, 'erp', 'usage') and not r.rolsuper and not r.r
   and r.rolname not in ('authenticated', 'service_role', 'postgres', 'supabase_admin', 'dashboard_user')
   and r.rolname not like 'pg\\_%' and r.rolname not like 'supabase\\_%'
   and r.oid <> (select nspowner from pg_namespace where nspname = 'erp')
+-- v0.60.10 (SEG-26) · un rol que salta el RLS (superusuario o bypassrls) y entra en erp: solo los del sistema
+union all
+select 'seguridad', 'el rol ' || r.rolname || ' salta el RLS y entra en el esquema erp', 'no debe (solo los roles del sistema)'
+from pg_roles r
+where (r.rolsuper or (r.rolbypassrls and has_schema_privilege(r.oid, 'erp', 'usage')))
+  and r.rolname not in ('service_role', 'postgres', 'supabase_admin', 'dashboard_user') and r.rolname <> current_user
+  and r.rolname not like 'pg\\_%' and r.rolname not like 'supabase\\_%'
 union all
 select 'seguridad', 'el rol ' || w.rol || ' entra en el esquema bi', 'no debe (solo powerbi_reader)'
 from (values ('anon'), ('authenticated')) w(rol)

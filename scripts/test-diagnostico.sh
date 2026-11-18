@@ -51,3 +51,14 @@ for want in "el rol powerbi_reader entra en el esquema erp" "el rol authenticate
   grep -qF "$want" <<< "$rows" || { echo "✗ el diagnóstico no ve: $want"; echo "$rows"; exit 1; }
 done
 echo "✓ Power BI: un rol de lectura en erp y bi abierto a la web, el diagnóstico los ve"
+
+# v0.60.10 (SEG-26) · un rol que salta el RLS y entra en erp
+psql -q -X -v ON_ERROR_STOP=1 -d "$db" -c "
+  set client_min_messages = warning;
+  drop role if exists t_salta_rls;
+  create role t_salta_rls nologin bypassrls;
+  grant usage on schema erp to t_salta_rls;" > /dev/null
+rows=$(psql -X -At -v ON_ERROR_STOP=1 -d "$db" -f database/diagnostico-supabase.sql)
+psql -q -X -d "$db" -c "revoke usage on schema erp from t_salta_rls; drop role t_salta_rls;" > /dev/null 2>&1 || true
+grep -qF "el rol t_salta_rls salta el RLS y entra en el esquema erp" <<< "$rows" || { echo "✗ el diagnóstico no ve un rol que salta el RLS"; echo "$rows"; exit 1; }
+echo "✓ SEG-26: un rol que salta el RLS y entra en erp, el diagnóstico lo ve"

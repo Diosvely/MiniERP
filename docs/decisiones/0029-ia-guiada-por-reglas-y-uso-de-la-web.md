@@ -71,3 +71,5 @@ cuentas** de SAP (OBYC) deciden las cuentas a partir de datos maestros, no del t
 - **Nuevos datos en la ficha del tercero** (`legal_form`, `withholding_code`) y en la vista `v_partners`.
 - **Pruebas:** 28 de 28 en la base de datos (fases 27 y 28 nuevas, y las dos fallan sin su migración) y 83 tests de la
   web.
+
+*Corrección (v0.60.8, 2026-11-17): «NIF / NIE» en lugar de «CIF», que desapareció en 2008 (H-60), y el Tutor descrito sin afirmaciones absolutas (H-62). La decisión no cambia.*

@@ -980,7 +980,8 @@ baja con resultado (671/771), con su supuesto de referencia.
 - **Se amortiza desde la puesta en funcionamiento, no desde la compra** (NRV 2.ª), y sobre el coste menos el valor
   residual.
 - **El supuesto, al céntimo:** furgoneta de 18.000, residual 2.000, 8 años, desde el 15/03.
-  - 2026: 9 meses + 17/31 = 1.591,40.
+  - 2026: 9 meses enteros (del 15/03 al 14/12) y 17 de los 31 días del mes que va del 15/12 al 14/01 = 1.591,40. Cada
+    mes se cuenta desde el día 15. *(Explicación corregida en la v0.60.9, AF-28.)*
   - Vendida el 30/06/2027 por 14.000: amortización acumulada 2.588,89, valor neto 15.411,11, pérdida 1.411,11 (671).
 - **La venta de un activo es una entrega con IVA:** por eso se factura a su cuenta (21x) y no a una 7xx. El precio no
   es ingreso; el resultado es la diferencia con el valor neto.
@@ -1942,8 +1943,9 @@ web.
 **Pantallas pendientes de diálogo:** ninguna nueva (cambiar la fecha no crea nada).
 
 **Lo que se aprende**
-- **El ejercicio contable y el período impositivo pueden no coincidir.** El primer año de una sociedad empieza el día
-  de su constitución, y el tramo reducido se ajusta a los días.
+- **El ejercicio contable y el período impositivo pueden no coincidir.** El primer año de una sociedad empieza cuando
+  nace la sociedad (compruébalo en la escritura y los estatutos), y el tramo reducido se ajusta a los días. *(Precisado
+  en la v0.60.9, AF-24: el art. 27 LIS no fija ese día.)*
 - **Una prueba que vigila todas las tablas** sigue valiendo cuando el proyecto crece: no hay que acordarse de añadir
   cada tabla nueva.
 
@@ -2076,3 +2078,21 @@ devoluciones de IA); el Tutor; la integración continua; el diagnóstico; los te
   vigente.
 - **Un ERP que no adivina:** una cuenta 8 o 9 sin regla no se cierra contra una cuenta cualquiera; se avisa y se decide a
   mano.
+
+## 2026-11-18 · v0.60.9 · Cierre de la etapa de correcciones
+
+**De dónde viene:** lo que auditoría fiscal revisó de una vez para cerrar la etapa (el primer período impositivo, la
+amortización por días, la prorrata, el IGIC de los bienes de inversión, el glosario y la NIC 34) y los textos de
+redacción del paso 9 y 10 de su revisión.
+
+**Qué se hizo:** migración 0098 (la cifra de negocios elevada al año); la pantalla del Impuesto sobre Sociedades y la
+portada; el glosario, el README y once ADR.
+
+**Pruebas:** fase 52 al día; 360 tests.
+
+**Lo que se aprende**
+- **Comparar años distintos exige igualarlos:** seis meses de ventas no se miden contra el límite de un año entero; se
+  elevan al año (art. 101.2 LIS).
+- **Citar bien es parte de la norma:** el art. 27 LIS dice cuánto dura el período, no cuándo empieza el primero; lo que
+  no está en la fuente se marca y se valida.
+- **Con esta versión termina la etapa de correcciones.** Lo siguiente es ordenar el trabajo por procesos.

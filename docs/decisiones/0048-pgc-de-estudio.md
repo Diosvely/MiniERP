@@ -67,4 +67,6 @@ los datos y se validó el diseño (`diseno-v0.48.0.md`):
 - **La norma de valoración dice cuánto, el cuadro de cuentas dice dónde.** Por eso cada ficha enlaza a su NRV.
 - **Consultar sin perder el hilo:** en el ERP real se consulta el PGC mientras se contabiliza; el panel hace lo mismo.
 - **En BC y SAP:** el plan de cuentas lleva una descripción por cuenta (BC: «G/L Account Card»; SAP: el texto largo de la
-  cuenta de mayor, FS00). Aquí la ficha va más allá: cuándo se carga y se abona, y un ejemplo.
+  cuenta de mayor, FS00). Aquí la ficha dice también cuándo se carga y se abona, con un ejemplo.
+
+*Revisión ética (v0.60.9, 2026-11-18): «va más allá» se cambia por una descripción (H-77). La decisión y sus consecuencias no cambian.*

@@ -2,6 +2,25 @@
 
 Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y versionado semántico.
 
+## [0.60.9] - 2026-11-18
+### Corregido
+- **Régimen sugerido del Impuesto sobre Sociedades** (AF-27, migración 0098): si el período del año anterior duró menos
+  de un año, su cifra de negocios se eleva al año antes de sugerir microempresa o reducida dimensión (art. 101.2 LIS).
+  La pantalla lo dice.
+- **Período impositivo** (AF-24 a AF-26): el aviso del primer período ya no atribuye al art. 27 LIS lo que no dice; la
+  pantalla avisa de que el ERP no calcula períodos que terminan antes del cierre (art. 27.2 LIS); el cómputo de días,
+  validado.
+- **Portada** (H-19, opción A): «Un laboratorio para aprender contabilidad española», «Cómo se aprende aquí» y «Puedes
+  explorarlo sin registrarte».
+- **Textos contra la norma:** la amortización por días (AF-28), la prorrata (AF-29), el artículo del IGIC de los bienes
+  de inversión (AF-30), «elementos de las cuentas anuales» en el glosario (AF-31), la NIC 34 (AF-32), el límite de los
+  intereses del art. 16 LIS y el IVA del leasing (H-74, H-75), la ADR de subvenciones al día (H-76).
+- **Revisión ética de las ADR 0042 a 0052** (H-73, H-77, H-78): sin frases que digan qué hacen otros programas o que el
+  ERP hace más que ellos, y sin invitar a usar «tu propio diario»; notas al final de cada ADR corregida (H-71); «NIF y
+  NIE» en el README (H-72).
+### Pruebas
+- Fase 52 (cifra elevada al año y tramo por días de 2028); test de la portada; 360 tests de la web.
+
 ## [0.60.8] - 2026-11-17
 ### Corregido
 - **Cierre de los grupos 8 y 9** (AF-16 de auditoría fiscal, migración 0097): cada cuenta se regulariza contra su cuenta
@@ -770,7 +789,7 @@ Con esta versión termina el plan de los cinco tableros (v0.53.0 a v0.57.0).
 - **Casillas de los modelos** (migración `0051_tax_forms.sql`, prueba `test_fase46_tax_forms.sql`):
   - 303 y 420 trimestrales y resúmenes anuales 390 y 425, desde el libro registro de facturas;
   - rectificativas en «modificación de bases» y «rectificación de deducciones»;
-  - bienes de inversión desde 3.005,06 € (art. 108 LIVA; art. 40 Ley 20/1991);
+  - bienes de inversión desde 3.005,06 € (art. 108 LIVA; art. 40.Nueve.6.º Ley 20/1991);
   - compensación de periodos anteriores y volumen de operaciones.
 - **Modelos 347 y 349** (migración `0052_forms_347_349.sql`, prueba `test_fase47_forms_347_349.sql`):
   - 347: terceros de más de 3.005,06 € por trimestres, claves A y B, sin operaciones intracomunitarias, exportaciones

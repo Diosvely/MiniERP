@@ -23,7 +23,8 @@ Es la prioridad 1 de la fase 2 del plan revisado (15-10-2026).
    - crea sola su 28x (2817, 2818…) y su 68x;
    - los terrenos (210, 220) no se amortizan.
 2. **Amortización lineal por meses, con el primer mes proporcional a los días.** Es la cuota de los libros de texto:
-   furgoneta de 18.000 con 2.000 de residual a 96 meses → 9 meses + 17/31 en 2026 = 1.591,40.
+   furgoneta de 18.000 con 2.000 de residual a 96 meses, desde el 15-03 → 9 meses enteros (del 15-03 al 14-12) y 17 de
+   los 31 días del mes que va del 15-12 al 14-01 = 1.591,40 en 2026. Cada mes se cuenta desde el día 15.
    - Hay un cuadro de amortización por años.
    - «Amortizar hasta» genera un asiento 68x/28x con todos los activos; la última amortización se deshace desde el
      módulo y nunca desde el diario.
@@ -63,3 +64,6 @@ Es la prioridad 1 de la fase 2 del plan revisado (15-10-2026).
   - La fase 34 compra, amortiza y vende activos al azar, con cuatro semillas.
 
 *Revisión ética (v0.60.1, 2026-11-08): se quitan los nombres de programas comerciales (ADR 0063). La decisión y sus consecuencias no cambian.*
+
+*Corrección (v0.60.9, 2026-11-18): la explicación del cómputo de días (AF-28, validado por auditoría fiscal: un solo
+cómputo, uniforme). El cálculo no cambia.*

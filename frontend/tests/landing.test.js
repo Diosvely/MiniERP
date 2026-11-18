@@ -14,7 +14,10 @@ describe('portada: enlaces del autor', () => {
 
 describe('portada: textos', () => {
   it('el lema es el elegido', () => {
-    expect(es.landingTitle).toBe('Tu aliado en la contabilidad y el análisis financiero')
+    // v0.60.9 (H-19, opción A elegida por Diosvely): dice lo que es, sin promesas ni llamadas a la acción
+    expect(es.landingTitle).toBe('Un laboratorio para aprender contabilidad española')
+    expect(en.landingTitle).toBe('A lab to learn Spanish accounting')
+    expect(es.landingBandTitle).not.toMatch(/empieza hoy/i)
   })
   it('las 6 funciones y los puntos de «¿Por qué?» tienen título y texto en los dos idiomas', () => {
     expect(FEATURES).toHaveLength(6)

@@ -68,4 +68,6 @@ Diseño validado por Diosvely antes de construir (paso 238):
 - **«Pendiente» no es un error.** Mientras no se ha hecho el cierre, el resultado no puede coincidir. Por eso el estado
   depende de si ya está contabilizado el impuesto, el último paso antes de la regularización.
 - **En BC y SAP** esto se hace con empresas de demostración (CRONUS, IDES) y con guías de formación. Aquí el caso trae su
-  solución calculada a mano y se corrige solo.
+  solución calculada a mano.
+
+*Revisión ética (v0.60.9, 2026-11-18): se quita «y se corrige solo», que comparaba con otros programas (H-77). La decisión y sus consecuencias no cambian.*

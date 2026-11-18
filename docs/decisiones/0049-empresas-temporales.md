@@ -8,7 +8,7 @@
 ## Contexto
 
 La base de datos gratuita de Supabase tiene **500 MB**. Por eso solo importaban diarios el owner y los miembros. Pero
-importar tu propio diario y preguntarle a la IA es lo que más engancha a quien prueba el ERP. Diosvely propuso
+importar un diario de práctica y preguntarle a la IA es lo que más se usa al probar el ERP. Diosvely propuso
 **empresas virtuales**: que un registrado pueda importar, y que lo importado se borre cuando se vaya. El diseño se
 validó antes de construir (`diseno-v0.49.0.md`).
 
@@ -59,7 +59,7 @@ importación.
   tamaño se queda en el pico. Por eso el tope principal son las líneas vivas.
 
 ## Consecuencias
-- Cualquiera que se registre puede probar el ERP y la IA con su propio diario, y la base de datos no crece sin control.
+- Cualquiera que se registre puede probar el ERP y la IA con un diario de práctica, y la base de datos no crece sin control.
 - Más privacidad: si alguien sube datos reales, no se quedan guardados.
 - **Limitaciones conocidas:**
   - la limpieza programada necesita pg_cron activado en Supabase;
@@ -79,3 +79,5 @@ importación.
   presupuesto se mide en líneas, y el número de empresas es solo un segundo freno.
 - **Las reglas, en la base de datos:** quién importa, cuándo se borra y los topes los decide PostgreSQL. La web solo
   enseña y avisa: aunque alguien se salte la web, las reglas se cumplen.
+
+*Revisión ética (v0.60.9, 2026-11-18): «tu propio diario» y «engancha» se cambian por «un diario de práctica» y «se usa», con la política de uso (H-78). La decisión y sus consecuencias no cambian.*

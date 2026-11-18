@@ -7,8 +7,8 @@
 ## Contexto
 
 Diosvely quería tableros **dentro del propio ERP**, con la idea de «las reglas en la base de datos y el tablero en la
-web»: lo mismo que se hizo para Power BI en la v0.50.0, pero sin salir del ERP. También quería una **barra arriba**
-(«como Microsoft»), encima del contenido, que empezara solo con «Tableros» y fuera creciendo poco a poco. El diseño se
+web»: lo mismo que se hizo para Power BI en la v0.50.0, pero sin salir del ERP. También quería una **barra arriba**,
+encima del contenido, que empezara solo con «Tableros» y fuera creciendo poco a poco. El diseño se
 validó antes de construir (`diseno-v0.52.0.md`).
 
 ## Decisión
@@ -73,3 +73,5 @@ validó antes de construir (`diseno-v0.52.0.md`).
 - **En BC y SAP:** Business Central tiene los *Role Centers* con sus *cues* y gráficos; SAP, las *Overview Pages* de
   Fiori y las *KPI tiles*, que leen *CDS views*. Aquí, el catálogo y `erp.dashboard_data`. *(Pendiente de validar por
   Diosvely.)*
+
+*Revisión ética (v0.60.9, 2026-11-18): se quita «como Microsoft» (H-77). La decisión y sus consecuencias no cambian.*

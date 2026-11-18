@@ -66,3 +66,5 @@ En una herramienta para aprender, un corrector que aprueba un error enseña ese 
   la 40090001 es una subcuenta de la 4009.
 - En un ERP, la cuenta la eligen unas reglas de configuración (los *posting groups* de BC o la determinación de cuentas
   de SAP, por ejemplo), y la de «facturas pendientes» es una cuenta aparte.
+
+*Revisión ética (v0.60.8, 2026-11-17): se quita una comparación con programas comerciales (H-65). La decisión y sus consecuencias no cambian.*

@@ -122,8 +122,19 @@ Dos hallazgos del chat de auditoría fiscal (AF-02 y AF-03), aprobados por Diosv
    (`period_start`; vacío = el ejercicio entero) y la pantalla deja cambiarlo mientras es un borrador. La fecha de
    inicio de la contabilidad de la empresa solo se **sugiere** (puede no ser la de constitución). Ejemplo: del 01-07 al
    31-12 (184 días), base de 40.000 € en 2026 → 25.205,48 × 19 % + 14.794,52 × 21 % = 7.895,89 €.
-   - *Pendiente de que lo confirme auditoría fiscal:* que el primer período impositivo empieza en la constitución
-     (art. 27 LIS).
+   - **Revisado por auditoría fiscal (AF-24, v0.60.9):** el art. 27 LIS dice que el período coincide con el ejercicio
+     económico y no pasa de 12 meses; no fija el inicio del primer período. Si a la fecha del devengo la sociedad no
+     está inscrita en el Registro Mercantil, ese período no tributa por el IS y sus rentas se atribuyen a los socios
+     (STS 1069/2024, de 17-06-2024). *Pendiente de validar por Diosvely: si el primer período empieza en la escritura o
+     en la inscripción (criterio de la DGT).*
+   - **Validado (AF-26, v0.60.9):** cuentan el primer y el último día; el divisor es 365 también en año bisiesto (art. 28
+     y 29.1 LIS, BOE consolidado).
+   - **Limitación (AF-25, opción a, v0.60.9):** el ERP calcula períodos que terminan en el cierre del ejercicio. Los que
+     terminan antes (extinción, cambio de residencia, transformación, art. 27.2 LIS) no se calculan; la pantalla lo dice.
+   - **La cifra de negocios de un año corto se eleva al año (AF-27, v0.60.9, migración 0098):** para sugerir el régimen,
+     si el período del año anterior duró menos de un año, cifra × 365 / días (art. 101.2 LIS). Sin año anterior (la
+     sociedad nueva usa su primer período) no se eleva: *pendiente de validar por Diosvely* si la segunda frase del
+     art. 101.2 lo exigiría.
 
 **Pruebas:** fase 52 con la regresión de los dos hallazgos (falla sin la 0091). 83 de 83 en la base de datos y 341 tests
 de la web.
@@ -132,5 +143,10 @@ de la web.
 - **Un período corto, un tramo corto.** El tipo reducido es una ayuda pensada para un año de actividad. Si la sociedad
   solo ha existido medio año, recibe media ayuda: los primeros 25.205,48 € al tipo reducido en lugar de 50.000 €.
 - **Ejercicio contable y período impositivo no son siempre lo mismo.** Casi siempre coinciden, pero el primer año de
-  una sociedad empieza el día que se constituye.
+  una sociedad empieza el día que nace la sociedad (y se comprueba en la escritura y los estatutos).
 
+*Corrección (v0.60.9, 2026-11-18): el primer período impositivo, el cómputo de días, los períodos que terminan antes y
+la cifra de negocios elevada al año (AF-24 a AF-27 de auditoría fiscal); el tipo de la microempresa (v0.60.8, H-69). La
+decisión no cambia.*
+
+*Revisión ética (v0.60.8, 2026-11-17): se quitan una comparación con programas comerciales y una frase sin fuente (H-64, H-65).*

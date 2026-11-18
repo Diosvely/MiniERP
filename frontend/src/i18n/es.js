@@ -1473,7 +1473,9 @@ export default {
     period: 'Período impositivo: del {a} al {b} ({n} días)',
     periodStart: 'Inicio del período impositivo',
     periodShort: 'El período dura menos de un año: el tramo al tipo reducido de la microempresa es 50.000 € × días / 365 (art. 29.1 LIS).',
-    periodSuggest: '¿La sociedad se constituyó el {d}? Si es su primer ejercicio, el período impositivo empieza ese día (art. 27 LIS).',
+    periodSuggest: '¿La sociedad nació el {d}? El período impositivo coincide con su ejercicio económico y nunca pasa de 12 meses (art. 27 LIS). En su primer año, empieza cuando nace la sociedad: compruébalo en la escritura y los estatutos.',
+    periodLimit: 'El ERP calcula períodos que terminan al cierre del ejercicio. No calcula los que terminan antes: extinción, cambio de residencia o transformación (art. 27.2 LIS).',
+    hintAnnual: 'El período del año anterior duró {n} días: su cifra de negocios se ha elevado al año (art. 101.2 LIS).',
     periodUse: 'Usar esa fecha', periodWhole: 'Volver al ejercicio entero', periodApply: 'Aplicar la fecha',
     recognize: 'Registrar el crédito fiscal por las bases negativas (4745)',
     recognizeHelp: 'PGC, NRV 13.ª: el crédito por pérdidas solo se registra si es probable que la empresa tenga beneficios para compensarlas. Es un juicio (criterio), por eso empieza desmarcado (prudencia). No cambia el impuesto que se paga, sino el año en que se reconoce el gasto.',
@@ -2080,7 +2082,7 @@ export default {
 
 // v0.26.0 · Pantalla de entrada
   landingTagline: 'Aprende · Analiza · Aporta',
-  landingTitle: 'Tu aliado en la contabilidad y el análisis financiero',
+  landingTitle: 'Un laboratorio para aprender contabilidad española',   // v0.60.9 (H-19, opción A)
   landingSubtitle: 'Un ERP web para aprender contabilidad española con empresas de práctica: registras facturas, liquidas el IVA o el IGIC, cierras el ejercicio y analizas los estados financieros.',
   landingMore: 'Conocer más',
   landingTrustLabel: 'En resumen',
@@ -2096,7 +2098,7 @@ export default {
     trace: { title: 'Trazabilidad', text: 'Cada cifra lleva a su origen: de la partida a sus cuentas, al libro mayor y al asiento.' },
     import: { title: 'Importa un diario de práctica', text: 'Sube un libro diario en Excel o CSV y obtén el balance, la cuenta de resultados y los ratios.' },
   },
-  landingWhyTitle: '¿Por qué MiniERP?',
+  landingWhyTitle: 'Cómo se aprende aquí',
   landingWhy: {
     doing: { title: 'Aprendes haciendo', text: 'El ciclo completo, de la factura al cierre, como en una gestoría.' },
     practice: { title: 'Con empresas de práctica', text: 'Casos guiados, supuestos que se corrigen solos y empresas sintéticas que cualquiera reproduce con una semilla.' },
@@ -2105,7 +2107,7 @@ export default {
     open: { title: 'Código abierto', text: 'Todo el proyecto está en GitHub: la base de datos, la web y las decisiones.' },
   },
   landingAccess: 'Acceso',
-  landingBandTitle: 'Empieza hoy, sin registrarte',
+  landingBandTitle: 'Puedes explorarlo sin registrarte',
   landingLinks: 'Enlaces del autor',
   landingAccountCreated: 'Cuenta creada',
   landingSignUpFailed: 'No se ha podido crear la cuenta.',

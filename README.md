@@ -51,7 +51,7 @@ española y el funcionamiento real de un ERP. Los ERP comerciales son caros y di
 propia, así que decidí **construir uno**. Diseñar la tabla de asientos obliga a entender *por qué* un ERP impone
 cada regla. Además, todo el código está en inglés para practicar el vocabulario técnico de BC y SAP.
 
-## ¿Qué hace hoy? (v0.60.8)
+## ¿Qué hace hoy? (v0.60.9)
 
 **Primeros pasos y navegación**
 - **Pantalla de Inicio** en cada empresa:
@@ -100,7 +100,7 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
 
 **Terceros, IVA/IGIC y facturas** (modelo gestoría)
 - **Terceros** (clientes 430, proveedores 400, acreedores 410, deudores 440) con su propia subcuenta y
-  **validación de NIF/NIE/CIF**.
+  **validación de NIF y NIE**.
 - **Configuración de impuestos** por tipo (472 soportado / 477 repercutido), con asistente para IVA o IGIC.
 - **Registro de facturas** recibidas y emitidas, normales y **rectificativas**, con asiento automático, vista
   previa y libro registro. La **regla del lado** aplica a devoluciones (608/708), rappels (609/709) y pronto pago
@@ -180,7 +180,8 @@ cada regla. Además, todo el código está en inglés para practicar el vocabula
 - **Balance de situación** en los tres modelos del PGC (PYMES por defecto, abreviado y normal; RD 1515/2007 y
   RD 1514/2007) y **cuenta de pérdidas y ganancias** (modelo PYMES), con desglose hasta la
   subcuenta y **análisis horizontal**: año anterior, variación en importe y en %. A mitad de ejercicio, la PyG se
-  compara con el mismo periodo y el Balance con el cierre anterior (NIC 34).
+  compara con el mismo periodo y el Balance con el cierre anterior, como pide la NIC 34 a la información intermedia
+  (el PGC no regula los estados intermedios).
 - **Estado de flujos de efectivo** por el método **directo** y el **indirecto**, con el cuadre del auditor entre
   los dos (el pago de una factura se clasifica por lo que compró), y una **cascada** que enseña de dónde viene y a dónde va el dinero del año.
 - **Ratios:**
@@ -348,7 +349,7 @@ Detalle en [`docs/modelo-datos.md`](docs/modelo-datos.md) y vocabulario español
 ├── scripts/generar-diagnostico.sh  genera database/diagnostico-supabase.sql (¿le falta algo a tu Supabase?)
 ├── scripts/generar-permisos.mjs    genera docs/permisos.md desde la prueba de permisos (fase 79)
 ├── database/
-│   ├── migrations/            0001 → 0097, se ejecutan en orden en Supabase
+│   ├── migrations/            0001 → 0098, se ejecutan en orden en Supabase
 │   ├── funciones/             versión vigente de cada función, para estudiarla (generado)
 │   ├── diagnostico-supabase.sql  consulta de solo lectura: qué le falta a tu Supabase (generado)
 │   ├── reset/                 reset del schema antiguo (solo histórico)
@@ -564,6 +565,7 @@ cuadrados. El ERP también lee directamente los diarios en Excel y los de Busine
 - [x] **v0.60.6**: operaciones societarias según la LSC (reparto con pérdidas, reducción de capital, art. 326), ajustes de la empresa y meses protegidos, cuota de IA devuelta si falla
 - [x] **v0.60.7**: el Balance «comparado con el compensado» (lo que esconde y sus ratios), el menú «Auditorías» con el tablero «Saldos al revés» y la caja en negativo en el activo, restando en la tesorería
 - [x] **v0.60.8**: correcciones de la etapa: el cierre de los grupos 8 y 9 contra su cuenta del PGC (133, 1340, 1341, 135), el ECPN con las transferencias en su sitio, el plazo de pago de la Ley 3/2004, textos y seguridad
+- [x] **v0.60.9**: cierre de la etapa de correcciones: la cifra de negocios de un año corto se eleva al año para sugerir el régimen del Impuesto sobre Sociedades, el aviso del primer período impositivo, la portada «Un laboratorio para aprender contabilidad española» y textos revisados contra la norma
 - [ ] Más botones en la barra superior
 - [ ] Ontología contable y chat con la IA (consulta, nunca calcula)
 - [ ] Más informes en Power BI e incrustarlos en el ERP con RLS por empresa

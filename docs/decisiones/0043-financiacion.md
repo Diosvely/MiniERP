@@ -19,8 +19,9 @@ La norma es el PGC 2007:
 - **NRV 9.ª, apdo. 3.1:** pasivos financieros a coste amortizado, con el tipo de interés efectivo;
 - **NRV 8.ª, apdo. 1.1:** arrendamiento financiero del arrendatario.
 
-El IVA / IGIC de cada cuota del leasing lo pide la ley del impuesto: hasta que se ejerce la opción de compra, el
-arrendamiento financiero es una prestación de servicios.
+El IVA / IGIC de cada cuota del leasing lo pide la ley del impuesto: mientras el arrendatario no se comprometa a ejercitar
+la opción de compra, el arrendamiento financiero es una prestación de servicios (art. 8.Dos.5.º LIVA). *(Pendiente de
+validar por Diosvely: el texto consolidado de la LIVA y el artículo equivalente del IGIC.)*
 
 ## Decisión
 
@@ -88,8 +89,9 @@ arrendamiento financiero es una prestación de servicios.
   - **solo sistema francés:** no hay cuota de principal constante, carencia ni tipo variable (euríbor);
   - **la primera cuota se calcula como un periodo entero**, aunque el primer vencimiento caiga antes;
   - **no se modelan las amortizaciones anticipadas ni la cancelación del préstamo;**
-  - **los intereses no se ajustan en el Impuesto sobre Sociedades.** No se aplica el límite del 30 % del beneficio
-    operativo del art. 16 LIS: está por debajo del millón de euros, salvo empresas grandes;
+  - **los intereses no se ajustan en el Impuesto sobre Sociedades.** Los gastos financieros netos se deducen con el
+    límite del 30 % del beneficio operativo, pero hasta 1 millón de euros al año se deducen siempre (art. 16.1 LIS), así
+    que el límite casi nunca afecta a una pyme;
   - **el arrendador** (quien da el leasing) **no está.**
 - **Pruebas:** 58 de 58 en la base de datos (fases 57 y 58) y 214 tests en la web. **Lo que salió al probar:**
   - el céntimo del F2, en el documento de supuestos;
@@ -113,6 +115,7 @@ arrendamiento financiero es una prestación de servicios.
 - **Leasing: es una compra a plazos disfrazada de alquiler.** Si es seguro que vas a quedarte el bien, lo registras
   como tuyo (213) y como deuda (174 / 524). Cada cuota baja la deuda y paga intereses. El bien se amortiza por su vida
   útil, no por la duración del contrato. El IVA / IGIC va en cada cuota, porque legalmente es un servicio hasta que
-  compras.
-- **En BC no hay módulo estándar de préstamos** (se usan asientos periódicos o extensiones). En SAP están Treasury and
-  Risk Management y Lease Administration. Aquí el valor es ver el cuadro y el asiento antes, con la norma.
+  te comprometes a comprar.
+- **Aquí se ve el cuadro y el asiento antes de contabilizar,** con la norma.
+
+*Revisión ética (v0.60.9, 2026-11-18): se quita una frase que decía, sin fuente, qué módulos tienen otros programas (H-73); el límite de los intereses (H-74) y el IVA del leasing (H-75) se precisan. La decisión y sus consecuencias no cambian.*

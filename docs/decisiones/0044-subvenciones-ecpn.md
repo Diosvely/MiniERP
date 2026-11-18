@@ -28,8 +28,9 @@ Las normas que se aplican son:
 2. **Plantilla.**
    - Se añaden los grupos 8 y 9 y la 522, con los títulos y subgrupos que se usan: 830 / 8301, 84x y 94x. Se añaden
      también, como cuentas de título, a las empresas que ya existen.
-   - **Balance.** Durante el año, el saldo de los grupos 8 y 9 ya es patrimonio neto (A-2 Subvenciones), igual que el
-     de los grupos 6 y 7 es el resultado del ejercicio. Sin esto, el balance no cuadraba.
+   - **Balance.** Durante el año, el saldo de los grupos 8 y 9 ya es patrimonio neto (las subvenciones en A-3, o A-2
+     según el modelo; desde la v0.60.4, los ajustes de valor en «A-2) Ajustes por cambios de valor», ADR 0062), igual
+     que el de los grupos 6 y 7 es el resultado del ejercicio. Sin esto, el balance no cuadraba.
    - **Estado de flujos de efectivo.**
      - Los grupos 8 y 9 y la 4708 de capital van a financiación (cobros por subvenciones, C-9 e).
      - La 83 va con los impuestos, como la 479 con la que se compensa.
@@ -78,8 +79,7 @@ Las normas que se aplican son:
    - **ECPN,** en Informes: las partes A y B con su comprobación, y exportación a Excel.
 
 ## Alternativas descartadas
-- **Llevar la subvención a la 130 directamente**, sin los grupos 8 y 9. Es lo que hacen muchos programas sencillos, pero
-  así no hay parte A del ECPN: el estado de ingresos y gastos reconocidos sale justamente de esos grupos.
+- **Llevar la subvención a la 130 directamente**, sin los grupos 8 y 9. Así no hay parte A del ECPN: el estado de ingresos y gastos reconocidos sale justamente de esos grupos.
 - **Imputar de forma lineal por años**, sin mirar la amortización. Rompe la correlación de la NRV 18.ª: si el activo se
   amortiza por meses, se vende o se deteriora, la imputación tiene que seguirlo.
 - **Una sola 4708 para las dos clases.** El EFE la clasificaría mal en una de ellas, y el invariante «directo =
@@ -113,15 +113,15 @@ Las normas que se aplican son:
   se registra ya como un pasivo diferido (479). Por eso la 130 tiene 13.500 y no 18.000: los otros 4.500 se deben a
   Hacienda en el futuro.
 - **Los grupos 8 y 9 son una cuenta de resultados del patrimonio neto.** Igual que los grupos 6 y 7 se cierran contra la
-  129, los grupos 8 y 9 se cierran contra la 130. De ahí sale la parte A del ECPN: lo que se ha ganado o perdido sin
+  129, los grupos 8 y 9 se cierran contra el subgrupo 13: las subvenciones contra la 130 y los ajustes de valor contra la
+  133, la 134 o la 135 (ver «Actualización (v0.60.8)»). De ahí sale la parte A del ECPN: lo que se ha ganado o perdido sin
   pasar por la cuenta de resultados.
 - **El ECPN contesta «¿por qué ha cambiado mi patrimonio?».** Puede ser por el resultado y las subvenciones (reconocidos),
   por lo que han puesto o retirado los socios (ampliaciones, dividendos) o por cambios entre partidas (el reparto a
   reservas). Si el saldo final no coincide con el balance, algo está mal.
 - **Reintegrable o no:** mientras puede tener que devolverse, es una deuda. El día que se cumple la condición, deja de
   serlo.
-- **En BC y SAP** no hay módulo estándar de subvenciones: se registran en el diario y el ECPN se monta con un informe.
-  Aquí sale del diario solo, comprobado contra el balance.
+- **El ECPN sale del diario,** comprobado contra el balance.
 
 ## Actualización (v0.60.8, 2026-11-17) · El cierre y el ECPN de los grupos 80-82 y 90-92
 
@@ -151,3 +151,5 @@ Las normas que se aplican son:
 - **Cada ajuste vuelve a su casa.** Lo que se gana o se pierde por valorar unas acciones a valor razonable se acumula en
   la 133; lo de las coberturas, en la 134; lo de la conversión de moneda, en la 135; las subvenciones, en la 130. Si al
   cerrar todo fuera a la 130, el Balance del año siguiente llamaría «subvención» a una plusvalía de unas acciones.
+
+*Revisión ética (v0.60.9, 2026-11-18): se quitan dos frases que comparaban con otros programas (H-73) y se ponen al día con la v0.60.8 el Balance y el cierre de los grupos 8 y 9 (H-76). La decisión y sus consecuencias no cambian.*

@@ -1,6 +1,6 @@
 # Funciones del esquema erp (versión vigente)
 
-Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0097`.
+Generado por `scripts/volcar-funciones.sh` con las migraciones `0001` … `0098`.
 No se edita a mano: el código fuente son las migraciones. Esto es para **estudiar** cada función en su forma
 actual sin rastrear sus redefiniciones.
 
@@ -110,7 +110,7 @@ actual sin rastrear sus redefiniciones.
 | [`corporate_tax_prepare`](corporate_tax_prepare.sql) | 1 | 0057_corporate_tax | security definer |
 | [`corporate_tax_proposals`](corporate_tax_proposals.sql) | 3 | 0061_equity_integration | invoker |
 | [`corporate_tax_quota`](corporate_tax_quota.sql) | 2 | 0091_corporate_tax_fixes | invoker |
-| [`corporate_tax_regime_hint`](corporate_tax_regime_hint.sql) | 1 | 0057_corporate_tax | invoker |
+| [`corporate_tax_regime_hint`](corporate_tax_regime_hint.sql) | 2 | 0098_regime_hint_annualized | invoker |
 | [`corporate_tax_settings`](corporate_tax_settings.sql) | 1 | 0057_corporate_tax | security definer |
 | [`counts_in_reports`](counts_in_reports.sql) | 1 | 0074_report_simulation | invoker |
 | [`create_accrual`](create_accrual.sql) | 1 | 0043_year_end_adjustments | security definer |

@@ -106,7 +106,7 @@ describe('Impuesto sobre Sociedades · período impositivo', () => {
     expect(period({ quota: 0 })).toBeNull()   // una base de datos sin la 0091 no rompe la pantalla
   })
   it('los textos del período existen en los dos idiomas y citan la ley', () => {
-    for (const k of ['period', 'periodStart', 'periodShort', 'periodSuggest', 'periodUse', 'periodWhole', 'periodApply']) {
+    for (const k of ['period', 'periodStart', 'periodShort', 'periodSuggest', 'periodUse', 'periodWhole', 'periodApply', 'periodLimit', 'hintAnnual']) {
       expect(es.ct[k]).toBeTruthy(); expect(en.ct[k]).toBeTruthy()
     }
     expect(es.ct.periodShort).toContain('art. 29.1 LIS')

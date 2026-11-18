@@ -46,8 +46,8 @@ estaba en el plan de la fase 2; se adelanta. El diseño se validó antes de cons
   regularización y de cierre, y Power BI necesitaría permisos sobre todo el ERP.
 - **Que el DAX decida la línea del balance según el signo.** Es posible, pero enrevesado, y en una demo en directo es
   más fácil que falle. La regla ya existe en el ERP y está probada.
-- **Una marca aparte («En Power BI») en lugar de «Demo».** Diosvely decidió usar la de demo: sus datos reales nunca se
-  publican.
+- **Una marca aparte («En Power BI») en lugar de «Demo».** Diosvely decidió usar la de demo: lo que no es demo nunca llega a
+  Power BI.
 - **Publicar en la web (Publish to web) o incrustar el informe en el ERP.** Lo primero es público y sin seguridad. Lo
   segundo, con RLS por empresa, queda anotado para más adelante (`ideas-pendientes.md`).
 
@@ -79,3 +79,5 @@ estaba en el plan de la fase 2; se adelanta. El diseño se validó antes de cons
   enseña es verdad.
 - **En BC y SAP:** Business Central publica *API pages* y *queries* para Power BI. SAP tiene las *CDS views* de
   análisis. Aquí, las vistas del esquema `bi`.
+
+*Revisión ética (v0.60.9, 2026-11-18): se aclara que lo que no es demo nunca llega a Power BI (H-78). La decisión y sus consecuencias no cambian.*

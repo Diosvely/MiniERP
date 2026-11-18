@@ -1,5 +1,5 @@
 -- =====================================================================
--- DIAGNÓSTICO DE SUPABASE · migraciones 0001 … 0097 (GENERADO por scripts/generar-diagnostico.sh: no editar)
+-- DIAGNÓSTICO DE SUPABASE · migraciones 0001 … 0098 (GENERADO por scripts/generar-diagnostico.sh: no editar)
 -- ---------------------------------------------------------------------
 -- Pégalo en el SQL Editor de Supabase y pulsa Run. SOLO LEE: no cambia nada.
 -- Devuelve una fila por cada diferencia con el repositorio. Ninguna fila («No rows returned») = todo al día.
@@ -106,7 +106,7 @@ f(sig, hash) as (values
   ('erp.corporate_tax_prepare(uuid,integer)', '21f5fd0a8a5aac030952e137c1e131f2'),
   ('erp.corporate_tax_proposals(uuid,integer)', 'cecd27dad2ff1d09b22900d891444cde'),
   ('erp.corporate_tax_quota(integer,text,numeric,integer)', '3bd0b0dcb09eea25137d84f1f4523785'),
-  ('erp.corporate_tax_regime_hint(uuid,integer)', '8d13a5d8d341184b503bd353acbdfbab'),
+  ('erp.corporate_tax_regime_hint(uuid,integer)', '579d92d2723d223a12158ae063da0122'),
   ('erp.corporate_tax_settings(uuid,text,boolean)', 'ce5aaaf44cd76e3e94b40f269fffa974'),
   ('erp.counts_in_reports(text,uuid)', '1a407aba5391ef28eea7df79706bb182'),
   ('erp.create_accrual(jsonb)', 'dc990ed17bcc6375abcf735b8464cb99'),

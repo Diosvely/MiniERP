@@ -1474,7 +1474,9 @@ export default {
     period: 'Tax period: from {a} to {b} ({n} days)',
     periodStart: 'Start of the tax period',
     periodShort: 'The period is shorter than a year: the micro-company reduced-rate bracket is €50,000 × days / 365 (art. 29.1 LIS).',
-    periodSuggest: 'Was the company incorporated on {d}? If this is its first year, the tax period starts that day (art. 27 LIS).',
+    periodSuggest: 'Was the company formed on {d}? The tax period matches the company\'s financial year and never exceeds 12 months (art. 27 LIS). In its first year it starts when the company is formed: check the deed and the bylaws.',
+    periodLimit: 'The ERP calculates periods that end at the year-end. It does not calculate those that end earlier: dissolution, change of residence or conversion (art. 27.2 LIS).',
+    hintAnnual: 'Last year\'s period lasted {n} days: its turnover has been annualised (art. 101.2 LIS).',
     periodUse: 'Use that date', periodWhole: 'Back to the whole year', periodApply: 'Apply the date',
     recognize: 'Recognise the tax credit for the tax losses (4745)',
     recognizeHelp: 'PGC, NRV 13.ª: the credit for losses is only recognised if it is probable that the company will have profits to offset them. It is a judgement, so it starts unticked (prudence). It does not change the tax paid, only the year in which the expense is recognised.',
@@ -2081,7 +2083,7 @@ export default {
 
  // v0.26.0 · Landing screen
   landingTagline: 'Learn · Analyse · Contribute',
-  landingTitle: 'Your ally in accounting and financial analysis',
+  landingTitle: 'A lab to learn Spanish accounting',   // v0.60.9 (H-19, option A)
   landingSubtitle: 'A web ERP to learn Spanish accounting with practice companies: register invoices, settle VAT or IGIC, close the year and analyse the financial statements.',
   landingMore: 'Learn more',
   landingTrustLabel: 'In short',
@@ -2097,7 +2099,7 @@ export default {
     trace: { title: 'Traceability', text: 'Every figure leads to its source: from the line to its accounts, to the ledger and to the entry.' },
     import: { title: 'Import a practice journal', text: 'Upload a journal in Excel or CSV and get the balance sheet, the income statement and the ratios.' },
   },
-  landingWhyTitle: 'Why MiniERP?',
+  landingWhyTitle: 'How you learn here',
   landingWhy: {
     doing: { title: 'Learn by doing', text: 'The whole cycle, from the invoice to the closing, as in an accounting firm.' },
     practice: { title: 'With practice companies', text: 'Guided cases, self-marking exercises and synthetic companies anyone can reproduce from a seed.' },
@@ -2106,7 +2108,7 @@ export default {
     open: { title: 'Open source', text: 'The whole project is on GitHub: the database, the web and the decisions.' },
   },
   landingAccess: 'Access',
-  landingBandTitle: 'Start today, without signing up',
+  landingBandTitle: 'You can explore it without signing up',
   landingLinks: 'Author links',
   landingAccountCreated: 'Account created',
   landingSignUpFailed: 'The account could not be created.',

@@ -9,7 +9,8 @@ Formato basado en [Keep a Changelog](https://keepachangelog.com/es-ES/1.1.0/) y 
   6.ª de elaboración de las cuentas anuales (6.ª.14 y 6.ª.17). La 1341 va a «Operaciones de cobertura». Modelos normal y
   abreviado; PYMES no cambia; ningún total cambia.
 - **Cuentas protegidas** (SEG-28): la empresa de una cuenta no cambia; su número y su tipo, solo si no tiene apuntes.
-- **Diagnóstico de Supabase** (SEG-26): avisa de un rol que salta el RLS (superusuario o bypassrls) y entra en `erp`.
+- **Diagnóstico de Supabase** (SEG-26): avisa de un rol que salta el RLS (superusuario o bypassrls) y entra en `erp`. Y si a la base le falta una función con permisos, la lista como «falta» en vez de pararse con «function … does not
+  exist».
 - **Power BI** (M-03 y M-04): `bi.dim_linea.orden_informe` con los totales al final; la guía, con las siete correcciones
   del ensayo en Power BI Desktop.
 - **ADR 0051** (AF-34): sin la comparación con programas comerciales que quedaba.

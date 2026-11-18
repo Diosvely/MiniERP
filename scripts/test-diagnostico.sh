@@ -62,3 +62,10 @@ rows=$(psql -X -At -v ON_ERROR_STOP=1 -d "$db" -f database/diagnostico-supabase.
 psql -q -X -d "$db" -c "revoke usage on schema erp from t_salta_rls; drop role t_salta_rls;" > /dev/null 2>&1 || true
 grep -qF "el rol t_salta_rls salta el RLS y entra en el esquema erp" <<< "$rows" || { echo "✗ el diagnóstico no ve un rol que salta el RLS"; echo "$rows"; exit 1; }
 echo "✓ SEG-26: un rol que salta el RLS y entra en erp, el diagnóstico lo ve"
+
+# v0.60.10 · si a la base le falta una función que tiene permisos en el repositorio, el diagnóstico la lista como
+# «falta» y no se para con «function … does not exist»
+psql -q -X -v ON_ERROR_STOP=1 -d "$db" -c "drop function erp.closing_equity_name(text);" > /dev/null
+rows=$(psql -X -At -v ON_ERROR_STOP=1 -d "$db" -f database/diagnostico-supabase.sql) || { echo "✗ el diagnóstico se para si falta una función"; exit 1; }
+grep -qF "función|erp.closing_equity_name(text)|falta" <<< "$rows" || { echo "✗ el diagnóstico no lista la función que falta"; echo "$rows"; exit 1; }
+echo "✓ una función que falta sale como «falta», sin parar el diagnóstico"

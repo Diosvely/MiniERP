@@ -1068,12 +1068,12 @@ where now_.privs <> tg.privs
 union all
 select 'seguridad', 'ejecutar ' || m.sig || ' (' || r.rol || ')', 'permiso de más'
 from mine m cross join (values ('anon'), ('authenticated')) r(rol)
-where has_function_privilege(r.rol, m.sig::regprocedure, 'execute')
+where has_function_privilege(r.rol, to_regprocedure(m.sig), 'execute')
   and not exists (select 1 from fg where fg.sig = m.sig and fg.rol = r.rol)
 union all
 select 'seguridad', 'ejecutar ' || fg.sig || ' (' || fg.rol || ')', 'permiso de menos'
 from fg join mine m on m.sig = fg.sig
-where not has_function_privilege(fg.rol, fg.sig::regprocedure, 'execute')
+where not has_function_privilege(fg.rol, to_regprocedure(m.sig), 'execute')   -- v0.60.10: sin fallar si la función falta
 -- v0.60.8 (SEG-25) · nadie más entra en erp, nadie de la web entra en bi, y powerbi_reader solo lee bi
 union all
 select 'seguridad', 'el rol ' || r.rolname || ' entra en el esquema erp', 'no debe (solo authenticated y los roles del sistema)'
